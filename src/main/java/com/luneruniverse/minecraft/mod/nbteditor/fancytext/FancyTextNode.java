@@ -46,7 +46,7 @@ public interface FancyTextNode {
 						FancyTextToken event = tokens.get(i + 1);
 						FancyTextToken closeSquare = tokens.get(i + 2);
 						if (event.type() == FancyTextToken.Type.TEXT && closeSquare.type() == FancyTextToken.Type.CLOSE_SQUARE) {
-							StyleOption action = StyleOption.valueOf(((String) event.content().get()).toUpperCase());
+							StyleOption action = StyleOption.get((String) event.content().get());
 							if (action != null) {
 								int openIndex = i + 3;
 								FancyTextToken open = tokens.get(openIndex);

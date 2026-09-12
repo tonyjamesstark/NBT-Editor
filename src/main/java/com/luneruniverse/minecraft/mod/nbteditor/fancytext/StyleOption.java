@@ -10,5 +10,17 @@ public enum StyleOption {
 	SHOW_ITEM,
 	SHOW_ENTITY,
 	INSERTION,
-	FONT
+	FONT;
+	
+	/**
+	 * @return The matching option, or null if the name isn't a style option
+	 */
+	public static StyleOption get(String name) {
+		for (StyleOption option : values()) {
+			if (option.name().equalsIgnoreCase(name))
+				return option;
+		}
+		return null;
+	}
+	
 }
