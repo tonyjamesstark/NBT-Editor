@@ -103,6 +103,7 @@ public class SaveQueue<T> {
 					}
 				} while (rerun);
 			}, "NBTEditor/Async/SaveQueue:" + name);
+			saveThread.setDaemon(true);
 			saveThread.start();
 		}
 		
