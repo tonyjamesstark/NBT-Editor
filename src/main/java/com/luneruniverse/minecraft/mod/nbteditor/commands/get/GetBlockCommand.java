@@ -35,7 +35,7 @@ public class GetBlockCommand extends ClientCommand {
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		Command<FabricClientCommandSource> getBlock = context -> {
 			PosArgument posArg = getDefaultArg(context, "pos", null, PosArgument.class);
-			BlockPos pos = (posArg == null ? null : posArg.toAbsoluteBlockPos(context.getSource().getPlayer().getCommandSource()));
+			BlockPos pos = (posArg == null ? null : posArg.toAbsoluteBlockPos(MVMisc.getCommandSource(context.getSource().getPlayer())));
 			if (pos != null && !MainUtil.client.world.isInBuildLimit(pos))
 				throw BlockPosArgumentType.OUT_OF_WORLD_EXCEPTION.create();
 			BlockStateArgument blockArg = context.getArgument("block", BlockStateArgument.class);
@@ -45,7 +45,7 @@ public class GetBlockCommand extends ClientCommand {
 			LocalBlock block = new LocalBlock(blockArg.getBlockState().getBlock(), new BlockStateProperties(blockArg.getBlockState()), nbt);
 			
 			if (pos == null) {
-				block.toItem().ifPresentOrElse(MainUtil::getWithMessage,
+				block.toItem(false).ifPresentOrElse(MainUtil::getWithMessage,
 						() -> MainUtil.client.player.sendMessage(TextInst.translatable("nbteditor.nbt.export.item.error"), false));
 			} else if (NBTEditorClient.SERVER_CONN.isEditingExpanded())
 				block.place(pos);

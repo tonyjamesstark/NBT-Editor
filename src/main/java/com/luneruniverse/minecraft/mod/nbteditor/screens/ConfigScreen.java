@@ -38,6 +38,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValu
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueDropdown;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueSlider;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestScreen;
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screen.Screen;
@@ -168,17 +169,17 @@ public class ConfigScreen extends TickableSupportingScreen {
 		
 		public Point position(int index, int numTabs, int screenWidth, int screenHeight) {
 			int x = switch (this) {
-				case BOTTOM_LEFT, TOP_LEFT -> index * (CreativeTab.WIDTH + 2) + 10;
+				case BOTTOM_LEFT, TOP_LEFT -> index * (CreativeTabWidget.WIDTH + 2) + 10;
 				case BOTTOM_CENTER, TOP_CENTER -> {
-					int tabsWidth = numTabs * (CreativeTab.WIDTH + 2) - 2;
+					int tabsWidth = numTabs * (CreativeTabWidget.WIDTH + 2) - 2;
 					int tabsStart = (screenWidth - tabsWidth) / 2;
-					yield tabsStart + index * (CreativeTab.WIDTH + 2);
+					yield tabsStart + index * (CreativeTabWidget.WIDTH + 2);
 				}
-				case BOTTOM_RIGHT, TOP_RIGHT -> screenWidth - CreativeTab.WIDTH - index * (CreativeTab.WIDTH + 2) - 10;
+				case BOTTOM_RIGHT, TOP_RIGHT -> screenWidth - CreativeTabWidget.WIDTH - index * (CreativeTabWidget.WIDTH + 2) - 10;
 			};
 			
 			int y = switch (this) {
-				case BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT -> screenHeight - CreativeTab.HEIGHT;
+				case BOTTOM_LEFT, BOTTOM_CENTER, BOTTOM_RIGHT -> screenHeight - CreativeTabWidget.HEIGHT;
 				case TOP_LEFT, TOP_CENTER, TOP_RIGHT -> 0;
 			};
 			
@@ -200,7 +201,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 	private static boolean singleQuotesAllowed;
 	private static double scrollSpeed;
 	private static boolean airEditable;
-	private static boolean jsonText;
+	private static boolean normalText;
 	private static List<String> shortcuts;
 	private static CheckUpdatesLevel checkUpdates;
 	private static boolean largeClientChest;
@@ -227,7 +228,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 		singleQuotesAllowed = false;
 		scrollSpeed = 5;
 		airEditable = false;
-		jsonText = false;
+		normalText = false;
 		shortcuts = new ArrayList<>();
 		checkUpdates = CheckUpdatesLevel.MINOR;
 		largeClientChest = false;
@@ -262,7 +263,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 			singleQuotesAllowed = settings.get("allowSingleQuotes").getAsBoolean();
 			scrollSpeed = settings.get("scrollSpeed").getAsDouble();
 			airEditable = settings.get("airEditable").getAsBoolean();
-			jsonText = settings.get("jsonText").getAsBoolean();
+			normalText = settings.get("jsonText").getAsBoolean();
 			shortcuts = getStream(settings.get("shortcuts").getAsJsonArray())
 					.map(cmd -> cmd.getAsString()).collect(Collectors.toList());
 			JsonPrimitive checkUpdatesLegacy = settings.get("checkUpdates").getAsJsonPrimitive();
@@ -303,7 +304,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 		settings.addProperty("allowSingleQuotes", singleQuotesAllowed);
 		settings.addProperty("scrollSpeed", scrollSpeed);
 		settings.addProperty("airEditable", airEditable);
-		settings.addProperty("jsonText", jsonText);
+		settings.addProperty("jsonText", normalText);
 		settings.add("shortcuts", shortcuts.stream().collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
 		settings.addProperty("checkUpdates", checkUpdates.name());
 		settings.addProperty("largeClientChest", largeClientChest);
@@ -371,8 +372,8 @@ public class ConfigScreen extends TickableSupportingScreen {
 	public static boolean isAirEditable() {
 		return airEditable;
 	}
-	public static boolean isJsonText() {
-		return jsonText;
+	public static boolean isNormalText() {
+		return normalText;
 	}
 	public static List<String> getShortcuts() {
 		return shortcuts;
@@ -588,10 +589,10 @@ public class ConfigScreen extends TickableSupportingScreen {
 				.addValueListener(value -> triggerBlockUpdates = value.getValidValue()))
 				.setTooltip("nbteditor.config.trigger_block_updates.desc"));
 		
-		functional.setConfigurable("jsonText", new ConfigItem<>(TextInst.translatable("nbteditor.config.json_text"),
-				new ConfigValueBoolean(jsonText, false, 100, TextInst.translatable("nbteditor.config.json_text.yes"), TextInst.translatable("nbteditor.config.json_text.no"))
-				.addValueListener(value -> jsonText = value.getValidValue()))
-				.setTooltip("nbteditor.config.json_text.desc"));
+		functional.setConfigurable("normalText", new ConfigItem<>(TextInst.translatable("nbteditor.config.normal_text"),
+				new ConfigValueBoolean(normalText, false, 100, TextInst.translatable("nbteditor.config.normal_text.yes"), TextInst.translatable("nbteditor.config.normal_text.no"))
+				.addValueListener(value -> normalText = value.getValidValue()))
+				.setTooltip("nbteditor.config.normal_text.desc"));
 		
 		functional.setConfigurable("allowSingleQuotes", new ConfigItem<>(TextInst.translatable("nbteditor.config.single_quotes"),
 				new ConfigValueBoolean(singleQuotesAllowed, false, 100, TextInst.translatable("nbteditor.config.single_quotes.allowed"),
