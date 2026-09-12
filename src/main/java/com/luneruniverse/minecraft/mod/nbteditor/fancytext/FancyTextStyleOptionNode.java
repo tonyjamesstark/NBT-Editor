@@ -30,7 +30,7 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 				ItemStack item;
 				try {
 					item = MainUtil.client.player.getInventory().getStack(Integer.parseInt(value));
-				} catch (NumberFormatException e) {
+				} catch (NumberFormatException | IndexOutOfBoundsException e) {
 					try {
 						item = ItemReference.getHeldItem().getItem();
 					} catch (CommandSyntaxException e2) {
@@ -62,6 +62,8 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 			}
 			case INSERTION -> style.withInsertion(value);
 			case FONT -> {
+				if (value == null)
+					yield style.withFont(Style.DEFAULT_FONT_ID);
 				try {
 					yield style.withFont(IdentifierInst.of(value));
 				} catch (InvalidIdentifierException e) {
