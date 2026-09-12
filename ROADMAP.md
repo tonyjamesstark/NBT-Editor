@@ -106,15 +106,45 @@ Three models independently flagged this subsystem and each found a *different* d
 finding is individually decisive, but the convergence is the signal, and the refactor is new
 enough on `dev` that nothing is built on it yet.
 
-- [ ] **3.1 Contents-space versus slot-space conflation** in `ConcatContainerIO`.
-- [ ] **3.2 `SlotKeyNbtListContainerIO.write` iterates `contents.length`, not `numSlots`.**
-  Currently masked by `ClientScreenHandlerSlot` locking, so it is latent rather than live.
-- [ ] **3.3 The tri-method invariant** across `getNumWritten`, `getWrittenSlotIndex`, and
-  `write` is unenforced and undocumented. Decide whether to encode it or document it.
+Shared premise, verified first. `ContainerScreen` extends `ClientHandledScreen` with
+`super(3, ...)`, so its inventory is always 27 slots, and `save()` passes all 27 to
+`ContainerIOs.write` no matter what `getMaxSlots` reports. Every write implementation therefore
+receives a longer array than it owns. `ContainerScreen.removed()` returns items sitting in slots
+at or past `numSlots` to the player, which is the author's own acknowledgement that items do reach
+those slots.
+
+- [x] **3.1 Contents-space versus slot-space conflation** in `ConcatContainerIO`. Real, and
+  unreachable. `getWrittenSlotIndex` adds the accumulated `getNumWritten` (contents space) to a
+  result that is a slot index. Those two agree only when each io consumes exactly as many contents
+  as it occupies slots. Every io satisfies that except the two compacting ones,
+  `OrderNbtListContainerIO` and `BundleContentsComponentContainerIO`, and both are last in every
+  concat that uses them. Checked all four in-scope concats: `DONKEY_IO`, `LLAMA_IO`, `VILLAGER_IO`,
+  `ALLAY_IO`. Each leads with `EquipmentContainerIO`, a fixed 8 slots for 8 contents. No
+  restructuring. Stating the invariant in 3.3 is what makes the conflation safe to leave.
+
+- [x] **3.2 `SlotKeyNbtListContainerIO.write` iterates `contents.length`, not `numSlots`.** Fixed
+  by bounding the loop. The unbounded version stamps `Slot` tags at or past `numSlots`, which its
+  own `isSupported` then rejects, so the next open silently refuses and the container becomes
+  uneditable. `OrderNbtListContainerIO.write` had the same shape, appending past `maxSlots` and
+  failing its own `isSupported` size check, so it is bounded too and its `getNumWritten` now
+  reports `min(contents.length, maxSlots)`. Both were masked by `ClientScreenHandlerSlot` locking,
+  a GUI-level guard protecting a data-level function in another package.
+
+- [x] **3.3 The tri-method invariant** across `getNumWritten`, `getWrittenSlotIndex`, and `write`
+  is now documented on `ContainerIO` rather than encoded. `getNumWritten` equals `getMaxSlots`
+  unless the io compacts, and a compacting io must be last in a concat. Encoding it would mean a
+  separate slot-offset concept threaded through `ConcatContainerIO` to buy nothing today. The same
+  pass corrected `read`'s javadoc, which promised "Will not contain null" while
+  `EquipmentContainerIO` and `SlotKeyNbtListContainerIO` both leave nulls in unset slots and
+  `ContainerScreen` line 57 defends against them.
 
 A fourth reported defect, a slicing bug in `ConcatContainerIO.getWrittenSlotIndex`, was checked
 and dismissed. `slot` is rebased by `- numWritten` and the result by `+ numWritten`, so the
-slicing is consistent.
+slicing is consistent. That is a separate claim from 3.1 and does not rescue it.
+
+**Verification.** `sh gradlew compileJava` under `25.0.4-tem`, BUILD SUCCESSFUL, the same 5
+pre-existing mixin warnings and no new ones. Both bounds confirmed in the bytecode with `javap`
+rather than read off the build log. Not exercised in-game.
 
 ## Phase 4: the 26.2 migration (scoped, not started)
 
@@ -146,6 +176,11 @@ Recorded so the next pass does not rediscover them. Nothing here is removed yet.
 
 - The pre-1.21.11 arms of every `Version.newSwitch()` and `range()` site.
 - The `nbteditor_1.17` module, and `MVShader1` / `MVShader2`.
+- `ClientScreenHandlerSlot.unlockDuring` has no callers. It is the only bypass of slot locking,
+  and it mishandles nesting: an inner call's `finally` unlocks the thread while the outer call is
+  still running.
+- `ContainerIOs.getNumWritten` has no callers. `getWrittenSlotIndex` has exactly one, from
+  `ContainerScreen` line 151.
 - `util/lock/PartitionedLockImpl` is live, reached through `PartitionedReadWriteLock` from
   `ClientChest`, so it is **not** a deletion candidate. It does carry real defects worth a
   separate audit: `lock(int)` blocks on the partition lock while still holding `globalLock`,
