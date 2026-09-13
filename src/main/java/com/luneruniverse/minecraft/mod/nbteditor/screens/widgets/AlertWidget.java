@@ -12,7 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class AlertWidget extends GroupWidget implements InitializableOverlay<Screen> {
@@ -40,14 +40,14 @@ public class AlertWidget extends GroupWidget implements InitializableOverlay<Scr
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MainUtil.client.currentScreen.renderBackground(matrices);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(MainUtil.client.currentScreen, context);
 		for (int i = 0; i < lines.length; i++) {
-			MVDrawableHelper.drawCenteredTextWithShadow(matrices, MainUtil.client.textRenderer, lines[i],
+			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer, lines[i],
 					x, y + i * MainUtil.client.textRenderer.fontHeight, -1);
 		}
-		super.render(matrices, mouseX, mouseY, delta);
-		MainUtil.renderLogo(matrices);
+		super.render(context, mouseX, mouseY, delta);
+		MainUtil.renderLogo(context);
 	}
 	
 	@Override

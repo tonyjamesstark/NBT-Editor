@@ -26,7 +26,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
@@ -98,36 +97,30 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 		serverInv = new ServerInventoryManager();
 	}
 	
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		MVDrawableHelper.drawTexture(matrices, TEXTURE, x, y, 0, 0, backgroundWidth, handler.getRows() * 18 + 17);
-		MVDrawableHelper.drawTexture(matrices, TEXTURE, x, y + handler.getRows() * 18 + 17, 0, 126, backgroundWidth, 96);
+	@Override
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+		MVDrawableHelper.drawTexture(context, TEXTURE, x, y, 0, 0, backgroundWidth, handler.getRows() * 18 + 17);
+		MVDrawableHelper.drawTexture(context, TEXTURE, x, y + handler.getRows() * 18 + 17, 0, 126, backgroundWidth, 96);
 		
 		if (showLogo())
-			MainUtil.renderLogo(matrices);
+			MainUtil.renderLogo(context);
 	}
-	@Override
-	protected final void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-		drawBackground(MVDrawableHelper.getMatrices(context), delta, mouseX, mouseY);
-	}
-	protected final void method_2389(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		drawBackground(matrices, delta, mouseX, mouseY);
+	protected final void method_2389(DrawContext context, float delta, int mouseX, int mouseY) {
+		drawBackground(context, delta, mouseX, mouseY);
 	}
 	protected boolean showLogo() {
 		return true;
 	}
 	
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		getLockedSlotsInfo().renderLockedHighlights(matrices, handler, true, false, true);
-		
-		MVDrawableHelper.drawTextWithoutShadow(matrices, textRenderer, getRenderedTitle(), titleX, titleY, 4210752);
-		MVDrawableHelper.drawTextWithoutShadow(matrices, textRenderer, playerInventoryTitle, playerInventoryTitleX, playerInventoryTitleY, 4210752);
-	}
 	@Override
-	protected final void drawForeground(DrawContext context, int mouseX, int mouseY) {
-		drawForeground(MVDrawableHelper.getMatrices(context), mouseX, mouseY);
+	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+		getLockedSlotsInfo().renderLockedHighlights(context, handler, true, false, true);
+		
+		MVDrawableHelper.drawTextWithoutShadow(context, textRenderer, getRenderedTitle(), titleX, titleY, 4210752);
+		MVDrawableHelper.drawTextWithoutShadow(context, textRenderer, playerInventoryTitle, playerInventoryTitleX, playerInventoryTitleY, 4210752);
 	}
-	protected final void method_2388(MatrixStack matrices, int mouseX, int mouseY) {
-		drawForeground(matrices, mouseX, mouseY);
+	protected final void method_2388(DrawContext context, int mouseX, int mouseY) {
+		drawForeground(context, mouseX, mouseY);
 	}
 	protected Text getRenderedTitle() {
 		return title;

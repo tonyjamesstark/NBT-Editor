@@ -30,7 +30,6 @@ import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.BookScreen.Contents;
 import net.minecraft.client.gui.screen.ingame.LecternScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Formatting;
 
 @Mixin(BookScreen.class)
@@ -124,17 +123,9 @@ public class BookScreenMixin extends Screen {
 	}
 	
 	@Inject(method = "render", at = @At("TAIL"))
-	@Group(name = "render", min = 1)
 	private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo info) {
 		if (renderLogo)
-			MainUtil.renderLogo(MVDrawableHelper.getMatrices(context));
-	}
-	@Inject(method = "method_25394(Lnet/minecraft/class_4587;IIF)V", at = @At("TAIL"))
-	@Group(name = "render", min = 1)
-	@SuppressWarnings("target")
-	private void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo info) {
-		if (renderLogo)
-			MainUtil.renderLogo(matrices);
+			MainUtil.renderLogo(context);
 	}
 	
 }

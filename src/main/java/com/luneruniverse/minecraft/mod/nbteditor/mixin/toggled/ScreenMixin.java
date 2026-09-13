@@ -16,12 +16,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
 	@Inject(method = "method_32633", at = @At(value = "INVOKE", target = "Lnet/minecraft/class_4587;method_22903()V", shift = At.Shift.AFTER), remap = false)
-	private void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> tooltip, int x, int y, TooltipPositioner positioner, CallbackInfo info) {
+	private void renderTooltipFromComponents(DrawContext context, List<TooltipComponent> tooltip, int x, int y, TooltipPositioner positioner, CallbackInfo info) {
 		if (!ConfigScreen.isTooltipOverflowFix())
 			return;
 		
@@ -30,6 +30,6 @@ public class ScreenMixin {
 		int screenWidth = MainUtil.client.getWindow().getScaledWidth();
 		int screenHeight = MainUtil.client.getWindow().getScaledHeight();
 		
-		MixinLink.renderTooltipFromComponents(matrices, pos.x(), pos.y(), size[0], size[1], screenWidth, screenHeight);
+		MixinLink.renderTooltipFromComponents(context, pos.x(), pos.y(), size[0], size[1], screenWidth, screenHeight);
 	}
 }

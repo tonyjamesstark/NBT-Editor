@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.util;
 
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -15,7 +16,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
 public class TextAreaScreen extends OverlaySupportingScreen {
 	
@@ -72,9 +73,9 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	}
 	
 	@Override
-	public void renderMain(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.renderBackground(matrices);
-		super.renderMain(matrices, mouseX, mouseY, delta);
+	public void renderMain(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(this, context);
+		super.renderMain(context, mouseX, mouseY, delta);
 	}
 	
 	@Override

@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
@@ -16,12 +15,13 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.text.Text;
 
 public class InputOverlay<T> extends GroupWidget implements InitializableOverlay<Screen> {
 	
-	public static interface Input<T> extends MVDrawable, MVElement {
+	public static interface Input<T> extends Drawable, MVElement {
 		public void init(int x, int y);
 		public int getWidth();
 		public int getHeight();
@@ -71,19 +71,19 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		ok.active = input.isValid();
 		
-		matrices.push();
-		matrices.translate(0.0, 0.0, 500.0);
-		MainUtil.client.currentScreen.renderBackground(matrices);
+		context.getMatrices().pushMatrix();
+		context.getMatrices().translate((float) (0.0), (float) (0.0));
+		MVDrawableHelper.renderBackground(MainUtil.client.currentScreen, context);
 		if (title != null) {
-			MVDrawableHelper.drawCenteredTextWithShadow(matrices, MainUtil.client.textRenderer, title,
+			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer, title,
 					x + input.getWidth() / 2, y - 4 - MainUtil.client.textRenderer.fontHeight, -1);
 		}
-		super.render(matrices, mouseX, mouseY, delta);
-		MainUtil.renderLogo(matrices);
-		matrices.pop();
+		super.render(context, mouseX, mouseY, delta);
+		MainUtil.renderLogo(context);
+		context.getMatrices().popMatrix();
 	}
 	
 	@Override

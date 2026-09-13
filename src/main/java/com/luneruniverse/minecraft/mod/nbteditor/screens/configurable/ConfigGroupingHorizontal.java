@@ -6,7 +6,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizontal<K, T>> extends ConfigGrouping<K, T> {
@@ -20,19 +20,19 @@ public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizo
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		int xOffset = 0;
 		Text fullName = getFullName();
 		if (fullName != null) {
-			MVDrawableHelper.drawTextWithShadow(matrices, MainUtil.client.textRenderer, fullName, PADDING * 2, 0, 0xFFFFFFFF);
+			MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, fullName, PADDING * 2, 0, 0xFFFFFFFF);
 			xOffset += getNameWidth();
 		}
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
-			matrices.push();
-			matrices.translate(xOffset, 0.0, 0.0);
-			path.render(matrices, mouseX - xOffset, mouseY, delta);
-			matrices.pop();
+			context.getMatrices().pushMatrix();
+			context.getMatrices().translate((float) (xOffset), (float) (0.0));
+			path.render(context, mouseX - xOffset, mouseY, delta);
+			context.getMatrices().popMatrix();
 			
 			xOffset += path.getSpacingWidth() + PADDING;
 		}

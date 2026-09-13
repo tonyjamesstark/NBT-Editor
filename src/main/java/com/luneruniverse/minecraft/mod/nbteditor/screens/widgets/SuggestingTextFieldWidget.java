@@ -20,7 +20,7 @@ import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -89,15 +89,15 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	private static final Supplier<Reflection.MethodInvoker> ChatInputSuggestor_render =
 			Reflection.getOptionalMethod(ChatInputSuggestor.class, "method_23923", MethodType.methodType(void.class, MatrixStack.class, int.class, int.class));
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!isDropdownOnly())
-			super.render(matrices, mouseX, mouseY, delta);
-		matrices.push();
-		matrices.translate(0, 0, 1.0);
+			super.render(context, mouseX, mouseY, delta);
+		context.getMatrices().pushMatrix();
+		context.getMatrices().translate((float) (0), (float) (0));
 		Version.newSwitch()
-				.range("1.20.0", null, () -> suggestor.render(MVDrawableHelper.getDrawContext(matrices), mouseX, mouseY))
+				.range("1.20.0", null, () -> suggestor.render(context, mouseX, mouseY))
 				.run();
-		matrices.pop();
+		context.getMatrices().popMatrix();
 	}
 	@Override
 	protected boolean shouldShowName() {

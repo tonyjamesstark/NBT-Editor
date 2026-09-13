@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
@@ -15,11 +14,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-public class CreativeTabWidget implements MVDrawable, MVElement {
+public class CreativeTabWidget implements Drawable, MVElement {
 	
 	public static record CreativeTabData(ItemStack item, Runnable onClick, Predicate<Screen> whenToShow) {}
 	public static final List<CreativeTabData> TABS = new ArrayList<>();
@@ -29,10 +29,10 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 		if (!tabs.isEmpty()) {
 			GroupWidget group = new GroupWidget() {
 				@Override
-				public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+				public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 					MVTooltip.setOneTooltip(true, false);
-					super.render(matrices, mouseX, mouseY, delta);
-					MVTooltip.renderOneTooltip(matrices, mouseX, mouseY);
+					super.render(context, mouseX, mouseY, delta);
+					MVTooltip.renderOneTooltip(context, mouseX, mouseY);
 				}
 			};
 			for (int i = 0; i < tabs.size(); i++) {
@@ -86,16 +86,16 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTexture(matrices, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.drawTexture(context, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
 		
 		int xOffset = Version.<Integer>newSwitch()
 				.range("1.19.3", null, 5)
 				.get();
-		MVDrawableHelper.renderItem(matrices, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
+		MVDrawableHelper.renderItem(context, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
 		
 		if (isMouseOver(mouseX, mouseY))
-			tooltip.render(matrices, mouseX, mouseY);
+			tooltip.render(context, mouseX, mouseY);
 	}
 	
 	@Override

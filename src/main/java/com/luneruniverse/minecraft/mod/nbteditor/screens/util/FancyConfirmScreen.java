@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScreenPacket {
@@ -37,24 +36,14 @@ public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScre
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (parent != null)
-			parent.render(matrices, -314, -314, delta);
+			parent.render(context, -314, -314, delta);
 		
-		matrices.push();
-		matrices.translate(0.0, 0.0, 500.0);
-		MVDrawableHelper.super_render(FancyConfirmScreen.class, this, matrices, mouseX, mouseY, delta);
-		MainUtil.renderLogo(matrices);
-		matrices.pop();
+		context.createNewRootLayer();
+		super.render(context, mouseX, mouseY, delta);
+		MainUtil.renderLogo(context);
 	}
-	public final void method_25394(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		render(matrices, mouseX, mouseY, delta);
-	}
-	@Override
-	public final void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		render(MVDrawableHelper.getMatrices(context), mouseX, mouseY, delta);
-	}
-	
 	@Override
 	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (MainUtil.client.world == null)

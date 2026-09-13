@@ -49,7 +49,7 @@ import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -95,7 +95,7 @@ public class MixinLink {
 		}
 		return new int[] {width, height};
 	}
-	public static void renderTooltipFromComponents(MatrixStack matrices, int x, int y, int width, int height, int screenWidth, int screenHeight) {
+	public static void renderTooltipFromComponents(DrawContext context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
 		x -= 5;
 		y -= 5;
 		width += 10;
@@ -126,7 +126,7 @@ public class MixinLink {
 		else if (newY + newHeight > screenHeight)
 			newY = screenHeight - newHeight;
 		
-		MainUtil.mapMatrices(matrices, x, y, width, height, newX, newY, newWidth, newHeight);
+		MainUtil.mapMatrices(context, x, y, width, height, newX, newY, newWidth, newHeight);
 	}
 	
 	
@@ -152,16 +152,16 @@ public class MixinLink {
 	}
 	
 	
-	public static void renderChatLimitWarning(ChatScreen source, MatrixStack matrices) {
+	public static void renderChatLimitWarning(ChatScreen source, DrawContext context) {
 		if (!ConfigScreen.isChatLimitExtended())
 			return;
 		
 		TextFieldWidget chatField = ((ChatScreenAccessor) source).getChatField();
 		if (chatField.getText().length() > 256) {
-			MVDrawableHelper.fill(matrices, source.width - 202, source.height - 40, source.width - 2, source.height - 14, 0xAAFFAA00);
+			MVDrawableHelper.fill(context, source.width - 202, source.height - 40, source.width - 2, source.height - 14, 0xAAFFAA00);
 			TextRenderer textRenderer = MainUtil.client.textRenderer;
-			MVDrawableHelper.drawCenteredTextWithShadow(matrices, textRenderer, TextInst.translatable("nbteditor.chat_length_warning_1"), source.width - 102, source.height - 40 + textRenderer.fontHeight / 2, 0xFFAA5500);
-			MVDrawableHelper.drawCenteredTextWithShadow(matrices, textRenderer, TextInst.translatable("nbteditor.chat_length_warning_2"), source.width - 102, source.height - 28 + textRenderer.fontHeight / 2, 0xFFAA5500);
+			MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.chat_length_warning_1"), source.width - 102, source.height - 40 + textRenderer.fontHeight / 2, 0xFFAA5500);
+			MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.chat_length_warning_2"), source.width - 102, source.height - 28 + textRenderer.fontHeight / 2, 0xFFAA5500);
 		}
 	}
 	

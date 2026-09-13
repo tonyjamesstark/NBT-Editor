@@ -28,7 +28,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.WrittenBookTagRef
 
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.ingame.BookScreen.Contents;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -250,8 +250,8 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	}
 	
 	@Override
-	protected void renderEditor(MatrixStack matrices, int fdf8eb, int mouseY, float delta) {
-		MVDrawableHelper.drawTextWithShadow(matrices, textRenderer, TextInst.translatable("nbteditor.book.page", page + 1, getPageCount()),
+	protected void renderEditor(DrawContext context, int fdf8eb, int mouseY, float delta) {
+		MVDrawableHelper.drawTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.book.page", page + 1, getPageCount()),
 				16 + 108 * 3 - 4 + 24 * 3, 64 + 10 - textRenderer.fontHeight / 2, -1);
 	}
 	

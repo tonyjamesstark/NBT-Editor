@@ -3,14 +3,14 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
 public class TranslatedGroupWidget extends GroupWidget {
 	
 	public static <T extends Drawable & Element> TranslatedGroupWidget forWidget(T widget, double x, double y, double z) {
 		TranslatedGroupWidget output = new TranslatedGroupWidget(x, y, z) {
 			@Override
-			protected void renderPre(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+			protected void renderPre(DrawContext context, int mouseX, int mouseY, float delta) {
 				setFocused(isMultiFocused() ? widget : null);
 			}
 		};
@@ -46,18 +46,18 @@ public class TranslatedGroupWidget extends GroupWidget {
 	}
 	
 	@Override
-	public final void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		matrices.push();
-		matrices.translate(x, y, z);
+	public final void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		context.getMatrices().pushMatrix();
+		context.getMatrices().translate((float) x, (float) y);
 		mouseX -= (int) x;
 		mouseY -= (int) y;
-		renderPre(matrices, mouseX, mouseY, delta);
-		super.render(matrices, mouseX, mouseY, delta);
-		renderPost(matrices, mouseX, mouseY, delta);
-		matrices.pop();
+		renderPre(context, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
+		renderPost(context, mouseX, mouseY, delta);
+		context.getMatrices().popMatrix();
 	}
-	protected void renderPre(MatrixStack matrices, int mouseX, int mouseY, float delta) {}
-	protected void renderPost(MatrixStack matrices, int mouseX, int mouseY, float delta) {}
+	protected void renderPre(DrawContext context, int mouseX, int mouseY, float delta) {}
+	protected void renderPost(DrawContext context, int mouseX, int mouseY, float delta) {}
 	
 	@Override
 	public boolean mouseClicked(Click click, boolean doubled) {

@@ -14,7 +14,6 @@ import java.util.regex.PatternSyntaxException;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
@@ -35,11 +34,12 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
-public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable, Selectable {
+public class MultiLineTextFieldWidget implements Drawable, MVElement, Tickable, Selectable {
 	
 	private class FindAndReplaceWidget extends TranslatedGroupWidget {
 		private static String findValue = "";
@@ -170,8 +170,8 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 		}
 		
 		@Override
-		public void renderPre(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			MVDrawableHelper.fill(matrices, -16, -16, 216, 76, 0xC8101010);
+		public void renderPre(DrawContext context, int mouseX, int mouseY, float delta) {
+			MVDrawableHelper.fill(context, -16, -16, 216, 76, 0xC8101010);
 		}
 		
 		@Override
@@ -423,61 +423,57 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.fill(matrices, x, y, x + width, y + height, bgColor);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.fill(context, x, y, x + width, y + height, bgColor);
 		
-		MVDrawableHelper.enableScissor(matrices, x, y, width, height);
+		MVDrawableHelper.enableScissor(context, x, y, width, height);
 		
-		matrices.push();
-		matrices.translate(0.0, scroll, 0.0);
+		context.getMatrices().pushMatrix();
+		context.getMatrices().translate((float) (0.0), (float) (scroll));
 		
-		renderHighlightsBelow(matrices, mouseX, mouseY, delta);
+		renderHighlightsBelow(context, mouseX, mouseY, delta);
 		
 		int yOffset = y;
 		for (Text line : renderedLines) {
-			MVDrawableHelper.drawText(matrices, textRenderer, line, x + textRenderer.fontHeight, yOffset + textRenderer.fontHeight, -1, shadow);
+			MVDrawableHelper.drawText(context, textRenderer, line, x + textRenderer.fontHeight, yOffset + textRenderer.fontHeight, -1, shadow);
 			yOffset += textRenderer.fontHeight * 1.5;
 		}
 		
-		Version.newSwitch()
-				.range("1.20.0", null, () -> matrices.translate(0.0, 0.0, 1.0))
-				.run();
-		
-		renderHighlightsAbove(matrices, mouseX, mouseY, delta);
-		renderHighlight(matrices, getSelStart(), getSelEnd(), selColor);
+		renderHighlightsAbove(context, mouseX, mouseY, delta);
+		renderHighlight(context, getSelStart(), getSelEnd(), selColor);
 		
 		if (isMultiFocused() && cursorBlinkTracker / 6 % 2 == 0) {
 			Point cursor = getXYPos(this.cursor);
-			MVDrawableHelper.fill(matrices, cursor.x, cursor.y, cursor.x + 1, cursor.y + textRenderer.fontHeight, cursorColor);
+			MVDrawableHelper.fill(context, cursor.x, cursor.y, cursor.x + 1, cursor.y + textRenderer.fontHeight, cursorColor);
 		}
 		
-		matrices.pop();
+		context.getMatrices().popMatrix();
 		
-		scrollBar.render(matrices, mouseX, mouseY, delta);
+		scrollBar.render(context, mouseX, mouseY, delta);
 		
 		if (suggestor != null) {
 			syncToSuggestor();
-			suggestor.render(matrices, mouseX, mouseY, delta);
+			suggestor.render(context, mouseX, mouseY, delta);
 		}
 		
-		MVDrawableHelper.disableScissor(matrices);
+		MVDrawableHelper.disableScissor(context);
 	}
-	protected void renderHighlightsBelow(MatrixStack matrices, int mouseX, int mouseY, float delta) {}
-	protected void renderHighlightsAbove(MatrixStack matrices, int mouseX, int mouseY, float delta) {}
-	protected void renderHighlight(MatrixStack matrices, int start, int end, int color) {
+	protected void renderHighlightsBelow(DrawContext context, int mouseX, int mouseY, float delta) {}
+	protected void renderHighlightsAbove(DrawContext context, int mouseX, int mouseY, float delta) {}
+	protected void renderHighlight(DrawContext context, int start, int end, int color) {
 		Point startPos = getXYPos(start);
 		Point endPos = getXYPos(end);
 		if (startPos.y == endPos.y)
-			MVDrawableHelper.fill(matrices, startPos.x, startPos.y, endPos.x, endPos.y + textRenderer.fontHeight, color);
+			MVDrawableHelper.fill(context, startPos.x, startPos.y, endPos.x, endPos.y + textRenderer.fontHeight, color);
 		else {
 			int line = 0;
 			int lineY;
 			while ((lineY = startPos.y + line * (int) (textRenderer.fontHeight * 1.5)) < endPos.y) {
 				Point lineStart = line == 0 ? startPos : new Point(x + textRenderer.fontHeight, lineY);
-				MVDrawableHelper.fill(matrices, lineStart.x, lineStart.y, x + width - textRenderer.fontHeight, lineStart.y + textRenderer.fontHeight, color);
+				MVDrawableHelper.fill(context, lineStart.x, lineStart.y, x + width - textRenderer.fontHeight, lineStart.y + textRenderer.fontHeight, color);
 				line++;
 			}
-			MVDrawableHelper.fill(matrices, x + textRenderer.fontHeight, lineY, endPos.x, endPos.y + textRenderer.fontHeight, color);
+			MVDrawableHelper.fill(context, x + textRenderer.fontHeight, lineY, endPos.x, endPos.y + textRenderer.fontHeight, color);
 		}
 	}
 	

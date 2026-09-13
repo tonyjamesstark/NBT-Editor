@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.input.CharInput;
@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 
 public class List2D extends Panel<List2D.List2DValue> {
 	
-	public static abstract class List2DValue implements MVDrawable, MVElement {
+	public static abstract class List2DValue implements Drawable, MVElement {
 		
 		protected static final MinecraftClient client = MinecraftClient.getInstance();
 		protected static final TextRenderer textRenderer = client.textRenderer;

@@ -10,7 +10,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -47,11 +47,11 @@ public class MVSliderWidget extends MVButtonWidget {
 	}
 	
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		if (renderSlider(matrices, mouseX, mouseY, delta)) {
-			MVDrawableHelper.drawTexture(matrices, this.hovered || this.isFocused() ? HANDLE_HIGHLIGHTED : HANDLE,
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+		if (renderSlider(context, mouseX, mouseY, delta)) {
+			MVDrawableHelper.drawTexture(context, this.hovered || this.isFocused() ? HANDLE_HIGHLIGHTED : HANDLE,
 					x + (int) (value * (width - 8)), y, 0, 0, 8, 20, 8, 20);
-			MVDrawableHelper.drawCenteredTextWithShadow(matrices, MainUtil.client.textRenderer, getMessage(),
+			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer, getMessage(),
 					x + width / 2, y + height / 2 - MainUtil.client.textRenderer.fontHeight / 2, -1);
 		} else {
 			new SliderWidget(x, y, width, height, getMessage(), value) {
@@ -59,10 +59,10 @@ public class MVSliderWidget extends MVButtonWidget {
 				protected void updateMessage() {}
 				@Override
 				protected void applyValue() {}
-			}.render(matrices, mouseX, mouseY, delta);
+			}.render(context, mouseX, mouseY, delta);
 		}
 	}
-	protected boolean renderSlider(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected boolean renderSlider(DrawContext context, int mouseX, int mouseY, float delta) {
 		return false;
 	}
 	

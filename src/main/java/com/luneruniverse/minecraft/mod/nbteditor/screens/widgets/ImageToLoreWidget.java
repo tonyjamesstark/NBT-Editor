@@ -28,7 +28,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class ImageToLoreWidget extends GroupWidget implements InitializableOverlay<Screen> {
@@ -137,12 +137,12 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MainUtil.client.currentScreen.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(matrices, textRenderer, TextInst.translatable("nbteditor.img_to_lore"),
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(MainUtil.client.currentScreen, context);
+		super.render(context, mouseX, mouseY, delta);
+		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.fontHeight - 22, -1);
-		MainUtil.renderLogo(matrices);
+		MainUtil.renderLogo(context);
 	}
 	
 	@Override

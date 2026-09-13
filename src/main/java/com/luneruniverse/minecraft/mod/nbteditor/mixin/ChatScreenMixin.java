@@ -16,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.util.math.MatrixStack;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin {
@@ -27,15 +26,8 @@ public class ChatScreenMixin {
 		return length;
 	}
 	@Inject(method = "render", at = @At("HEAD"))
-	@Group(name = "render", min = 1)
 	private void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo info) {
-		MixinLink.renderChatLimitWarning((ChatScreen) (Object) this, MVDrawableHelper.getMatrices(context));
-	}
-	@Inject(method = "method_25394(Lnet/minecraft/class_4587;IIF)V", at = @At("HEAD"))
-	@Group(name = "render", min = 1)
-	@SuppressWarnings("target")
-	private void render(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo info) {
-		MixinLink.renderChatLimitWarning((ChatScreen) (Object) this, matrices);
+		MixinLink.renderChatLimitWarning((ChatScreen) (Object) this, context);
 	}
 	
 	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setScreen(Lnet/minecraft/client/gui/screen/Screen;)V"), cancellable = true)

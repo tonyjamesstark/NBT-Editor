@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.It
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SlotUtil;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -98,10 +98,10 @@ public class LockedSlotsInfo {
 		return isBlocked(slot, 0, SlotActionType.PICKUP, explicitly);
 	}
 	
-	public void renderLockedHighlights(MatrixStack matrices, ScreenHandler handler, boolean explicitly, boolean player, boolean container) {
+	public void renderLockedHighlights(DrawContext context, ScreenHandler handler, boolean explicitly, boolean player, boolean container) {
 		for (Slot slot : handler.slots) {
 			if ((slot.inventory == MainUtil.client.player.getInventory() ? player : container) && isBlocked(slot, explicitly))
-				MVDrawableHelper.drawSlotHighlight(matrices, slot.x, slot.y, 0x60FF0000);
+				MVDrawableHelper.drawSlotHighlight(context, slot.x, slot.y, 0x60FF0000);
 		}
 	}
 	

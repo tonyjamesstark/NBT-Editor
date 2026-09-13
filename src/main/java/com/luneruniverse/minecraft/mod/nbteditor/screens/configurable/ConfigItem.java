@@ -11,7 +11,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.input.CharInput;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
@@ -54,16 +54,16 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTextWithShadow(matrices, MainUtil.client.textRenderer, name, 0, (getSpacingHeight() - MainUtil.client.textRenderer.fontHeight) / 2, 0xFFFFFFFF);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, name, 0, (getSpacingHeight() - MainUtil.client.textRenderer.fontHeight) / 2, 0xFFFFFFFF);
 		
-		matrices.push();
-		matrices.translate(valueOffsetX, valueOffsetY, 0.0);
-		value.render(matrices, mouseX - valueOffsetX, mouseY - valueOffsetY, delta);
-		matrices.pop();
+		context.getMatrices().pushMatrix();
+		context.getMatrices().translate((float) (valueOffsetX), (float) (valueOffsetY));
+		value.render(context, mouseX - valueOffsetX, mouseY - valueOffsetY, delta);
+		context.getMatrices().popMatrix();
 		
 		if (tooltip != null && mouseX >= 0 && mouseX <= valueOffsetX && isMouseOver(mouseX, mouseY))
-			tooltip.render(matrices, mouseX, mouseY);
+			tooltip.render(context, mouseX, mouseY);
 	}
 	
 	@Override

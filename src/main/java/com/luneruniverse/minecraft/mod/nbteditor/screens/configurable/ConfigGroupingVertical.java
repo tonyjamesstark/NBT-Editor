@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical<K, T>> extends ConfigGrouping<K, T> {
@@ -22,13 +22,13 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.fill(matrices, 0, 0, PADDING, getSpacingHeight(), isValueValid() ? 0xFFAAAAAA : 0xFFDF4949);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.fill(context, 0, 0, PADDING, getSpacingHeight(), isValueValid() ? 0xFFAAAAAA : 0xFFDF4949);
 		
 		int yOffset = 0;
 		Text fullName = getFullName();
 		if (fullName != null) {
-			MVDrawableHelper.drawTextWithShadow(matrices, MainUtil.client.textRenderer, fullName, PADDING * 2, 0, 0xFFFFFFFF);
+			MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, fullName, PADDING * 2, 0, 0xFFFFFFFF);
 			yOffset += getNameHeight();
 		}
 		
@@ -41,10 +41,10 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 		for (ConfigPath path : paths) {
 			yOffset -= path.getSpacingHeight() + PADDING;
 			
-			matrices.push();
-			matrices.translate(PADDING * 2, yOffset, 0.0);
-			path.render(matrices, mouseX - PADDING * 2, mouseY - yOffset, delta);
-			matrices.pop();
+			context.getMatrices().pushMatrix();
+			context.getMatrices().translate((float) (PADDING * 2), (float) (yOffset));
+			path.render(context, mouseX - PADDING * 2, mouseY - yOffset, delta);
+			context.getMatrices().popMatrix();
 		}
 	}
 	

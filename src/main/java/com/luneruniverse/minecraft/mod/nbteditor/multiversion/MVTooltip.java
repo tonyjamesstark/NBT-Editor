@@ -12,7 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
@@ -47,11 +47,11 @@ public class MVTooltip {
 		}
 		return false;
 	}
-	public static boolean renderOneTooltip(MatrixStack matrices, int mouseX, int mouseY) {
+	public static boolean renderOneTooltip(DrawContext context, int mouseX, int mouseY) {
 		MVTooltip tooltip = setOneTooltip(false, false);
 		if (tooltip == null)
 			return false;
-		tooltip.render(matrices, mouseX, mouseY);
+		tooltip.render(context, mouseX, mouseY);
 		return true;
 	}
 	
@@ -118,7 +118,7 @@ public class MVTooltip {
 		});
 	}
 	
-	public void render(MatrixStack matrices, int mouseX, int mouseY) {
+	public void render(DrawContext context, int mouseX, int mouseY) {
 		if (oneTooltip) {
 			if (lastTooltip || theOneTooltip == null)
 				theOneTooltip = this;
@@ -127,18 +127,18 @@ public class MVTooltip {
 		
 		// Undo translations and render at actual position
 		// This allows Screen#renderTooltip to adjust for window height
-		float[] translation = MVMatrix4f.getTranslation(matrices);
-		matrices.push();
-		matrices.translate(-translation[0], -translation[1], 0.0);
+		float[] translation = MVMatrix4f.getTranslation(context);
+		context.getMatrices().pushMatrix();
+		context.getMatrices().translate((float) (-translation[0]), (float) (-translation[1]));
 		boolean scissor = MVGlStateManager.isScissorEnabled();
 		if (scissor)
 			GL20.glDisable(GL20.GL_SCISSOR_TEST);
 		
-		MVDrawableHelper.renderTooltip(matrices, lines, mouseX + (int) translation[0], mouseY + (int) translation[1]);
+		MVDrawableHelper.renderTooltip(context, lines, mouseX + (int) translation[0], mouseY + (int) translation[1]);
 		
 		if (scissor)
 			GL20.glEnable(GL20.GL_SCISSOR_TEST);
-		matrices.pop();
+		context.getMatrices().popMatrix();
 	}
 	
 }

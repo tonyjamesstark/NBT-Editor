@@ -14,7 +14,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
 public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValue<T, ConfigValueDropdown<T>> {
 	
@@ -78,14 +78,16 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	}
 	
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		float[] translation = MVMatrix4f.getTranslation(matrices);
-		matrices.push();
-		matrices.translate(0.0, 0.0, (MainUtil.client.getWindow().getScaledHeight() - translation[1]) / 20);
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+		// The open list has to sit above its siblings; z-ordering became layering in 1.21.9.
+		// ponytail: raises everything drawn after this point too, which the reverse-order
+		// render in ConfigGroupingVertical already relies on.
+		if (open)
+			context.createNewRootLayer();
 		
-		super.renderButton(matrices, mouseX, mouseY, delta);
+		super.renderButton(context, mouseX, mouseY, delta);
 		if (open) {
-			MVDrawableHelper.fill(matrices, this.x, this.height, this.x + this.width, allValues.size() * this.height, 0xFF000000);
+			MVDrawableHelper.fill(context, this.x, this.height, this.x + this.width, allValues.size() * this.height, 0xFF000000);
 			boolean xHover = this.active && mouseX >= this.x && mouseX < this.x + this.width;
 			int i = 0;
 			for (T option : allValues) {
@@ -97,16 +99,15 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 					color = 0xFF257789;
 				else if (importantValues.contains(option))
 					color = 0xFFFFAA00;
-				MVDrawableHelper.drawCenteredTextWithShadow(matrices, MainUtil.client.textRenderer, TextInst.of(option.toString()),
+				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer, TextInst.of(option.toString()),
 						this.x + this.width / 2, y + (this.height - MainUtil.client.textRenderer.fontHeight) / 2, color);
 				if (color != -1 && option instanceof ConfigTooltipSupplier) // Hovering
-					((ConfigTooltipSupplier) option).getTooltip().render(matrices, mouseX, mouseY);
+					((ConfigTooltipSupplier) option).getTooltip().render(context, mouseX, mouseY);
 			}
 		}
 		if (isSelected() && value instanceof ConfigTooltipSupplier)
-			((ConfigTooltipSupplier) value).getTooltip().render(matrices, mouseX, mouseY);
+			((ConfigTooltipSupplier) value).getTooltip().render(context, mouseX, mouseY);
 		
-		matrices.pop();
 	}
 	
 	@Override

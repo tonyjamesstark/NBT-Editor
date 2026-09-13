@@ -7,7 +7,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class OverlayScreen extends OverlaySupportingScreen {
@@ -57,9 +57,9 @@ public class OverlayScreen extends OverlaySupportingScreen {
 	}
 	
 	@Override
-	protected void renderMain(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void renderMain(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (parent != null)
-			parent.render(matrices, -314, -314, delta);
+			parent.render(context, -314, -314, delta);
 	}
 	
 }

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 
@@ -14,9 +13,9 @@ import net.minecraft.client.input.CharInput;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
-public abstract class Panel<T extends Drawable & Element> implements MVDrawable, MVElement, Selectable {
+public abstract class Panel<T extends Drawable & Element> implements Drawable, MVElement, Selectable {
 	
 	public static record PositionedPanelElement<T extends Drawable & Element>(T element, int x, int y) {
 	}
@@ -56,25 +55,25 @@ public abstract class Panel<T extends Drawable & Element> implements MVDrawable,
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		updateMousePos(mouseX, mouseY);
 		
 		checkOverScroll();
 		
-		MVDrawableHelper.enableScissor(matrices, getPaddedX(), getPaddedY(), getPaddedWidth(), getPaddedHeight());
+		MVDrawableHelper.enableScissor(context, getPaddedX(), getPaddedY(), getPaddedWidth(), getPaddedHeight());
 		
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
 			T element = pos.element();
 			
-			matrices.push();
-			matrices.translate(pos.x() + x, pos.y() + y + scroll, 0.0);
-			element.render(matrices, mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, delta);
-			matrices.pop();
+			context.getMatrices().pushMatrix();
+			context.getMatrices().translate((float) (pos.x() + x), (float) (pos.y() + y + scroll));
+			element.render(context, mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, delta);
+			context.getMatrices().popMatrix();
 		}
 		
-		MVDrawableHelper.disableScissor(matrices);
+		MVDrawableHelper.disableScissor(context);
 		
-		scrollBar.render(matrices, mouseX, mouseY, delta);
+		scrollBar.render(context, mouseX, mouseY, delta);
 	}
 	
 	private void checkOverScroll() {

@@ -30,7 +30,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
@@ -185,12 +185,12 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			
 			@Override
-			public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-				MainUtil.client.currentScreen.renderBackground(matrices);
-				MVDrawableHelper.drawCenteredTextWithShadow(matrices, MainUtil.client.textRenderer,
+			public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+				MVDrawableHelper.renderBackground(MainUtil.client.currentScreen, context);
+				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer,
 						TextInst.translatable("nbteditor.formatted_text.events"),
 						x, y - 38 - MainUtil.client.textRenderer.fontHeight, -1);
-				super.render(matrices, mouseX, mouseY, delta);
+				super.render(context, mouseX, mouseY, delta);
 			}
 			
 			@Override
@@ -456,7 +456,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		}
 		
 		@Override
-		protected void renderHighlightsBelow(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		protected void renderHighlightsBelow(DrawContext context, int mouseX, int mouseY, float delta) {
 			Style initialStyle = getStyle(0);
 			int start = (initialStyle.getClickEvent() != null || initialStyle.getHoverEvent() != null || initialStyle.getInsertion() != null ? 0 : -1);
 			for (int i = 0; i < styles.size(); i++) {
@@ -467,12 +467,12 @@ public class FormattedTextFieldWidget extends GroupWidget {
 					if (start == -1)
 						start = i;
 				} else if (start != -1) {
-					renderHighlight(matrices, start, i, 0x55FFAA00);
+					renderHighlight(context, start, i, 0x55FFAA00);
 					start = -1;
 				}
 			}
 			if (start != -1)
-				renderHighlight(matrices, start, getText().length(), 0x55FFAA00);
+				renderHighlight(context, start, getText().length(), 0x55FFAA00);
 		}
 		
 		@Override
@@ -859,15 +859,15 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		setFocused(isMultiFocused() ? field : null);
-		field.render(matrices, mouseX, mouseY, delta);
+		field.render(context, mouseX, mouseY, delta);
 		
 		if (colors != null) {
-			matrices.push();
-			matrices.translate(0.0, 0.0, 1.0);
-			colors.render(matrices, mouseX, mouseY, delta);
-			matrices.pop();
+			context.getMatrices().pushMatrix();
+			context.getMatrices().translate((float) (0.0), (float) (0.0));
+			colors.render(context, mouseX, mouseY, delta);
+			context.getMatrices().popMatrix();
 		}
 		
 		if (font != null) {
@@ -880,7 +880,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 		}
 		
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 	
 	@Override

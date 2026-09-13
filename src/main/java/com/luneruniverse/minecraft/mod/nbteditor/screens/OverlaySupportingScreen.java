@@ -9,7 +9,7 @@ import net.minecraft.client.input.CharInput;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class OverlaySupportingScreen extends TickableSupportingScreen {
@@ -79,23 +79,18 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public final void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public final void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		int bgMouseX = (overlay == null ? mouseX : -314);
 		int bgMouseY = (overlay == null ? mouseY : -314);
-		renderMain(matrices, bgMouseX, bgMouseY, delta);
+		renderMain(context, bgMouseX, bgMouseY, delta);
 		if (overlay != null) {
-			boolean translated = (overlayZ != 0);
-			if (translated) {
-				matrices.push();
-				matrices.translate(0.0, 0.0, overlayZ);
-			}
-			((Drawable) overlay).render(matrices, mouseX, mouseY, delta);
-			if (translated)
-				matrices.pop();
+			if (overlayZ != 0)
+				context.createNewRootLayer();
+			((Drawable) overlay).render(context, mouseX, mouseY, delta);
 		}
 	}
-	protected void renderMain(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.render(matrices, mouseX, mouseY, delta);
+	protected void renderMain(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 	}
 	
 	@Override

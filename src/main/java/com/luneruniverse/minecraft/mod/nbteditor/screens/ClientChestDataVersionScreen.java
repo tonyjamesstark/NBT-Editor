@@ -22,7 +22,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -137,7 +137,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		boolean fullButtons = (dataVersionStatus != DataVersionStatus.TOO_UPDATED);
 		
 		if (fullButtons) {
@@ -148,20 +148,20 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		
 		MVTooltip.setOneTooltip(true, false);
 		
-		super.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(matrices, textRenderer,
+		MVDrawableHelper.renderBackground(this, context);
+		super.render(context, mouseX, mouseY, delta);
+		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer,
 				msg, width / 2, height / 2 - 44 - textRenderer.fontHeight / 2, -1);
 		if (fullButtons) {
-			MVDrawableHelper.fill(matrices, width / 2 - 55, height / 2 - 34, width / 2 - 53, height / 2 + 34, 0xFFAAAAAA);
-			MVDrawableHelper.fill(matrices, width / 2 + 53, height / 2 - 34, width / 2 + 55, height / 2 + 34, 0xFFAAAAAA);
-			MVDrawableHelper.drawCenteredTextWithShadow(matrices, textRenderer,
+			MVDrawableHelper.fill(context, width / 2 - 55, height / 2 - 34, width / 2 - 53, height / 2 + 34, 0xFFAAAAAA);
+			MVDrawableHelper.fill(context, width / 2 + 53, height / 2 - 34, width / 2 + 55, height / 2 + 34, 0xFFAAAAAA);
+			MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer,
 					TextInst.translatable("nbteditor.client_chest.data_version.import", Version.getReleaseTarget()),
 					width / 2 - 108, height / 2 - 24 - textRenderer.fontHeight / 2, -1);
 		}
-		MainUtil.renderLogo(matrices);
+		MainUtil.renderLogo(context);
 		
-		MVTooltip.renderOneTooltip(matrices, mouseX, mouseY);
+		MVTooltip.renderOneTooltip(context, mouseX, mouseY);
 	}
 	
 	@Override

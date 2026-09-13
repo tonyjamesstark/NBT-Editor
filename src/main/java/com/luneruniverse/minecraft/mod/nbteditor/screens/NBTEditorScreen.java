@@ -45,7 +45,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
@@ -360,15 +360,15 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	protected void preRenderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void preRenderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
 		MVTooltip.setOneTooltip(true, false);
-		editor.render(matrices, mouseX, mouseY, delta); // So the tab completion renders on top correctly
-		MVTooltip.renderOneTooltip(matrices, mouseX, mouseY);
+		editor.render(context, mouseX, mouseY, delta); // So the tab completion renders on top correctly
+		MVTooltip.renderOneTooltip(context, mouseX, mouseY);
 	}
 	@Override
-	protected void renderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void renderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (NBTAutocompleteIntegration.INSTANCE.isEmpty())
-			renderTip(matrices, "nbteditor.nbt_ac.tip");
+			renderTip(context, "nbteditor.nbt_ac.tip");
 	}
 	
 	@Override

@@ -24,7 +24,7 @@ import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Style;
 
 @Mixin(Screen.class)
@@ -61,7 +61,7 @@ public class ScreenMixin {
 	// See toggled.ScreenMixin#renderTooltipFromComponents, toggled.DrawContextMixin#drawTooltip
 	@Inject(method = "method_32633(Lnet/minecraft/class_4587;Ljava/util/List;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/class_4587;method_22903()V", shift = At.Shift.AFTER), remap = false, require = 0)
 	@SuppressWarnings("target")
-	private void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> tooltip, int x, int y, CallbackInfo info) {
+	private void renderTooltipFromComponents(DrawContext context, List<TooltipComponent> tooltip, int x, int y, CallbackInfo info) {
 		if (!ConfigScreen.isTooltipOverflowFix())
 			return;
 		
@@ -78,6 +78,6 @@ public class ScreenMixin {
 		if (y + height + 6 > screenHeight)
 			y = screenHeight - height - 6;
 		
-		MixinLink.renderTooltipFromComponents(matrices, x, y, width, height, screenWidth, screenHeight);
+		MixinLink.renderTooltipFromComponents(context, x, y, width, height, screenWidth, screenHeight);
 	}
 }

@@ -5,7 +5,7 @@ import java.util.function.BiFunction;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.input.CharInput;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
 public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	
@@ -31,8 +31,8 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		visible.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		visible.render(context, mouseX, mouseY, delta);
 	}
 	
 	@Override
