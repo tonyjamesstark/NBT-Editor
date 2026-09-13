@@ -23,8 +23,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Att
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.CustomPotionContents;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.hideflags.HideFlagsComponentsTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.hideflags.HideFlagsNBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.hideflags.HideFlagsTooltipDisplayComponentTagReference;
 import com.mojang.authlib.GameProfile;
 
@@ -75,7 +73,7 @@ public class ItemTagReferences {
 					content -> content.pages().stream().map(RawFilteredPair::raw).collect(Collectors.toList()),
 					pages -> new WritableBookContentComponent(pages.stream().map(RawFilteredPair::of).toList())));
 	
-	public static final TagReference<Boolean, ItemStack> UNBREAKABLE = ComponentTagReference.forExistance(MVComponentType.UNBREAKABLE_1_21_5);
+	public static final TagReference<Boolean, ItemStack> UNBREAKABLE = ComponentTagReference.forExistance(MVComponentType.UNBREAKABLE);
 	
 	public static final TagReference<NbtCompound, ItemStack> CUSTOM_DATA = getComponentTagRefOfNBT(MVComponentType.CUSTOM_DATA);
 	
