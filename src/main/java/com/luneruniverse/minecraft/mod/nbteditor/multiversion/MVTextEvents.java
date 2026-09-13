@@ -66,9 +66,7 @@ public class MVTextEvents {
 				Reflection.getOptionalMethod(ClickEvent.class, "method_10845", MethodType.methodType(ClickEvent.Action.class));
 		/** Null for an action the fancy-text format cannot express (SHOW_DIALOG, CUSTOM). */
 		public static ClickAction<?> getAction(ClickEvent event) {
-			return switch (Version.<ClickEvent.Action>newSwitch()
-					.range("1.21.5", null, () -> event.getAction())
-					.get()) {
+			return switch (event.getAction()) {
 				case OPEN_URL -> OPEN_URL;
 				case OPEN_FILE -> OPEN_FILE;
 				case RUN_COMMAND -> RUN_COMMAND;
@@ -105,18 +103,14 @@ public class MVTextEvents {
 		private static final Supplier<Reflection.MethodInvoker> ClickEvent_getValue =
 				Reflection.getOptionalMethod(ClickEvent.class, "method_10844", MethodType.methodType(String.class));
 		public String getStringifiedValue(ClickEvent event) {
-			return Version.<String>newSwitch()
-					.range("1.21.5", null, () -> getter.apply(event).toString())
-					.get();
+			return getter.apply(event).toString();
 		}
 		public Optional<T> getValue(ClickEvent event) {
 			return parseValue(getStringifiedValue(event));
 		}
 		
 		public ClickEvent newEvent(T value) {
-			return Version.<ClickEvent>newSwitch()
-					.range("1.21.5", null, () -> constructor.apply(value))
-					.get();
+			return constructor.apply(value);
 		}
 		public Optional<ClickEvent> newEventParse(String valueStr) {
 			return parseValue(valueStr).map(this::newEvent);
@@ -140,9 +134,7 @@ public class MVTextEvents {
 		private static final Supplier<Reflection.MethodInvoker> HoverEvent_getAction =
 				Reflection.getOptionalMethod(HoverEvent.class, "method_10892", MethodType.methodType(HoverEvent.Action.class));
 		public static HoverAction<?> getAction(HoverEvent event) {
-			return switch (Version.<HoverEvent.Action>newSwitch()
-					.range("1.21.5", null, () -> event.getAction())
-					.get()) {
+			return switch (event.getAction()) {
 				case SHOW_TEXT -> SHOW_TEXT;
 				case SHOW_ITEM -> SHOW_ITEM;
 				case SHOW_ENTITY -> SHOW_ENTITY;
@@ -179,53 +171,41 @@ public class MVTextEvents {
 				Reflection.getOptionalMethod(HoverEvent$ItemStackContent, () -> "method_27683", () -> MethodType.methodType(ItemStack.class));
 		@SuppressWarnings("unchecked")
 		public T getValue(HoverEvent event) {
-			return Version.<T>newSwitch()
-					.range("1.21.5", null, () -> getter.apply(event))
-					.get();
+			return getter.apply(event);
 		}
 		private static final Supplier<Reflection.MethodInvoker> HoverEvent$Action_contentsToJson =
 				Reflection.getOptionalMethod(HoverEvent.Action.class, "method_27669", MethodType.methodType(JsonElement.class, Object.class));
 		public String getStringifiedValue(HoverEvent event) {
-			return Version.<String>newSwitch()
-					.range("1.21.5", null, () -> {
-						NbtCompound nbt = (NbtCompound) MVMisc.result(HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event)).orElseThrow();
-						if (this == SHOW_TEXT)
-							return nbt.get("value").toString();
-						nbt.remove("action");
-						return nbt.toString();
-					})
-					.get();
+			NbtCompound nbt = (NbtCompound) MVMisc.result(HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event)).orElseThrow();
+			if (this == SHOW_TEXT)
+				return nbt.get("value").toString();
+			nbt.remove("action");
+			return nbt.toString();
 		}
 		
 		public HoverEvent newEvent(T value) {
-			return Version.<HoverEvent>newSwitch()
-					.range("1.21.5", null, () -> constructor.apply(value))
-					.get();
+			return constructor.apply(value);
 		}
 		private static final Supplier<Reflection.MethodInvoker> HoverEvent_fromJson =
 				Reflection.getOptionalMethod(HoverEvent.class, "method_27664", MethodType.methodType(HoverEvent.class, JsonObject.class));
 		public Optional<HoverEvent> newEventParse(String valueStr) {
-			return Version.<Optional<HoverEvent>>newSwitch()
-					.range("1.21.5", null, () -> {
-						NbtElement valueNbt;
-						try {
-							valueNbt = StringNbtReader.fromOps(NbtOps.INSTANCE).read(valueStr);
-						} catch (CommandSyntaxException e) {
-							return Optional.empty();
-						}
-						
-						NbtCompound nbt = new NbtCompound();
-						nbt.putString("action", name);
-						if (this == SHOW_TEXT)
-							nbt.put("value", valueNbt);
-						else if (valueNbt instanceof NbtCompound valueNbtCompound)
-							nbt.copyFrom(valueNbtCompound);
-						else
-							return Optional.empty();
-						
-						return MVMisc.result(HoverEvent.CODEC.parse(NbtOps.INSTANCE, nbt));
-					})
-					.get();
+			NbtElement valueNbt;
+			try {
+				valueNbt = StringNbtReader.fromOps(NbtOps.INSTANCE).read(valueStr);
+			} catch (CommandSyntaxException e) {
+				return Optional.empty();
+			}
+
+			NbtCompound nbt = new NbtCompound();
+			nbt.putString("action", name);
+			if (this == SHOW_TEXT)
+				nbt.put("value", valueNbt);
+			else if (valueNbt instanceof NbtCompound valueNbtCompound)
+				nbt.copyFrom(valueNbtCompound);
+			else
+				return Optional.empty();
+
+			return MVMisc.result(HoverEvent.CODEC.parse(NbtOps.INSTANCE, nbt));
 		}
 	}
 	

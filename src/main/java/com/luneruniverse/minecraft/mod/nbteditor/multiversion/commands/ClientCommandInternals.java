@@ -65,12 +65,8 @@ public final class ClientCommandInternals {
 	private static final Supplier<MethodInvoker> CommandException_getTextMessage =
 			Reflection.getOptionalMethod(CommandException, () -> "method_9199", () -> MethodType.methodType(Text.class));
 	static {
-		API_COMMAND_NAME = Version.<String>newSwitch()
-				.range("1.19.0", null, "fabric-command-api-v2:client")
-				.get();
-		activeDispatcher = Version.<CommandDispatcher<FabricClientCommandSource>>newSwitch()
-				.range("1.19.0", null, () -> null)
-				.get();
+		API_COMMAND_NAME = "fabric-command-api-v2:client";
+		activeDispatcher = null;
 	}
 
 	public static void setActiveDispatcher(@Nullable CommandDispatcher<FabricClientCommandSource> dispatcher) {
@@ -116,7 +112,7 @@ public final class ClientCommandInternals {
 			commandSource.sendError(getErrorMessage(e));
 			return true;
 		} catch (RuntimeException e) {
-			if (Version.<Boolean>newSwitch().range("1.20.3", null, false).get() &&
+			if (false &&
 					CommandException.get().isInstance(e)) {
 				LOGGER.warn("Error while executing client-sided command '{}'", command, e);
 				commandSource.sendError(CommandException_getTextMessage.get().invoke(e));

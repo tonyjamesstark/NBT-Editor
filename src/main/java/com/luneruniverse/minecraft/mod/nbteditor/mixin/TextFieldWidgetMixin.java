@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 
@@ -61,8 +60,5 @@ public abstract class TextFieldWidgetMixin implements Tickable {
 	@Override
 	public void tick() {
 		TextFieldWidget source = (TextFieldWidget) (Object) this;
-		Version.newSwitch()
-				.range("1.20.2", null, () -> {})
-				.run();
 	}
 }

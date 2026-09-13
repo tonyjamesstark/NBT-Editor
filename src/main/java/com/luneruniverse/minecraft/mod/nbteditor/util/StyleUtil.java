@@ -6,16 +6,13 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 
 import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 
 public class StyleUtil {
 	
-	public static final boolean SHADOW_COLOR_EXISTS = Version.<Boolean>newSwitch()
-			.range("1.21.4", null, true)
-			.get();
+	public static final boolean SHADOW_COLOR_EXISTS = true;
 	
 	public static final Style RESET_STYLE = Style.EMPTY.withColor(Formatting.WHITE)
 			.withBold(false).withItalic(false).withUnderline(false).withStrikethrough(false).withObfuscated(false);

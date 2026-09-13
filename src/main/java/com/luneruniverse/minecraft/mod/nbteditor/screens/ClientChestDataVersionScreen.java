@@ -210,20 +210,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	}
 	
 	private void updateWithWarning(Runnable callback) {
-		if (Version.<Boolean>newSwitch()
-				.range("1.21", null, true)
-				.get()) {
-			callback.run();
-			return;
-		}
-		
-		client.setScreen(new FancyConfirmScreen(value -> {
-			if (value)
-				callback.run();
-			else
-				client.setScreen(this);
-		}, TextInst.translatable("nbteditor.client_chest.data_version.update_page_confirm_1.20.5_1.20.6.title"),
-				TextInst.translatable("nbteditor.client_chest.data_version.update_page_confirm_1.20.5_1.20.6.desc")));
+		callback.run();
 	}
 	
 }

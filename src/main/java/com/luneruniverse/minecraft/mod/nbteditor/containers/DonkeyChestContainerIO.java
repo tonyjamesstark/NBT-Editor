@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.containers;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -8,9 +7,7 @@ import net.minecraft.util.Identifier;
 
 public class DonkeyChestContainerIO implements ContainerIO<NbtCompound> {
 	
-	private static final boolean ITEMS_SHIFTED = Version.<Boolean>newSwitch()
-			.range("1.20.5", null, false)
-			.get();
+	private static final boolean ITEMS_SHIFTED = false;
 	
 	private final boolean llama;
 	private final ContainerIO<NbtCompound> delegate;

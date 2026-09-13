@@ -96,8 +96,8 @@ public class AttributesScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				.setConfigurable("min", createExtremeAmountBtn("nbteditor.attributes.amount.min", false, false))
 				.setConfigurable("infinity", createExtremeAmountBtn("nbteditor.attributes.amount.infinity", true, true))
 				.setConfigurable("negative_infinity", createExtremeAmountBtn("nbteditor.attributes.amount.negative_infinity", false, true)));
-		visible.setConfigurable("slot", new ConfigItem<>(TextInst.translatable("nbteditor.attributes.slot"), ConfigValueDropdown.forFilteredEnum(
-				AttributeModifierData.Slot.ANY, AttributeModifierData.Slot.ANY, AttributeModifierData.Slot.class, AttributeModifierData.Slot::isInThisVersion)));
+		visible.setConfigurable("slot", new ConfigItem<>(TextInst.translatable("nbteditor.attributes.slot"), ConfigValueDropdown.forEnum(
+				AttributeModifierData.Slot.ANY, AttributeModifierData.Slot.ANY, AttributeModifierData.Slot.class)));
 		ATTRIBUTE_ENTRY = new ConfigHiddenDataNamed<>(visible, AttributeModifierId.randomUUID(), (id, defaults) -> AttributeModifierId.randomUUID());
 	}
 	@SuppressWarnings("unchecked")

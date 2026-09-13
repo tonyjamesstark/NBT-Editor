@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ImportScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidget;
@@ -35,9 +34,7 @@ public class ScreenMixin {
 	}
 	@Inject(method = "init(Lnet/minecraft/client/MinecraftClient;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;init()V"), require = 0)
 	private void init(MinecraftClient client, int width, int height, CallbackInfo info) {
-		Version.newSwitch()
-				.range("1.19.4", null, () -> CreativeTabWidget.addCreativeTabs((Screen) (Object) this))
-				.run();
+		CreativeTabWidget.addCreativeTabs((Screen) (Object) this);
 	}
 	
 	@Inject(method = "onFilesDropped", at = @At("HEAD"))

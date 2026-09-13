@@ -12,7 +12,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenP
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.InventoryItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
@@ -133,9 +132,6 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 	@Override
 	public final void tick() {
 		super.tick();
-		Version.newSwitch()
-				.range("1.17.1", null, () -> {})
-				.run();
 	}
 	@Override
 	protected void handledScreenTick() {}

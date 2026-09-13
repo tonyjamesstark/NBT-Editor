@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
 import net.minecraft.client.gui.Click;
@@ -44,9 +43,7 @@ public class CreativeTabWidget implements Drawable, MVElement {
 		}
 	}
 	
-	public static final int WIDTH = Version.<Integer>newSwitch()
-			.range("1.19.3", null, 26)
-			.get();
+	public static final int WIDTH = 26;
 	public static final int HEIGHT = 32;
 	
 	private static final Identifier TEXTURE_TOP;
@@ -54,19 +51,10 @@ public class CreativeTabWidget implements Drawable, MVElement {
 	private static final int V_TOP;
 	private static final int V_BOTTOM;
 	static {
-		if (Version.<Boolean>newSwitch()
-				.range("1.20.2", null, true)
-				.get()) {
-			TEXTURE_TOP = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_top_unselected.png");
-			TEXTURE_BOTTOM = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_bottom_unselected.png");
-			V_TOP = 0;
-			V_BOTTOM = 0;
-		} else {
-			TEXTURE_TOP = IdentifierInst.of("textures/gui/container/creative_inventory/tabs.png");
-			TEXTURE_BOTTOM = IdentifierInst.of("textures/gui/container/creative_inventory/tabs.png");
-			V_TOP = 0;
-			V_BOTTOM = 64;
-		}
+		TEXTURE_TOP = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_top_unselected.png");
+		TEXTURE_BOTTOM = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_bottom_unselected.png");
+		V_TOP = 0;
+		V_BOTTOM = 0;
 	}
 	
 	private final boolean bottom;
@@ -89,9 +77,7 @@ public class CreativeTabWidget implements Drawable, MVElement {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.drawTexture(context, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
 		
-		int xOffset = Version.<Integer>newSwitch()
-				.range("1.19.3", null, 5)
-				.get();
+		int xOffset = 5;
 		MVDrawableHelper.renderItem(context, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
 		
 		if (isMouseOver(mouseX, mouseY))

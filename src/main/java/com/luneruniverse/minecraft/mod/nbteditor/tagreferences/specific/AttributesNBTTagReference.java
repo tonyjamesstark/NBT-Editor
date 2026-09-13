@@ -96,8 +96,6 @@ public class AttributesNBTTagReference implements TagReference<List<AttributeDat
 					} catch (IllegalArgumentException e) {
 						continue;
 					}
-					if (!slot.isInThisVersion())
-						continue;
 				}
 				
 				if (!attributeNbt.nbte$containsUuid("UUID"))
@@ -128,8 +126,6 @@ public class AttributesNBTTagReference implements TagReference<List<AttributeDat
 				attributeNbt.putString("Name", attributeNbt.nbte$getStringOrDefault("AttributeName"));
 				attributeNbt.putInt("Operation", attribute.modifierData().get().operation().ordinal());
 				if (attribute.modifierData().get().slot() != Slot.ANY) {
-					if (!attribute.modifierData().get().slot().isInThisVersion())
-						throw new IllegalArgumentException("The slot " + attribute.modifierData().get().slot() + " isn't available in this version of Minecraft!");
 					attributeNbt.putString("Slot", attribute.modifierData().get().slot().name().toLowerCase());
 				}
 				attributeNbt.nbte$putUuid("UUID", attribute.modifierData().get().id().getUUID());

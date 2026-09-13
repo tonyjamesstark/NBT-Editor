@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigCategory;
@@ -69,9 +68,7 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 				allEnchantments.entrySet().stream().filter(enchant -> enchant.getValue().isAcceptableItem(inputItem)).map(Map.Entry::getKey).toList())));
 		entry.setConfigurable("level", new ConfigItem<>(TextInst.translatable("nbteditor.enchantments.level"),
 				ConfigValueNumber.forInt(1, 1, 1,
-						Version.<Integer>newSwitch()
-								.range("1.17.1", null, 255)
-								.get())));
+						255)));
 		config = new ConfigList(TextInst.translatable("nbteditor.enchantments"), false, entry);
 		
 		ItemTagReferences.ENCHANTMENTS.get(localNBT.getEditableItem()).getEnchants().forEach(enchant -> {

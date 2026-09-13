@@ -6,14 +6,10 @@ import net.minecraft.util.InvalidIdentifierException;
 public class IdentifierInst {
 	
 	public static Identifier of(String id) throws InvalidIdentifierException {
-		return Version.<Identifier>newSwitch()
-				.range("1.21.0", null, () -> Identifier.of(id))
-				.get();
+		return Identifier.of(id);
 	}
 	public static Identifier of(String namespace, String path) throws InvalidIdentifierException {
-		return Version.<Identifier>newSwitch()
-				.range("1.21.0", null, () -> Identifier.of(namespace, path))
-				.get();
+		return Identifier.of(namespace, path);
 	}
 	
 	public static boolean isValid(String id) {

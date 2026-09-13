@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
@@ -58,9 +57,7 @@ public class LocalItemParts extends LocalItem {
 	}
 	
 	private void setCachedItemCount() {
-		Version.newSwitch()
-				.range("1.21.0", null, () -> cachedItem.setCount(Math.min(count, cachedItem.getMaxCount())))
-				.run();
+		cachedItem.setCount(Math.min(count, cachedItem.getMaxCount()));
 	}
 	private ItemStack getCachedItem() {
 		if (cachedItem.getItem() == item && Objects.equals(cachedNbt, nbt)) {

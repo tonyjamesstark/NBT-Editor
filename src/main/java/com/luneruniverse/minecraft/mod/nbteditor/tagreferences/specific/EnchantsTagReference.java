@@ -7,7 +7,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.ComponentTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.NBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
@@ -25,8 +24,7 @@ import net.minecraft.nbt.NbtList;
 public class EnchantsTagReference implements TagReference<Enchants, ItemStack> {
 	
 	private static TagReference<Enchants, ItemStack> getEnchantsTagRef(String tag, MVComponentType<ItemEnchantmentsComponent> component) {
-		return Version.<TagReference<Enchants, ItemStack>>newSwitch()
-				.range("1.20.5", null, () -> new ComponentTagReference<>(component,
+		return (new ComponentTagReference<>(component,
 						null,
 						componentValue -> componentValue == null ? new Enchants() : new Enchants(componentValue.getEnchantmentEntries().stream()
 								.map(entry -> new Enchants.EnchantWithLevel(entry.getKey().value(), entry.getIntValue())).collect(Collectors.toList())),
@@ -34,8 +32,7 @@ public class EnchantsTagReference implements TagReference<Enchants, ItemStack> {
 								new Object2IntOpenHashMap<>(enchants.getEnchants().stream().collect(Collectors.toMap(
 										enchant -> MVRegistry.getEnchantmentRegistry().getInternalValue().getEntry(enchant.enchant()),
 										enchant -> Math.min(255, enchant.level()),
-										Math::max))))))
-				.get();
+										Math::max))))));
 	}
 	
 	private static final TagReference<Enchants, ItemStack> ENCHANTMENTS = getEnchantsTagRef("Enchantments", MVComponentType.ENCHANTMENTS);

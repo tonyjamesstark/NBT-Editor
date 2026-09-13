@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 
 import io.netty.buffer.Unpooled;
@@ -47,9 +46,7 @@ public class MVServerNetworking {
 	
 	@SuppressWarnings("deprecation")
 	public static void send(ServerPlayerEntity player, MVPacket packet) {
-		ServerMVMisc.sendS2CPacket(player, Version.<CustomPayloadS2CPacket>newSwitch()
-				.range("1.20.2", null, () -> MVPacketCustomPayload.wrapS2C(packet))
-				.get());
+		ServerMVMisc.sendS2CPacket(player, MVPacketCustomPayload.wrapS2C(packet));
 	}
 	
 	@SuppressWarnings("unchecked")

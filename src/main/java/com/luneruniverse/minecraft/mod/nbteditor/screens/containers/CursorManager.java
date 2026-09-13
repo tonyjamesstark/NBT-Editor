@@ -1,7 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.containers;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SetCursorC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -119,13 +118,7 @@ public class CursorManager {
 			if (currentBranch != currentRoot) {
 				ItemStack cursor = currentBranch.getScreenHandler().getCursorStack();
 				if (currentRootHasServerCursor) {
-					if (Version.<Boolean>newSwitch()
-							.range("1.17.1", null, true)
-							.get()) {
-						MainUtil.get(cursor, true);
-					} else {
-						MainUtil.dropCreativeStack(cursor);
-					}
+					MainUtil.get(cursor, true);
 					cursor = ItemStack.EMPTY;
 				}
 				MainUtil.setCursorStackSilently(currentRoot.getScreenHandler(), cursor);

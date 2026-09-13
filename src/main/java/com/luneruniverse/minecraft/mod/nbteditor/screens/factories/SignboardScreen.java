@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
@@ -42,9 +41,7 @@ import net.minecraft.util.Identifier;
 public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
 	// Double sided & waxable
-	private static boolean NEW_FEATURES = Version.<Boolean>newSwitch()
-			.range("1.20.0", null, true)
-			.get();
+	private static boolean NEW_FEATURES = true;
 	
 	private static int getRenderedColor(DyeColor dye) {
 		if (dye == DyeColor.BLACK)

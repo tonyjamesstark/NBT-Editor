@@ -41,16 +41,10 @@ public class MVRegistry<T> implements Iterable<T> {
 	}
 	
 	private static final Class<?> REGISTRY_CLASS = Reflection.getClass("net.minecraft.class_2378");
-	private static final Class<?> REGISTRIES_CLASS = Version.<Class<?>>newSwitch()
-			.range("1.19.3", null, () -> Reflection.getClass("net.minecraft.class_7923"))
-			.get();
+	private static final Class<?> REGISTRIES_CLASS = Reflection.getClass("net.minecraft.class_7923");
 	private static <T> MVRegistry<T> getRegistry(String oldName, String newName, boolean defaulted) {
-		return new MVRegistry<>(Reflection.getField(REGISTRIES_CLASS, Version.<String>newSwitch()
-				.range("1.19.3", null, newName)
-				.get(),
-				defaulted ? Version.<String>newSwitch()
-						.range("1.19.3", null, "Lnet/minecraft/class_7922;")
-						.get() : "Lnet/minecraft/class_2378;")
+		return new MVRegistry<>(Reflection.getField(REGISTRIES_CLASS, newName,
+				defaulted ? "Lnet/minecraft/class_7922;" : "Lnet/minecraft/class_2378;")
 				.get(null));
 	}
 	
@@ -60,9 +54,7 @@ public class MVRegistry<T> implements Iterable<T> {
 	public static final MVRegistry<Block> BLOCK = getRegistry("field_11146", "field_41175", true);
 	public static final MVRegistry<EntityType<?>> ENTITY_TYPE = getRegistry("field_11145", "field_41177", true);
 	public static final MVRegistry<EntityAttribute> ATTRIBUTE = getRegistry("field_23781", "field_41190", false);
-	public static final MVRegistry<Potion> POTION = getRegistry("field_11143", "field_41179", Version.<Boolean>newSwitch()
-			.range("1.20.5", null, false)
-			.get());
+	public static final MVRegistry<Potion> POTION = getRegistry("field_11143", "field_41179", false);
 	public static final MVRegistry<StatusEffect> STATUS_EFFECT = getRegistry("field_11159", "field_41174", false);
 	
 	private static MVRegistry<Enchantment> ENCHANTMENT;
@@ -115,9 +107,7 @@ public class MVRegistry<T> implements Iterable<T> {
 		return call(value, "method_10221", () -> MethodType.methodType(Identifier.class, Object.class), entry);
 	}
 	
-	private static final String get = Version.<String>newSwitch()
-			.range("1.21.2", null, "method_63535")
-			.get();
+	private static final String get = "method_63535";
 	public T get(Identifier id) {
 		return call(value, get, () -> MethodType.methodType(Object.class, Identifier.class), id);
 	}

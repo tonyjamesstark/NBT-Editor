@@ -3,16 +3,13 @@ package com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 
 public interface MVNbtCompoundParent {
 	
-	public static boolean NBT_CODE_REFACTORED = Version.<Boolean>newSwitch()
-			.range("1.21.5", null, true)
-			.get();
+	public static boolean NBT_CODE_REFACTORED = true;
 	
 	public static final byte NUMBER_TYPE = 99;
 	

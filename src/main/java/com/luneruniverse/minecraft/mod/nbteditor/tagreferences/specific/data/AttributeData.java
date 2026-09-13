@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.AttributeModifierId;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.Operation;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.Slot;
@@ -57,16 +56,16 @@ public record AttributeData(EntityAttribute attribute, double value, Optional<At
 		
 		public enum Slot {
 			ANY("nbteditor.attributes.slot.any"),
-			HAND("nbteditor.attributes.slot.hand", "1.20.5", null),
+			HAND("nbteditor.attributes.slot.hand"),
 			MAINHAND("nbteditor.attributes.slot.mainhand"),
 			OFFHAND("nbteditor.attributes.slot.offhand"),
-			ARMOR("nbteditor.attributes.slot.armor", "1.20.5", null),
+			ARMOR("nbteditor.attributes.slot.armor"),
 			HEAD("nbteditor.attributes.slot.head"),
 			CHEST("nbteditor.attributes.slot.chest"),
 			LEGS("nbteditor.attributes.slot.legs"),
 			FEET("nbteditor.attributes.slot.feet"),
-			BODY("nbteditor.attributes.slot.body", "1.20.5", null),
-			SADDLE("nbteditor.attributes.slot.saddle", "1.21.5", null);
+			BODY("nbteditor.attributes.slot.body"),
+			SADDLE("nbteditor.attributes.slot.saddle");
 			
 			public static Slot fromMinecraft(Object slot) {
 				return switch ((AttributeModifierSlot) slot) {
@@ -85,15 +84,8 @@ public record AttributeData(EntityAttribute attribute, double value, Optional<At
 			}
 			
 			private final Text name;
-			private final boolean inThisVersion;
-			private Slot(String key, String minVersion, String maxVersion) {
-				this.name = TextInst.translatable(key);
-				this.inThisVersion = Version.<Boolean>newSwitch()
-						.range(minVersion, maxVersion, true)
-						.getOptionally().orElse(false);
-			}
 			private Slot(String key) {
-				this(key, null, null);
+				this.name = TextInst.translatable(key);
 			}
 			public Object toMinecraft() {
 				return switch (this) {
@@ -110,9 +102,6 @@ public record AttributeData(EntityAttribute attribute, double value, Optional<At
 					case SADDLE -> AttributeModifierSlot.SADDLE;
 				};
 			}
-			public boolean isInThisVersion() {
-				return inThisVersion;
-			}
 			@Override
 			public String toString() {
 				return name.getString();
@@ -121,9 +110,7 @@ public record AttributeData(EntityAttribute attribute, double value, Optional<At
 		
 		public static class AttributeModifierId {
 			
-			public static final boolean ID_IS_IDENTIFIER = Version.<Boolean>newSwitch()
-					.range("1.21.0", null, true)
-					.get();
+			public static final boolean ID_IS_IDENTIFIER = true;
 			
 			public static AttributeModifierId randomUUID() {
 				return new AttributeModifierId(UUID.randomUUID());

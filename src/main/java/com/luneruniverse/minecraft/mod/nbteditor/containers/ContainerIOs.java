@@ -16,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
@@ -81,51 +80,31 @@ public class ContainerIOs {
 			ItemBlockContainerIO.forKeys(BlockEntityType.LECTERN, "Book"), "has_book");
 	private static final Function<EntityType<?>, ItemEntityContainerIO> ITEM_FRAME_IO =
 			entityId -> ItemEntityContainerIO.forKeys(entityId, "Item");
-	private static final ContainerIO<ItemStack> BUNDLE_IO = Version.<ContainerIO<ItemStack>>newSwitch()
-			.range("1.20.5", null, () -> new BundleContentsComponentContainerIO(27))
-			.get();
-	private static final ItemBlockContainerIO CHISELED_BOOKSHELF_IO = Version.<ItemBlockContainerIO>newSwitch()
-			.range("1.20.0", null, () -> BlockStateUpdatingContainerIO.forItemBlock(
+	private static final ContainerIO<ItemStack> BUNDLE_IO = new BundleContentsComponentContainerIO(27);
+	private static final ItemBlockContainerIO CHISELED_BOOKSHELF_IO = BlockStateUpdatingContainerIO.forItemBlock(
 					ItemBlockContainerIO.forSlotKeyItems(6), "slot_0_occupied", "slot_1_occupied", "slot_2_occupied",
-					"slot_3_occupied", "slot_4_occupied", "slot_5_occupied"))
-			.get();
-	private static final ItemBlockContainerIO SUSPICIOUS_SAND_IO = Version.<ItemBlockContainerIO>newSwitch()
-			.range("1.20.0", null, () -> ItemBlockContainerIO.forKeys(BlockEntityType.BRUSHABLE_BLOCK, "item"))
-			.get();
-	private static final ItemBlockContainerIO DECORATED_POT_IO = Version.<ItemBlockContainerIO>newSwitch()
-			.range("1.20.5", null, () -> new ItemBlockContainerIO(
-					new ContainerComponentContainerIO(1), ContainerIO.forLocalNBT(new KeysContainerIO(false, "item"))))
-			.get();
-	private static final ItemBlockContainerIO CRAFTER_IO = Version.<ItemBlockContainerIO>newSwitch()
-			.range("1.21.0", null, () -> ItemBlockContainerIO.forSlotKeyItems(9))
-			.get();
+					"slot_3_occupied", "slot_4_occupied", "slot_5_occupied");
+	private static final ItemBlockContainerIO SUSPICIOUS_SAND_IO = ItemBlockContainerIO.forKeys(BlockEntityType.BRUSHABLE_BLOCK, "item");
+	private static final ItemBlockContainerIO DECORATED_POT_IO = new ItemBlockContainerIO(
+					new ContainerComponentContainerIO(1), ContainerIO.forLocalNBT(new KeysContainerIO(false, "item")));
+	private static final ItemBlockContainerIO CRAFTER_IO = ItemBlockContainerIO.forSlotKeyItems(9);
 	private static final ContainerIO<ItemStack> SPAWN_EGG_IO = new DelegateContainerIO<>(
 			(item, entity) -> get(entity),
 			item -> new LocalEntity(MVMisc.getEntityType(item), ItemTagReferences.ENTITY_DATA.get(item)),
 			(item, entity) -> ItemTagReferences.ENTITY_DATA.set(item, MainUtil.fillId(entity.getNBT(), entity.getId().toString())));
 	private static final Function<EntityType<?>, ItemEntityContainerIO> EQUIPMENT_IO =
-			entityId -> ItemEntityContainerIO.forEntityTagIO(Version.<ContainerIO<NbtCompound>>newSwitch()
-					.range("1.20.5", null, () -> new EquipmentContainerIO(false).forNbtCompoundEquipment())
-					.get(),
+			entityId -> ItemEntityContainerIO.forEntityTagIO(new EquipmentContainerIO(false).forNbtCompoundEquipment(),
 					entityId);
 	private static final ContainerIO<LocalEntity> HORSE_IO = ContainerIO.forLocalNBT(
-			Version.<ContainerIO<NbtCompound>>newSwitch()
-					.range("1.21.5", null, () -> new EquipmentContainerIO(false).forNbtCompoundEquipment())
-					.get());
+			new EquipmentContainerIO(false).forNbtCompoundEquipment());
 	private static final ContainerIO<LocalEntity> BASIC_HORSE_IO = ContainerIO.forLocalNBT(
-			Version.<ContainerIO<NbtCompound>>newSwitch()
-					.range("1.21.5", null, () -> new EquipmentContainerIO(false).forNbtCompoundEquipment())
-					.get());
+			new EquipmentContainerIO(false).forNbtCompoundEquipment());
 	private static final ContainerIO<LocalEntity> DONKEY_IO = ContainerIO.forLocalNBT(
-			Version.<ContainerIO<NbtCompound>>newSwitch()
-					.range("1.21.5", null, () -> new ConcatContainerIO<>(
-							new EquipmentContainerIO(false).forNbtCompoundEquipment(), new DonkeyChestContainerIO(false)))
-					.get());
+			new ConcatContainerIO<>(
+							new EquipmentContainerIO(false).forNbtCompoundEquipment(), new DonkeyChestContainerIO(false)));
 	private static final ContainerIO<LocalEntity> LLAMA_IO = ContainerIO.forLocalNBT(
-			Version.<ContainerIO<NbtCompound>>newSwitch()
-					.range("1.21.5", null, () -> new ConcatContainerIO<>(
-							new EquipmentContainerIO(true).forNbtCompoundEquipment(), new DonkeyChestContainerIO(true)))
-					.get());
+			new ConcatContainerIO<>(
+							new EquipmentContainerIO(true).forNbtCompoundEquipment(), new DonkeyChestContainerIO(true)));
 	private static final ContainerIO<LocalEntity> VILLAGER_IO = new ConcatContainerIO<>(
 			EQUIPMENT_IO.apply(EntityType.VILLAGER).entity(),
 			ContainerIO.forLocalNBT(new OrderNbtListContainerIO(8).forNbtCompound("Inventory")));
@@ -134,15 +113,11 @@ public class ContainerIOs {
 	private static final ItemEntityContainerIO HOPPER_MINECART_IO = ItemEntityContainerIO.forEntityTagIO(
 			new SlotKeyNbtListContainerIO(5).forNbtCompoundItems(), EntityType.FURNACE_MINECART);
 	private static final Function<EntityType<?>, ItemEntityContainerIO> CHEST_BOAT_IO =
-			entityType -> Version.<ItemEntityContainerIO>newSwitch()
-					.range("1.19.0", null, () -> ItemEntityContainerIO.forEntityTagIO(
-							new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), entityType))
-					.get();
-	private static final ContainerIO<LocalEntity> ALLAY_IO = Version.<ContainerIO<LocalEntity>>newSwitch()
-			.range("1.19.0", null, () -> new ConcatContainerIO<>(
+			entityType -> ItemEntityContainerIO.forEntityTagIO(
+							new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), entityType);
+	private static final ContainerIO<LocalEntity> ALLAY_IO = (new ConcatContainerIO<>(
 					EQUIPMENT_IO.apply(EntityType.ALLAY).entity(),
-					ContainerIO.forLocalNBT(new OrderNbtListContainerIO(1).forNbtCompound("Inventory"))))
-			.get();
+					ContainerIO.forLocalNBT(new OrderNbtListContainerIO(1).forNbtCompound("Inventory"))));
 	
 	public static void loadClass() {}
 	
@@ -173,19 +148,11 @@ public class ContainerIOs {
 			if (item instanceof BundleItem bundle)
 				registerItemIO(bundle, BUNDLE_IO);
 		}
-		Version.newSwitch()
-				.range("1.20.0", null, () -> {
-					registerItemBlockIO((BlockItem) Items.CHISELED_BOOKSHELF, CHISELED_BOOKSHELF_IO);
-					registerItemBlockIO((BlockItem) Items.SUSPICIOUS_SAND, SUSPICIOUS_SAND_IO);
-					registerItemBlockIO((BlockItem) Items.SUSPICIOUS_GRAVEL, SUSPICIOUS_SAND_IO);
-				})
-				.run();
-		Version.newSwitch()
-				.range("1.20.3", null, () -> registerItemBlockIO((BlockItem) Items.DECORATED_POT, DECORATED_POT_IO))
-				.run();
-		Version.newSwitch()
-				.range("1.21.0", null, () -> registerItemBlockIO((BlockItem) Items.CRAFTER, CRAFTER_IO))
-				.run();
+		registerItemBlockIO((BlockItem) Items.CHISELED_BOOKSHELF, CHISELED_BOOKSHELF_IO);
+		registerItemBlockIO((BlockItem) Items.SUSPICIOUS_SAND, SUSPICIOUS_SAND_IO);
+		registerItemBlockIO((BlockItem) Items.SUSPICIOUS_GRAVEL, SUSPICIOUS_SAND_IO);
+		registerItemBlockIO((BlockItem) Items.DECORATED_POT, DECORATED_POT_IO);
+		registerItemBlockIO((BlockItem) Items.CRAFTER, CRAFTER_IO);
 		
 		registerItemEntityIO(Items.ARMOR_STAND, EntityType.ARMOR_STAND, EQUIPMENT_IO);
 		for (Item item : MVRegistry.ITEM) {
@@ -196,32 +163,20 @@ public class ContainerIOs {
 		registerEntityIO(EntityType.HORSE, HORSE_IO);
 		registerEntityIO(EntityType.SKELETON_HORSE, BASIC_HORSE_IO);
 		registerEntityIO(EntityType.ZOMBIE_HORSE, BASIC_HORSE_IO);
-		Version.newSwitch()
-				.range("1.20.0", null, () -> registerEntityIO(EntityType.CAMEL, BASIC_HORSE_IO))
-				.run();
+		registerEntityIO(EntityType.CAMEL, BASIC_HORSE_IO);
 		registerEntityIO(EntityType.DONKEY, DONKEY_IO);
 		registerEntityIO(EntityType.MULE, DONKEY_IO);
 		registerEntityIO(EntityType.LLAMA, LLAMA_IO);
 		registerEntityIO(EntityType.TRADER_LLAMA, LLAMA_IO);
 		registerEntityIO(EntityType.VILLAGER, VILLAGER_IO);
-		Version.newSwitch()
-				.range("1.20.3", null, () -> {
-					registerItemEntityIO(Items.CHEST_MINECART, EntityType.CHEST_MINECART, CHEST_MINECART_IO);
-					registerItemEntityIO(Items.HOPPER_MINECART, EntityType.HOPPER_MINECART, HOPPER_MINECART_IO);
-				})
-				.run();
+		registerItemEntityIO(Items.CHEST_MINECART, EntityType.CHEST_MINECART, CHEST_MINECART_IO);
+		registerItemEntityIO(Items.HOPPER_MINECART, EntityType.HOPPER_MINECART, HOPPER_MINECART_IO);
 		Map<EntityType<?>, BoatItem> boatItems = new HashMap<>();
-		Version.newSwitch()
-				.range("1.21.2", null, () -> {
-					for (Item item : MVRegistry.ITEM) {
-						if (item instanceof BoatItem boat)
-							boatItems.put(boat.boatEntityType, boat);
-					}
-				})
-				.run();
-		Version.newSwitch()
-				.range("1.19.0", null, () -> registerEntityIO(EntityType.ALLAY, ALLAY_IO))
-				.run();
+		for (Item item : MVRegistry.ITEM) {
+			if (item instanceof BoatItem boat)
+				boatItems.put(boat.boatEntityType, boat);
+		}
+		registerEntityIO(EntityType.ALLAY, ALLAY_IO);
 		MVClientNetworking.PlayNetworkStateEvents.Join.EVENT.register(() -> {
 			for (EntityType<?> entityType : MVRegistry.ENTITY_TYPE) {
 				if (ENTITY_IO.containsKey(entityType))
@@ -229,16 +184,12 @@ public class ContainerIOs {
 				Entity entity = ServerMVMisc.createEntity(entityType, MainUtil.client.world);
 				if (entity instanceof MobEntity)
 					registerEntityIO(entityType, EQUIPMENT_IO.apply(entityType).entity());
-				Version.newSwitch()
-						.range("1.19.0", null, () -> {
-							if (entity instanceof ChestBoatEntity) {
-								registerEntityIO(entityType, CHEST_BOAT_IO.apply(entityType).entity());
-								BoatItem item = boatItems.get(entityType);
-								if (item != null)
-									registerItemIO(item, CHEST_BOAT_IO.apply(entityType).item());
-							}
-						})
-						.run();
+				if (entity instanceof ChestBoatEntity) {
+					registerEntityIO(entityType, CHEST_BOAT_IO.apply(entityType).entity());
+					BoatItem item = boatItems.get(entityType);
+					if (item != null)
+						registerItemIO(item, CHEST_BOAT_IO.apply(entityType).item());
+				}
 			}
 		});
 	}

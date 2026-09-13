@@ -130,11 +130,9 @@ public final class ClientCommandManager {
 	public static void createDispatcher() {
 		final CommandDispatcher<FabricClientCommandSource> dispatcher = new CommandDispatcher<>();
 		ClientCommandInternals.setActiveDispatcher(dispatcher);
-		Object registryAccess = Version.newSwitch()
-				.range("1.20.5", null, () -> CommandRegistryAccess.of(
+		Object registryAccess = CommandRegistryAccess.of(
 						ClientPlayNetworkHandler_getRegistryManager_Immutable.get().invoke(MainUtil.client.getNetworkHandler()),
-						MainUtil.client.getNetworkHandler().getEnabledFeatures()))
-				.get();
+						MainUtil.client.getNetworkHandler().getEnabledFeatures());
 		ClientCommandRegistrationCallback.EVENT.invoker().register(dispatcher, registryAccess);
 		ClientCommandInternals.finalizeInit();
 	}

@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
@@ -88,10 +87,8 @@ public class ComponentsHideFlag extends HideFlag {
 	// Was previously covered by MISC
 	public static final HideFlag STORED_ENCHANTMENTS = registerFieldGetter("stored_enchantments",
 			DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantmentsComponent.class, "field_49390", "method_58449");
-	public static final HideFlag TRIM = Version.<HideFlag>newSwitch()
-			.range("1.21.0", null, () -> registerMethodGetter("trim",
-					DataComponentTypes.TRIM, ArmorTrim.class, "comp_3181", "method_58421"))
-			.get();
+	public static final HideFlag TRIM = registerMethodGetter("trim",
+					DataComponentTypes.TRIM, ArmorTrim.class, "comp_3181", "method_58421");
 	
 	private final Text name;
 	private final ComponentType<?> component;

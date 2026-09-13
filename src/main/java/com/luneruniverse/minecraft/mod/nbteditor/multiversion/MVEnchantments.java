@@ -19,9 +19,7 @@ import net.minecraft.util.Formatting;
 
 public class MVEnchantments {
 	
-	public static final boolean DATA_PACK_ENCHANTMENTS = Version.<Boolean>newSwitch()
-			.range("1.21.0", null, true)
-			.get();
+	public static final boolean DATA_PACK_ENCHANTMENTS = true;
 	
 	@SuppressWarnings("unchecked")
 	private static Enchantment getEnchantment(String field) {
@@ -38,9 +36,7 @@ public class MVEnchantments {
 	private static final Supplier<Reflection.MethodInvoker> Enchantment_isCursed =
 			Reflection.getOptionalMethod(Enchantment.class, "method_8195", MethodType.methodType(boolean.class));
 	public static boolean isCursed(Enchantment enchant) {
-		return Version.<Boolean>newSwitch()
-				.range("1.21.0", null, () -> MVRegistry.getEnchantmentRegistry().getInternalValue().getEntry(enchant).isIn(EnchantmentTags.CURSE))
-				.get();
+		return MVRegistry.getEnchantmentRegistry().getInternalValue().getEntry(enchant).isIn(EnchantmentTags.CURSE);
 	}
 	
 	public static void addEnchantment(ItemStack item, Enchantment enchant, int level) {
@@ -53,13 +49,9 @@ public class MVEnchantments {
 			Reflection.getOptionalMethod(Enchantment.class, "method_8184", MethodType.methodType(String.class));
 	public static Text getEnchantmentName(Enchantment enchant) {
 		Formatting color = (isCursed(enchant) ? Formatting.RED : Formatting.GRAY);
-		return Version.<Text>newSwitch()
-				.range("1.21.0", null, () -> {
-					MutableText output = enchant.description().copy();
-					Texts.setStyleIfAbsent(output, Style.EMPTY.withColor(color));
-					return output;
-				})
-				.get();
+		MutableText output = enchant.description().copy();
+		Texts.setStyleIfAbsent(output, Style.EMPTY.withColor(color));
+		return output;
 	}
 	
 }

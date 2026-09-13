@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTValue;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StringJsonWriterQuoted;
@@ -21,9 +20,7 @@ import net.minecraft.nbt.NbtString;
 
 public class StringNBTFolder implements NBTFolder<NbtString> {
 	
-	public static final boolean JSON = Version.<Boolean>newSwitch()
-			.range("1.21.5", null, false)
-			.get();
+	public static final boolean JSON = false;
 	
 	private final Supplier<NbtString> get;
 	private final Consumer<NbtString> set;

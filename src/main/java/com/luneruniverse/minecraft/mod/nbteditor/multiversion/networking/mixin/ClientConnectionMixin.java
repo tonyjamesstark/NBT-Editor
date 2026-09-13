@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
@@ -58,18 +57,14 @@ public abstract class ClientConnectionMixin {
 	@Inject(method = "handlePacket", at = @At("HEAD"), cancellable = true)
 	private static void handlePacket(Packet<?> packet, PacketListener listener, CallbackInfo info) {
 		if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(listener) && packet instanceof CustomPayloadS2CPacket customPacket) {
-			MVPacket mvPacket = Version.<MVPacket>newSwitch()
-					.range("1.20.2", null, () -> MVPacketCustomPayload.unwrapS2C(customPacket))
-					.get();
+			MVPacket mvPacket = MVPacketCustomPayload.unwrapS2C(customPacket);
 			if (mvPacket != null) {
 				MVClientNetworking.callListeners(mvPacket);
 				info.cancel();
 			}
 		}
 		if (listener instanceof ServerPlayNetworkHandler handler && packet instanceof CustomPayloadC2SPacket customPacket) {
-			MVPacket mvPacket = Version.<MVPacket>newSwitch()
-					.range("1.20.2", null, () -> MVPacketCustomPayload.unwrapC2S(customPacket))
-					.get();
+			MVPacket mvPacket = MVPacketCustomPayload.unwrapC2S(customPacket);
 			if (mvPacket != null) {
 				MVServerNetworking.callListeners(mvPacket, handler.player);
 				info.cancel();

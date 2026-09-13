@@ -7,9 +7,7 @@ import com.mojang.blaze3d.opengl.GlStateManager;
 
 public class MVGlStateManager {
 	
-	private static final boolean OPEN_GL = Version.<Boolean>newSwitch()
-			.range("1.21.5", null, true)
-			.get();
+	private static final boolean OPEN_GL = true;
 	
 	private static final Supplier<Class<?>> platform_GlStateManager =
 			Reflection.getOptionalClass("com.mojang.blaze3d.platform.GlStateManager");

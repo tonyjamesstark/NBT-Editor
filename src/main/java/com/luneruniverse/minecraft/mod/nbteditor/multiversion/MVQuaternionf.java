@@ -15,25 +15,14 @@ import net.minecraft.client.util.math.MatrixStack;
 
 public class MVQuaternionf {
 	
-	public static final Class<?> Quaternionf_class = Version.<Class<?>>newSwitch()
-			.range("1.19.3", null, () -> Reflection.getClass("org.joml.Quaternionf"))
-			.get();
-	public static final Class<?> Quaternionfc_class = Version.<Class<?>>newSwitch()
-			.range("1.19.3", null, () -> Reflection.getClass("org.joml.Quaternionfc"))
-			.get();
-	private static final Class<?> return_class = Version.<Class<?>>newSwitch()
-			.range("1.19.3", null, () -> Quaternionf_class)
-			.get();
+	public static final Class<?> Quaternionf_class = Reflection.getClass("org.joml.Quaternionf");
+	public static final Class<?> Quaternionfc_class = Reflection.getClass("org.joml.Quaternionfc");
+	private static final Class<?> return_class = Quaternionf_class;
 	
 	public static MVQuaternionf ofAxisRotation(float angle, float x, float y, float z) {
-		return new MVQuaternionf(
-				Version.<Object>newSwitch()
-						.range("1.19.3", null, () -> {
-							Object quat = Reflection.newInstance(Quaternionf_class, new Class<?>[] {});
-							((Quaternionf) quat).rotationAxis(angle, x, y, z);
-							return quat;
-						})
-						.get());
+		Object quat = Reflection.newInstance(Quaternionf_class, new Class<?>[] {});
+		((Quaternionf) quat).rotationAxis(angle, x, y, z);
+		return new MVQuaternionf(quat);
 	}
 	public static MVQuaternionf ofXRotation(float angle) {
 		return ofAxisRotation(angle, 1, 0, 0);
@@ -62,9 +51,7 @@ public class MVQuaternionf {
 	private final Cache<String, Reflection.MethodInvoker> methodCache = CacheBuilder.newBuilder().build();
 	@SuppressWarnings("unchecked")
 	private <R> R call(String oldMethod, String newMethod, Supplier<MethodType> type, Object... args) {
-		String method = Version.<String>newSwitch()
-				.range("1.19.3", null, () -> newMethod)
-				.get();
+		String method = newMethod;
 		try {
 			return (R) methodCache.get(method, () -> Reflection.getMethod(Quaternionf_class, method, type.get())).invoke(value, args);
 		} catch (ExecutionException | UncheckedExecutionException e) {
@@ -98,17 +85,13 @@ public class MVQuaternionf {
 	private static final Supplier<Reflection.MethodInvoker> Quaternionf_copy =
 			Reflection.getOptionalMethod(Quaternionf_class, "method_23695", MethodType.methodType(Quaternionf_class));
 	public MVQuaternionf copy() {
-		return new MVQuaternionf(Version.<Object>newSwitch()
-				.range("1.19.3", null, () -> Reflection.newInstance(Quaternionf_class, new Class<?>[] {Quaternionfc_class}, value))
-				.get());
+		return new MVQuaternionf(Reflection.newInstance(Quaternionf_class, new Class<?>[] {Quaternionfc_class}, value));
 	}
 	
 	private static final Supplier<Reflection.MethodInvoker> MatrixStack_multiply =
 			Reflection.getOptionalMethod(MatrixStack.class, "method_22907", MethodType.methodType(void.class, Quaternionf_class));
 	public void applyToMatrixStack(MatrixStack matrices) {
-		Version.newSwitch()
-				.range("1.19.3", null, () -> matrices.multiply((Quaternionf) value))
-				.run();
+		matrices.multiply((Quaternionf) value);
 	}
 	
 	

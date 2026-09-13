@@ -7,14 +7,10 @@ import net.minecraft.world.World;
 public class MVRegistryKeys {
 	
 	private static final Class<?> REGISTRY_CLASS = Reflection.getClass("net.minecraft.class_2378");
-	private static final Class<?> REGISTRY_KEYS_CLASS = Version.<Class<?>>newSwitch()
-			.range("1.19.3", null, () -> Reflection.getClass("net.minecraft.class_7924"))
-			.get();
+	private static final Class<?> REGISTRY_KEYS_CLASS = Reflection.getClass("net.minecraft.class_7924");
 	private static <T> RegistryKey<T> getRegistryKey(String oldName, String newName) {
 		return Reflection.getField(REGISTRY_KEYS_CLASS,
-				Version.<String>newSwitch()
-						.range("1.19.3", null, newName)
-						.get(),
+				newName,
 				"Lnet/minecraft/class_5321;").get(null);
 	}
 	

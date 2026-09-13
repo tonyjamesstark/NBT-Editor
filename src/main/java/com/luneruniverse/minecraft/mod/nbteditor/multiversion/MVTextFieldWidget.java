@@ -19,9 +19,7 @@ public class MVTextFieldWidget extends TextFieldWidget implements Tickable, MVEl
 	
 	public MVTextFieldWidget tooltip(MVTooltip tooltip) {
 		this.tooltip = tooltip;
-		Version.newSwitch()
-				.range("1.19.3", null, () -> setTooltip(tooltip == null ? null : tooltip.toNewTooltip()))
-				.run();
+		setTooltip(tooltip == null ? null : tooltip.toNewTooltip());
 		return this;
 	}
 	

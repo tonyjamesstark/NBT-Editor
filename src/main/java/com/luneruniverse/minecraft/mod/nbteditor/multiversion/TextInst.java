@@ -27,16 +27,10 @@ public class TextInst {
 		return Text.of(msg);
 	}
 	public static EditableText literal(String msg) {
-		return new EditableText(Version.<MutableText>newSwitch()
-				.range("1.19.0", null, () -> Text.literal(msg))
- // new LiteralText(msg)
-				.get());
+		return new EditableText(Text.literal(msg));
 	}
 	public static EditableText translatable(String key, Object... args) {
-		return new EditableText(Version.<MutableText>newSwitch()
-				.range("1.20.3", null, () -> Text.stringifiedTranslatable(key, args))
- // new TranslatableText(key, args)
-				.get());
+		return new EditableText(Text.stringifiedTranslatable(key, args));
 	}
 	
 	public static EditableText copy(Text text) {
@@ -55,32 +49,26 @@ public class TextInst {
 	 * <strong>CONSIDER USING {@link TextUtil#fromStringSafely(String, boolean)}</strong>
 	 */
 	public static @Nullable Text fromString(String str, boolean eitherFormat) throws IllegalArgumentException {
-		return Version.<Text>newSwitch()
-				.range("1.21.5", null, () -> {
-					IllegalArgumentException wrapper;
-					try {
-						return fromSNbt(str);
-					} catch (CommandSyntaxException | InvalidNbtException e) {
-						wrapper = new IllegalArgumentException("Failed to parse text");
-						wrapper.addSuppressed(e);
-						if (!eitherFormat)
-							throw wrapper;
-					}
-					
-					try {
-						return fromJson(str);
-					} catch (JsonParseException e) {
-						wrapper.addSuppressed(e);
-						throw wrapper;
-					}
-				})
-				.get();
+		IllegalArgumentException wrapper;
+		try {
+			return fromSNbt(str);
+		} catch (CommandSyntaxException | InvalidNbtException e) {
+			wrapper = new IllegalArgumentException("Failed to parse text");
+			wrapper.addSuppressed(e);
+			if (!eitherFormat)
+				throw wrapper;
+		}
+
+		try {
+			return fromJson(str);
+		} catch (JsonParseException e) {
+			wrapper.addSuppressed(e);
+			throw wrapper;
+		}
 	}
 	public static String toString(Text text) throws IllegalArgumentException {
 		try {
-			return Version.<String>newSwitch()
-					.range("1.21.5", null, () -> toSNbt(text))
-					.get();
+			return toSNbt(text);
 		} catch (InvalidNbtException | JsonParseException e) {
 			throw new IllegalArgumentException("Failed to stringify text", e);
 		}
@@ -88,18 +76,14 @@ public class TextInst {
 	
 	public static @Nullable Text fromMinecraft(NbtElement mc) throws IllegalArgumentException {
 		try {
-			return Version.<Text>newSwitch()
-					.range("1.21.5", null, () -> fromNbt(mc))
-					.get();
+			return fromNbt(mc);
 		} catch (InvalidNbtException | JsonParseException e) {
 			throw new IllegalArgumentException("Failed to parse text", e);
 		}
 	}
 	public static NbtElement toMinecraft(Text text) throws IllegalArgumentException {
 		try {
-			return Version.<NbtElement>newSwitch()
-					.range("1.21.5", null, () -> toNbt(text))
-					.get();
+			return toNbt(text);
 		} catch (InvalidNbtException | JsonParseException e) {
 			throw new IllegalArgumentException("Failed to stringify text", e);
 		}

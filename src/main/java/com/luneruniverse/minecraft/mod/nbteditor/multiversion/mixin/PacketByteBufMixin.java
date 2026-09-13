@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryMan
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVPacketByteBufParent;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 
 import io.netty.buffer.ByteBuf;
@@ -69,9 +68,7 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 			Reflection.getOptionalMethod(PacketByteBuf.class, "method_10794", MethodType.methodType(PacketByteBuf.class, NbtCompound.class));
 	@Override
 	public PacketByteBuf writeNbtCompound(NbtCompound element) {
-		return Version.<PacketByteBuf>newSwitch()
-				.range("1.20.2", null, () -> ((PacketByteBuf) (Object) this).writeNbt(element))
-				.get();
+		return ((PacketByteBuf) (Object) this).writeNbt(element);
 	}
 	
 	@Override
@@ -89,17 +86,13 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 			Reflection.getOptionalMethod(PacketByteBuf.class, "method_10819", MethodType.methodType(ItemStack.class));
 	@Override
 	public ItemStack readItemStack() {
-		return Version.<ItemStack>newSwitch()
-				.range("1.20.5", null, () -> ServerMVMisc.packetCodecDecode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf()))
-				.get();
+		return ServerMVMisc.packetCodecDecode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf());
 	}
 	private static final Supplier<Reflection.MethodInvoker> PacketByteBuf_writeItemStack =
 			Reflection.getOptionalMethod(PacketByteBuf.class, "method_10793", MethodType.methodType(PacketByteBuf.class, ItemStack.class));
 	@Override
 	public PacketByteBuf writeItemStack(ItemStack item) {
-		Version.newSwitch()
-				.range("1.20.5", null, () -> ServerMVMisc.packetCodecEncode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf(), item))
-				.run();
+		ServerMVMisc.packetCodecEncode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf(), item);
 		return (PacketByteBuf) (Object) this;
 	}
 	

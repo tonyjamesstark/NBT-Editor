@@ -18,7 +18,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVQuaternionf;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.EntityReference;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SummonEntityC2SPacket;
@@ -166,27 +165,22 @@ public class LocalEntity implements LocalNBT {
 				output = new ItemStack(Items.GLOW_ITEM_FRAME);
 			else if (entityType == EntityType.PAINTING)
 				output = new ItemStack(Items.PAINTING);
-			else {
-				output = Version.<ItemStack>newSwitch()
-						.range("1.20.3", null, () -> {
-							if (entityType == EntityType.COMMAND_BLOCK_MINECART)
-								return new ItemStack(Items.COMMAND_BLOCK_MINECART);
-							if (entityType == EntityType.FURNACE_MINECART)
-								return new ItemStack(Items.FURNACE_MINECART);
-							if (entityType == EntityType.MINECART)
-								return new ItemStack(Items.MINECART);
-							if (entityType == EntityType.CHEST_MINECART)
-								return new ItemStack(Items.CHEST_MINECART);
-							if (entityType == EntityType.HOPPER_MINECART)
-								return new ItemStack(Items.HOPPER_MINECART);
-							if (entityType == EntityType.TNT_MINECART)
-								return new ItemStack(Items.TNT_MINECART);
-							if (getCachedEntity() instanceof AbstractBoatEntity)
-								return new ItemStack(MVMisc.getBoatItem(entityType, nbt));
-							return new ItemStack(Items.PIG_SPAWN_EGG);
-						})
-						.get();
-			}
+			else if (entityType == EntityType.COMMAND_BLOCK_MINECART)
+				output = new ItemStack(Items.COMMAND_BLOCK_MINECART);
+			else if (entityType == EntityType.FURNACE_MINECART)
+				output = new ItemStack(Items.FURNACE_MINECART);
+			else if (entityType == EntityType.MINECART)
+				output = new ItemStack(Items.MINECART);
+			else if (entityType == EntityType.CHEST_MINECART)
+				output = new ItemStack(Items.CHEST_MINECART);
+			else if (entityType == EntityType.HOPPER_MINECART)
+				output = new ItemStack(Items.HOPPER_MINECART);
+			else if (entityType == EntityType.TNT_MINECART)
+				output = new ItemStack(Items.TNT_MINECART);
+			else if (getCachedEntity() instanceof AbstractBoatEntity)
+				output = new ItemStack(MVMisc.getBoatItem(entityType, nbt));
+			else
+				output = new ItemStack(Items.PIG_SPAWN_EGG);
 		}
 		
 		NbtCompound nbt = this.nbt.copy();
@@ -199,9 +193,7 @@ public class LocalEntity implements LocalNBT {
 			if (entityType == EntityType.ITEM_FRAME || entityType == EntityType.GLOW_ITEM_FRAME ||
 					entityType == EntityType.PAINTING) {
 				nbt.remove("Rotation");
-				Version.newSwitch()
-						.range("1.21.5", null, () -> nbt.remove("block_pos"))
-						.run();
+				nbt.remove("block_pos");
 				if (entityType == EntityType.PAINTING)
 					nbt.remove("facing");
 				else

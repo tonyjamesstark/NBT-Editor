@@ -59,15 +59,10 @@ public class DynamicRegistryManagerHolder {
 			entries.addAll(RegistryLoader.DYNAMIC_REGISTRIES);
 			entries.addAll(RegistryLoader.DIMENSION_REGISTRIES);
 			
-			DynamicRegistryManager.Immutable dynamicRegistries = Version.<DynamicRegistryManager.Immutable>newSwitch()
-					.range("1.21.2", null, () -> {
-						List<Registry.PendingTagLoad<?>> tags = TagGroupLoader.startReload(resourceManager, combinedRegistries.get(ServerDynamicRegistryType.STATIC));
-						DynamicRegistryManager.Immutable preceding = combinedRegistries.getPrecedingRegistryManagers(ServerDynamicRegistryType.RELOADABLE);
-						List<RegistryWrapper.Impl<?>> loadedRegistries = TagGroupLoader.collectRegistries(preceding, tags);
-						
-						return RegistryLoader.loadFromResource(resourceManager, loadedRegistries, entries);
-					})
-					.get();
+			List<Registry.PendingTagLoad<?>> tags = TagGroupLoader.startReload(resourceManager, combinedRegistries.get(ServerDynamicRegistryType.STATIC));
+			DynamicRegistryManager.Immutable preceding = combinedRegistries.getPrecedingRegistryManagers(ServerDynamicRegistryType.RELOADABLE);
+			List<RegistryWrapper.Impl<?>> loadedRegistries = TagGroupLoader.collectRegistries(preceding, tags);
+			DynamicRegistryManager.Immutable dynamicRegistries = RegistryLoader.loadFromResource(resourceManager, loadedRegistries, entries);
 			
 			future.complete(combinedRegistries.with(ServerDynamicRegistryType.RELOADABLE, dynamicRegistries).getCombinedRegistryManager());
 		});
@@ -138,9 +133,7 @@ public class DynamicRegistryManagerHolder {
 		});
 	}
 	
-	private static final boolean getReadOnlyWrapperExists = Version.<Boolean>newSwitch()
-			.range("1.21.2", null, false)
-			.get();
+	private static final boolean getReadOnlyWrapperExists = false;
 	private static final Supplier<Reflection.MethodInvoker> Registry_getReadOnlyWrapper =
 			Reflection.getOptionalMethod(Registry.class, "method_46771", MethodType.methodType(RegistryWrapper.Impl.class));
 	public static <T> boolean isOwnedByDefaultManager(RegistryEntry.Reference<T> entry) {
