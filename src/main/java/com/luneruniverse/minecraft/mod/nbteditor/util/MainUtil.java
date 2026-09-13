@@ -31,7 +31,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.shaders.MVShader;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
 
@@ -454,37 +453,6 @@ public class MainUtil {
 		if (output == null)
 			return defaultValue;
 		return output;
-	}
-	
-	
-	public static void fillShader(DrawContext context, MVShader shader, Consumer<VertexConsumer> data, int x, int y, int width, int height) {
-		int x1 = x;
-		int y1 = y;
-		int x2 = x + width;
-		int y2 = y + height;
-		
-		MVMatrix4f matrix = MVMatrix4f.getPositionMatrix(context.peek());
-		VertexConsumer vertexConsumer = MVMisc.beginDrawingShader(context, shader);
-		
-		matrix.applyToVertex(vertexConsumer, x1, y1, 0).texture(0, 0);
-		data.accept(vertexConsumer);
-		MVMisc.nextVertex(vertexConsumer);
-		
-		matrix.applyToVertex(vertexConsumer, x1, y2, 0).texture(0, 1);
-		data.accept(vertexConsumer);
-		MVMisc.nextVertex(vertexConsumer);
-		
-		matrix.applyToVertex(vertexConsumer, x2, y2, 0).texture(1, 1);
-		data.accept(vertexConsumer);
-		MVMisc.nextVertex(vertexConsumer);
-		
-		matrix.applyToVertex(vertexConsumer, x2, y1, 0).texture(1, 0);
-		data.accept(vertexConsumer);
-		MVMisc.nextVertex(vertexConsumer);
-		
-		MVGlStateManager._disableDepthTest();
-		MVMisc.endDrawingShader(context, vertexConsumer);
-		MVGlStateManager._enableDepthTest();
 	}
 	
 	

@@ -10,6 +10,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.command.permission.Permission;
+import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.entity.vehicle.VehicleInventory;
@@ -59,12 +61,8 @@ public class ServerMVMisc {
 				.get();
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> Entity_hasPermissionLevel =
-			Reflection.getOptionalMethod(Entity.class, "method_5687", MethodType.methodType(boolean.class, int.class));
 	public static boolean hasPermissionLevel(PlayerEntity player, int level) {
-		return Version.<Boolean>newSwitch()
-				.range("1.21.2", null, () -> player.hasPermissionLevel(level))
-				.get();
+		return player.getPermissions().hasPermission(new Permission.Level(PermissionLevel.fromLevel(level)));
 	}
 	
 	private static final Supplier<Reflection.MethodInvoker> Property_getValues =

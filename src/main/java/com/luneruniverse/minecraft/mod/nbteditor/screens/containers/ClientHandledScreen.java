@@ -105,9 +105,6 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 		if (showLogo())
 			MainUtil.renderLogo(context);
 	}
-	protected final void method_2389(DrawContext context, float delta, int mouseX, int mouseY) {
-		drawBackground(context, delta, mouseX, mouseY);
-	}
 	protected boolean showLogo() {
 		return true;
 	}
@@ -118,9 +115,6 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 		
 		MVDrawableHelper.drawTextWithoutShadow(context, textRenderer, getRenderedTitle(), titleX, titleY, 4210752);
 		MVDrawableHelper.drawTextWithoutShadow(context, textRenderer, playerInventoryTitle, playerInventoryTitleX, playerInventoryTitleY, 4210752);
-	}
-	protected final void method_2388(DrawContext context, int mouseX, int mouseY) {
-		drawForeground(context, mouseX, mouseY);
 	}
 	protected Text getRenderedTitle() {
 		return title;

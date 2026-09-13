@@ -29,7 +29,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandRegistrationCallback;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.shaders.MVShader;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.CommandDispatcher;
@@ -72,7 +71,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.NbtViews;
+
 import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.permission.PermissionPredicate;
 import net.minecraft.command.argument.BlockStateArgumentType;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
@@ -107,6 +109,7 @@ import net.minecraft.nbt.NbtSizeTracker;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.visitor.StringNbtWriter;
+import net.minecraft.storage.NbtWriteView;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
@@ -400,35 +403,6 @@ public class MVMisc {
 		}
 	}
 	
-	private static final Supplier<Class<?>> VertexFormat = Reflection.getOptionalClass("net.minecraft.class_293");
-	private static final Supplier<Class<?>> VertexFormat$DrawMode = Reflection.getOptionalClass("net.minecraft.class_293$class_5596");
-	private static final Supplier<Reflection.MethodInvoker> Tessellator_getBuffer =
-			Reflection.getOptionalMethod(Tessellator.class, "method_1349", MethodType.methodType(BufferBuilder.class));
-	private static final Supplier<Reflection.MethodInvoker> BufferBuilder_begin =
-			Reflection.getOptionalMethod(() -> BufferBuilder.class, () -> "method_1328", () -> MethodType.methodType(void.class, VertexFormat$DrawMode.get(), VertexFormat.get()));
-	private static final Supplier<Reflection.MethodInvoker> RenderSystem_setShader =
-			Reflection.getOptionalMethod(RenderSystem.class, "setShader", MethodType.methodType(void.class, Supplier.class));
-	public static VertexConsumer beginDrawingShader(MatrixStack matrices, MVShader shader) {
-		return Version.<VertexConsumer>newSwitch()
-				.range("1.20.0", null, () -> MVDrawableHelper.getDrawContext(matrices).vertexConsumers.getBuffer(shader.getLayer()))
-				.get();
-	}
-	private static final Supplier<Class<?>> BufferBuilder$BuiltBuffer = Reflection.getOptionalClass("net.minecraft.class_287$class_7433");
-	private static final Supplier<Class<?>> BufferRenderer = Reflection.getOptionalClass("net.minecraft.class_286");
-	private static final Supplier<Reflection.MethodInvoker> BufferBuilder_end_void =
-			Reflection.getOptionalMethod(BufferBuilder.class, "method_1326", MethodType.methodType(void.class));
-	private static final Supplier<Reflection.MethodInvoker> BufferRenderer_draw =
-			Reflection.getOptionalMethod(BufferRenderer, () -> "method_1309", () -> MethodType.methodType(void.class, BufferBuilder.class));
-	private static final Supplier<Reflection.MethodInvoker> BufferBuilder_end_BuiltBuffer =
-			Reflection.getOptionalMethod(() -> BufferBuilder.class, () -> "method_1326", () -> MethodType.methodType(BufferBuilder$BuiltBuffer.get()));
-	private static final Supplier<Reflection.MethodInvoker> BufferRenderer_drawWithGlobalProgram =
-			Reflection.getOptionalMethod(BufferRenderer, () -> "method_43433", () -> MethodType.methodType(void.class, BufferBuilder$BuiltBuffer.get()));
-	public static void endDrawingShader(MatrixStack matrices, VertexConsumer vertexConsumer) {
-		Version.newSwitch()
-				.range("1.20.0", null, () -> MVDrawableHelper.getDrawContext(matrices).vertexConsumers.draw())
-				.run();
-	}
-	
 	private static final Supplier<Reflection.MethodInvoker> TextFieldWidget_setCursor =
 			Reflection.getOptionalMethod(TextFieldWidget.class, "method_1883", MethodType.methodType(void.class, int.class));
 	public static void setCursor(TextFieldWidget textField, int cursor) {
@@ -437,15 +411,6 @@ public class MVMisc {
 				.run();
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> BlockRenderManager_renderBlock_java_util_Random =
-			Reflection.getOptionalMethod(BlockRenderManager.class, "method_3355", MethodType.methodType(boolean.class, BlockState.class, BlockPos.class, BlockRenderView.class, MatrixStack.class, VertexConsumer.class, boolean.class, java.util.Random.class));
-	private static final Supplier<Reflection.MethodInvoker> BlockRenderManager_renderBlock_net_minecraft_Random =
-			Reflection.getOptionalMethod(BlockRenderManager.class, "method_3355", MethodType.methodType(void.class, BlockState.class, BlockPos.class, BlockRenderView.class, MatrixStack.class, VertexConsumer.class, boolean.class, Random.class));
-	public static void renderBlock(BlockRenderManager renderer, BlockState state, BlockPos pos, BlockRenderView world, MatrixStack matrices, VertexConsumer vertexConsumer, boolean cull) {
-		Version.newSwitch()
-				.range("1.21.5", null, () -> renderer.renderBlock(state, pos, world, matrices, vertexConsumer, cull, renderer.getModel(state).getParts(Random.create())))
-				.run();
-	}
 	
 	private static final Supplier<Reflection.MethodInvoker> SpawnEggItem_getEntityType_NbtCompound =
 			Reflection.getOptionalMethod(SpawnEggItem.class, "method_8015", MethodType.methodType(EntityType.class, NbtCompound.class));
@@ -454,7 +419,7 @@ public class MVMisc {
 	public static EntityType<?> getEntityType(ItemStack item) {
 		SpawnEggItem spawnEggItem = (SpawnEggItem) item.getItem();
 		return Version.<EntityType<?>>newSwitch()
-				.range("1.21.4", null, () -> spawnEggItem.getEntityType(DynamicRegistryManagerHolder.get(), item))
+				.range("1.21.4", null, () -> spawnEggItem.getEntityType(item))
 				.get();
 	}
 	
@@ -527,11 +492,6 @@ public class MVMisc {
 	
 	private static final Supplier<Reflection.MethodInvoker> VertexConsumer_next =
 			Reflection.getOptionalMethod(VertexConsumer.class, "method_1344", MethodType.methodType(void.class));
-	public static void nextVertex(VertexConsumer vertexConsumer) {
-		Version.newSwitch()
-				.range("1.21.0", null, () -> {})
-				.run();
-	}
 	
 	private static final Supplier<Reflection.MethodInvoker> VertexConsumer_vertex =
 			Reflection.getOptionalMethod(VertexConsumer.class, "method_22912", MethodType.methodType(VertexConsumer.class, double.class, double.class, double.class));
@@ -565,11 +525,6 @@ public class MVMisc {
 	
 	private static final Supplier<Reflection.MethodInvoker> VertexConsumer_light =
 			Reflection.getOptionalMethod(VertexConsumer.class, "method_22916", MethodType.methodType(VertexConsumer.class, int.class));
-	public static void setVertexLight(VertexConsumer vertexConsumer, int uv) {
-		Version.newSwitch()
-				.range("1.21.0", null, () -> vertexConsumer.light(uv))
-				.run();
-	}
 	
 	public static <T> T withDefaultRegistryManager(Supplier<T> callback) {
 		if (NBTManagers.COMPONENTS_EXIST)
@@ -596,7 +551,7 @@ public class MVMisc {
 	public static ServerCommandSource getCommandSource(Entity entity) {
 		return Version.<ServerCommandSource>newSwitch()
 				.range("1.21.2", null, () -> new ServerCommandSource(
-						CommandOutput.DUMMY, entity.getPos(), entity.getRotationClient(), null, 0,
+						CommandOutput.DUMMY, entity.getEntityPos(), entity.getRotationClient(), null, PermissionPredicate.NONE,
 						entity.getName().getString(), entity.getDisplayName(), null, entity))
 				.get();
 	}
@@ -615,46 +570,18 @@ public class MVMisc {
 				.get();
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> EntityRenderDispatcher_render =
-			Reflection.getOptionalMethod(EntityRenderManager.class, "method_3954", MethodType.methodType(void.class, Entity.class, double.class, double.class, double.class, float.class, float.class, MatrixStack.class, VertexConsumerProvider.class, int.class));
-	public static void renderEntity(EntityRenderManager dispatcher, Entity entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		Version.newSwitch()
-				.range("1.21.2", null, () -> dispatcher.render(entity, x, y, z, tickDelta, matrices, vertexConsumers, light))
-				.run();
-	}
 	
 	// From MinecraftClient#addBlockEntityNbt (1.21.3)
 	// Edited to remove x, y, & z
 	@SuppressWarnings("deprecation")
 	public static void addBlockEntityNbtWithoutXYZ(ItemStack item, BlockEntity entity) {
-		NbtCompound blockEntityTag = entity.createComponentlessNbtWithIdentifyingData(DynamicRegistryManagerHolder.get());
-		blockEntityTag.remove("x");
-		blockEntityTag.remove("y");
-		blockEntityTag.remove("z");
-		entity.removeFromCopiedStackNbt(blockEntityTag);
-		BlockItem.setBlockEntityData(item, entity.getType(), blockEntityTag);
+		// writeComponentlessData omits x/y/z, so the position strip this used to do by hand is gone.
+		NbtWriteView view = NbtViews.newWriteView();
+		entity.writeComponentlessData(view);
+		BlockEntity.writeId(view, entity.getType());
+		entity.removeFromCopiedStackData(view);
+		BlockItem.setBlockEntityData(item, entity.getType(), view);
 		item.applyComponentsFrom(entity.createComponentMap());
-	}
-	
-	private static final Supplier<Reflection.MethodInvoker> BlockEntityRenderer_render =
-			Reflection.getOptionalMethod(BlockEntityRenderer.class, "method_3569", MethodType.methodType(void.class, BlockEntity.class, float.class, MatrixStack.class, VertexConsumerProvider.class, int.class, int.class));
-	// From BlockEntityRenderManager#renderEntity (1.21.3)
-	// Edited to input a tickDelta and use default light and overlay values
-	public static <T extends BlockEntity> boolean renderBlockEntity(BlockEntityRenderManager dispatcher, T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider provider) {
-		BlockEntityRenderer<T> renderer = dispatcher.get(entity);
-		if (renderer == null)
-			return true;
-		try {
-			Version.newSwitch()
-					.range("1.21.5", null, () -> renderer.render(entity, tickDelta, matrices, provider, 0xF000F0, OverlayTexture.DEFAULT_UV, dispatcher.camera.getPos()))
-					.run();
-		} catch (Throwable e) {
-			CrashReport report = CrashReport.create(e, "Rendering Block Entity");
-			CrashReportSection entitySection = report.addElement("Block Entity Details");
-			entity.populateCrashReport(entitySection);
-			throw new CrashException(report);
-		}
-		return false;
 	}
 	
 	public static int scaleRgb(int argb, double scale) {

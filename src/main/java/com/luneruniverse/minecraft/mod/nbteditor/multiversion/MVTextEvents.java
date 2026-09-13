@@ -64,6 +64,7 @@ public class MVTextEvents {
 		
 		private static final Supplier<Reflection.MethodInvoker> ClickEvent_getAction =
 				Reflection.getOptionalMethod(ClickEvent.class, "method_10845", MethodType.methodType(ClickEvent.Action.class));
+		/** Null for an action the fancy-text format cannot express (SHOW_DIALOG, CUSTOM). */
 		public static ClickAction<?> getAction(ClickEvent event) {
 			return switch (Version.<ClickEvent.Action>newSwitch()
 					.range("1.21.5", null, () -> event.getAction())
@@ -74,6 +75,7 @@ public class MVTextEvents {
 				case SUGGEST_COMMAND -> SUGGEST_COMMAND;
 				case CHANGE_PAGE -> CHANGE_PAGE;
 				case COPY_TO_CLIPBOARD -> COPY_TO_CLIPBOARD;
+				default -> null;
 			};
 		}
 		

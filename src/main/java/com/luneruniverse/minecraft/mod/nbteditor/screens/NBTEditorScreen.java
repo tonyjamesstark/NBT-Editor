@@ -427,7 +427,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				? keyPressed2(input) : true;
 	}
 	private boolean keyPressed2(KeyInput input) {
-		int keyCode = input.key();
+		int keyCode = input.key(); int modifiers = input.modifiers();
 		if (keyCode == GLFW.GLFW_KEY_DELETE || keyCode == GLFW.GLFW_KEY_BACKSPACE)
 			remove();
 		else if (keyCode == GLFW.GLFW_KEY_ENTER) {

@@ -116,7 +116,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			
 			public EventEditorWidget(ClickEvent clickEvent, HoverEvent hoverEvent, EventPairCallback onDone) {
 				MVTextEvents.ClickAction<?> clickAction = (clickEvent == null ? null : MVTextEvents.ClickAction.getAction(clickEvent));
-				String clickValue = (clickEvent == null ? "" : clickAction.getStringifiedValue(clickEvent));
+				String clickValue = (clickAction == null ? "" : clickAction.getStringifiedValue(clickEvent));
 				MVTextEvents.HoverAction<?> hoverAction = (hoverEvent == null ? null : MVTextEvents.HoverAction.getAction(hoverEvent));
 				String hoverValue = (hoverEvent == null ? "" : hoverAction.getStringifiedValue(hoverEvent));
 				

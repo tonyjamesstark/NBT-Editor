@@ -128,7 +128,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		if (!ServerMVMisc.hasPermissionLevel(player, 2))
 			return;
 		
-		ServerWorld world = player.getServer().getWorld(packet.getWorld());
+		ServerWorld world = player.getEntityWorld().getServer().getWorld(packet.getWorld());
 		if (world != null) {
 			BlockEntity blockEntity = world.getBlockEntity(packet.getPos());
 			if (blockEntity != null) {
@@ -167,7 +167,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		if (!ServerMVMisc.hasPermissionLevel(player, 2))
 			return;
 		
-		ServerWorld world = player.getServer().getWorld(packet.getWorld());
+		ServerWorld world = player.getEntityWorld().getServer().getWorld(packet.getWorld());
 		if (world != null) {
 			Entity entity = world.getEntity(packet.getUUID());
 			if (entity != null && !(entity instanceof PlayerEntity)) {
@@ -186,7 +186,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		if (!ServerMVMisc.hasPermissionLevel(player, 2))
 			return;
 		
-		ServerWorld world = player.getServer().getWorld(packet.getWorld());
+		ServerWorld world = player.getEntityWorld().getServer().getWorld(packet.getWorld());
 		if (world == null)
 			return;
 		
@@ -220,7 +220,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		if (!ServerMVMisc.hasPermissionLevel(player, 2))
 			return;
 		
-		ServerWorld world = player.getServer().getWorld(packet.getWorld());
+		ServerWorld world = player.getEntityWorld().getServer().getWorld(packet.getWorld());
 		if (world == null)
 			return;
 		
@@ -242,7 +242,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		
 		if (packet.isRecreate() || !entity.getUuid().equals(newUUID) || entity.getType() != entityType) {
 			Entity vehicle = entity.getVehicle();
-			Vec3d pos = entity.getPos();
+			Vec3d pos = entity.getEntityPos();
 			float yaw = entity.getYaw();
 			float bodyYaw = (entity instanceof LivingEntity livingEntity ? livingEntity.bodyYaw : 0);
 			float headYaw = entity.getHeadYaw();
@@ -261,7 +261,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 			world.spawnEntity(entity);
 			readEntityNbtWithPassengers(world, entity, packet.getNbt());
 			if (vehicle != null)
-				entity.startRiding(vehicle, true);
+				entity.startRiding(vehicle, true, true);
 		} else {
 			entity.getDataTracker().reset();
 			readEntityNbtWithPassengers(world, entity, packet.getNbt());
@@ -272,7 +272,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		if (!ServerMVMisc.hasPermissionLevel(player, 2))
 			return;
 		
-		ServerWorld world = player.getServer().getWorld(packet.getWorld());
+		ServerWorld world = player.getEntityWorld().getServer().getWorld(packet.getWorld());
 		if (world == null) {
 			MVServerNetworking.send(player, new ViewEntityS2CPacket(packet.getRequestId(), null, null, null, null));
 			return;
@@ -342,7 +342,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 				}
 				passenger = ServerMVMisc.createEntity(passengerType, world);
 				passenger.setUuid(passengerUUID);
-				passenger.startRiding(entity, true);
+				passenger.startRiding(entity, true, true);
 				world.spawnEntity(passenger);
 			}
 			

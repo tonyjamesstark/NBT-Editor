@@ -59,7 +59,6 @@ public class NBTEditorMixinPlugin extends BasicMixinPlugin {
 				.range("1.21.0", null, () -> output.add("toggled.EnchantmentMixin"))
 				.run();
 		Version.newSwitch()
-				.range("1.21.5", null, () -> output.add("toggled.GameRendererMixin_1_21_5"))
 				.run();
 		Version.newSwitch()
 				.range("1.21.4", null, () -> {

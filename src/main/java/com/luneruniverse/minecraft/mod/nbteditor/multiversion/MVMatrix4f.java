@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
+import org.joml.Matrix3x2fc;
 import org.joml.Matrix4f;
 import org.joml.Quaternionfc;
 import org.joml.Vector3f;
@@ -33,14 +34,9 @@ public class MVMatrix4f {
 	
 	private static final Supplier<Reflection.MethodInvoker> Matrix4f_writeColumnMajor =
 			Reflection.getOptionalMethod(Matrix4f_class, "method_4932", MethodType.methodType(void.class, FloatBuffer.class));
-	public static float[] getTranslation(MatrixStack matrices) {
-		Object matrix = getPositionMatrix(matrices.peek()).getInternalValue();
-		return Version.<float[]>newSwitch()
-				.range("1.19.3", null, () -> {
-					Vector3f output = ((Matrix4f) matrix).getColumn(3, new Vector3f());
-					return new float[] {output.x, output.y, output.z};
-				})
-				.get();
+	/** The x/y offset a 1.21.9 GUI matrix carries, as {x, y}. */
+	public static float[] getTranslation(Matrix3x2fc matrix) {
+		return new float[] {matrix.m20(), matrix.m21()};
 	}
 	
 	private static final Supplier<Reflection.MethodInvoker> Matrix4f_scale =

@@ -86,18 +86,11 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 		return this;
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> ChatInputSuggestor_render =
-			Reflection.getOptionalMethod(ChatInputSuggestor.class, "method_23923", MethodType.methodType(void.class, MatrixStack.class, int.class, int.class));
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!isDropdownOnly())
 			super.render(context, mouseX, mouseY, delta);
-		context.getMatrices().pushMatrix();
-		context.getMatrices().translate((float) (0), (float) (0));
-		Version.newSwitch()
-				.range("1.20.0", null, () -> suggestor.render(context, mouseX, mouseY))
-				.run();
-		context.getMatrices().popMatrix();
+		suggestor.render(context, mouseX, mouseY);
 	}
 	@Override
 	protected boolean shouldShowName() {

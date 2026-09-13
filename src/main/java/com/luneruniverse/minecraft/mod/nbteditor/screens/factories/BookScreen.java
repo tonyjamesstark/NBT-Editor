@@ -158,7 +158,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		return output;
 	}
 	private Style makePreviewStyle(Style style) {
-		if (style.getClickEvent() == null)
+		if (style.getClickEvent() == null || MVTextEvents.ClickAction.getAction(style.getClickEvent()) == null)
 			return style;
 		return MixinLink.withRunClickEvent(style, () -> {
 			MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(style.getClickEvent());

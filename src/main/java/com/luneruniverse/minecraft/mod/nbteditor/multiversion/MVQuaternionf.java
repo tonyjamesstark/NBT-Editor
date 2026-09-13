@@ -111,12 +111,5 @@ public class MVQuaternionf {
 				.run();
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> EntityRenderDispatcher_setRotation =
-			Reflection.getOptionalMethod(EntityRenderManager.class, "method_24196", MethodType.methodType(void.class, Quaternionf_class));
-	public void applyToEntityRenderDispatcher(EntityRenderManager dispatcher) {
-		Version.newSwitch()
-				.range("1.19.3", null, () -> dispatcher.setRotation((Quaternionf) value))
-				.run();
-	}
 	
 }

@@ -21,9 +21,6 @@ import net.minecraft.util.Identifier;
  */
 public class MVDrawableHelper {
 	
-	public static VertexConsumerProvider.Immediate getVertexConsumerProvider() {
-		return MainUtil.client.gameRenderer.buffers.getEntityVertexConsumers();
-	}
 	
 	public static void fill(DrawContext context, int x1, int y1, int x2, int y2, int color) {
 		context.fill(x1, y1, x2, y2, color);

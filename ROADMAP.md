@@ -232,7 +232,12 @@ Each step ends in a build. Do not start the next until the previous compiles.
 - [x] **4.1b Input callbacks to the event records.** `Click`, `KeyInput` and `CharInput` across
   roughly 200 sites, done by codemod. Signatures take the record; a destructuring prologue keeps
   each body's existing names, so no body was rewritten.
-- [ ] **4.1c The rendering stack.** Blocked behind 4.2 by choice, not by necessity.
+- [x] **4.1c The rendering stack.** The 1.21.9 GUI rewrite, done as one collapse rather than a
+  port: `DrawContext` replaces `MatrixStack` throughout, `drawIcon` replaces `renderButton`,
+  `createNewRootLayer()` replaces z-translation, and `ReadView`/`WriteView` replace the direct
+  entity and block-entity NBT accessors. The custom shader stack went with it -- its one consumer,
+  the HSV colour square, is a per-column gradient. `./gradlew build` is green, including remap and
+  access-widener validation.
 - [ ] **4.2 Raise the floor and subtract.** Delete the pre-1.21.11 arms across all 270
   `newSwitch()` sites and 568 `range()` calls, the `nbteditor_1.17` module, and
   `MVShader1`/`MVShader2`. Do this *before* the rename so 4.3 does not pay migration cost on code

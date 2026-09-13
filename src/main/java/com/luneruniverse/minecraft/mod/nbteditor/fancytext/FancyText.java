@@ -56,6 +56,11 @@ public class FancyText {
 		return output;
 	}
 	
+	/** SHOW_DIALOG and CUSTOM click events have no fancy-text form, so they are dropped. */
+	private static boolean isWritable(ClickEvent event) {
+		return event != null && MVTextEvents.ClickAction.getAction(event) != null;
+	}
+	
 	public static Map.Entry<String, Boolean> stringify(Text text, Style base) {
 		base = base.withParent(StyleUtil.RESET_STYLE);
 		StringBuilder output = new StringBuilder();
@@ -72,7 +77,7 @@ public class FancyText {
 					!Objects.equals(partStyle.getHoverEvent(), hoverEvent.getPlain()) ||
 					!Objects.equals(partStyle.getInsertion(), insertion.getPlain()) ||
 					!Objects.equals(fontId(partStyle), font.getPlain())) {
-				if (clickEvent.getPlain() != null)
+				if (isWritable(clickEvent.getPlain()))
 					output.append(')');
 				if (hoverEvent.getPlain() != null)
 					output.append(')');
@@ -85,7 +90,9 @@ public class FancyText {
 				hoverEvent.setPlain(partStyle.getHoverEvent());
 				insertion.setPlain(partStyle.getInsertion());
 				font.setPlain(fontId(partStyle));
-				if (partStyle.getClickEvent() != null) {
+				if (partStyle.getClickEvent() != null && !isWritable(partStyle.getClickEvent()))
+					errors.setPlain(true);
+				if (isWritable(partStyle.getClickEvent())) {
 					MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(partStyle.getClickEvent());
 					output.append('[');
 					output.append(clickAction.getName());
@@ -130,7 +137,7 @@ public class FancyText {
 			}
 			
 			AtomicReference<Style> currentStyle =
-					(clickEvent.getPlain() != null || hoverEvent.getPlain() != null ? eventContentsStyle : style);
+					(isWritable(clickEvent.getPlain()) || hoverEvent.getPlain() != null ? eventContentsStyle : style);
 			Style changes = StyleUtil.minus(partStyle, currentStyle.getPlain());
 			currentStyle.setPlain(partStyle);
 			
@@ -176,7 +183,7 @@ public class FancyText {
 			return Optional.empty();
 		}, base);
 		
-		if (clickEvent.getPlain() != null)
+		if (isWritable(clickEvent.getPlain()))
 			output.append(')');
 		if (hoverEvent.getPlain() != null)
 			output.append(')');

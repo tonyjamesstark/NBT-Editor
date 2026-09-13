@@ -103,20 +103,6 @@ public class MVTooltip {
 		MixinLink.NEW_TOOLTIPS.put(output, true);
 		return output;
 	}
-	Object toOldTooltip() {
-		if (isEmpty())
-			return Reflection.getField(ButtonWidget.class, "field_25035", "Lnet/minecraft/class_4185$class_5316;").get(null); // ButtonWidget.EMPTY
-		
-		return Proxy.newProxyInstance(MVMisc.class.getClassLoader(),
-				new Class<?>[] {Reflection.getClass("net.minecraft.class_4185$class_5316")}, (obj, method, args) -> {
-			if (args.length == 1) // supply
-				return null;
-			if (args.length != 4) // onTooltip
-				throw new RuntimeException("Unexpected method call: " + method.getName());
-			throw new UnsupportedOperationException("Old-style tooltips are below the supported floor");
-			return null;
-		});
-	}
 	
 	public void render(DrawContext context, int mouseX, int mouseY) {
 		if (oneTooltip) {
@@ -127,7 +113,7 @@ public class MVTooltip {
 		
 		// Undo translations and render at actual position
 		// This allows Screen#renderTooltip to adjust for window height
-		float[] translation = MVMatrix4f.getTranslation(context);
+		float[] translation = MVMatrix4f.getTranslation(context.getMatrices());
 		context.getMatrices().pushMatrix();
 		context.getMatrices().translate((float) (-translation[0]), (float) (-translation[1]));
 		boolean scissor = MVGlStateManager.isScissorEnabled();

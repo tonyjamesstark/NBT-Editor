@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.misc.Shaders;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
@@ -65,7 +64,14 @@ public class ColorSelectorWidget extends GroupWidget {
 	private class ColorArea implements Drawable, MVElement {
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-			MainUtil.fillShader(context, Shaders.POSITION_HSV, vertex -> MVMisc.setVertexLight(vertex, hueValue), x, y, areaSize, areaSize);
+			// For a fixed hue, HSV is separable: each column is a straight fade from
+			// full value down to black, so vanilla's gradient fill draws it exactly.
+			// ponytail: one fill per column (128); a custom GUI render pipeline would
+			// be one quad, at the cost of the shader stack this replaced.
+			for (int i = 0; i < areaSize; i++) {
+				int top = 0xFF000000 | Color.HSBtoRGB(hueValue / 360.0f, (float) i / areaSize, 1);
+				context.fillGradient(x + i, y, x + i + 1, y + areaSize, top, 0xFF000000);
+			}
 		}
 		@Override
 		public boolean mouseClicked(Click click, boolean doubled) {
