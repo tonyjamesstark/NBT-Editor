@@ -50,7 +50,6 @@ public class MVClientNetworking {
 				.range("1.20.5", null, () -> {
 					DynamicRegistryManagerHolder.setClientManager(networkHandler);
 				})
-				.range(null, "1.20.4", () -> {})
 				.run();
 		
 		PlayNetworkStateEvents.Start.EVENT.invoker().onPlayStart(networkHandler);
@@ -65,7 +64,6 @@ public class MVClientNetworking {
 				.range("1.20.5", null, () -> {
 					DynamicRegistryManagerHolder.setClientManager(null);
 				})
-				.range(null, "1.20.4", () -> {})
 				.run();
 	}
 	
@@ -75,16 +73,6 @@ public class MVClientNetworking {
 	public static void send(MVPacket packet) {
 		MVMisc.sendC2SPacket(Version.<CustomPayloadC2SPacket>newSwitch()
 				.range("1.20.2", null, () -> MVPacketCustomPayload.wrapC2S(packet))
-				.range(null, "1.20.1", () -> {
-					PacketByteBuf payload = new PacketByteBuf(Unpooled.buffer());
-					packet.write(payload);
-					try {
-						return CustomPayloadC2SPacket.class.getConstructor(Identifier.class, PacketByteBuf.class)
-								.newInstance(packet.getPacketId(), payload);
-					} catch (Exception e) {
-						throw new RuntimeException("Failed to create CustomPayloadC2SPacket", e);
-					}
-				})
 				.get());
 	}
 	

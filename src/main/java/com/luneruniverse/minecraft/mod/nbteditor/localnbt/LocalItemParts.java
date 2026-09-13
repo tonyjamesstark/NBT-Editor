@@ -60,7 +60,6 @@ public class LocalItemParts extends LocalItem {
 	private void setCachedItemCount() {
 		Version.newSwitch()
 				.range("1.21.0", null, () -> cachedItem.setCount(Math.min(count, cachedItem.getMaxCount())))
-				.range(null, "1.20.6", () -> cachedItem.setCount(count))
 				.run();
 	}
 	private ItemStack getCachedItem() {

@@ -18,10 +18,6 @@ public class ScreenHandlerMixin {
 	private void close(PlayerEntity player, CallbackInfo info) {
 		Version.newSwitch()
 				.range("1.18.0", null, () -> {})
-				.range(null, "1.17.1", () -> {
-					if (!(player instanceof ServerPlayerEntity))
-						info.cancel();
-				})
 				.run();
 	}
 }

@@ -27,12 +27,10 @@ public class DataTrackerMixin implements ResetableDataTracker {
 	public void reset() {
 		if (Version.<Boolean>newSwitch()
 				.range("1.19.3", null, false)
-				.range(null, "1.19.2", true)
 				.get())
 			return; // DataTracker$Entry#initialValue doesn't exist
 		ReadWriteLock lock = Version.<ReadWriteLock>newSwitch()
 				.range("1.20.5", null, () -> null)
-				.range(null, "1.20.4", () -> DataTracker_lock.get().get(this))
 				.get();
 		if (lock != null)
 			lock.writeLock().lock();
@@ -40,7 +38,6 @@ public class DataTrackerMixin implements ResetableDataTracker {
 			@SuppressWarnings("unchecked")
 			DataTracker.Entry<?>[] entries = Version.<DataTracker.Entry<?>[]>newSwitch()
 					.range("1.20.5", null, () -> DataTracker_entries_array.get().get(this))
-					.range(null, "1.20.4", () -> ((Int2ObjectMap<DataTracker.Entry<?>>) DataTracker_entries_Int2ObjectMap.get().get(this)).values().toArray(DataTracker.Entry[]::new))
 					.get();
 			for (DataTracker.Entry<?> entry : entries) {
 				resetEntry(entry);

@@ -45,7 +45,6 @@ public class MVDrawableHelper {
 			Object matrixValue;
 			if (Version.<Boolean>newSwitch()
 					.range("1.20.0", null, true)
-					.range(null, "1.19.4", false)
 					.get()) {
 				matrixType = DrawContext.class;
 				matrixValue = getDrawContext(matrices);
@@ -67,7 +66,6 @@ public class MVDrawableHelper {
 	public static void render(Drawable caller, MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		Version.newSwitch()
 				.range("1.20.0", null, () -> caller.render(MVDrawableHelper.getDrawContext(matrices), mouseX, mouseY, delta))
-				.range(null, "1.19.4", () -> Drawable_render.get().invoke(caller, matrices, mouseX, mouseY, delta))
 				.run();
 	}
 	
@@ -84,7 +82,6 @@ public class MVDrawableHelper {
 			MethodType type;
 			if (Version.<Boolean>newSwitch()
 					.range("1.20.0", null, true)
-					.range(null, "1.19.4", false)
 					.get()) {
 				context = MVDrawableHelper.getDrawContext(matrices);
 				type = MethodType.methodType(rtype, ptypes);
@@ -119,14 +116,12 @@ public class MVDrawableHelper {
 	public static void drawTextWithoutShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {
 		Version.newSwitch()
 				.range("1.20.0", null, () -> getDrawContext(matrices).drawText(textRenderer, text, x, y, color, false))
-				.range(null, "1.19.4", () -> TextRenderer_draw.get().invoke(textRenderer, matrices, text, x, y, color))
 				.run();
 	}
 	
 	public static void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int x, int y, int color) {
 		call("method_27535", Version.<Class<?>>newSwitch()
 				.range("1.20.0", null, int.class)
-				.range(null, "1.19.4", void.class)
 				.get(), new Class<?>[] {TextRenderer.class, Text.class, int.class, int.class, int.class}, matrices, textRenderer, text, x, y, color);
 	}
 	
@@ -145,15 +140,6 @@ public class MVDrawableHelper {
 	public static void drawTexture(MatrixStack matrices, Identifier texture, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
 		Version.newSwitch()
 				.range("1.21.2", null, () -> getDrawContext(matrices).drawTexture(RenderLayer::getGuiTextured, texture, x, y, u, v, width, height, textureWidth, textureHeight))
-				.range("1.20.0", "1.21.1", () -> DrawContext_drawTexture.get().invoke(getDrawContext(matrices), texture, x, y, u, v, width, height, textureWidth, textureHeight))
-				.range(null, "1.19.4", () -> {
-					RenderSystem_setShader.get().invoke(null, (Supplier<ShaderProgram>) () -> GameRenderer_getPositionTexProgram.get().invoke(null));
-					RenderSystem_setShaderTexture.get().invoke(null, 0, texture);
-					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-					call("method_25290", void.class,
-							new Class<?>[] {int.class, int.class, float.class, float.class, int.class, int.class, int.class, int.class},
-							matrices, x, y, u, v, width, height, textureWidth, textureHeight);
-				})
 				.run();
 	}
 	public static void drawTexture(MatrixStack matrices, Identifier texture, int x, int y, float u, float v, int width, int height) {
@@ -165,7 +151,6 @@ public class MVDrawableHelper {
 	public static void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
 		Version.newSwitch()
 				.range("1.20.0", null, () -> getDrawContext(matrices).drawTooltip(MainUtil.client.textRenderer, text, x, y))
-				.range(null, "1.19.4", () -> Screen_renderTooltip_Text.get().invoke(MainUtil.client.currentScreen, matrices, text, x, y))
 				.run();
 	}
 	
@@ -174,7 +159,6 @@ public class MVDrawableHelper {
 	public static void renderTooltip(MatrixStack matrices, List<OrderedText> lines, int x, int y) {
 		Version.newSwitch()
 				.range("1.20.0", null, () -> getDrawContext(matrices).drawOrderedTooltip(MainUtil.client.textRenderer, lines, x, y))
-				.range(null, "1.19.4", () -> Screen_renderTooltip_List.get().invoke(MainUtil.client.currentScreen, matrices, lines, x, y))
 				.run();
 	}
 	
@@ -199,20 +183,6 @@ public class MVDrawableHelper {
 					context.drawItem(item, x, y);
 					context.drawStackOverlay(textRenderer, item, x, y);
 				})
-				.range("1.19.4", "1.19.4", () -> {
-					ItemRenderer_renderInGuiWithOverrides_MatrixStack.get().invoke(itemRenderer, matrices, item, x, y);
-					ItemRenderer_renderGuiItemOverlay_MatrixStack.get().invoke(itemRenderer, matrices, textRenderer, item, x, y);
-				})
-				.range(null, "1.19.3", () -> {
-					if (setScreenZOffset)
-						DrawableHelper_setZOffset.get().invoke(MainUtil.client.currentScreen, (int) zOffset);
-					ItemRenderer_zOffset.get().set(itemRenderer, zOffset);
-					ItemRenderer_renderInGuiWithOverrides.get().invoke(itemRenderer, item, x, y);
-					ItemRenderer_renderGuiItemOverlay.get().invoke(itemRenderer, textRenderer, item, x, y);
-					ItemRenderer_zOffset.get().set(itemRenderer, 0.0F);
-					if (setScreenZOffset)
-						DrawableHelper_setZOffset.get().invoke(MainUtil.client.currentScreen, 0);
-				})
 				.run();
 	}
 	
@@ -229,9 +199,6 @@ public class MVDrawableHelper {
 					else
 						screen.renderInGameBackground(getDrawContext(matrices));
 				})
-				.range("1.20.2", "1.20.4", () -> screen.renderBackground(getDrawContext(matrices), mousePos[0], mousePos[1], MVMisc.getTickDelta()))
-				.range("1.20.0", "1.20.1", () -> Screen_renderBackground_DrawContext.get().invoke(screen, MVDrawableHelper.getDrawContext(matrices)))
-				.range(null, "1.19.4", () -> Screen_renderBackground_MatrixStack.get().invoke(screen, matrices))
 				.run();
 	}
 	
@@ -240,13 +207,6 @@ public class MVDrawableHelper {
 	public static void drawSlotHighlight(MatrixStack matrices, int x, int y, int color) {
 		Version.newSwitch()
 				.range("1.20.0", null, () -> getDrawContext(matrices).fillGradient(RenderLayer.getGuiOverlay(), x, y, x + 16, y + 16, color, color, 0))
-				.range(null, "1.19.4", () -> {
-					MVGlStateManager._disableDepthTest();
-					MVGlStateManager._colorMask(true, true, true, false);
-					DrawableHelper_fillGradient.get().invoke(null, matrices, x, y, x + 16, y + 16, color, color, 0);
-					MVGlStateManager._colorMask(true, true, true, true);
-					MVGlStateManager._enableDepthTest();
-				})
 				.run();
 	}
 	
@@ -255,27 +215,17 @@ public class MVDrawableHelper {
 	public static void applyModelViewMatrix() {
 		Version.newSwitch()
 				.range("1.21.2", null, () -> {})
-				.range(null, "1.21.1", () -> RenderSystem_applyModelViewMatrix.get().invoke(null))
 				.run();
 	}
 	
 	public static void enableScissor(MatrixStack matrices, int x, int y, int width, int height) {
 		Version.newSwitch()
 				.range("1.20.0", null, () -> getDrawContext(matrices).enableScissor(x, y, x + width, y + height))
-				.range(null, "1.19.4", () -> {
-					double scale = MainUtil.client.getWindow().getScaleFactor();
-					RenderSystem.enableScissor(
-							(int) (x * scale),
-							(int) ((MainUtil.client.getWindow().getScaledHeight() - (y + height)) * scale),
-							(int) (width * scale),
-							(int) (height * scale));
-				})
 				.run();
 	}
 	public static void disableScissor(MatrixStack matrices) {
 		Version.newSwitch()
 				.range("1.20.0", null, () -> getDrawContext(matrices).disableScissor())
-				.range(null, "1.19.4", () -> RenderSystem.disableScissor())
 				.run();
 	}
 	

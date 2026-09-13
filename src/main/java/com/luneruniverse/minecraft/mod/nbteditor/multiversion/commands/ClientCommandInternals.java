@@ -67,11 +67,9 @@ public final class ClientCommandInternals {
 	static {
 		API_COMMAND_NAME = Version.<String>newSwitch()
 				.range("1.19.0", null, "fabric-command-api-v2:client")
-				.range(null, "1.18.2", "fabric-command-api-v1:client")
 				.get();
 		activeDispatcher = Version.<CommandDispatcher<FabricClientCommandSource>>newSwitch()
 				.range("1.19.0", null, () -> null)
-				.range(null, "1.18.2", () -> new CommandDispatcher<>())
 				.get();
 	}
 
@@ -118,7 +116,7 @@ public final class ClientCommandInternals {
 			commandSource.sendError(getErrorMessage(e));
 			return true;
 		} catch (RuntimeException e) {
-			if (Version.<Boolean>newSwitch().range("1.20.3", null, false).range(null, "1.20.2", true).get() &&
+			if (Version.<Boolean>newSwitch().range("1.20.3", null, false).get() &&
 					CommandException.get().isInstance(e)) {
 				LOGGER.warn("Error while executing client-sided command '{}'", command, e);
 				commandSource.sendError(CommandException_getTextMessage.get().invoke(e));

@@ -10,7 +10,6 @@ public class DonkeyChestContainerIO implements ContainerIO<NbtCompound> {
 	
 	private static final boolean ITEMS_SHIFTED = Version.<Boolean>newSwitch()
 			.range("1.20.5", null, false)
-			.range(null, "1.20.4", true)
 			.get();
 	
 	private final boolean llama;

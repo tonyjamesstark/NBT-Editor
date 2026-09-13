@@ -33,7 +33,6 @@ public class FactoryCommand extends ClientCommandGroup {
 		
 		Version.newSwitch()
 				.range("1.20.5", null, () -> getChildren().add(new MaxStackSizeCommand()))
-				.range(null, "1.20.4", () -> {})
 				.run();
 	}
 	

@@ -71,7 +71,6 @@ public abstract class TextFieldWidgetMixin implements Tickable {
 		TextFieldWidget source = (TextFieldWidget) (Object) this;
 		Version.newSwitch()
 				.range("1.20.2", null, () -> {})
-				.range(null, "1.20.1", () -> TextFieldWidget_focusedTicks.get().set(source, (int) TextFieldWidget_focusedTicks.get().get(source) + 1))
 				.run();
 	}
 }

@@ -19,7 +19,6 @@ public enum MVDrawMode {
 	private <T extends Enum<T>> MVDrawMode() {
 		value = Enum.valueOf((Class<T>) Reflection.getClass(Version.<String>newSwitch()
 				.range("1.21.5", null, "com.mojang.blaze3d.vertex.VertexFormat$class_5596")
-				.range(null, "1.21.4", "net.minecraft.class_293$class_5596")
 				.get()), name());
 	}
 	

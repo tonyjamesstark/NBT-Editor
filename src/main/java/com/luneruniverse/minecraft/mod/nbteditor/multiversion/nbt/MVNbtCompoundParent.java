@@ -12,7 +12,6 @@ public interface MVNbtCompoundParent {
 	
 	public static boolean NBT_CODE_REFACTORED = Version.<Boolean>newSwitch()
 			.range("1.21.5", null, true)
-			.range(null, "1.21.4", false)
 			.get();
 	
 	public static final byte NUMBER_TYPE = 99;

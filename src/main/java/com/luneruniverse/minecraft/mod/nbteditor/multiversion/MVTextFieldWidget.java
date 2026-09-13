@@ -30,7 +30,6 @@ public class MVTextFieldWidget extends TextFieldWidget implements Tickable, MVEl
 		this.tooltip = tooltip;
 		Version.newSwitch()
 				.range("1.19.3", null, () -> setTooltip(tooltip == null ? null : tooltip.toNewTooltip()))
-				.range(null, "1.19.2", () -> {})
 				.run();
 		return this;
 	}
@@ -43,10 +42,6 @@ public class MVTextFieldWidget extends TextFieldWidget implements Tickable, MVEl
 			MVDrawableHelper.super_render(MVTextFieldWidget.class, this, matrices, mouseX, mouseY, delta);
 			Version.newSwitch()
 					.range("1.19.3", null, () -> {})
-					.range(null, "1.19.2", () -> {
-						if (hovered)
-							method_25352(matrices, mouseX, mouseY);
-					})
 					.run();
 		} finally {
 			matrix = null;

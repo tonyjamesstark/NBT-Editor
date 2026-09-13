@@ -43,16 +43,13 @@ public class MVRegistry<T> implements Iterable<T> {
 	private static final Class<?> REGISTRY_CLASS = Reflection.getClass("net.minecraft.class_2378");
 	private static final Class<?> REGISTRIES_CLASS = Version.<Class<?>>newSwitch()
 			.range("1.19.3", null, () -> Reflection.getClass("net.minecraft.class_7923"))
-			.range(null, "1.19.2", () -> REGISTRY_CLASS)
 			.get();
 	private static <T> MVRegistry<T> getRegistry(String oldName, String newName, boolean defaulted) {
 		return new MVRegistry<>(Reflection.getField(REGISTRIES_CLASS, Version.<String>newSwitch()
 				.range("1.19.3", null, newName)
-				.range(null, "1.19.2", oldName)
 				.get(),
 				defaulted ? Version.<String>newSwitch()
 						.range("1.19.3", null, "Lnet/minecraft/class_7922;")
-						.range(null, "1.19.2", "Lnet/minecraft/class_2348;")
 						.get() : "Lnet/minecraft/class_2378;")
 				.get(null));
 	}
@@ -65,7 +62,6 @@ public class MVRegistry<T> implements Iterable<T> {
 	public static final MVRegistry<EntityAttribute> ATTRIBUTE = getRegistry("field_23781", "field_41190", false);
 	public static final MVRegistry<Potion> POTION = getRegistry("field_11143", "field_41179", Version.<Boolean>newSwitch()
 			.range("1.20.5", null, false)
-			.range(null, "1.20.4", true)
 			.get());
 	public static final MVRegistry<StatusEffect> STATUS_EFFECT = getRegistry("field_11159", "field_41174", false);
 	
@@ -121,7 +117,6 @@ public class MVRegistry<T> implements Iterable<T> {
 	
 	private static final String get = Version.<String>newSwitch()
 			.range("1.21.2", null, "method_63535")
-			.range(null, "1.21.1", "method_10223")
 			.get();
 	public T get(Identifier id) {
 		return call(value, get, () -> MethodType.methodType(Object.class, Identifier.class), id);

@@ -23,7 +23,6 @@ public class NBTBlockEntityNBTManager implements NBTManager<BlockEntity> {
 	public Attempt<NbtCompound> trySerialize(BlockEntity subject) {
 		return new Attempt<>(Version.<NbtCompound>newSwitch()
 				.range("1.18.0", null, () -> BlockEntity_createNbtWithId.get().invoke(subject))
-				.range(null, "1.17.1", () -> BlockEntity_writeNbt.get().invoke(subject, new NbtCompound()))
 				.get());
 	}
 	
@@ -37,10 +36,6 @@ public class NBTBlockEntityNBTManager implements NBTManager<BlockEntity> {
 	public NbtCompound getNbt(BlockEntity subject) {
 		return Version.<NbtCompound>newSwitch()
 				.range("1.18.0", null, () -> BlockEntity_createNbt.get().invoke(subject))
-				.range(null, "1.17.1", () -> {
-					ServerMixinLink.BLOCK_ENTITY_WRITE_NBT_WITHOUT_IDENTIFYING_DATA.add(Thread.currentThread());
-					return BlockEntity_writeNbt.get().invoke(subject, new NbtCompound());
-				})
 				.get();
 	}
 	@Override

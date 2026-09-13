@@ -139,7 +139,6 @@ public class LocalEntity implements LocalNBT {
 		
 		MatrixStack renderMatrices = Version.<MatrixStack>newSwitch()
 				.range("1.19.4", null, matrices)
-				.range(null, "1.19.3", MatrixStack::new)
 				.get();
 		
 		MVMatrix4f.ofScale(1, 1, -1).applyToPositionMatrix(matrices);
@@ -147,7 +146,6 @@ public class LocalEntity implements LocalNBT {
 		rotation.conjugate();
 		if (Version.<Boolean>newSwitch()
 				.range("1.21.0", null, true)
-				.range(null, "1.20.6", false)
 				.get()) {
 			rotation.rotateY((float) Math.PI);
 		}
@@ -201,7 +199,6 @@ public class LocalEntity implements LocalNBT {
 								return new ItemStack(MVMisc.getBoatItem(entityType, nbt));
 							return new ItemStack(Items.PIG_SPAWN_EGG);
 						})
-						.range(null, "1.20.2", () -> new ItemStack(Items.PIG_SPAWN_EGG))
 						.get();
 			}
 		}
@@ -218,11 +215,6 @@ public class LocalEntity implements LocalNBT {
 				nbt.remove("Rotation");
 				Version.newSwitch()
 						.range("1.21.5", null, () -> nbt.remove("block_pos"))
-						.range(null, "1.21.4", () -> {
-							nbt.remove("TileX");
-							nbt.remove("TileY");
-							nbt.remove("TileZ");
-						})
 						.run();
 				if (entityType == EntityType.PAINTING)
 					nbt.remove("facing");

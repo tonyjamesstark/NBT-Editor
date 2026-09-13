@@ -23,7 +23,6 @@ public class StringNBTFolder implements NBTFolder<NbtString> {
 	
 	public static final boolean JSON = Version.<Boolean>newSwitch()
 			.range("1.21.5", null, false)
-			.range(null, "1.21.4", true)
 			.get();
 	
 	private final Supplier<NbtString> get;

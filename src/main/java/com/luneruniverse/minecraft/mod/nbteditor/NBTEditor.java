@@ -49,7 +49,6 @@ public class NBTEditor implements ModInitializer {
 		
 		Version.newSwitch()
 				.range("1.20.5", null, () -> ServerLifecycleEvents.SERVER_STARTING.register(DynamicRegistryManagerHolder::setServerManager))
-				.range(null, "1.20.4", () -> {})
 				.run();
 	}
 	

@@ -212,8 +212,6 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	private void updateWithWarning(Runnable callback) {
 		if (Version.<Boolean>newSwitch()
 				.range("1.21", null, true)
-				.range("1.20.5", "1.20.6", false)
-				.range(null, "1.20.4", true)
 				.get()) {
 			callback.run();
 			return;

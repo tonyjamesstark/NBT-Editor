@@ -83,27 +83,21 @@ public class ContainerIOs {
 			entityId -> ItemEntityContainerIO.forKeys(entityId, "Item");
 	private static final ContainerIO<ItemStack> BUNDLE_IO = Version.<ContainerIO<ItemStack>>newSwitch()
 			.range("1.20.5", null, () -> new BundleContentsComponentContainerIO(27))
-			.range(null, "1.20.4", () -> ContainerIO.forItemStack(new OrderNbtListContainerIO(27).forNbtCompoundItems()))
 			.get();
 	private static final ItemBlockContainerIO CHISELED_BOOKSHELF_IO = Version.<ItemBlockContainerIO>newSwitch()
 			.range("1.20.0", null, () -> BlockStateUpdatingContainerIO.forItemBlock(
 					ItemBlockContainerIO.forSlotKeyItems(6), "slot_0_occupied", "slot_1_occupied", "slot_2_occupied",
 					"slot_3_occupied", "slot_4_occupied", "slot_5_occupied"))
-			.range(null, "1.19.4", () -> null)
 			.get();
 	private static final ItemBlockContainerIO SUSPICIOUS_SAND_IO = Version.<ItemBlockContainerIO>newSwitch()
 			.range("1.20.0", null, () -> ItemBlockContainerIO.forKeys(BlockEntityType.BRUSHABLE_BLOCK, "item"))
-			.range(null, "1.19.4", () -> null)
 			.get();
 	private static final ItemBlockContainerIO DECORATED_POT_IO = Version.<ItemBlockContainerIO>newSwitch()
 			.range("1.20.5", null, () -> new ItemBlockContainerIO(
 					new ContainerComponentContainerIO(1), ContainerIO.forLocalNBT(new KeysContainerIO(false, "item"))))
-			.range("1.20.3", "1.20.4", () -> ItemBlockContainerIO.forKeys(BlockEntityType.DECORATED_POT, "item"))
-			.range(null, "1.20.2", () -> null)
 			.get();
 	private static final ItemBlockContainerIO CRAFTER_IO = Version.<ItemBlockContainerIO>newSwitch()
 			.range("1.21.0", null, () -> ItemBlockContainerIO.forSlotKeyItems(9))
-			.range(null, "1.20.6", () -> null)
 			.get();
 	private static final ContainerIO<ItemStack> SPAWN_EGG_IO = new DelegateContainerIO<>(
 			(item, entity) -> get(entity),
@@ -112,38 +106,25 @@ public class ContainerIOs {
 	private static final Function<EntityType<?>, ItemEntityContainerIO> EQUIPMENT_IO =
 			entityId -> ItemEntityContainerIO.forEntityTagIO(Version.<ContainerIO<NbtCompound>>newSwitch()
 					.range("1.20.5", null, () -> new EquipmentContainerIO(false).forNbtCompoundEquipment())
-					.range(null, "1.20.4", () -> new ArmorHandsContainerIO())
 					.get(),
 					entityId);
 	private static final ContainerIO<LocalEntity> HORSE_IO = ContainerIO.forLocalNBT(
 			Version.<ContainerIO<NbtCompound>>newSwitch()
 					.range("1.21.5", null, () -> new EquipmentContainerIO(false).forNbtCompoundEquipment())
-					.range("1.20.5", "1.21.4", () -> new ConcatContainerIO<>(
-							new ArmorHandsContainerIO(), new KeysContainerIO(false, "SaddleItem", "body_armor_item")))
-					.range(null, "1.20.4", () -> new ConcatContainerIO<>(
-							new ArmorHandsContainerIO(), new KeysContainerIO(false, "SaddleItem", "ArmorItem")))
 					.get());
 	private static final ContainerIO<LocalEntity> BASIC_HORSE_IO = ContainerIO.forLocalNBT(
 			Version.<ContainerIO<NbtCompound>>newSwitch()
 					.range("1.21.5", null, () -> new EquipmentContainerIO(false).forNbtCompoundEquipment())
-					.range(null, "1.21.4", () -> new ConcatContainerIO<>(
-							new ArmorHandsContainerIO(), new KeysContainerIO(false, "SaddleItem")))
 					.get());
 	private static final ContainerIO<LocalEntity> DONKEY_IO = ContainerIO.forLocalNBT(
 			Version.<ContainerIO<NbtCompound>>newSwitch()
 					.range("1.21.5", null, () -> new ConcatContainerIO<>(
 							new EquipmentContainerIO(false).forNbtCompoundEquipment(), new DonkeyChestContainerIO(false)))
-					.range(null, "1.21.4", () -> new ConcatContainerIO<>(
-							new ArmorHandsContainerIO(), new KeysContainerIO(false, "SaddleItem"), new DonkeyChestContainerIO(false)))
 					.get());
 	private static final ContainerIO<LocalEntity> LLAMA_IO = ContainerIO.forLocalNBT(
 			Version.<ContainerIO<NbtCompound>>newSwitch()
 					.range("1.21.5", null, () -> new ConcatContainerIO<>(
 							new EquipmentContainerIO(true).forNbtCompoundEquipment(), new DonkeyChestContainerIO(true)))
-					.range("1.20.5", "1.21.4", () -> new ConcatContainerIO<>(
-							new ArmorHandsContainerIO(), new KeysContainerIO(false, "body_armor_item"), new DonkeyChestContainerIO(true)))
-					.range(null, "1.20.4", () -> new ConcatContainerIO<>(
-							new ArmorHandsContainerIO(), new KeysContainerIO(false, "DecorItem"), new DonkeyChestContainerIO(true)))
 					.get());
 	private static final ContainerIO<LocalEntity> VILLAGER_IO = new ConcatContainerIO<>(
 			EQUIPMENT_IO.apply(EntityType.VILLAGER).entity(),
@@ -156,13 +137,11 @@ public class ContainerIOs {
 			entityType -> Version.<ItemEntityContainerIO>newSwitch()
 					.range("1.19.0", null, () -> ItemEntityContainerIO.forEntityTagIO(
 							new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), entityType))
-					.range(null, "1.18.2", () -> null)
 					.get();
 	private static final ContainerIO<LocalEntity> ALLAY_IO = Version.<ContainerIO<LocalEntity>>newSwitch()
 			.range("1.19.0", null, () -> new ConcatContainerIO<>(
 					EQUIPMENT_IO.apply(EntityType.ALLAY).entity(),
 					ContainerIO.forLocalNBT(new OrderNbtListContainerIO(1).forNbtCompound("Inventory"))))
-			.range(null, "1.18.2", () -> null)
 			.get();
 	
 	public static void loadClass() {}
@@ -200,15 +179,12 @@ public class ContainerIOs {
 					registerItemBlockIO((BlockItem) Items.SUSPICIOUS_SAND, SUSPICIOUS_SAND_IO);
 					registerItemBlockIO((BlockItem) Items.SUSPICIOUS_GRAVEL, SUSPICIOUS_SAND_IO);
 				})
-				.range(null, "1.19.4", () -> {})
 				.run();
 		Version.newSwitch()
 				.range("1.20.3", null, () -> registerItemBlockIO((BlockItem) Items.DECORATED_POT, DECORATED_POT_IO))
-				.range(null, "1.20.2", () -> {})
 				.run();
 		Version.newSwitch()
 				.range("1.21.0", null, () -> registerItemBlockIO((BlockItem) Items.CRAFTER, CRAFTER_IO))
-				.range(null, "1.20.6", () -> {})
 				.run();
 		
 		registerItemEntityIO(Items.ARMOR_STAND, EntityType.ARMOR_STAND, EQUIPMENT_IO);
@@ -222,7 +198,6 @@ public class ContainerIOs {
 		registerEntityIO(EntityType.ZOMBIE_HORSE, BASIC_HORSE_IO);
 		Version.newSwitch()
 				.range("1.20.0", null, () -> registerEntityIO(EntityType.CAMEL, BASIC_HORSE_IO))
-				.range(null, "1.19.4", () -> {})
 				.run();
 		registerEntityIO(EntityType.DONKEY, DONKEY_IO);
 		registerEntityIO(EntityType.MULE, DONKEY_IO);
@@ -234,10 +209,6 @@ public class ContainerIOs {
 					registerItemEntityIO(Items.CHEST_MINECART, EntityType.CHEST_MINECART, CHEST_MINECART_IO);
 					registerItemEntityIO(Items.HOPPER_MINECART, EntityType.HOPPER_MINECART, HOPPER_MINECART_IO);
 				})
-				.range(null, "1.20.2", () -> {
-					registerEntityIO(EntityType.CHEST_MINECART, CHEST_MINECART_IO.entity());
-					registerEntityIO(EntityType.HOPPER_MINECART, HOPPER_MINECART_IO.entity());
-				})
 				.run();
 		Map<EntityType<?>, BoatItem> boatItems = new HashMap<>();
 		Version.newSwitch()
@@ -247,24 +218,9 @@ public class ContainerIOs {
 							boatItems.put(boat.boatEntityType, boat);
 					}
 				})
-				.range("1.20.3", "1.21.1", () -> {
-					EntityType<?> chestBoat = Reflection.getField(EntityType.class, "field_38096", "Lnet/minecraft/class_1299;").get(null);
-					ContainerIO<ItemStack> io = CHEST_BOAT_IO.apply(chestBoat).item();
-					registerItemIO(Items.OAK_CHEST_BOAT, io);
-					registerItemIO(Items.SPRUCE_CHEST_BOAT, io);
-					registerItemIO(Items.BIRCH_CHEST_BOAT, io);
-					registerItemIO(Items.JUNGLE_CHEST_BOAT, io);
-					registerItemIO(Items.ACACIA_CHEST_BOAT, io);
-					registerItemIO(Items.CHERRY_CHEST_BOAT, io);
-					registerItemIO(Items.DARK_OAK_CHEST_BOAT, io);
-					registerItemIO(Items.MANGROVE_CHEST_BOAT, io);
-					registerItemIO(Items.BAMBOO_CHEST_RAFT, io);
-				})
-				.range(null, "1.20.2", () -> {})
 				.run();
 		Version.newSwitch()
 				.range("1.19.0", null, () -> registerEntityIO(EntityType.ALLAY, ALLAY_IO))
-				.range(null, "1.18.2", () -> {})
 				.run();
 		MVClientNetworking.PlayNetworkStateEvents.Join.EVENT.register(() -> {
 			for (EntityType<?> entityType : MVRegistry.ENTITY_TYPE) {
@@ -282,7 +238,6 @@ public class ContainerIOs {
 									registerItemIO(item, CHEST_BOAT_IO.apply(entityType).item());
 							}
 						})
-						.range(null, "1.18.2", () -> {})
 						.run();
 			}
 		});

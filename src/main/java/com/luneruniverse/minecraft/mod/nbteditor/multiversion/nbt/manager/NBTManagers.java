@@ -21,7 +21,6 @@ public class NBTManagers {
 	static {
 		COMPONENTS_EXIST = Version.<Boolean>newSwitch()
 				.range("1.20.5", null, true)
-				.range(null, "1.20.4", false)
 				.get();
 		if (COMPONENTS_EXIST) {
 			ITEM = new ComponentItemNBTManager();

@@ -148,10 +148,6 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 		super.tick();
 		Version.newSwitch()
 				.range("1.17.1", null, () -> {})
-				.range(null, "1.17", () -> {
-					if (client.player.isAlive() && !client.player.isRemoved())
-						handledScreenTick();
-				})
 				.run();
 	}
 	@Override

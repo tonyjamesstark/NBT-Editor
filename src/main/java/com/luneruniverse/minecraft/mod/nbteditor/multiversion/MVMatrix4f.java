@@ -20,11 +20,9 @@ public class MVMatrix4f {
 	
 	public static final Class<?> Matrix4f_class = Version.<Class<?>>newSwitch()
 			.range("1.19.3", null, () -> Reflection.getClass("org.joml.Matrix4f"))
-			.range(null, "1.19.2", () -> Reflection.getClass("net.minecraft.class_1159"))
 			.get();
 	public static final Class<?> Matrix4fc_class = Version.<Class<?>>newSwitch()
 			.range("1.19.3", null, () -> Reflection.getClass("org.joml.Matrix4fc"))
-			.range(null, "1.19.2", Matrix4f_class)
 			.get();
 	
 	private static final Reflection.MethodInvoker MatrixStack_Entry_getPositionMatrix =
@@ -42,13 +40,6 @@ public class MVMatrix4f {
 					Vector3f output = ((Matrix4f) matrix).getColumn(3, new Vector3f());
 					return new float[] {output.x, output.y, output.z};
 				})
-				.range(null, "1.19.2", () -> {
-					FloatBuffer buffer = FloatBuffer.allocate(16);
-					Matrix4f_writeColumnMajor.get().invoke(matrix, buffer); // matrix.writeColumnMajor(buffer)
-					float[] output = new float[3];
-					buffer.get(12, output);
-					return output;
-				})
 				.get();
 	}
 	
@@ -61,7 +52,6 @@ public class MVMatrix4f {
 					((Matrix4f) matrix).scale(x, y, z);
 					return matrix;
 				})
-				.range(null, "1.19.2", () -> Matrix4f_scale.get().invoke(null, x, y, z))
 				.get());
 	}
 	
@@ -71,7 +61,6 @@ public class MVMatrix4f {
 		Object matrix = Reflection.newInstance(Matrix4f_class, new Class<?>[] {});
 		Version.newSwitch()
 				.range("1.19.3", null, () -> {})
-				.range(null, "1.19.2", () -> Matrix4f_loadIdentity.get().invoke(matrix))
 				.run();
 		return matrix;
 	}
@@ -83,7 +72,6 @@ public class MVMatrix4f {
 					((Matrix4f) matrix).set((Quaternionfc) quat.getInternalValue());
 					return matrix;
 				})
-				.range(null, "1.19.2", () -> Reflection.newInstance(Matrix4f_class, new Class<?>[] {MVQuaternionf.Quaternionf_class}, quat.getInternalValue()))
 				.get();
 	}
 	
@@ -109,7 +97,6 @@ public class MVMatrix4f {
 	private <R> R call(String oldMethod, String newMethod, Supplier<MethodType> type, Object... args) {
 		String method = Version.<String>newSwitch()
 				.range("1.19.3", null, () -> newMethod)
-				.range(null, "1.19.2", () -> oldMethod)
 				.get();
 		try {
 			return (R) methodCache.get(method, () -> Reflection.getMethod(Matrix4f_class, method, type.get())).invoke(value, args);
@@ -122,7 +109,6 @@ public class MVMatrix4f {
 		call("method_22672", "mul", () -> MethodType.methodType(
 				Version.<Class<?>>newSwitch()
 						.range("1.19.3", null, () -> Matrix4f_class)
-						.range(null, "1.19.2", void.class)
 						.get(),
 				Matrix4fc_class), right);
 		return this;
@@ -141,7 +127,6 @@ public class MVMatrix4f {
 	public MVMatrix4f copy() {
 		return new MVMatrix4f(Version.<Object>newSwitch()
 				.range("1.19.3", null, () -> Reflection.newInstance(Matrix4f_class, new Class<?>[] {Matrix4fc_class}, value)) // new Matrix4f((Matrix4f) matrix)
-				.range(null, "1.19.2", () -> Matrix4f_copy.get().invoke(value))
 				.get());
 	}
 	
@@ -150,7 +135,6 @@ public class MVMatrix4f {
 	public void applyToPositionMatrix(MatrixStack matrices) {
 		Version.newSwitch()
 				.range("1.19.3", null, () -> matrices.multiplyPositionMatrix((Matrix4f) value))
-				.range(null, "1.19.2", () -> MatrixStack_multiplyPositionMatrix.get().invoke(matrices, value))
 				.run();
 	}
 	

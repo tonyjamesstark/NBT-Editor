@@ -36,7 +36,6 @@ public class ScreenMixin {
 	private void init(MinecraftClient client, int width, int height, CallbackInfo info) {
 		Version.newSwitch()
 				.range("1.19.4", null, () -> CreativeTabWidget.addCreativeTabs((Screen) (Object) this))
-				.range(null, "1.19.3", () -> {})
 				.run();
 	}
 	

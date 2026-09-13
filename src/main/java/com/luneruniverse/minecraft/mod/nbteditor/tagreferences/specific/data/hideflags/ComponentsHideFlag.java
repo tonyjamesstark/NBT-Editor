@@ -91,14 +91,6 @@ public class ComponentsHideFlag extends HideFlag {
 	public static final HideFlag TRIM = Version.<HideFlag>newSwitch()
 			.range("1.21.0", null, () -> registerMethodGetter("trim",
 					DataComponentTypes.TRIM, ArmorTrim.class, "comp_3181", "method_58421"))
-			.range("1.20.5", "1.20.6", () -> registerFieldGetter("trim",
-					DataComponentTypes.TRIM, ArmorTrim.class, "field_49279", "method_58421"))
-			.get();
-	
-	public static final HideFlag JUKEBOX_PLAYABLE = Version.<HideFlag>newSwitch()
-			.range("1.21.0", "1.21.4", () -> registerMethodGetter("jukebox_playable",
-					DataComponentTypes.JUKEBOX_PLAYABLE, JukeboxPlayableComponent.class, "comp_2834", "method_60749"))
-			.range("1.20.5", "1.20.6", () -> null)
 			.get();
 	
 	private final Text name;

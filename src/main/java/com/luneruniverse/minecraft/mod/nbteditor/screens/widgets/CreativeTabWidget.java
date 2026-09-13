@@ -46,7 +46,6 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 	
 	public static final int WIDTH = Version.<Integer>newSwitch()
 			.range("1.19.3", null, 26)
-			.range(null, "1.19.2", 28)
 			.get();
 	public static final int HEIGHT = 32;
 	
@@ -57,7 +56,6 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 	static {
 		if (Version.<Boolean>newSwitch()
 				.range("1.20.2", null, true)
-				.range(null, "1.20.1", false)
 				.get()) {
 			TEXTURE_TOP = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_top_unselected.png");
 			TEXTURE_BOTTOM = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_bottom_unselected.png");
@@ -93,7 +91,6 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 		
 		int xOffset = Version.<Integer>newSwitch()
 				.range("1.19.3", null, 5)
-				.range(null, "1.19.2", 6)
 				.get();
 		MVDrawableHelper.renderItem(matrices, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
 		

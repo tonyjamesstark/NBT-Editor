@@ -17,15 +17,12 @@ public class MVQuaternionf {
 	
 	public static final Class<?> Quaternionf_class = Version.<Class<?>>newSwitch()
 			.range("1.19.3", null, () -> Reflection.getClass("org.joml.Quaternionf"))
-			.range(null, "1.19.2", () -> Reflection.getClass("net.minecraft.class_1158"))
 			.get();
 	public static final Class<?> Quaternionfc_class = Version.<Class<?>>newSwitch()
 			.range("1.19.3", null, () -> Reflection.getClass("org.joml.Quaternionfc"))
-			.range(null, "1.19.2", Quaternionf_class)
 			.get();
 	private static final Class<?> return_class = Version.<Class<?>>newSwitch()
 			.range("1.19.3", null, () -> Quaternionf_class)
-			.range(null, "1.19.2", void.class)
 			.get();
 	
 	public static MVQuaternionf ofAxisRotation(float angle, float x, float y, float z) {
@@ -35,11 +32,6 @@ public class MVQuaternionf {
 							Object quat = Reflection.newInstance(Quaternionf_class, new Class<?>[] {});
 							((Quaternionf) quat).rotationAxis(angle, x, y, z);
 							return quat;
-						})
-						.range(null, "1.19.2", () -> {
-							Class<?> Vec3f_class = Reflection.getClass("net.minecraft.class_1160");
-							Object axis = Reflection.newInstance(Vec3f_class, new Class<?>[] {float.class, float.class, float.class}, x, y, z);
-							return Reflection.newInstance(Quaternionf_class, new Class<?>[] {Vec3f_class, float.class, boolean.class}, axis, angle, false);
 						})
 						.get());
 	}
@@ -72,7 +64,6 @@ public class MVQuaternionf {
 	private <R> R call(String oldMethod, String newMethod, Supplier<MethodType> type, Object... args) {
 		String method = Version.<String>newSwitch()
 				.range("1.19.3", null, () -> newMethod)
-				.range(null, "1.19.2", () -> oldMethod)
 				.get();
 		try {
 			return (R) methodCache.get(method, () -> Reflection.getMethod(Quaternionf_class, method, type.get())).invoke(value, args);
@@ -109,7 +100,6 @@ public class MVQuaternionf {
 	public MVQuaternionf copy() {
 		return new MVQuaternionf(Version.<Object>newSwitch()
 				.range("1.19.3", null, () -> Reflection.newInstance(Quaternionf_class, new Class<?>[] {Quaternionfc_class}, value))
-				.range(null, "1.19.2", () -> Quaternionf_copy.get().invoke(value))
 				.get());
 	}
 	
@@ -118,7 +108,6 @@ public class MVQuaternionf {
 	public void applyToMatrixStack(MatrixStack matrices) {
 		Version.newSwitch()
 				.range("1.19.3", null, () -> matrices.multiply((Quaternionf) value))
-				.range(null, "1.19.2", () -> MatrixStack_multiply.get().invoke(matrices, value))
 				.run();
 	}
 	
@@ -127,7 +116,6 @@ public class MVQuaternionf {
 	public void applyToEntityRenderDispatcher(EntityRenderDispatcher dispatcher) {
 		Version.newSwitch()
 				.range("1.19.3", null, () -> dispatcher.setRotation((Quaternionf) value))
-				.range(null, "1.19.2", () -> EntityRenderDispatcher_setRotation.get().invoke(dispatcher, value))
 				.run();
 	}
 	

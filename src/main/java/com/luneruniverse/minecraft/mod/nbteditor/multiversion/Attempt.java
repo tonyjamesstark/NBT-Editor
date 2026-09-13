@@ -16,12 +16,10 @@ public record Attempt<T>(Optional<T> value, String error) {
 	public static <T> Attempt<T> ofResult(DataResult<T> result) {
 		Optional<T> value = Version.<Optional<T>>newSwitch()
 				.range("1.20.5", null, () -> result.resultOrPartial())
-				.range(null, "1.20.4", () -> DataResult_resultOrPartial.get().invoke(result))
 				.get();
 		
 		String error = Version.<Optional<DataResult.Error<T>>>newSwitch()
 				.range("1.20.5", null, () -> result.error())
-				.range(null, "1.20.4", () -> DataResult_error.get().invoke(result))
 				.get()
 				.map(DataResult.Error::message).orElse(null);
 		

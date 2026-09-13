@@ -15,7 +15,6 @@ public class StyleUtil {
 	
 	public static final boolean SHADOW_COLOR_EXISTS = Version.<Boolean>newSwitch()
 			.range("1.21.4", null, true)
-			.range(null, "1.21.3", false)
 			.get();
 	
 	public static final Style RESET_STYLE = Style.EMPTY.withColor(Formatting.WHITE)

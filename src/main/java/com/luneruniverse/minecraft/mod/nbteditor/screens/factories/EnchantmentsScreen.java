@@ -71,7 +71,6 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 				ConfigValueNumber.forInt(1, 1, 1,
 						Version.<Integer>newSwitch()
 								.range("1.17.1", null, 255)
-								.range(null, "1.17", 32767)
 								.get())));
 		config = new ConfigList(TextInst.translatable("nbteditor.enchantments"), false, entry);
 		

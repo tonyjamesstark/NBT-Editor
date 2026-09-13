@@ -21,7 +21,6 @@ public class MVEnchantments {
 	
 	public static final boolean DATA_PACK_ENCHANTMENTS = Version.<Boolean>newSwitch()
 			.range("1.21.0", null, true)
-			.range(null, "1.20.6", false)
 			.get();
 	
 	@SuppressWarnings("unchecked")
@@ -41,7 +40,6 @@ public class MVEnchantments {
 	public static boolean isCursed(Enchantment enchant) {
 		return Version.<Boolean>newSwitch()
 				.range("1.21.0", null, () -> MVRegistry.getEnchantmentRegistry().getInternalValue().getEntry(enchant).isIn(EnchantmentTags.CURSE))
-				.range(null, "1.20.6", () -> Enchantment_isCursed.get().invoke(enchant))
 				.get();
 	}
 	
@@ -59,11 +57,6 @@ public class MVEnchantments {
 				.range("1.21.0", null, () -> {
 					MutableText output = enchant.description().copy();
 					Texts.setStyleIfAbsent(output, Style.EMPTY.withColor(color));
-					return output;
-				})
-				.range(null, "1.20.6", () -> {
-					EditableText output = TextInst.translatable(Enchantment_getTranslationKey.get().invoke(enchant));
-					output.formatted(color);
 					return output;
 				})
 				.get();

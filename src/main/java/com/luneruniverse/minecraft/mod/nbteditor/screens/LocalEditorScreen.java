@@ -128,7 +128,6 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		
 		boolean oldMatrix = Version.<Boolean>newSwitch()
 				.range("1.19.4", null, false)
-				.range(null, "1.19.3", true)
 				.get();
 		if (oldMatrix)
 			matrices = RenderSystem_getModelViewStack.get().invoke(null);

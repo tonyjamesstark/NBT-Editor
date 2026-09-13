@@ -35,26 +35,6 @@ public class EnchantsTagReference implements TagReference<Enchants, ItemStack> {
 										enchant -> MVRegistry.getEnchantmentRegistry().getInternalValue().getEntry(enchant.enchant()),
 										enchant -> Math.min(255, enchant.level()),
 										Math::max))))))
-				.range(null, "1.20.4", () -> TagReference.mapValue(Enchants::new, Enchants::getEnchants,
-						TagReference.forItems(ArrayList::new, TagReference.forLists(element -> {
-							if (!(element instanceof NbtCompound compound))
-								return null;
-							if (!compound.nbte$contains("id", NbtElement.STRING_TYPE))
-								return null;
-							Enchantment enchant = MVRegistry.getEnchantmentRegistry().get(
-									IdentifierInst.of(compound.nbte$getStringOrDefault("id")));
-							if (enchant == null)
-								return null;
-							int level = compound.nbte$getShortOrDefault("lvl");
-							if (level < 1)
-								return null;
-							return new Enchants.EnchantWithLevel(enchant, level);
-						}, enchant -> {
-							NbtCompound output = new NbtCompound();
-							output.putString("id", MVRegistry.getEnchantmentRegistry().getId(enchant.enchant()).toString());
-							output.putShort("lvl", (short) enchant.level());
-							return output;
-						}, new NBTTagReference<>(NbtList.class, tag)))))
 				.get();
 	}
 	

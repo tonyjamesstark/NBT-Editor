@@ -163,7 +163,6 @@ public class GroupWidget extends AbstractParentElement implements MVDrawable, MV
 	public boolean method_25401(double mouseX, double mouseY, double amount) {
 		return Version.<Boolean>newSwitch()
 				.range("1.20.2", null, () -> MVElement.super.method_25401(mouseX, mouseY, amount))
-				.range(null, "1.20.1", () -> super_mouseScrolled(mouseX, mouseY, amount))
 				.get();
 	}
 	@Override

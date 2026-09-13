@@ -20,14 +20,12 @@ public class BlockTagReferences {
 					new NBTComponentTagReference<>("profile", ProfileComponent.CODEC, Optional::empty,
 							ProfileComponent::name,
 							name -> new ProfileComponent(name, Optional.empty(), new PropertyMap()))))
-			.range(null, "1.20.4", () -> TagReference.forLocalNBT(Optional::empty, new GameProfileNameNBTTagReference()))
 			.get();
 	public static final TagReference<Optional<GameProfile>, LocalBlock> PROFILE = Version.<TagReference<Optional<GameProfile>, LocalBlock>>newSwitch()
 			.range("1.20.5", null, () -> TagReference.forLocalNBT(Optional::empty,
 					new NBTComponentTagReference<>("profile", ProfileComponent.CODEC, Optional::empty,
 							profile -> Optional.of(profile.gameProfile()),
 							profile -> profile.map(ProfileComponent::new).orElse(null))))
-			.range(null, "1.20.4", () -> TagReference.forLocalNBT(Optional::empty, new GameProfileNBTTagReference()))
 			.get();
 	
 }

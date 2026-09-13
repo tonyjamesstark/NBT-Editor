@@ -441,7 +441,6 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 		
 		Version.newSwitch()
 				.range("1.20.0", null, () -> matrices.translate(0.0, 0.0, 1.0))
-				.range(null, "1.19.4", () -> {})
 				.run();
 		
 		renderHighlightsAbove(matrices, mouseX, mouseY, delta);

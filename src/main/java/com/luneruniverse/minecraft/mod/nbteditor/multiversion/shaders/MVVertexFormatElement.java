@@ -13,8 +13,6 @@ public class MVVertexFormatElement {
 	private static MVVertexFormatElement getElement(String fieldName1, String fieldName2, Supplier<Object> field3) {
 		return new MVVertexFormatElement(Version.<Object>newSwitch()
 				.range("1.21.5", null, field3)
-				.range("1.21.0", "1.21.4", () -> Reflection.getField(Reflection.getClass("net.minecraft.class_296"), fieldName2, "Lnet/minecraft/class_296;").get(null))
-				.range(null, "1.20.6", () -> Reflection.getField(VertexFormats.class, fieldName1, "Lnet/minecraft/class_296;").get(null))
 				.get());
 	}
 	

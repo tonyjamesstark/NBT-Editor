@@ -27,7 +27,6 @@ public class MVButtonWidget extends PressableWidget {
 		if (tooltip != null) {
 			Version.newSwitch()
 					.range("1.19.3", null, () -> setTooltip(tooltip.toNewTooltip()))
-					.range(null, "1.19.2", () -> {})
 					.run();
 		}
 	}
@@ -60,13 +59,6 @@ public class MVButtonWidget extends PressableWidget {
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		Version.newSwitch()
 				.range("1.20.0", null, () -> super.renderWidget(MVDrawableHelper.getDrawContext(matrices), mouseX, mouseY, delta))
-				.range("1.19.4", "1.19.4", () -> super_renderButton("method_48579", matrices, mouseX, mouseY, delta))
-				.range("1.19.3", "1.19.3", () -> super_renderButton("method_25359", matrices, mouseX, mouseY, delta))
-				.range(null, "1.19.2", () -> {
-					super_renderButton("method_25359", matrices, mouseX, mouseY, delta);
-					if (hovered)
-						method_25352(matrices, mouseX, mouseY);
-				})
 				.run();
 	}
 	@Override

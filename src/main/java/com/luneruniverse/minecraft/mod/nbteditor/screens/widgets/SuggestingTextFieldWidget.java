@@ -96,7 +96,6 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 		matrices.translate(0, 0, 1.0);
 		Version.newSwitch()
 				.range("1.20.0", null, () -> suggestor.render(MVDrawableHelper.getDrawContext(matrices), mouseX, mouseY))
-				.range(null, "1.19.4", () -> ChatInputSuggestor_render.get().invoke(suggestor, matrices, mouseX, mouseY))
 				.run();
 		matrices.pop();
 	}

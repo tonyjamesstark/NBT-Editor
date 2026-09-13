@@ -44,7 +44,6 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	// Double sided & waxable
 	private static boolean NEW_FEATURES = Version.<Boolean>newSwitch()
 			.range("1.20.0", null, true)
-			.range(null, "1.19.4", false)
 			.get();
 	
 	private static int getRenderedColor(DyeColor dye) {
