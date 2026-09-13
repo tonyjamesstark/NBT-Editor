@@ -186,7 +186,7 @@ public class MixinLink {
 		if (!creativeInv && !NBTEditorClient.SERVER_CONN.isScreenEditable())
 			return;
 		
-		if (!Screen.hasControlDown())
+		if (!MVMisc.hasControlDown())
 			return;
 		
 		if (slot instanceof CreativeInventoryScreen.CreativeSlot creativeSlot)

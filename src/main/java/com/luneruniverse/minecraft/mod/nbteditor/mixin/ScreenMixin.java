@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
@@ -48,7 +49,7 @@ public class ScreenMixin {
 	
 	@Inject(method = "handleTextClick", at = @At("HEAD"), cancellable = true)
 	private void handleTextClick(Style style, CallbackInfoReturnable<Boolean> info) {
-		if (style != null && !Screen.hasShiftDown() && style.getClickEvent() != null) {
+		if (style != null && !MVMisc.hasShiftDown() && style.getClickEvent() != null) {
 			MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(style.getClickEvent());
 			if (clickAction == MVTextEvents.ClickAction.OPEN_FILE &&
 					MixinLink.tryRunClickEvent(clickAction.getStringifiedValue(style.getClickEvent()))) {

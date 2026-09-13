@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -209,7 +210,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 												});
 									}
 									case DUPLICATE -> {
-										if (Screen.hasShiftDown()) {
+										if (MVMisc.hasShiftDown()) {
 											InputOverlay.show(
 													TextInst.translatable("nbteditor.configurable.list.duplicate"),
 													StringInput.builder()

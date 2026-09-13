@@ -257,7 +257,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				TextInst.translatable("nbteditor.signboard.glowing." + (isGlowing() ? "enabled" : "disabled"))
 				.styled(style -> style.withColor(getRenderedColor(getColor()))), btn -> {
 			boolean prevGlowing = isGlowing();
-			if (prevGlowing && hasShiftDown()) {
+			if (prevGlowing && MVMisc.hasShiftDown()) {
 				colors.setOpen(true);
 				return;
 			}

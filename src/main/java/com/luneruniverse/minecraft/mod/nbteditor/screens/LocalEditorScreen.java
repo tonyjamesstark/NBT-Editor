@@ -163,7 +163,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		if (super.keyPressed(input))
 			return true;
 		
-		if (hasControlDown() && !hasShiftDown() && !hasAltDown() && keyCode == GLFW.GLFW_KEY_S) {
+		if (MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown() && keyCode == GLFW.GLFW_KEY_S) {
 			save();
 			return true;
 		}

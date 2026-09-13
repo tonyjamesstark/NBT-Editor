@@ -481,7 +481,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			if (super.keyPressed(input))
 				return true;
 			
-			if (Screen.hasControlDown() && !Screen.hasShiftDown()) {
+			if (MVMisc.hasControlDown() && !MVMisc.hasShiftDown()) {
 				Formatting formatting = switch (keyCode) {
 					case GLFW.GLFW_KEY_B -> Formatting.BOLD;
 					case GLFW.GLFW_KEY_I -> Formatting.ITALIC;
@@ -497,7 +497,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				}
 			}
 			
-			if (Screen.hasControlDown() && Screen.hasShiftDown()) {
+			if (MVMisc.hasControlDown() && MVMisc.hasShiftDown()) {
 				switch (keyCode) {
 					case GLFW.GLFW_KEY_C -> showCustomColor(hasShadowKeyDown());
 					case GLFW.GLFW_KEY_E -> showEvents();
@@ -688,7 +688,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	
 	private static boolean hasShadowKeyDown() {
-		return StyleUtil.SHADOW_COLOR_EXISTS && Screen.hasAltDown();
+		return StyleUtil.SHADOW_COLOR_EXISTS && MVMisc.hasAltDown();
 	}
 	
 	private int x;

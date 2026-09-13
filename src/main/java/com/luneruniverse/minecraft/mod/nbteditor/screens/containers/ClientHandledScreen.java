@@ -64,10 +64,10 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 			return false;
 		
 		boolean notAir = item != null && !item.isEmpty();
-		if (hasControlDown()) {
+		if (MVMisc.hasControlDown()) {
 			if (notAir && ContainerIOs.isSupported(item))
 				ContainerScreen.show(ref);
-		} else if (hasShiftDown()) {
+		} else if (MVMisc.hasShiftDown()) {
 			if (notAir)
 				MainUtil.client.setScreen(new LocalFactoryScreen<>(ref));
 		} else
@@ -223,7 +223,7 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 		if (!(this instanceof CursorHistoryScreen))
 			GetLostItemCommand.addToHistory(handler.getCursorStack());
 		
-		if (!(slot != null && allowEnchantmentCombine() && Screen.hasControlDown() && tryCombineEnchantments(slot, actionType)))
+		if (!(slot != null && allowEnchantmentCombine() && MVMisc.hasControlDown() && tryCombineEnchantments(slot, actionType)))
 			handler.onSlotClick(slot == null ? slotId : slot.id, button, actionType, MainUtil.client.player);
 		
 		if (!(this instanceof CursorHistoryScreen))

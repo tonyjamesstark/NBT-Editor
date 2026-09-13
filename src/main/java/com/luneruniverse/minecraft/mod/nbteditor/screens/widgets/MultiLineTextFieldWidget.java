@@ -65,10 +65,10 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 				btn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
 			}, new MVTooltip("nbteditor.multi_line_text.regex")));
 			addWidget(MVMisc.newButton(0, 40, 40, 20, TextInst.translatable("nbteditor.multi_line_text.find"), btn -> {
-				goToNext(Screen.hasShiftDown(), true);
+				goToNext(MVMisc.hasShiftDown(), true);
 			}));
 			addWidget(MVMisc.newButton(44, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace"), btn -> {
-				if (goToNext(Screen.hasShiftDown(), true))
+				if (goToNext(MVMisc.hasShiftDown(), true))
 					replaceSel();
 			}));
 			addWidget(MVMisc.newButton(112, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace_all"), btn -> {
@@ -200,7 +200,7 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 				return true;
 			}
 			if (keyCode == GLFW.GLFW_KEY_ENTER) {
-				goToNext(Screen.hasShiftDown(), true);
+				goToNext(MVMisc.hasShiftDown(), true);
 				return true;
 			}
 			if (keyCode == GLFW.GLFW_KEY_TAB) {
@@ -210,7 +210,7 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 					setFocused(find);
 				return true;
 			}
-			if (keyCode == GLFW.GLFW_KEY_R && Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown()) {
+			if (keyCode == GLFW.GLFW_KEY_R && MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown()) {
 				regex = !regex;
 				regexBtn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
 				return true;
@@ -645,7 +645,7 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	public void setCursor(int cursor, boolean select) {
 		int selStart = this.selStart;
 		int selEnd = this.selEnd;
-		if (select && Screen.hasShiftDown())
+		if (select && MVMisc.hasShiftDown())
 			selEnd = cursor;
 		else {
 			selStart = cursor;
@@ -702,14 +702,14 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	@Override
 	public boolean keyPressed(KeyInput input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
-		if (suggestor != null && (keyCode != GLFW.GLFW_KEY_UP && keyCode != GLFW.GLFW_KEY_DOWN || Screen.hasAltDown())) {
+		if (suggestor != null && (keyCode != GLFW.GLFW_KEY_UP && keyCode != GLFW.GLFW_KEY_DOWN || MVMisc.hasAltDown())) {
 			syncToSuggestor();
 			if (suggestor.keyPressed(input)) {
 				syncFromSuggestor();
 				return true;
 			}
 		}
-		if (Screen.isSelectAll(keyCode)) {
+		if (MVMisc.isSelectAll(keyCode)) {
 			onCursorMove(text.length(), 0, text.length());
 			selStart = 0;
 			selEnd = text.length();
@@ -717,16 +717,16 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 			cursorX = -1;
 			return true;
 		}
-		if (Screen.isCopy(keyCode)) {
+		if (MVMisc.isCopy(keyCode)) {
 			MainUtil.client.keyboard.setClipboard(onCopy(getSelectedText(), getSelStart(), getSelEnd() - getSelStart()));
 			return true;
 		}
-		if (Screen.isPaste(keyCode)) {
+		if (MVMisc.isPaste(keyCode)) {
 			this.write(pasteFilter(onPaste(MainUtil.client.keyboard.getClipboard(), getSelStart(), getSelEnd() - getSelStart())));
 			cursorX = -1;
 			return true;
 		}
-		if (Screen.isCut(keyCode)) {
+		if (MVMisc.isCut(keyCode)) {
 			MainUtil.client.keyboard.setClipboard(onCopy(getSelectedText(), getSelStart(), getSelEnd() - getSelStart()));
 			this.write("");
 			cursorX = -1;
@@ -760,7 +760,7 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 		}
 		switch (keyCode) {
 			case GLFW.GLFW_KEY_LEFT: {
-				if (Screen.hasControlDown()) {
+				if (MVMisc.hasControlDown()) {
 					this.setCursor(this.getWordSkipPosition(true, false), true);
 				} else {
 					this.moveCursor(-1);
@@ -769,7 +769,7 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 				return true;
 			}
 			case GLFW.GLFW_KEY_RIGHT: {
-				if (Screen.hasControlDown()) {
+				if (MVMisc.hasControlDown()) {
 					this.setCursor(this.getWordSkipPosition(false, false), true);
 				} else {
 					this.moveCursor(1);
@@ -778,14 +778,14 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 				return true;
 			}
 			case GLFW.GLFW_KEY_UP: {
-				if (Screen.hasControlDown())
+				if (MVMisc.hasControlDown())
 					setCursor(0, true);
 				else
 					moveCursorUp();
 				return true;
 			}
 			case GLFW.GLFW_KEY_DOWN: {
-				if (Screen.hasControlDown())
+				if (MVMisc.hasControlDown())
 					setCursor(text.length(), true);
 				else
 					moveCursorDown();
@@ -844,13 +844,13 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	}
 	
 	public static boolean isUndo(int code) {
-		return code == GLFW.GLFW_KEY_Z && Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown();
+		return code == GLFW.GLFW_KEY_Z && MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown();
 	}
 	public static boolean isRedo(int code) {
-		return code == GLFW.GLFW_KEY_Y && Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown();
+		return code == GLFW.GLFW_KEY_Y && MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown();
 	}
 	public static boolean isFind(int code) {
-		return code == GLFW.GLFW_KEY_F && Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown();
+		return code == GLFW.GLFW_KEY_F && MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown();
 	}
 	
 	// passOneSpace requires that one section of whitespace is passed, either at the end or beginning of the search
@@ -889,11 +889,11 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	}
 	
 	private int getCursorPosWithOffset(int offset) {
-		return Util.moveCursor(this.text, Screen.hasShiftDown() ? cursor : (offset > 0 ? getSelEnd() : getSelStart()), offset);
+		return Util.moveCursor(this.text, MVMisc.hasShiftDown() ? cursor : (offset > 0 ? getSelEnd() : getSelStart()), offset);
 	}
 	
 	private void erase(boolean backwards) {
-		if (Screen.hasControlDown()) {
+		if (MVMisc.hasControlDown()) {
 			this.eraseWords(backwards);
 		} else {
 			this.eraseCharacters(backwards ? -1 : 1);

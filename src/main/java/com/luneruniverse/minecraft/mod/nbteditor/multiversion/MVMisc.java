@@ -38,6 +38,10 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DataResult;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.lwjgl.glfw.GLFW;
+import net.minecraft.client.util.Window;
+import net.minecraft.client.util.InputUtil;
+import net.minecraft.client.input.SystemKeycodes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.Keyboard;
@@ -833,4 +837,39 @@ public class MVMisc {
 				.get();
 	}
 	
+	
+	// 1.21.9 moved the modifier queries off Screen and onto the input record. These
+	// callers ask outside an event, which is what Screen's statics polled for.
+	private static boolean isEitherPressed(int left, int right) {
+		Window window = MainUtil.client.getWindow();
+		return InputUtil.isKeyPressed(window, left) || InputUtil.isKeyPressed(window, right);
+	}
+	public static boolean hasShiftDown() {
+		return isEitherPressed(GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT);
+	}
+	public static boolean hasControlDown() {
+		if (SystemKeycodes.IS_MAC_OS)
+			return isEitherPressed(GLFW.GLFW_KEY_LEFT_SUPER, GLFW.GLFW_KEY_RIGHT_SUPER);
+		return isEitherPressed(GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL);
+	}
+	public static boolean hasAltDown() {
+		return isEitherPressed(GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT);
+	}
+	private static boolean isShortcut(int keyCode, int shortcutKey) {
+		return keyCode == shortcutKey && hasControlDown() && !hasShiftDown() && !hasAltDown();
+	}
+	public static boolean isSelectAll(int keyCode) {
+		return isShortcut(keyCode, GLFW.GLFW_KEY_A);
+	}
+	public static boolean isCopy(int keyCode) {
+		return isShortcut(keyCode, GLFW.GLFW_KEY_C);
+	}
+	public static boolean isPaste(int keyCode) {
+		return isShortcut(keyCode, GLFW.GLFW_KEY_V);
+	}
+	public static boolean isCut(int keyCode) {
+		return isShortcut(keyCode, GLFW.GLFW_KEY_X);
+	}
+	
+
 }

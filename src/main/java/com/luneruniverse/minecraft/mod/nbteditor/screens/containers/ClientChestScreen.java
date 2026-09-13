@@ -242,7 +242,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 			boolean prev = (keyCode == GLFW.GLFW_KEY_PAGE_DOWN);
 			if (ConfigScreen.isInvertedPageKeybinds())
 				prev = !prev;
-			boolean jump = hasShiftDown();
+			boolean jump = MVMisc.hasShiftDown();
 			if (prev) {
 				if (jump)
 					prevPageJump();
