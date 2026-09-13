@@ -10,7 +10,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class MVQuaternionf {
@@ -112,8 +112,8 @@ public class MVQuaternionf {
 	}
 	
 	private static final Supplier<Reflection.MethodInvoker> EntityRenderDispatcher_setRotation =
-			Reflection.getOptionalMethod(EntityRenderDispatcher.class, "method_24196", MethodType.methodType(void.class, Quaternionf_class));
-	public void applyToEntityRenderDispatcher(EntityRenderDispatcher dispatcher) {
+			Reflection.getOptionalMethod(EntityRenderManager.class, "method_24196", MethodType.methodType(void.class, Quaternionf_class));
+	public void applyToEntityRenderDispatcher(EntityRenderManager dispatcher) {
 		Version.newSwitch()
 				.range("1.19.3", null, () -> dispatcher.setRotation((Quaternionf) value))
 				.run();

@@ -13,6 +13,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.StringReader;
 
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
@@ -21,6 +22,10 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class FancyText {
+	
+	private static Identifier fontId(Style style) {
+		return style.getFont() instanceof StyleSpriteSource.Font font ? font.id() : null;
+	}
 	
 	public static Text parse(String str, Style base) {
 		List<FancyTextToken> tokens = FancyTextToken.parse(new StringReader(str));
@@ -66,7 +71,7 @@ public class FancyText {
 			if (!Objects.equals(partStyle.getClickEvent(), clickEvent.getPlain()) ||
 					!Objects.equals(partStyle.getHoverEvent(), hoverEvent.getPlain()) ||
 					!Objects.equals(partStyle.getInsertion(), insertion.getPlain()) ||
-					!Objects.equals(partStyle.font, font.getPlain())) {
+					!Objects.equals(fontId(partStyle), font.getPlain())) {
 				if (clickEvent.getPlain() != null)
 					output.append(')');
 				if (hoverEvent.getPlain() != null)
@@ -79,7 +84,7 @@ public class FancyText {
 				clickEvent.setPlain(partStyle.getClickEvent());
 				hoverEvent.setPlain(partStyle.getHoverEvent());
 				insertion.setPlain(partStyle.getInsertion());
-				font.setPlain(partStyle.font);
+				font.setPlain(fontId(partStyle));
 				if (partStyle.getClickEvent() != null) {
 					MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(partStyle.getClickEvent());
 					output.append('[');
@@ -117,9 +122,9 @@ public class FancyText {
 					output.append(partStyle.getInsertion().replace("\\", "\\\\").replace("{", "\\{").replace("}", "\\}"));
 					output.append("}(");
 				}
-				if (partStyle.font != null) {
+				if (fontId(partStyle) != null) {
 					output.append("[font]{");
-					output.append(partStyle.font.toString());
+					output.append(fontId(partStyle).toString());
 					output.append("}(");
 				}
 			}

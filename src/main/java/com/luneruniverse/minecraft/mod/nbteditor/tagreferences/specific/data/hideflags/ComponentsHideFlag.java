@@ -18,7 +18,7 @@ import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.JukeboxPlayableComponent;
-import net.minecraft.item.BlockPredicatesChecker;
+import net.minecraft.component.type.BlockPredicatesComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.equipment.trim.ArmorTrim;
 import net.minecraft.text.Text;
@@ -70,9 +70,9 @@ public class ComponentsHideFlag extends HideFlag {
 	public static final HideFlag UNBREAKABLE = registerMethodGetter("unbreakable",
 			DataComponentTypes.UNBREAKABLE, Reflection.getClass("net.minecraft.class_9300"), "comp_2417", "method_58435");
 	public static final HideFlag CAN_BREAK = registerMethodGetter("can_break",
-			DataComponentTypes.CAN_BREAK, BlockPredicatesChecker.class, "method_57324", "method_58402");
+			DataComponentTypes.CAN_BREAK, BlockPredicatesComponent.class, "method_57324", "method_58402");
 	public static final HideFlag CAN_PLACE_ON = registerMethodGetter("can_place_on",
-			DataComponentTypes.CAN_PLACE_ON, BlockPredicatesChecker.class, "method_57324", "method_58402");
+			DataComponentTypes.CAN_PLACE_ON, BlockPredicatesComponent.class, "method_57324", "method_58402");
 	public static final HideFlag MISC = register("misc",
 			(ComponentType<?>) MVComponentType.HIDE_ADDITIONAL_TOOLTIP_1_20_5_1_21_4.getInternalValue(),
 			item -> item.contains(MVComponentType.HIDE_ADDITIONAL_TOOLTIP_1_20_5_1_21_4),

@@ -50,7 +50,7 @@ public class StyleUtil {
 				Objects.equals(a.getClickEvent(), b.getClickEvent()) &&
 				Objects.equals(a.getHoverEvent(), b.getHoverEvent()) &&
 				Objects.equals(a.getInsertion(), b.getInsertion()) &&
-				Objects.equals(a.font, b.font);
+				Objects.equals(a.getFont(), b.getFont());
 		
 		if (SHADOW_COLOR_EXISTS)
 			output &= Objects.equals(a.getShadowColor(), b.getShadowColor());
@@ -89,8 +89,8 @@ public class StyleUtil {
 			output = output.withHoverEvent(style.getHoverEvent());
 		if (style.getInsertion() != null && !style.getInsertion().equals(base.getInsertion()))
 			output = output.withInsertion(style.getInsertion());
-		if (style.font != null && !style.font.equals(base.font))
-			output = output.withFont(style.font);
+		if (style.getFont() != null && !style.getFont().equals(base.getFont()))
+			output = output.withFont(style.getFont());
 		
 		if (SHADOW_COLOR_EXISTS && style.getShadowColor() != null && !style.getShadowColor().equals(base.getShadowColor()))
 			output = output.withShadowColor(style.getShadowColor());

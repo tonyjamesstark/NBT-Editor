@@ -28,7 +28,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.hideflag
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.hideflags.HideFlagsNBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.hideflags.HideFlagsTooltipDisplayComponentTagReference;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.PropertyMap;
 
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.BlockStateComponent;
@@ -61,14 +60,14 @@ public class ItemTagReferences {
 	public static final TagReference<Optional<String>, ItemStack> PROFILE_NAME = Version.<TagReference<Optional<String>, ItemStack>>newSwitch()
 			.range("1.20.5", null, () -> new ComponentTagReference<>(MVComponentType.PROFILE,
 					null,
-					component -> component == null ? Optional.empty() : component.name(),
-					name -> new ProfileComponent(name, Optional.empty(), new PropertyMap())))
+					component -> component == null ? Optional.empty() : component.getName(),
+					name -> name.map(ProfileComponent::ofDynamic).orElse(null)))
 			.get();
 	public static final TagReference<Optional<GameProfile>, ItemStack> PROFILE = Version.<TagReference<Optional<GameProfile>, ItemStack>>newSwitch()
 			.range("1.20.5", null, () -> new ComponentTagReference<>(MVComponentType.PROFILE,
 					null,
-					profile -> Optional.ofNullable(profile).map(ProfileComponent::gameProfile),
-					profile -> profile.map(ProfileComponent::new).orElse(null)))
+					profile -> Optional.ofNullable(profile).map(ProfileComponent::getGameProfile),
+					profile -> profile.map(ProfileComponent::ofStatic).orElse(null)))
 			.get();
 	
 	public static final TagReference<List<AttributeData>, ItemStack> ATTRIBUTES = Version.<TagReference<List<AttributeData>, ItemStack>>newSwitch()

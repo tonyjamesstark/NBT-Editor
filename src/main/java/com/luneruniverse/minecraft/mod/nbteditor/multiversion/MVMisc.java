@@ -63,9 +63,9 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
-import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.block.entity.BlockEntityRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.CommandRegistryAccess;
@@ -612,8 +612,8 @@ public class MVMisc {
 	}
 	
 	private static final Supplier<Reflection.MethodInvoker> EntityRenderDispatcher_render =
-			Reflection.getOptionalMethod(EntityRenderDispatcher.class, "method_3954", MethodType.methodType(void.class, Entity.class, double.class, double.class, double.class, float.class, float.class, MatrixStack.class, VertexConsumerProvider.class, int.class));
-	public static void renderEntity(EntityRenderDispatcher dispatcher, Entity entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+			Reflection.getOptionalMethod(EntityRenderManager.class, "method_3954", MethodType.methodType(void.class, Entity.class, double.class, double.class, double.class, float.class, float.class, MatrixStack.class, VertexConsumerProvider.class, int.class));
+	public static void renderEntity(EntityRenderManager dispatcher, Entity entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 		Version.newSwitch()
 				.range("1.21.2", null, () -> dispatcher.render(entity, x, y, z, tickDelta, matrices, vertexConsumers, light))
 				.run();
@@ -634,9 +634,9 @@ public class MVMisc {
 	
 	private static final Supplier<Reflection.MethodInvoker> BlockEntityRenderer_render =
 			Reflection.getOptionalMethod(BlockEntityRenderer.class, "method_3569", MethodType.methodType(void.class, BlockEntity.class, float.class, MatrixStack.class, VertexConsumerProvider.class, int.class, int.class));
-	// From BlockEntityRenderDispatcher#renderEntity (1.21.3)
+	// From BlockEntityRenderManager#renderEntity (1.21.3)
 	// Edited to input a tickDelta and use default light and overlay values
-	public static <T extends BlockEntity> boolean renderBlockEntity(BlockEntityRenderDispatcher dispatcher, T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider provider) {
+	public static <T extends BlockEntity> boolean renderBlockEntity(BlockEntityRenderManager dispatcher, T entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider provider) {
 		BlockEntityRenderer<T> renderer = dispatcher.get(entity);
 		if (renderer == null)
 			return true;

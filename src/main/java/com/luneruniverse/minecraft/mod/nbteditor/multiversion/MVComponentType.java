@@ -17,7 +17,7 @@ import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.component.type.SuspiciousStewEffectsComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.component.type.WrittenBookContentComponent;
-import net.minecraft.item.BlockPredicatesChecker;
+import net.minecraft.component.type.BlockPredicatesComponent;
 import net.minecraft.item.equipment.trim.ArmorTrim;
 import net.minecraft.text.Text;
 import net.minecraft.util.Unit;
@@ -30,9 +30,9 @@ public class MVComponentType<T> {
 			new MVComponentType<>(() -> DataComponentTypes.BLOCK_ENTITY_DATA);
 	public static final MVComponentType<BlockStateComponent> BLOCK_STATE =
 			new MVComponentType<>(() -> DataComponentTypes.BLOCK_STATE);
-	public static final MVComponentType<BlockPredicatesChecker> CAN_BREAK =
+	public static final MVComponentType<BlockPredicatesComponent> CAN_BREAK =
 			new MVComponentType<>(() -> DataComponentTypes.CAN_BREAK);
-	public static final MVComponentType<BlockPredicatesChecker> CAN_PLACE_ON =
+	public static final MVComponentType<BlockPredicatesComponent> CAN_PLACE_ON =
 			new MVComponentType<>(() -> DataComponentTypes.CAN_PLACE_ON);
 	public static final MVComponentType<NbtComponent> CUSTOM_DATA =
 			new MVComponentType<>(() -> DataComponentTypes.CUSTOM_DATA);

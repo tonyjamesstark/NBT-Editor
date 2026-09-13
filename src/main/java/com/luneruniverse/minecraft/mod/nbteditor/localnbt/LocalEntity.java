@@ -26,7 +26,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.Entity;
@@ -153,7 +153,7 @@ public class LocalEntity implements LocalNBT {
 		
 		DiffuseLighting.enableGuiShaderLighting();
 		VertexConsumerProvider.Immediate provider = MVDrawableHelper.getVertexConsumerProvider();
-		EntityRenderDispatcher dispatcher = MainUtil.client.getEntityRenderDispatcher();
+		EntityRenderManager dispatcher = MainUtil.client.getEntityRenderDispatcher();
 		dispatcher.setRenderShadows(false);
 		rotation.applyToEntityRenderDispatcher(dispatcher);
 		MVMisc.renderEntity(dispatcher, getCachedEntity(), 0, 0, 0, 0, tickDelta, renderMatrices, provider, 0xF000F0);
