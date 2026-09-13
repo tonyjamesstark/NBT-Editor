@@ -5,8 +5,12 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.DynamicOps;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.nbt.InvalidNbtException;
@@ -111,22 +115,19 @@ public class TextInst {
 		return toNbt(text).toString();
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> Text$Serialization_fromJson =
-			Reflection.getOptionalMethod(Text.Serialization.class, "method_10877", MethodType.methodType(MutableText.class, String.class));
 	/**
 	 * <strong>CONSIDER USING {@link TextUtil#fromJsonSafely(String)}</strong>
 	 */
-	public static @Nullable Text fromJson(String json) throws JsonParseException {
-		return Version.<Text>newSwitch()
-				.range("1.20.5", null, () -> Text.Serialization.fromJson(json, DynamicRegistryManagerHolder.get()))
-				.get();
+	private static DynamicOps<JsonElement> jsonOps() {
+		return DynamicRegistryManagerHolder.get().getOps(JsonOps.INSTANCE);
 	}
-	private static final Supplier<Reflection.MethodInvoker> Text$Serialization_toJsonString =
-			Reflection.getOptionalMethod(Text.Serialization.class, "method_10867", MethodType.methodType(String.class, Text.class));
+	public static @Nullable Text fromJson(String json) throws JsonParseException {
+		return Attempt.ofResult(TextCodecs.CODEC.parse(jsonOps(), JsonParser.parseString(json)))
+				.getSuccessOrThrow(JsonParseException::new);
+	}
 	public static String toJson(Text text) throws JsonParseException {
-		return Version.<String>newSwitch()
-				.range("1.20.5", null, () -> Text.Serialization.toJsonString(text, DynamicRegistryManagerHolder.get()))
-				.get();
+		return Attempt.ofResult(TextCodecs.CODEC.encodeStart(jsonOps(), text))
+				.getSuccessOrThrow(JsonParseException::new).toString();
 	}
 	
 	public static Text fromNbt(NbtElement nbt) throws InvalidNbtException {

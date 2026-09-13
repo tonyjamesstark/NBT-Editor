@@ -50,7 +50,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 		this.overlay = overlay;
 		this.overlayScreen = overlay;
 		this.overlayZ = z;
-		overlay.init(client, width, height);
+		overlay.init(width, height);
 		if (overlay instanceof InitializableOverlay<?> initable)
 			initable.initUnchecked(this);
 		return overlay;
@@ -73,7 +73,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	@Override
 	protected void init() {
 		if (overlayScreen != null)
-			overlayScreen.init(client, width, height);
+			overlayScreen.init(width, height);
 		if (overlay instanceof InitializableOverlay<?> initable)
 			initable.initUnchecked(this);
 	}

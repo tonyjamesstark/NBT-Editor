@@ -113,7 +113,7 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	@Override
 	public boolean mouseClicked(Click click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-		return suggestor.mouseClicked(click, doubled) || !isDropdownOnly() && super.mouseClicked(click, doubled);
+		return suggestor.mouseClicked(click) || !isDropdownOnly() && super.mouseClicked(click, doubled);
 	}
 	
 	@Override
