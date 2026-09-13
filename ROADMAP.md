@@ -193,14 +193,46 @@ fixed game version, with no API drift mixed in. Going straight from 1.21.5/Yarn 
 blends rename errors, API-change errors, and a six-minor-version loom upgrade into one failure
 surface with no way to attribute any single break.
 
+### What the first build taught us (2026-09-13)
+
+Four corrections, recorded before the plan below is read again.
+
+**Loom 1.16 split into two plugins.** `net.fabricmc.fabric-loom-remap` builds against a mapped
+game; `net.fabricmc.fabric-loom` builds against a deobfuscated one. At 26.2 there is no remapping
+stage at all: no `mappings` line, `implementation` instead of `modImplementation`, and no
+`remapJar`. That removes the ground under `mergeRefmapJson`, `mergeLibs` and `mergeDevLibs` in
+`build.gradle`, and `loom:injected_interfaces` needs re-checking against the new plugin.
+
+**The target toolchain is already in place.** Gradle 9.5.1 and Loom 1.16.2 landed during 4.1
+rather than 4.5, because ModMenu 17.0.0 is itself built with Loom 1.14.6 and refuses an older
+one. Only `minecraft_version`, `yarn_mappings` and `fabric_version` are left for 4.5.
+
+**Both third-party mods publish for 26.2.** ModMenu 20.0.2 and nbt-autocomplete
+1.3.15-fabric-26.2. This was listed as unresolved; it is resolved.
+
+**4.1's premise was wrong, and 4.1 cannot finish without 4.2.** Names do move between 1.21.5 and
+1.21.11. Two vanilla rewrites land in that window. The input callbacks on `Element` became
+records, which is done. The rendering stack was rebuilt, which is not: `DrawContext.getMatrices`
+returns a `Matrix3x2fStack`, `RenderSystem.setShaderColor`, `enableScissor` and `disableScissor`
+are gone, `RenderLayer` lost `MultiPhaseParameters` and `RenderPhase` entirely. The ~95 remaining
+errors sit overwhelmingly in code that 4.2 deletes, so fixing them before 4.2 is wasted work.
+
+Renames confirmed against the 1.21.11 jar: `EntityRenderDispatcher` to `EntityRenderManager`,
+`BlockPredicatesChecker` to `BlockPredicatesComponent`, `Text.Serialization` to `TextCodecs`,
+`Style.font` from `Identifier` to `StyleSpriteSource`, and the static `Screen.hasShiftDown`
+family replaced by `hasShift`/`hasCtrl`/`hasAlt` on the input record.
+
 ### Sequence
 
 Each step ends in a build. Do not start the next until the previous compiles.
 
-- [ ] **4.1 Bump 1.21.5 to 1.21.11, staying on Yarn.** Names do not move. `minecraft_version`,
-  `yarn_mappings`, `fabric_version`, `loader_version`, and a `1.21.11` entry in
-  `data_versions.json`, which currently tops out at 1.21.5 across 54 entries. This step proves
-  the open-ended `range("1.21.x", null, ...)` arms actually work.
+- [x] **4.1a Toolchain to 1.21.11.** Minecraft 1.21.11, Yarn 1.21.11+build.6, fabric-api 0.141.6,
+  loader 0.17.3, Gradle 9.5.1, Loom 1.16.2 on `fabric-loom-remap`. `data_versions.json` gains
+  1.21.6 through 1.21.11, and 1.21.5 is corrected from 4324 to 4325.
+- [x] **4.1b Input callbacks to the event records.** `Click`, `KeyInput` and `CharInput` across
+  roughly 200 sites, done by codemod. Signatures take the record; a destructuring prologue keeps
+  each body's existing names, so no body was rewritten.
+- [ ] **4.1c The rendering stack.** Blocked behind 4.2 by choice, not by necessity.
 - [ ] **4.2 Raise the floor and subtract.** Delete the pre-1.21.11 arms across all 270
   `newSwitch()` sites and 568 `range()` calls, the `nbteditor_1.17` module, and
   `MVShader1`/`MVShader2`. Do this *before* the rename so 4.3 does not pay migration cost on code
