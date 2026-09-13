@@ -7,6 +7,7 @@ import java.util.List;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
@@ -88,22 +89,24 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
-			if (path.mouseClicked(mouseX - PADDING * 2, mouseY - yOffset, button))
+			if (path.mouseClicked(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo()), doubled))
 				return true;
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
 		return false;
 	}
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(Click click) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
-			if (path.mouseReleased(mouseX - PADDING * 2, mouseY - yOffset, button))
+			if (path.mouseReleased(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo())))
 				return true;
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
@@ -119,12 +122,13 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 		}
 	}
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
 			// Buttons return true by default, causing problems with returning early
-			path.mouseDragged(mouseX - PADDING * 2, mouseY - yOffset, button, deltaX, deltaY);
+			path.mouseDragged(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo()), deltaX, deltaY);
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
 		return false;

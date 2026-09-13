@@ -3,6 +3,9 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InitializableOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -105,17 +108,19 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		if (overlay != null)
-			return overlay.mouseClicked(mouseX, mouseY, button);
-		return super.mouseClicked(mouseX, mouseY, button);
+			return overlay.mouseClicked(click, doubled);
+		return super.mouseClicked(click, doubled);
 	}
 	
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(Click click) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		if (overlay != null)
-			return overlay.mouseReleased(mouseX, mouseY, button);
-		return super.mouseReleased(mouseX, mouseY, button);
+			return overlay.mouseReleased(click);
+		return super.mouseReleased(click);
 	}
 	
 	@Override
@@ -127,10 +132,11 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		if (overlay != null)
-			return overlay.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+			return overlay.mouseDragged(click, deltaX, deltaY);
+		return super.mouseDragged(click, deltaX, deltaY);
 	}
 	
 	@Override
@@ -141,24 +147,27 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (overlay != null)
-			return overlay.keyPressed(keyCode, scanCode, modifiers);
-		return super.keyPressed(keyCode, scanCode, modifiers);
+			return overlay.keyPressed(input);
+		return super.keyPressed(input);
 	}
 	
 	@Override
-	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+	public boolean keyReleased(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (overlay != null)
-			return overlay.keyReleased(keyCode, scanCode, modifiers);
-		return super.keyReleased(keyCode, scanCode, modifiers);
+			return overlay.keyReleased(input);
+		return super.keyReleased(input);
 	}
 	
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
+	public boolean charTyped(CharInput input) {
+		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		if (overlay != null)
-			return overlay.charTyped(chr, modifiers);
-		return super.charTyped(chr, modifiers);
+			return overlay.charTyped(input);
+		return super.charTyped(input);
 	}
 	
 }

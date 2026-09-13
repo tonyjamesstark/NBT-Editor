@@ -8,6 +8,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
@@ -99,15 +102,16 @@ public abstract class Panel<T extends Drawable & Element> implements MVDrawable,
 	
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		updateMousePos(mouseX, mouseY);
 		
-		if (scrollBar.mouseClicked(mouseX, mouseY, button))
+		if (scrollBar.mouseClicked(click, doubled))
 			return true;
 		
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().mouseClicked(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, button)) {
+			if (pos.element().mouseClicked(new Click(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()), doubled)) {
 				success = true;
 				if (!continueEvents())
 					break;
@@ -117,12 +121,13 @@ public abstract class Panel<T extends Drawable & Element> implements MVDrawable,
 	}
 	
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(Click click) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		updateMousePos(mouseX, mouseY);
 		
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().mouseReleased(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, button)) {
+			if (pos.element().mouseReleased(new Click(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()))) {
 				success = true;
 				if (!continueEvents())
 					break;
@@ -140,15 +145,16 @@ public abstract class Panel<T extends Drawable & Element> implements MVDrawable,
 	}
 	
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		updateMousePos(mouseX, mouseY);
 		
-		if (scrollBar.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
+		if (scrollBar.mouseDragged(click, deltaX, deltaY))
 			return true;
 		
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().mouseDragged(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, button, deltaX, deltaY)) {
+			if (pos.element().mouseDragged(new Click(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()), deltaX, deltaY)) {
 				success = true;
 				if (!continueEvents())
 					break;
@@ -186,10 +192,11 @@ public abstract class Panel<T extends Drawable & Element> implements MVDrawable,
 	
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().keyPressed(keyCode, scanCode, modifiers)) {
+			if (pos.element().keyPressed(input)) {
 				success = true;
 				if (!continueEvents())
 					break;
@@ -198,10 +205,11 @@ public abstract class Panel<T extends Drawable & Element> implements MVDrawable,
 		return success;
 	}
 	@Override
-	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+	public boolean keyReleased(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().keyReleased(keyCode, scanCode, modifiers)) {
+			if (pos.element().keyReleased(input)) {
 				success = true;
 				if (!continueEvents())
 					break;
@@ -210,10 +218,11 @@ public abstract class Panel<T extends Drawable & Element> implements MVDrawable,
 		return success;
 	}
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
+	public boolean charTyped(CharInput input) {
+		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().charTyped(chr, modifiers)) {
+			if (pos.element().charTyped(input)) {
 				success = true;
 				if (!continueEvents())
 					break;

@@ -8,6 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class ScrollBarWidget implements MVDrawable, MVElement {
@@ -45,7 +46,8 @@ public class ScrollBarWidget implements MVDrawable, MVElement {
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y();
 		if (mouseX >= x && mouseX <= x + 8) {
 			dragging = true;
 			dragStartMouseY = mouseY;
@@ -58,7 +60,8 @@ public class ScrollBarWidget implements MVDrawable, MVElement {
 	}
 	
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseY = click.y();
 		if (!dragging)
 			return false;
 		

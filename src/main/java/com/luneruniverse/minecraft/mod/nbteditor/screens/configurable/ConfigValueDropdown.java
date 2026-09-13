@@ -11,6 +11,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMatrix4f;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -108,8 +110,9 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		boolean output = super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		boolean output = super.mouseClicked(click, doubled);
 		if (!output && this.active && this.visible && open && mouseX >= this.x && mouseX < this.x + this.width) {
 			int i = 0;
 			for (T option : allValues) {
@@ -186,7 +189,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
 		return false; // Stop space from triggering the button
 	}
 	

@@ -23,6 +23,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldW
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -72,9 +74,10 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		
 		name = new NamedTextFieldWidget(16 + (32 + 8) * 2, 16 + 8, 100, 16) {
 			@Override
-			public boolean mouseClicked(double mouseX, double mouseY, int button) {
+			public boolean mouseClicked(Click click, boolean doubled) {
+				double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 				if (isNameEditable())
-					return super.mouseClicked(mouseX, mouseY, button);
+					return super.mouseClicked(click, doubled);
 				else
 					return false;
 			}
@@ -154,10 +157,11 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (getOverlay() != null)
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		if (super.keyPressed(keyCode, scanCode, modifiers))
+			return super.keyPressed(input);
+		if (super.keyPressed(input))
 			return true;
 		
 		if (hasControlDown() && !hasShiftDown() && !hasAltDown() && keyCode == GLFW.GLFW_KEY_S) {
@@ -165,7 +169,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 			return true;
 		}
 		
-		return name.keyPressed(keyCode, scanCode, modifiers);
+		return name.keyPressed(input);
 	}
 	
 	protected void setSaved(boolean saved) {

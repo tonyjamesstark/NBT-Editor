@@ -38,6 +38,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -217,7 +218,7 @@ public class MixinLink {
 		}
 	}
 	
-	public static void keyPressed(HandledScreen<?> source, int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> info) {
+	public static void keyPressed(HandledScreen<?> source, KeyInput input, CallbackInfoReturnable<Boolean> info) {
 		boolean creativeInv = (source instanceof CreativeInventoryScreen);
 		
 		Slot hoveredSlot = ((HandledScreenAccessor) source).getFocusedSlot();
@@ -230,7 +231,7 @@ public class MixinLink {
 						(!creativeInv && NBTEditorClient.SERVER_CONN.isScreenEditable())) &&
 				(!(source instanceof InventoryScreen) || hoveredSlot.id > 4) &&
 				(ConfigScreen.isAirEditable() || hoveredSlot.getStack() != null && !hoveredSlot.getStack().isEmpty())) {
-			if (ClientHandledScreen.handleKeybind(keyCode, hoveredSlot.getStack(),
+			if (ClientHandledScreen.handleKeybind(input.key(), hoveredSlot.getStack(),
 					ItemReference.getContainerItem(source, hoveredSlot))) {
 				info.setReturnValue(true);
 			}

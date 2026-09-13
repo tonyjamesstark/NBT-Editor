@@ -15,6 +15,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -85,9 +87,10 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		navigationClicked = false;
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(click, doubled);
 	}
 	
 	@Override
@@ -129,7 +132,8 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 		});
 	}
 	
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (MainUtil.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
 			ref.showParent();
 			return true;
@@ -142,7 +146,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 			}
 		}
 		
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 	private ContainerItemReference<L> getContainerRef(int slot) {
 		ItemStack[] contents = new ItemStack[this.handler.getInventory().size()];

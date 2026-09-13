@@ -15,6 +15,8 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -110,8 +112,9 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		return suggestor.mouseClicked(mouseX, mouseY, button) || !isDropdownOnly() && super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return suggestor.mouseClicked(click, doubled) || !isDropdownOnly() && super.mouseClicked(click, doubled);
 	}
 	
 	@Override
@@ -120,10 +123,11 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (!isMultiFocused())
 			return false;
-		return suggestor.keyPressed(keyCode, scanCode, modifiers) || !isDropdownOnly() && super.keyPressed(keyCode, scanCode, modifiers);
+		return suggestor.keyPressed(input) || !isDropdownOnly() && super.keyPressed(input);
 	}
 	
 	@Override

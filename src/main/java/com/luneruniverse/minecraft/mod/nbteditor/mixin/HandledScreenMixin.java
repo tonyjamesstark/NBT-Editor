@@ -10,6 +10,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.ItemStack;
@@ -34,10 +35,10 @@ public class HandledScreenMixin {
 	}
 	
 	@Inject(method = "keyPressed", at = @At(value = "HEAD"), cancellable = true)
-	private void keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> info) {
+	private void keyPressed(KeyInput input, CallbackInfoReturnable<Boolean> info) {
 		HandledScreen<?> source = (HandledScreen<?>) (Object) this;
 		if (source instanceof CreativeInventoryScreen || source instanceof ClientHandledScreen)
 			return;
-		MixinLink.keyPressed(source, keyCode, scanCode, modifiers, info);
+		MixinLink.keyPressed(source, input, info);
 	}
 }

@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -66,7 +67,8 @@ public class MVSliderWidget extends MVButtonWidget {
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		if (button != GLFW.GLFW_MOUSE_BUTTON_1 || !isMouseOver(mouseX, mouseY))
 			return false;
 		setValueFromMouse(mouseX);
@@ -74,7 +76,8 @@ public class MVSliderWidget extends MVButtonWidget {
 	}
 	
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); int button = click.button();
 		if (button != GLFW.GLFW_MOUSE_BUTTON_1)
 			return false;
 		setValueFromMouse(mouseX);
@@ -82,7 +85,8 @@ public class MVSliderWidget extends MVButtonWidget {
 	}
 	
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(Click click) {
+		int button = click.button();
 		if (button != GLFW.GLFW_MOUSE_BUTTON_1)
 			return false;
 		playDownSound(MinecraftClient.getInstance().getSoundManager());

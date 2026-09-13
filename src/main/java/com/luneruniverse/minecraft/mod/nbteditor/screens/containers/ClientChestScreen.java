@@ -19,6 +19,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.item.ItemStack;
@@ -90,20 +92,22 @@ public class ClientChestScreen extends ClientHandledScreen {
 		
 		nameField = new NamedTextFieldWidget(this.x - 87, this.y, 83, 16) {
 			@Override
-			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				boolean output = super.mouseClicked(mouseX, mouseY, button);
+			public boolean mouseClicked(Click click, boolean doubled) {
+				double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+				boolean output = super.mouseClicked(click, doubled);
 				if (output)
 					navigationClicked = true;
 				return output;
 			}
 			@Override
-			public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+			public boolean keyPressed(KeyInput input) {
+				int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 				if (keyCode == GLFW.GLFW_KEY_ENTER && !nameField.isValid()) {
 					nameField.setValid(true);
 					ClientChestHelper.setNameOfPage(PAGE, nameField.getText());
 					return true;
 				}
-				return super.keyPressed(keyCode, scanCode, modifiers);
+				return super.keyPressed(input);
 			}
 		}.name(TextInst.translatable("nbteditor.client_chest.page_name"));
 		nameField.setMaxLength(Integer.MAX_VALUE);
@@ -119,8 +123,9 @@ public class ClientChestScreen extends ClientHandledScreen {
 		
 		pageField = new TextFieldWidget(textRenderer, this.x - 63, this.y + 22, 35, 16, TextInst.of("")) {
 			@Override
-			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				boolean output = super.mouseClicked(mouseX, mouseY, button);
+			public boolean mouseClicked(Click click, boolean doubled) {
+				double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+				boolean output = super.mouseClicked(click, doubled);
 				if (output)
 					navigationClicked = true;
 				return output;
@@ -225,7 +230,8 @@ public class ClientChestScreen extends ClientHandledScreen {
 		pageField.tick();
 	}
 	
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		navigationClicked = false;
 		
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
@@ -263,17 +269,18 @@ public class ClientChestScreen extends ClientHandledScreen {
 			}
 		}
 		
-		return !this.nameField.keyPressed(keyCode, scanCode, modifiers) && !this.nameField.isActive() &&
-				!this.pageField.keyPressed(keyCode, scanCode, modifiers) && !this.pageField.isActive()
-				? super.keyPressed(keyCode, scanCode, modifiers) : true;
+		return !this.nameField.keyPressed(input) && !this.nameField.isActive() &&
+				!this.pageField.keyPressed(input) && !this.pageField.isActive()
+				? super.keyPressed(input) : true;
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		navigationClicked = false;
-		MVMisc.setKeyboardRepeatEvents(this.nameField.mouseClicked(mouseX, mouseY, button) ||
-				this.pageField.mouseClicked(mouseX, mouseY, button));
-		super.mouseClicked(mouseX, mouseY, button);
+		MVMisc.setKeyboardRepeatEvents(this.nameField.mouseClicked(click, doubled) ||
+				this.pageField.mouseClicked(click, doubled));
+		super.mouseClicked(click, doubled);
 		return true;
 	}
 	

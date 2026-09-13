@@ -7,6 +7,9 @@ import java.util.function.UnaryOperator;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
@@ -92,12 +95,14 @@ public class List2D extends Panel<List2D.List2DValue> {
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		return super.mouseClicked(mouseX, mouseY, button) || finalEventHandler.mouseClicked(mouseX - x, mouseY - y, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return super.mouseClicked(click, doubled) || finalEventHandler.mouseClicked(new Click(mouseX - x, mouseY - y, click.buttonInfo()), doubled);
 	}
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		return super.mouseReleased(mouseX, mouseY, button) || finalEventHandler.mouseReleased(mouseX - x, mouseY - y, button);
+	public boolean mouseReleased(Click click) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return super.mouseReleased(click) || finalEventHandler.mouseReleased(new Click(mouseX - x, mouseY - y, click.buttonInfo()));
 	}
 	
 	@Override
@@ -106,8 +111,9 @@ public class List2D extends Panel<List2D.List2DValue> {
 		finalEventHandler.mouseMoved(mouseX, mouseY);
 	}
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY) || finalEventHandler.mouseDragged(mouseX - x, mouseY - y, button, deltaX, deltaY);
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return super.mouseDragged(click, deltaX, deltaY) || finalEventHandler.mouseDragged(new Click(mouseX - x, mouseY - y, click.buttonInfo()), deltaX, deltaY);
 	}
 	@Override
 	protected void updateMousePos(double mouseX, double mouseY) {
@@ -132,16 +138,19 @@ public class List2D extends Panel<List2D.List2DValue> {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return super.keyPressed(keyCode, scanCode, modifiers) || finalEventHandler.keyPressed(keyCode, scanCode, modifiers);
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+		return super.keyPressed(input) || finalEventHandler.keyPressed(input);
 	}
 	@Override
-	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-		return super.keyReleased(keyCode, scanCode, modifiers) || finalEventHandler.keyReleased(keyCode, scanCode, modifiers);
+	public boolean keyReleased(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+		return super.keyReleased(input) || finalEventHandler.keyReleased(input);
 	}
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
-		return super.charTyped(chr, modifiers) || finalEventHandler.charTyped(chr, modifiers);
+	public boolean charTyped(CharInput input) {
+		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
+		return super.charTyped(input) || finalEventHandler.charTyped(input);
 	}
 	
 	

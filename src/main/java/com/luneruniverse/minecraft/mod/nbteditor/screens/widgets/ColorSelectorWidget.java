@@ -15,6 +15,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVSliderWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
@@ -66,14 +68,16 @@ public class ColorSelectorWidget extends GroupWidget {
 			MainUtil.fillShader(matrices, Shaders.POSITION_HSV, vertex -> MVMisc.setVertexLight(vertex, hueValue), x, y, areaSize, areaSize);
 		}
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(Click click, boolean doubled) {
+			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 			if (button != GLFW.GLFW_MOUSE_BUTTON_1 || !isMouseOver(mouseX, mouseY))
 				return false;
-			mouseDragged(mouseX, mouseY, button, 0, 0);
+			mouseDragged(click, 0, 0);
 			return true;
 		}
 		@Override
-		public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 			if (button != GLFW.GLFW_MOUSE_BUTTON_1)
 				return false;
 			mouseX = MathHelper.clamp(mouseX, x, x + areaSize);
@@ -113,7 +117,8 @@ public class ColorSelectorWidget extends GroupWidget {
 				return true;
 			}
 			@Override
-			public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+			public boolean keyPressed(KeyInput input) {
+				int keyCode = input.key();
 				if (keyCode == GLFW.GLFW_KEY_RIGHT) {
 					setValue(getValue() + 1 / 359.0);
 					return true;

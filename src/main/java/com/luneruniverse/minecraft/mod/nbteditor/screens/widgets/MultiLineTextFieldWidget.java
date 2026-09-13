@@ -27,6 +27,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
@@ -190,7 +193,8 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 		}
 		
 		@Override
-		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		public boolean keyPressed(KeyInput input) {
+			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 			if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 				OverlaySupportingScreen.setOverlayStatic(null);
 				return true;
@@ -212,7 +216,7 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 				return true;
 			}
 			
-			return super.keyPressed(keyCode, scanCode, modifiers);
+			return super.keyPressed(input);
 		}
 		
 		@Override
@@ -520,10 +524,11 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		if (suggestor != null) {
 			syncToSuggestor();
-			if (suggestor.mouseClicked(mouseX, mouseY, button)) {
+			if (suggestor.mouseClicked(click, doubled)) {
 				syncFromSuggestor();
 				return true;
 			}
@@ -531,7 +536,7 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 		if (!isMouseOver(mouseX, mouseY))
 			return false;
 		
-		if (scrollBar.mouseClicked(mouseX, mouseY, button))
+		if (scrollBar.mouseClicked(click, doubled))
 			return true;
 		
 		setCursor(getCharPos(mouseX, mouseY - scroll), true);
@@ -540,8 +545,9 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	}
 	
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		if (scrollBar.mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		if (scrollBar.mouseDragged(click, deltaX, deltaY))
 			return true;
 		if (!isMouseOver(mouseX, mouseY))
 			return false;
@@ -695,10 +701,11 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (suggestor != null && (keyCode != GLFW.GLFW_KEY_UP && keyCode != GLFW.GLFW_KEY_DOWN || Screen.hasAltDown())) {
 			syncToSuggestor();
-			if (suggestor.keyPressed(keyCode, scanCode, modifiers)) {
+			if (suggestor.keyPressed(input)) {
 				syncFromSuggestor();
 				return true;
 			}
@@ -931,7 +938,8 @@ public class MultiLineTextFieldWidget implements MVDrawable, MVElement, Tickable
 	}
 	
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
+	public boolean charTyped(CharInput input) {
+		char chr = (char) input.codepoint();
 		if (MVMisc.isValidChar(chr)) {
 			this.write(Character.toString(chr));
 			cursorX = -1;

@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.util.math.MatrixStack;
@@ -59,11 +60,12 @@ public class TranslatedGroupWidget extends GroupWidget {
 	protected void renderPost(MatrixStack matrices, int mouseX, int mouseY, float delta) {}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		mouseX -= x;
 		mouseY -= y;
 		return mouseClickedPre(mouseX, mouseY, button) ||
-				super.mouseClicked(mouseX, mouseY, button) ||
+				super.mouseClicked(click, doubled) ||
 				mouseClickedPost(mouseX, mouseY, button);
 	}
 	protected boolean mouseClickedPre(double mouseX, double mouseY, int button) {
@@ -74,11 +76,12 @@ public class TranslatedGroupWidget extends GroupWidget {
 	}
 	
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(Click click) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		mouseX -= x;
 		mouseY -= y;
 		return mouseReleasedPre(mouseX, mouseY, button) ||
-				super.mouseReleased(mouseX, mouseY, button) ||
+				super.mouseReleased(click) ||
 				mouseReleasedPost(mouseX, mouseY, button);
 	}
 	protected boolean mouseReleasedPre(double mouseX, double mouseY, int button) {
@@ -100,11 +103,12 @@ public class TranslatedGroupWidget extends GroupWidget {
 	protected void mouseMovedPost(double mouseX, double mouseY) {}
 	
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		mouseX -= x;
 		mouseY -= y;
 		return mouseDraggedPre(mouseX, mouseY, button, deltaX, deltaY) ||
-				super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY) ||
+				super.mouseDragged(click, deltaX, deltaY) ||
 				mouseDraggedPost(mouseX, mouseY, button, deltaX, deltaY);
 	}
 	protected boolean mouseDraggedPre(double mouseX, double mouseY, int button, double deltaX, double deltaY) {

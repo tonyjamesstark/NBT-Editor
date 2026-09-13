@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -56,8 +57,9 @@ public class ConfigValueSlider<T extends Number> extends SliderWidget implements
 	private double mouseClickX = -1;
 	private double mouseClickY = -1;
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		boolean output = super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		boolean output = super.mouseClicked(click, doubled);
 		if (output) {
 			mouseClickX = mouseX;
 			mouseClickY = mouseY;

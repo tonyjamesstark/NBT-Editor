@@ -25,6 +25,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -145,7 +146,8 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			OverlaySupportingScreen.setOverlayStatic(null);
 			return true;
@@ -156,7 +158,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 			return true;
 		}
 		
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 	
 }

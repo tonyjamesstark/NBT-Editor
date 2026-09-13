@@ -17,6 +17,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.StringJsonWriterQuoted;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.NbtCompound;
@@ -118,7 +119,8 @@ public class NBTValue extends List2D.List2DValue {
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y();
 		if (isHovering((int) mouseX, (int) mouseY)) {
 			if (key == null) {
 				screen.selectNbt(null, true);

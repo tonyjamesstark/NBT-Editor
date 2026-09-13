@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.text.Text;
 
 public class StringInput extends GroupWidget implements InputOverlay.Input<String> {
@@ -86,8 +87,9 @@ public class StringInput extends GroupWidget implements InputOverlay.Input<Strin
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		boolean output = super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		boolean output = super.mouseClicked(click, doubled);
 		if (!output)
 			setFocused(null);
 		return output;

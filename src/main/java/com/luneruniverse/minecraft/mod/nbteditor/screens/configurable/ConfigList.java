@@ -16,6 +16,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -171,7 +174,8 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		
 		
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(Click click, boolean doubled) {
+			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 			if (contextMenuOpen) {
 				if (mouseX >= contextMenuX && mouseX <= contextMenuX + 50 && mouseY >= contextMenuY && mouseY <= contextMenuY + LIST_CONTEXT_MENU_HEIGHT) {
 					if (mouseX > contextMenuX && mouseX < contextMenuX + 50) {
@@ -278,19 +282,21 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 				}
 			}
 			
-			return value.mouseClicked(mouseX - indexTextOffset, mouseY, button);
+			return value.mouseClicked(new Click(mouseX - indexTextOffset, mouseY, click.buttonInfo()), doubled);
 		}
 		@Override
-		public boolean mouseReleased(double mouseX, double mouseY, int button) {
-			return value.mouseReleased(mouseX - indexTextOffset, mouseY, button);
+		public boolean mouseReleased(Click click) {
+			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+			return value.mouseReleased(new Click(mouseX - indexTextOffset, mouseY, click.buttonInfo()));
 		}
 		@Override
 		public void mouseMoved(double mouseX, double mouseY) {
 			value.mouseMoved(mouseX - indexTextOffset, mouseY);
 		}
 		@Override
-		public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-			return value.mouseDragged(mouseX - indexTextOffset, mouseY, button, deltaX, deltaY);
+		public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+			return value.mouseDragged(new Click(mouseX - indexTextOffset, mouseY, click.buttonInfo()), deltaX, deltaY);
 		}
 		@Override
 		public boolean mouseScrolled(double mouseX, double mouseY, double xAmount, double yAmount) {
@@ -298,16 +304,19 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		}
 		
 		@Override
-		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-			return value.keyPressed(keyCode, scanCode, modifiers);
+		public boolean keyPressed(KeyInput input) {
+			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+			return value.keyPressed(input);
 		}
 		@Override
-		public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-			return value.keyReleased(keyCode, scanCode, modifiers);
+		public boolean keyReleased(KeyInput input) {
+			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+			return value.keyReleased(input);
 		}
 		@Override
-		public boolean charTyped(char chr, int modifiers) {
-			return value.charTyped(chr, modifiers);
+		public boolean charTyped(CharInput input) {
+			char chr = (char) input.codepoint(); int modifiers = input.modifiers();
+			return value.charTyped(input);
 		}
 		
 		@Override

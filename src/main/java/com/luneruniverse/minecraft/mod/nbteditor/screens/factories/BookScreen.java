@@ -26,6 +26,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldW
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.TranslatedGroupWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.WrittenBookTagReferences;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.ingame.BookScreen.Contents;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Style;
@@ -206,12 +207,13 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 					net.minecraft.client.gui.screen.ingame.BookScreen preview =
 							new net.minecraft.client.gui.screen.ingame.BookScreen(getPreviewItem()) {
 						@Override
-						public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+						public boolean keyPressed(KeyInput input) {
+							int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 							if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 								setOverlay(null);
 								return true;
 							}
-							return super.keyPressed(keyCode, scanCode, modifiers);
+							return super.keyPressed(input);
 						}
 					};
 					setOverlayScreen(preview, 200);
@@ -254,10 +256,11 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (getOverlay() != null)
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		if (super.keyPressed(keyCode, scanCode, modifiers))
+			return super.keyPressed(input);
+		if (super.keyPressed(input))
 			return true;
 		
 		if (keyCode == GLFW.GLFW_KEY_PAGE_UP || keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {

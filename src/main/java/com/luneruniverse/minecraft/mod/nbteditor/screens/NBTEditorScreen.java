@@ -43,6 +43,8 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -264,7 +266,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		editor = new List2D(16, editorY, width - 16 * 2, height - editorY - 16 * 2 - 8, 4, 32, 32, 8)
 				.setFinalEventHandler(new MVElement() {
 					@Override
-					public boolean mouseClicked(double mouseX, double mouseY, int button) {
+					public boolean mouseClicked(Click click, boolean doubled) {
 						selectedValue = null;
 						value.setText("");
 						value.setEditable(false);
@@ -408,19 +410,20 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (getOverlay() != null)
-			return super.keyPressed(keyCode, scanCode, modifiers);
+			return super.keyPressed(input);
 		
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			close();
 			return true;
 		}
 		
-		return !type.keyPressed(keyCode, scanCode, modifiers) && !type.isActive() &&
-				!count.keyPressed(keyCode, scanCode, modifiers) && !count.isActive() &&
-				!path.keyPressed(keyCode, scanCode, modifiers) && !path.isActive() &&
-				!value.keyPressed(keyCode, scanCode, modifiers) && !value.isActive()
+		return !type.keyPressed(input) && !type.isActive() &&
+				!count.keyPressed(input) && !count.isActive() &&
+				!path.keyPressed(input) && !path.isActive() &&
+				!value.keyPressed(input) && !value.isActive()
 				? keyPressed2(keyCode, scanCode, modifiers) : true;
 	}
 	private boolean keyPressed2(int keyCode, int scanCode, int modifiers) {
@@ -443,7 +446,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				add();
 		}
 		
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 	
 	@Override

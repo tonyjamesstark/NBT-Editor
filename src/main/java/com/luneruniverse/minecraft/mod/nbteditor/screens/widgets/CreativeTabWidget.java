@@ -13,6 +13,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -105,7 +106,8 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 		return x <= mouseX && mouseX < x + WIDTH && y <= mouseY && mouseY < y + HEIGHT;
 	}
 	
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y();
 		if (isMouseOver(mouseX, mouseY)) {
 			onClick.run();
 			return true;
