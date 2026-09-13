@@ -52,7 +52,7 @@ public class OverlayScreen extends OverlaySupportingScreen {
 	@Override
 	protected void init() {
 		if (parent != null)
-			parent.init(client, width, height);
+			parent.init(width, height);
 		super.init();
 	}
 	

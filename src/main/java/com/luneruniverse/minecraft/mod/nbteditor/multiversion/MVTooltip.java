@@ -113,7 +113,7 @@ public class MVTooltip {
 				return null;
 			if (args.length != 4) // onTooltip
 				throw new RuntimeException("Unexpected method call: " + method.getName());
-			render((MatrixStack) args[1], (int) args[2], (int) args[3]);
+			throw new UnsupportedOperationException("Old-style tooltips are below the supported floor");
 			return null;
 		});
 	}

@@ -200,7 +200,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		addDrawableChild(path);
 		
 		value = new SuggestingTextFieldWidget(this, 16, 16 + 8 + 32 + (16 + 8) * 2, 288, 16).name(TextInst.translatable("nbteditor.nbt.value"));
-		value.setRenderTextProvider((str, index) -> {
+		value.addFormatter((str, index) -> {
 			return TextUtil.substring(NbtFormatter.FORMATTER.formatSafely(value.getText()).text(), index, index + str.length()).asOrderedText();
 		});
 		value.setMaxLength(Integer.MAX_VALUE);

@@ -67,11 +67,12 @@ public class ConfigValueSlider<T extends Number> extends SliderWidget implements
 		return clicked = output;
 	}
 	@Override
-	protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
+	protected void onDrag(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y();
 		if (clicked && MainUtil.equals(mouseX, mouseClickX + deltaX) && MainUtil.equals(mouseY, mouseClickY + deltaY)) {
 			mouseClickX += deltaX;
 			mouseClickY += deltaY;
-			super.onDrag(mouseX, mouseY, deltaX, deltaY);
+			super.onDrag(click, deltaX, deltaY);
 		}
 	}
 	

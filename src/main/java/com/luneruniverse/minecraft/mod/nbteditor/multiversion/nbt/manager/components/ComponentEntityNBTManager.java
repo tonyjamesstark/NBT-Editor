@@ -1,6 +1,7 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.components;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Attempt;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.NbtViews;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManager;
 
 import net.minecraft.entity.Entity;
@@ -11,9 +12,8 @@ public class ComponentEntityNBTManager implements NBTManager<Entity> {
 	
 	@Override
 	public Attempt<NbtCompound> trySerialize(Entity subject) {
-		NbtCompound nbt = new NbtCompound();
+		NbtCompound nbt = getNbt(subject);
 		nbt.putString("id", EntityType.getId(subject.getType()).toString());
-		subject.writeNbt(nbt);
 		return new Attempt<>(nbt);
 	}
 	
@@ -23,7 +23,7 @@ public class ComponentEntityNBTManager implements NBTManager<Entity> {
 	}
 	@Override
 	public NbtCompound getNbt(Entity subject) {
-		return subject.writeNbt(new NbtCompound());
+		return NbtViews.write(subject::writeData);
 	}
 	@Override
 	public NbtCompound getOrCreateNbt(Entity subject) {
@@ -31,7 +31,7 @@ public class ComponentEntityNBTManager implements NBTManager<Entity> {
 	}
 	@Override
 	public void setNbt(Entity subject, NbtCompound nbt) {
-		subject.readNbt(nbt);
+		NbtViews.read(nbt, subject::readData);
 	}
 	
 }

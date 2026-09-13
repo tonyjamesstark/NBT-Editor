@@ -87,8 +87,8 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 	}
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+	public boolean keyPressed(KeyInput keyInput) {
+		int keyCode = keyInput.key();
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			close.run();
 			return true;
@@ -99,7 +99,7 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 			return true;
 		}
 		
-		return super.keyPressed(input);
+		return super.keyPressed(keyInput);
 	}
 	
 }

@@ -31,7 +31,7 @@ public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScre
 	@Override
 	protected void init() {
 		if (parent != null)
-			parent.init(client, width, height);
+			parent.init(width, height);
 		super.init();
 	}
 	

@@ -34,6 +34,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -202,7 +203,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				}
 				if (keyCode == GLFW.GLFW_KEY_ENTER) {
 					if (ok.active)
-						ok.onPress();
+						ok.onPress(input);
 					return true;
 				}
 				
@@ -440,7 +441,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			InputOverlay.show(
 					TextInst.translatable("nbteditor.formatted_text.font"),
 					StringInput.builder()
-							.withDefault(initialStyle.font == null ? "" : initialStyle.font.toString())
+							.withDefault(initialStyle.getFont() instanceof StyleSpriteSource.Font f ? f.id().toString() : "")
 							.withValidator(font -> font.isEmpty() || IdentifierInst.isValid(font))
 							.withSuggestions((str, cursor) -> {
 								SuggestionsBuilder builder = new SuggestionsBuilder(str, 0);
@@ -452,7 +453,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 								return builder.buildFuture();
 							})
 							.build(),
-					font -> applyStyleChange(style -> style.withFont(font.isEmpty() ? null : IdentifierInst.of(font)), true));
+					font -> applyStyleChange(style -> style.withFont(font.isEmpty() ? null : new StyleSpriteSource.Font(IdentifierInst.of(font))), true));
 		}
 		
 		@Override
@@ -876,7 +877,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				lastFontChange = time;
 				lastFont += Math.floor(Math.random() * 2) + 1;
 				font.setMessage(TextInst.literal(lastFont % 3 + "")
-						.styled(style -> style.withFont(IdentifierInst.of("nbteditor", "fancy_f"))));
+						.styled(style -> style.withFont(new StyleSpriteSource.Font(IdentifierInst.of("nbteditor", "fancy_f")))));
 			}
 		}
 		

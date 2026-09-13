@@ -134,7 +134,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 	
 	public boolean keyPressed(KeyInput input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
-		if (MainUtil.client.options.inventoryKey.matchesKey(keyCode, scanCode)) {
+		if (MainUtil.client.options.inventoryKey.matchesKey(input)) {
 			ref.showParent();
 			return true;
 		}

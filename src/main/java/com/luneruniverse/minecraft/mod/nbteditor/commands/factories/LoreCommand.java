@@ -23,6 +23,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -128,8 +129,7 @@ public class LoreCommand extends ClientCommand {
 						.styled(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
 								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore remove " + finalI))))
 						.append(TextInst.literal(" ").formatted(Formatting.DARK_PURPLE).formatted(Formatting.ITALIC).append(line)
-						.styled(style -> MixinLink.withRunClickEvent(style, () -> MainUtil.client.currentScreen.handleTextClick(Style.EMPTY.withClickEvent(
-									MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true)))))
+						.styled(style -> MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreen(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true))))
 								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore set " + finalI))))));
 				i++;
 			}

@@ -25,7 +25,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Style;
+import net.minecraft.text.ClickEvent;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
@@ -47,15 +47,14 @@ public class ScreenMixin {
 			ImportScreen.importFiles(paths, Optional.empty());
 	}
 	
-	@Inject(method = "handleTextClick", at = @At("HEAD"), cancellable = true)
-	private void handleTextClick(Style style, CallbackInfoReturnable<Boolean> info) {
-		if (style != null && !MVMisc.hasShiftDown() && style.getClickEvent() != null) {
-			MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(style.getClickEvent());
-			if (clickAction == MVTextEvents.ClickAction.OPEN_FILE &&
-					MixinLink.tryRunClickEvent(clickAction.getStringifiedValue(style.getClickEvent()))) {
-				info.setReturnValue(true);
-			}
-		}
+	@Inject(method = "handleClickEvent", at = @At("HEAD"), cancellable = true)
+	private static void handleClickEvent(ClickEvent event, MinecraftClient client, Screen screen, CallbackInfo info) {
+		if (event == null || MVMisc.hasShiftDown())
+			return;
+		MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(event);
+		if (clickAction == MVTextEvents.ClickAction.OPEN_FILE &&
+				MixinLink.tryRunClickEvent(clickAction.getStringifiedValue(event)))
+			info.cancel();
 	}
 	
 	// See toggled.ScreenMixin#renderTooltipFromComponents, toggled.DrawContextMixin#drawTooltip
