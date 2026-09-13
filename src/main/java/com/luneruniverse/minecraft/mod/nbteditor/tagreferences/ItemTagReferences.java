@@ -9,16 +9,9 @@ import java.util.stream.Collectors;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.ComponentTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.NBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.AttributesNBTTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.CustomDataNBTTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.CustomPotionContentsNBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.EnchantsTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.GameProfileNBTTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.GameProfileNameNBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.CustomPotionContents;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
@@ -34,7 +27,6 @@ import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.text.RawFilteredPair;
 import net.minecraft.text.Text;
 

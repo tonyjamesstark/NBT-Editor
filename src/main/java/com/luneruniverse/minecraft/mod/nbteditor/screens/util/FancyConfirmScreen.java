@@ -1,7 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.util;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;

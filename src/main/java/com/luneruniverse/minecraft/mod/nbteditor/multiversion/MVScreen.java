@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;

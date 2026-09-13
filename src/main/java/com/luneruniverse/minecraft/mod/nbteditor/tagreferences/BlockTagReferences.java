@@ -5,8 +5,6 @@ import java.util.Optional;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.NBTComponentTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.GameProfileNBTTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.GameProfileNameNBTTagReference;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.component.type.ProfileComponent;

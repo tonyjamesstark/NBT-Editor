@@ -39,8 +39,6 @@ public class DynamicRegistryManagerHolder {
 	private static volatile DynamicRegistryManager clientManager;
 	private static volatile DynamicRegistryManager serverManager;
 	
-	private static final Supplier<Reflection.MethodInvoker> RegistryLoader_loadFromResource =
-			Reflection.getOptionalMethod(RegistryLoader.class, "method_56515", MethodType.methodType(DynamicRegistryManager.Immutable.class, ResourceManager.class, DynamicRegistryManager.class, List.class));
 	private static CompletableFuture<DynamicRegistryManager> loadDefaultManagerImpl() {
 		CompletableFuture<DynamicRegistryManager> future = new CompletableFuture<>();
 		MixinLink.executeCrashableTask(() -> {

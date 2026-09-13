@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVButtonWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMatrix4f;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 

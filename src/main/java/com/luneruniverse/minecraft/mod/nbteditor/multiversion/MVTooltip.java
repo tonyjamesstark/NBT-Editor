@@ -1,17 +1,17 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.opengl.GL20;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -113,18 +113,22 @@ public class MVTooltip {
 		
 		// Undo translations and render at actual position
 		// This allows Screen#renderTooltip to adjust for window height
-		float[] translation = MVMatrix4f.getTranslation(context.getMatrices());
-		context.getMatrices().pushMatrix();
-		context.getMatrices().translate((float) (-translation[0]), (float) (-translation[1]));
-		boolean scissor = MVGlStateManager.isScissorEnabled();
+		Matrix3x2fStack matrices = context.getMatrices();
+		float dx = matrices.m20();
+		float dy = matrices.m21();
+		matrices.pushMatrix();
+		matrices.translate(-dx, -dy);
+		// ponytail: reads and pokes raw GL scissor state. 1.21.9 defers GUI draws through
+		// GuiRenderState, so this needs an in-game check before it can be trusted.
+		boolean scissor = GlStateManager.SCISSOR.capState.state;
 		if (scissor)
 			GL20.glDisable(GL20.GL_SCISSOR_TEST);
 		
-		MVDrawableHelper.renderTooltip(context, lines, mouseX + (int) translation[0], mouseY + (int) translation[1]);
+		MVDrawableHelper.renderTooltip(context, lines, mouseX + (int) dx, mouseY + (int) dy);
 		
 		if (scissor)
 			GL20.glEnable(GL20.GL_SCISSOR_TEST);
-		context.getMatrices().popMatrix();
+		matrices.popMatrix();
 	}
 	
 }

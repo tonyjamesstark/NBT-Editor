@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMatrix4f;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -49,11 +48,11 @@ public abstract class DrawContextMixin {
 	
 	@ModifyVariable(method = "scissorContains", at = @At("HEAD"), ordinal = 0, require = 0)
 	private int scissorContainsX(int x) {
-		return x + (int) MVMatrix4f.getTranslation(getMatrices())[0];
+		return x + (int) getMatrices().m20();
 	}
 	@ModifyVariable(method = "scissorContains", at = @At("HEAD"), ordinal = 1, require = 0)
 	private int scissorContainsY(int y) {
-		return y + (int) MVMatrix4f.getTranslation(getMatrices())[1];
+		return y + (int) getMatrices().m21();
 	}
 	
 }

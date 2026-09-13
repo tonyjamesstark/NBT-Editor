@@ -7,12 +7,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.JsonOps;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;

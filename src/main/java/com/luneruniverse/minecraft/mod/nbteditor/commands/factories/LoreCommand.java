@@ -25,7 +25,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 

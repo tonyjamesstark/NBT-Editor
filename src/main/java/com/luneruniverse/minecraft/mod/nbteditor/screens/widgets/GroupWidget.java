@@ -1,7 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

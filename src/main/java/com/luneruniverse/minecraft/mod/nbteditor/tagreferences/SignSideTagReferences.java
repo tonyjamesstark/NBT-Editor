@@ -2,8 +2,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.tagreferences;
 
 import java.util.List;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.ArraySplitTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.NBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 

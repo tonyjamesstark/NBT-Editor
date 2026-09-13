@@ -1,18 +1,12 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import java.lang.invoke.MethodType;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.mojang.serialization.DataResult;
 
 public record Attempt<T>(Optional<T> value, String error) {
 	
-	private static final Supplier<Reflection.MethodInvoker> DataResult_resultOrPartial =
-			Reflection.getOptionalMethod(DataResult.class, "resultOrPartial", MethodType.methodType(Optional.class));
-	private static final Supplier<Reflection.MethodInvoker> DataResult_error =
-			Reflection.getOptionalMethod(DataResult.class, "error", MethodType.methodType(Optional.class));
 	public static <T> Attempt<T> ofResult(DataResult<T> result) {
 		Optional<T> value = result.resultOrPartial();
 		

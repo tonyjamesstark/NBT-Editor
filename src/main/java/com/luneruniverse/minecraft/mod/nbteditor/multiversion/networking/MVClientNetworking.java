@@ -10,12 +10,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryMan
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.util.Identifier;
 
 public class MVClientNetworking {

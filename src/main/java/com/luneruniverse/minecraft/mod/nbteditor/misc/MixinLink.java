@@ -41,7 +41,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;

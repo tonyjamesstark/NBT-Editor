@@ -12,7 +12,6 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.command.permission.Permission;
 import net.minecraft.command.permission.PermissionLevel;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.StorageMinecartEntity;
 import net.minecraft.entity.vehicle.VehicleInventory;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -22,8 +21,6 @@ import net.minecraft.world.World;
 
 public class ServerMVMisc {
 	
-	private static final Supplier<Reflection.MethodInvoker> EntityTrackingListener_sendPacket =
-			Reflection.getOptionalMethod(() -> Reflection.getClass("net.minecraft.class_5629"), () -> "method_14364", () -> MethodType.methodType(void.class, Packet.class));
 	public static void sendS2CPacket(ServerPlayerEntity player, Packet<?> packet) {
 		player.networkHandler.sendPacket(packet);
 	}
@@ -44,8 +41,6 @@ public class ServerMVMisc {
 		PacketEncoder_encode.get().invoke(codec, buf, value);
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> EntityType_create =
-			Reflection.getOptionalMethod(EntityType.class, "method_5883", MethodType.methodType(Entity.class, World.class));
 	public static Entity createEntity(EntityType<?> entityType, World world) {
 		return entityType.create(world, SpawnReason.COMMAND);
 	}
@@ -54,8 +49,6 @@ public class ServerMVMisc {
 		return player.getPermissions().hasPermission(new Permission.Level(PermissionLevel.fromLevel(level)));
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> Property_getValues =
-			Reflection.getOptionalMethod(Property.class, "method_11898", MethodType.methodType(Collection.class));
 	public static <T extends Comparable<T>> Collection<T> getValues(Property<T> property) {
 		return property.getValues();
 	}

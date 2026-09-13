@@ -1,7 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion.mixin;
 
-import java.lang.invoke.MethodType;
-import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,8 +62,6 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 		writeIdentifier(key.getValue());
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> PacketByteBuf_writeNbt =
-			Reflection.getOptionalMethod(PacketByteBuf.class, "method_10794", MethodType.methodType(PacketByteBuf.class, NbtCompound.class));
 	@Override
 	public PacketByteBuf writeNbtCompound(NbtCompound element) {
 		return ((PacketByteBuf) (Object) this).writeNbt(element);
@@ -82,14 +78,10 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 		writeDouble(vector.getZ());
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> PacketByteBuf_readItemStack =
-			Reflection.getOptionalMethod(PacketByteBuf.class, "method_10819", MethodType.methodType(ItemStack.class));
 	@Override
 	public ItemStack readItemStack() {
 		return ServerMVMisc.packetCodecDecode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf());
 	}
-	private static final Supplier<Reflection.MethodInvoker> PacketByteBuf_writeItemStack =
-			Reflection.getOptionalMethod(PacketByteBuf.class, "method_10793", MethodType.methodType(PacketByteBuf.class, ItemStack.class));
 	@Override
 	public PacketByteBuf writeItemStack(ItemStack item) {
 		ServerMVMisc.packetCodecEncode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf(), item);

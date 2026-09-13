@@ -1,7 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import java.lang.invoke.MethodType;
-import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
@@ -33,8 +31,6 @@ public class MVEnchantments {
 	public static final Enchantment LOYALTY = getEnchantment("field_9120");
 	public static final Enchantment FIRE_ASPECT = getEnchantment("field_9124");
 	
-	private static final Supplier<Reflection.MethodInvoker> Enchantment_isCursed =
-			Reflection.getOptionalMethod(Enchantment.class, "method_8195", MethodType.methodType(boolean.class));
 	public static boolean isCursed(Enchantment enchant) {
 		return MVRegistry.getEnchantmentRegistry().getInternalValue().getEntry(enchant).isIn(EnchantmentTags.CURSE);
 	}
@@ -45,8 +41,6 @@ public class MVEnchantments {
 		ItemTagReferences.ENCHANTMENTS.set(item, enchants);
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> Enchantment_getTranslationKey =
-			Reflection.getOptionalMethod(Enchantment.class, "method_8184", MethodType.methodType(String.class));
 	public static Text getEnchantmentName(Enchantment enchant) {
 		Formatting color = (isCursed(enchant) ? Formatting.RED : Formatting.GRAY);
 		MutableText output = enchant.description().copy();

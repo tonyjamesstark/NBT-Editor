@@ -1,8 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens;
 
-import java.lang.invoke.MethodType;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -11,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -20,7 +17,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.AlertWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.Click;

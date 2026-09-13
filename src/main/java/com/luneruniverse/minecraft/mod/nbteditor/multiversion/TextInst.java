@@ -1,7 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import java.lang.invoke.MethodType;
-import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -16,8 +14,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.nbt.InvalidNbtException;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 

@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.ComponentTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.NBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 
 import net.minecraft.component.type.WrittenBookContentComponent;

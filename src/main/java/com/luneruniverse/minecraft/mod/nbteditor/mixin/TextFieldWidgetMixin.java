@@ -1,22 +1,16 @@
 package com.luneruniverse.minecraft.mod.nbteditor.mixin;
 
-import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Group;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.Identifier;
 
 @Mixin(TextFieldWidget.class)
@@ -55,8 +49,6 @@ public abstract class TextFieldWidgetMixin implements Tickable {
 		return color;
 	}
 	
-	private static final Supplier<Reflection.FieldReference> TextFieldWidget_focusedTicks =
-			Reflection.getOptionalField(TextFieldWidget.class, "field_2107", "I");
 	@Override
 	public void tick() {
 		TextFieldWidget source = (TextFieldWidget) (Object) this;

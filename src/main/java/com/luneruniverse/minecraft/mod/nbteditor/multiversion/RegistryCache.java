@@ -1,13 +1,11 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import java.lang.invoke.MethodType;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -27,8 +25,6 @@ public class RegistryCache {
 		return caches.computeIfAbsent(registryManager, key -> new RegistryCache(registryManager, false));
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> Registry_getEntry =
-			Reflection.getOptionalMethod(Registry.class, "method_55841", MethodType.methodType(Optional.class, Identifier.class));
 	/**
 	 * @return May be null
 	 */
@@ -44,8 +40,6 @@ public class RegistryCache {
 				.orElse(null);
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> Registry_getKey =
-			Reflection.getOptionalMethod(Registry.class, "method_30517", MethodType.methodType(RegistryKey.class));
 	private static final LoadingCache<Registry<?>, Boolean> staticRegistries = CacheBuilder.newBuilder().build(
 			CacheLoader.from(registry -> {
 				return (Registries.REGISTRIES.get(registry.getKey().getValue()) != null);
@@ -68,8 +62,6 @@ public class RegistryCache {
 		this(registryManager, true);
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> DynamicRegistryManager_getOptional =
-			Reflection.getOptionalMethod(DynamicRegistryManager.class, "method_33310", MethodType.methodType(Optional.class, RegistryKey.class));
 	public Optional<? extends Registry<?>> getRegistry(Identifier registryKey) {
 		return cache.computeIfAbsent(registryKey, id -> {
 			DynamicRegistryManager registryManager = registryManagerRef.get();

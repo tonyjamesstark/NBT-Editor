@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVQuaternionf;
 
 import org.joml.Quaternionf;
 

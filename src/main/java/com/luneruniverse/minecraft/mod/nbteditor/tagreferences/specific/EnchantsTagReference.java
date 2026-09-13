@@ -1,25 +1,18 @@
 package com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific;
 
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.ComponentTagReference;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.NBTTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 
 public class EnchantsTagReference implements TagReference<Enchants, ItemStack> {
 	
