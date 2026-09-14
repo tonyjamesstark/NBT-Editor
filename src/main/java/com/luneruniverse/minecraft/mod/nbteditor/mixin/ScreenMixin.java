@@ -53,7 +53,7 @@ public class ScreenMixin {
 			info.cancel();
 	}
 	
-	// See toggled.ScreenMixin#renderTooltipFromComponents, toggled.DrawContextMixin#drawTooltip
+	// See toggled.DrawContextMixin#drawTooltip
 	@Inject(method = "method_32633(Lnet/minecraft/class_4587;Ljava/util/List;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/class_4587;method_22903()V", shift = At.Shift.AFTER), remap = false, require = 0)
 	@SuppressWarnings("target")
 	private void renderTooltipFromComponents(GuiGraphics context, List<ClientTooltipComponent> tooltip, int x, int y, CallbackInfo info) {
