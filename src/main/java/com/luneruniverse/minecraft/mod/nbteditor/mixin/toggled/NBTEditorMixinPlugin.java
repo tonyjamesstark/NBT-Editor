@@ -28,7 +28,6 @@ public class NBTEditorMixinPlugin extends BasicMixinPlugin {
 		output.add("toggled.TooltipMixin");
 		output.add("toggled.EnchantmentMixin");
 		output.add("toggled.ItemModelManagerMixin");
-		output.add("toggled.ItemRenderStateLayerRenderStateMixin");
 		output.add("toggled.ClientPlayNetworkHandlerMixin");
 		output.add("toggled.SnbtParsingMixin");
 	}

@@ -45,11 +45,6 @@ public class ConfigValueSlider<T extends Number> extends AbstractSliderButton im
 			this.onChanged.addAll(onChanged);
 	}
 	
-	@Override
-	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		super.extractRenderState(context, mouseX, mouseY, delta);
-	}
-	
 	// There is no element focusing in configs, so onDrag is called for everything
 	// This makes sure onDrag is only called when the mouse was clicked on the slider
 	// Accounts for mouseClicked stopping on the first true

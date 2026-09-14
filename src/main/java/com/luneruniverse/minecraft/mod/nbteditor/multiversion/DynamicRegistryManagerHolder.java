@@ -60,7 +60,8 @@ public class DynamicRegistryManagerHolder {
 			List<Registry.PendingTags<?>> tags = TagLoader.loadTagsForExistingRegistries(resourceManager, combinedRegistries.getLayer(RegistryLayer.STATIC));
 			RegistryAccess.Frozen preceding = combinedRegistries.getAccessForLoading(RegistryLayer.RELOADABLE);
 			List<HolderLookup.RegistryLookup<?>> loadedRegistries = TagLoader.buildUpdatedLookups(preceding, tags);
-			RegistryAccess.Frozen dynamicRegistries = RegistryDataLoader.load(resourceManager, loadedRegistries, entries);
+			RegistryAccess.Frozen dynamicRegistries =
+					RegistryDataLoader.load(resourceManager, loadedRegistries, entries, Runnable::run).join();
 			
 			future.complete(combinedRegistries.replaceFrom(RegistryLayer.RELOADABLE, dynamicRegistries).compositeAccess());
 		});

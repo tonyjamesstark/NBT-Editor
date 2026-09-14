@@ -23,6 +23,7 @@ import tsp.headdb.ported.Head;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.LocalHead;
 import tsp.headdb.ported.Utils;
+import net.minecraft.world.item.DyeColor;
 
 public class InventoryUtils {
 
@@ -226,7 +227,7 @@ public class InventoryUtils {
     }
 
     public static void fill(Container inv) {
-        ItemStack item = getUIItem("fill", new ItemStack(Items.BLACK_STAINED_GLASS_PANE));
+        ItemStack item = getUIItem("fill", new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)));
         // Do not bother filling the inventory if item to fill it with is AIR.
         if (item == null || item.isEmpty()) return;
         

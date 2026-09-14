@@ -26,6 +26,7 @@ import tsp.headdb.ported.Category;
 import tsp.headdb.ported.Head;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.inventory.InventoryUtils;
+import net.minecraft.world.item.DyeColor;
 
 public class GetHdbCommand extends ClientCommand {
 	
@@ -76,7 +77,7 @@ public class GetHdbCommand extends ClientCommand {
 					if (!HeadAPI.checkUpdated())
 						return Command.SINGLE_SUCCESS;
 					Category category = context.getArgument("category", Category.class);
-					ItemStack shulker = ShulkerBoxBlock.getColoredItemStack(MainUtil.getDyeColor(category.getColor()));
+					ItemStack shulker = new ItemStack(Items.DYED_SHULKER_BOX.pick(MainUtil.getDyeColor(category.getColor())));
 					shulker.nbte$setCustomName(TextInst.of(ChatFormatting.RESET.toString() + category.getColor() + ChatFormatting.BOLD + category.getTranslatedName().toUpperCase()));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeads(category).stream().map(Head::getItemStack).toList());
@@ -86,7 +87,7 @@ public class GetHdbCommand extends ClientCommand {
 					if (!HeadAPI.checkUpdated())
 						return Command.SINGLE_SUCCESS;
 					String query = context.getArgument("query", String.class);
-					ItemStack shulker = new ItemStack(Items.BROWN_SHULKER_BOX);
+					ItemStack shulker = new ItemStack(Items.DYED_SHULKER_BOX.pick(DyeColor.BROWN));
 					shulker.nbte$setCustomName(TextInst.of(ChatFormatting.RESET.toString() + ChatFormatting.GOLD + ChatFormatting.BOLD + TextInst.translatable("nbteditor.hdb.search").getString() + ": " + query));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeadsByName(query).stream().map(Head::getItemStack).toList());

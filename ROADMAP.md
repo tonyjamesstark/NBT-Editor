@@ -315,6 +315,41 @@ and `Minecraft.screen` no longer exposed as a field.
 This is the bulk of the remaining work and it is a rewrite of the mod's rendering, not a
 migration of it. It wants its own phase rather than a line in 4.5.
 
+### How it actually went (2026-09-14, same day)
+
+It was a rename after all, not a rewrite. 26.2 renamed every `render*` hook to a matching
+`extract*` and `GuiGraphics` to `GuiGraphicsExtractor`; the drawing calls underneath kept their
+shape (`drawString` to `text`, `drawCenteredString` to `centeredText`, `renderItem` to `item`).
+`MVDrawableHelper` absorbed the whole of it, so ~60 call sites never moved. 468 errors down to
+zero in four passes.
+
+What was not mechanical:
+
+- **`EditBox.setFilter` is gone.** Grafted back on as `nbte$setFilter` via `FilterableTextField`
+  and a `@Redirect` on the `value` field write in `TextFieldWidgetMixin`. A rejected keystroke
+  still moves the cursor; the ceiling is marked in the mixin.
+- **`ChatFormatting` lost its metadata** — it is now a code and a `toString`. `isColor`,
+  `getColor`, `getName` and `getByName` moved into `StyleUtil`, backed by `TextColor`; `getChar`
+  became the access-widened `code` field.
+- **`Minecraft` no longer owns the screen and overlay stack** — `Gui` does. The `setScreen` and
+  `setOverlay` injections moved out of `MinecraftClientMixin` into a new `GuiMixin`.
+- **`DataComponentPatch.get` folded in a prototype lookup**, losing the absent-versus-removed
+  distinction the item NBT manager depends on. `MVMisc.getPatched` reads `entrySet()` directly.
+- **The enchant-glint fix is gone.** It worked around MC-69683 by wrapping the buffer source for
+  block items; 26.2 passes `hasFoil` through `SpecialModelRenderer.submit` itself, so vanilla
+  fixed it. The mixin, the config option and its lang keys were deleted.
+- **Colored items are `ColorCollection`s** — `Items.BLACK_STAINED_GLASS_PANE` is now
+  `Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)`, and `ShulkerBoxBlock.getColoredItemStack` is
+  gone in favour of `Items.DYED_SHULKER_BOX.pick(...)`.
+- **`MultiBufferSource` and `ItemRenderer` no longer exist**; submission goes through
+  `SubmitNodeCollector`. Only the deleted glint mixin touched them.
+
+Two access-widener lines were stale and failed `validateAccessWidener`:
+`AbstractWidget.render` (the method is gone) and `CommandSuggestions.updateUsageInfo()V` (it takes
+arguments now, and nothing calls it).
+
+`./gradlew build` is green at 26.2. Nothing has been run in-game yet.
+
 ### The version-guard failure mode, unchanged
 
 Relaxing `Version.parseVersion` alone is not sufficient, and the failure afterwards is *mixed*.

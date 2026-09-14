@@ -42,8 +42,8 @@ public class MVButtonWidget extends AbstractButton {
 	 * {@code renderWidget} final and moved widget painting into {@code drawIcon}.
 	 */
 	public void renderButton(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		renderDefaultSprite(context);
-		renderDefaultLabel(context.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
+		extractDefaultSprite(context);
+		extractDefaultLabel(context.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
 	}
 	@Override
 	protected final void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {

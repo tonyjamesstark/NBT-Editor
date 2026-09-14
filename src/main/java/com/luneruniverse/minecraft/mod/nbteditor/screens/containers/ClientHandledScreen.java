@@ -76,7 +76,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	
 	protected ClientHandledScreen(int rows, Component title) {
 		super(new ClientScreenHandler(rows), MainUtil.client.player.getInventory(), title);
-		((ClientScreenHandler) menu).setScreenAndShow(this);
+		((ClientScreenHandler) menu).setScreen(this);
 		menu.suppressRemoteUpdates();
 	}
 	
@@ -95,7 +95,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	}
 	
 	@Override
-	protected void renderBg(GuiGraphicsExtractor context, float delta, int mouseX, int mouseY) {
+	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		super.extractBackground(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos, 0, 0, imageWidth, menu.getRowCount() * 18 + 17);
 		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos + menu.getRowCount() * 18 + 17, 0, 126, imageWidth, 96);
 		
@@ -107,7 +108,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	}
 	
 	@Override
-	protected void renderLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
+	protected void extractLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
 		getLockedSlotsInfo().renderLockedHighlights(context, menu, true, false, true);
 		
 		MVDrawableHelper.drawTextWithoutShadow(context, font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752);

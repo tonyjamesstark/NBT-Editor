@@ -143,7 +143,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 				show();
 			}
 		});
-		pageField.setFilter(MainUtil.intPredicate(() -> 0, NBTEditorClient.CLIENT_CHEST::getPageCount, true));
+		pageField.nbte$setFilter(MainUtil.intPredicate(() -> 0, NBTEditorClient.CLIENT_CHEST::getPageCount, true));
 		this.addRenderableWidget(pageField);
 		
 		MutableComponent prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");

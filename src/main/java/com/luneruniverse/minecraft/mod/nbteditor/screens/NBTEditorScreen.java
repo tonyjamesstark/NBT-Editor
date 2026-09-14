@@ -175,7 +175,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				item.setCount(Integer.parseInt(str));
 				checkSave();
 			});
-			count.setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
+			count.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
 		} else {
 			count.setValue("1");
 			count.setEditable(false);

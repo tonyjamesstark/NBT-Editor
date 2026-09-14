@@ -27,6 +27,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.ContainerInput;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.Utils;
+import net.minecraft.world.item.DyeColor;
 
 /**
  * A paged pane. Credits @ I Al Ianstaan
@@ -213,7 +214,7 @@ public class PagedPane extends ClientHandledScreen {
         // create separator
         fillRow(
                 inventory.getContainerSize() / 9 - 2,
-                new ItemStack(Items.BLACK_STAINED_GLASS_PANE),
+                new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)),
                 inventory
         );
 

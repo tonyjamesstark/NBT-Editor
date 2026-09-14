@@ -119,8 +119,8 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		imgHeight = addWidget(new NamedTextFieldWidget(width / 2 + 2, height / 2 - 18, 100, 16)
 				.name(TextInst.translatable("nbteditor.img_to_lore.height")));
 		
-		imgWidth.setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
-		imgHeight.setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
+		imgWidth.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
+		imgHeight.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
 		
 		if (prevImgWidth != null)
 			imgWidth.setValue(prevImgWidth);

@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
@@ -8,6 +9,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.ChatFormatting;
 
 public class StyleUtil {
@@ -98,7 +100,7 @@ public class StyleUtil {
 	public static Style minusFormatting(Style style, Style base, ChatFormatting formatting) {
 		if (formatting == ChatFormatting.RESET)
 			return base;
-		if (formatting.isColor())
+		if (isColor(formatting))
 			return style.withColor(base.getColor());
 		return switch (formatting) {
 			case BOLD -> style.withBold(base.bold);
@@ -108,6 +110,32 @@ public class StyleUtil {
 			case OBFUSCATED -> style.withObfuscated(base.obfuscated);
 			default -> throw new IllegalArgumentException("Unknown formatting: " + formatting);
 		};
+	}
+	
+	// 26.2 stripped ChatFormatting down to a code and a toString. Everything the
+	// mod still asked it for now comes from TextColor or the enum constant itself.
+	
+	public static boolean isColor(ChatFormatting formatting) {
+		return TextColor.fromLegacyFormat(formatting) != null;
+	}
+	
+	/** Null when the formatting is not a color. */
+	public static Integer getColor(ChatFormatting formatting) {
+		TextColor color = TextColor.fromLegacyFormat(formatting);
+		return color == null ? null : color.getValue();
+	}
+	
+	public static String getName(ChatFormatting formatting) {
+		return formatting.name().toLowerCase(Locale.ROOT);
+	}
+	
+	/** Null when no formatting goes by that name. */
+	public static ChatFormatting getByName(String name) {
+		try {
+			return ChatFormatting.valueOf(name.toUpperCase(Locale.ROOT));
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
 	}
 	
 }

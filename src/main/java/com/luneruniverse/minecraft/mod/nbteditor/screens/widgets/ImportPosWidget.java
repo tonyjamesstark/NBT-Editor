@@ -61,9 +61,9 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 		z = addWidget(new NamedTextFieldWidget(width / 2 + 36, height / 2 - 18, 66, 16, z)
 				.name(TextInst.translatable("nbteditor.nbt.import.pos.z")));
 		
-		x.setFilter(MainUtil.intPredicate());
-		y.setFilter(MainUtil.intPredicate());
-		z.setFilter(MainUtil.intPredicate());
+		x.nbte$setFilter(MainUtil.intPredicate());
+		y.nbte$setFilter(MainUtil.intPredicate());
+		z.nbte$setFilter(MainUtil.intPredicate());
 		
 		if (firstInit) {
 			x.setValue("" + defaultPos.getX());

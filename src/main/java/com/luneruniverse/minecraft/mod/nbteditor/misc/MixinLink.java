@@ -238,8 +238,6 @@ public class MixinLink {
 	}
 	
 	
-	public static final List<ItemStack> ENCHANT_GLINT_FIX = new ArrayList<>();
-	
 	
 	/**
 	 * Only in 1.20.5 or higher

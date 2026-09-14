@@ -216,7 +216,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 	private static boolean invertedPageKeybinds;
 	private static boolean triggerBlockUpdates;
 	private static boolean warnIncompatibleProtocol;
-	private static boolean enchantGlintFix;
 	private static boolean recreateBlocksAndEntities;
 	private static CreativeTabsPosition creativeTabsPos;
 	
@@ -247,7 +246,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 		invertedPageKeybinds = false;
 		triggerBlockUpdates = true;
 		warnIncompatibleProtocol = true;
-		enchantGlintFix = false;
 		recreateBlocksAndEntities = false;
 		creativeTabsPos = CreativeTabsPosition.BOTTOM_LEFT;
 		
@@ -284,7 +282,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 			invertedPageKeybinds = settings.get("invertedPageKeybinds").getAsBoolean();
 			triggerBlockUpdates = settings.get("triggerBlockUpdates").getAsBoolean();
 			warnIncompatibleProtocol = settings.get("warnIncompatibleProtocol").getAsBoolean();
-			enchantGlintFix = settings.get("enchantGlintFix").getAsBoolean();
 			recreateBlocksAndEntities = settings.get("recreateBlocksAndEntities").getAsBoolean();
 			creativeTabsPos = CreativeTabsPosition.valueOf(settings.get("creativeTabsPos").getAsString());
 		} catch (NoSuchFileException | ClassCastException | NullPointerException e) {
@@ -324,7 +321,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 		settings.addProperty("invertedPageKeybinds", invertedPageKeybinds);
 		settings.addProperty("triggerBlockUpdates", triggerBlockUpdates);
 		settings.addProperty("warnIncompatibleProtocol", warnIncompatibleProtocol);
-		settings.addProperty("enchantGlintFix", enchantGlintFix);
 		settings.addProperty("recreateBlocksAndEntities", recreateBlocksAndEntities);
 		settings.addProperty("creativeTabsPos", creativeTabsPos.name());
 		
@@ -415,9 +411,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 	public static boolean isWarnIncompatibleProtocol() {
 		return warnIncompatibleProtocol;
 	}
-	public static boolean isEnchantGlintFix() {
-		return enchantGlintFix;
-	}
 	public static boolean isRecreateBlocksAndEntities() {
 		return recreateBlocksAndEntities;
 	}
@@ -503,11 +496,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 				new ConfigValueBoolean(screenshotOptions, true, 100, TextInst.translatable("nbteditor.config.screenshot_options.enabled"), TextInst.translatable("nbteditor.config.screenshot_options.disabled"))
 				.addValueListener(value -> screenshotOptions = value.getValidValue()))
 				.setTooltip(new MVTooltip(TextInst.translatable("nbteditor.config.screenshot_options.desc", TextInst.translatable("nbteditor.file_options.show"), TextInst.translatable("nbteditor.file_options.delete")))));
-		
-		mc.setConfigurable("enchantGlintFix", new ConfigItem<>(TextInst.translatable("nbteditor.config.enchant_glint_fix"),
-				new ConfigValueBoolean(enchantGlintFix, false, 100, TextInst.translatable("nbteditor.config.enchant_glint_fix.enabled"), TextInst.translatable("nbteditor.config.enchant_glint_fix.disabled"))
-				.addValueListener(value -> enchantGlintFix = value.getValidValue()))
-				.setTooltip("nbteditor.config.enchant_glint_fix.desc"));
 		
 		// ---------- GUIs ----------
 		

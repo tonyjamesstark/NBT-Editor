@@ -28,7 +28,7 @@ public class ChatScreenMixin {
 		if (text.isEmpty() || text.length() <= 256)
 			return;
 		if (text.charAt(0) == '/' && ClientCommandInternals.executeCommand(text.substring(1))) {
-			MainUtil.client.gui.getChat().addRecentChat(text);
+			MainUtil.client.gui.hud.getChat().addRecentChat(text);
 			if (MainUtil.client.gui.screen() instanceof ChatScreen)
 				MainUtil.client.setScreenAndShow(null);
 			info.setReturnValue(true);

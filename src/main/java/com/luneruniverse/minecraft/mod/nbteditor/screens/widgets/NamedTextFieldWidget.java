@@ -39,10 +39,10 @@ public class NamedTextFieldWidget extends MVTextFieldWidget {
 	
 	
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (name != null && shouldShowName())
 			setSuggestion(value.isEmpty() ? name.getString() : null);
-		super.extractRenderState(context, mouseX, mouseY, delta);
+		super.extractWidgetRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	protected boolean shouldShowName() {

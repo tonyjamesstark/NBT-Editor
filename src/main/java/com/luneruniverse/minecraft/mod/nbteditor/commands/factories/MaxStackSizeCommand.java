@@ -15,6 +15,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.ChatFormatting;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 
 public class MaxStackSizeCommand extends ClientCommand {
 	
@@ -33,7 +34,7 @@ public class MaxStackSizeCommand extends ClientCommand {
 		builder.then(literal("default").executes(context -> {
 			ItemReference ref = ItemReference.getHeldItem();
 			ItemStack item = ref.getItem();
-			if (item.getComponentsPatch().get(DataComponents.MAX_STACK_SIZE) == null) {
+			if (MVMisc.getPatched(item.getComponentsPatch(), DataComponents.MAX_STACK_SIZE) == null) {
 				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.max_stack_size.already_removed"));
 			} else if (item.has(DataComponents.MAX_DAMAGE) &&
 					item.getPrototype().getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {

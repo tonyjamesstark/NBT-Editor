@@ -97,7 +97,7 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 		if (lastColor == lastIndex || StyleUtil.SHADOW_COLOR_EXISTS && lastColor == lastShadowColor - 1 && lastShadowColor == lastIndex) {
 			builder = builder.createOffset(builder.getStart() + lastIndex + 1);
 			for (ChatFormatting format : ChatFormatting.values())
-				builder.suggest(format.getChar() + "", () -> format.getName());
+				builder.suggest(format.code + "", () -> StyleUtil.getName(format));
 			builder.suggest("#", TextInst.translatable("nbteditor.fancy_text_arg_type.custom_color"));
 			if (StyleUtil.SHADOW_COLOR_EXISTS && lastColor == lastIndex)
 				builder.suggest("_", TextInst.translatable("nbteditor.fancy_text_arg_type.shadow_color"));

@@ -82,10 +82,10 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (!isDropdownOnly())
-			super.extractRenderState(context, mouseX, mouseY, delta);
-		suggestor.render(context, mouseX, mouseY);
+			super.extractWidgetRenderState(context, mouseX, mouseY, delta);
+		suggestor.extractRenderState(context, mouseX, mouseY);
 	}
 	@Override
 	protected boolean shouldShowName() {

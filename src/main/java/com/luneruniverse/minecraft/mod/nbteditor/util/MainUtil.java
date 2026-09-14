@@ -252,7 +252,7 @@ public class MainUtil {
 		Component name = item.get(MVComponentType.ITEM_NAME);
 		if (name != null)
 			return name;
-		return MVMisc.getName(item.getItem());
+		return MVMisc.getName(item);
 	}
 	public static Component getCustomItemNameSafely(ItemStack item) {
 		return item.getHoverName();

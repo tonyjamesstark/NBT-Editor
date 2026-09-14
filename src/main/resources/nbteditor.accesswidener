@@ -21,14 +21,11 @@ accessible field net/minecraft/network/chat/Style underlined Ljava/lang/Boolean;
 accessible field net/minecraft/network/chat/Style strikethrough Ljava/lang/Boolean;
 accessible field net/minecraft/network/chat/Style obfuscated Ljava/lang/Boolean;
 
-extendable method net/minecraft/client/gui/components/AbstractWidget render (Lnet/minecraft/client/gui/GuiGraphics;IIF)V
-
 accessible field net/minecraft/client/gui/components/CommandSuggestions currentParse Lcom/mojang/brigadier/ParseResults;
 accessible field net/minecraft/client/gui/components/CommandSuggestions keepSuggestions Z
 accessible field net/minecraft/client/gui/components/CommandSuggestions suggestions Lnet/minecraft/client/gui/components/CommandSuggestions$SuggestionsList;
 accessible field net/minecraft/client/gui/components/CommandSuggestions commandUsage Ljava/util/List;
 accessible field net/minecraft/client/gui/components/CommandSuggestions pendingSuggestions Ljava/util/concurrent/CompletableFuture;
-accessible method net/minecraft/client/gui/components/CommandSuggestions updateUsageInfo ()V
 extendable method net/minecraft/client/gui/components/CommandSuggestions formatChat (Ljava/lang/String;I)Lnet/minecraft/util/FormattedCharSequence;
 accessible field net/minecraft/client/gui/components/CommandSuggestions$SuggestionsList rect Lnet/minecraft/client/renderer/Rect2i;
 
@@ -68,3 +65,5 @@ accessible field net/minecraft/world/item/BoatItem entityType Lnet/minecraft/wor
 
 # Private in older versions
 accessible method net/minecraft/network/chat/TextColor formatValue ()Ljava/lang/String;
+
+accessible field net/minecraft/ChatFormatting code C

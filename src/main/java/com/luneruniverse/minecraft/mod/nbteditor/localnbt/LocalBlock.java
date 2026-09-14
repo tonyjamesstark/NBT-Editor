@@ -167,7 +167,7 @@ public class LocalBlock implements LocalNBT {
 			cachedItemState = state.copy();
 			cachedItemNbt = nbt == null ? null : nbt.copy();
 		}
-		context.renderItem(cachedItem, x, y);
+		context.item(cachedItem, x, y);
 	}
 	
 	@Override

@@ -52,7 +52,8 @@
     },
     "loom:injected_interfaces": {
       "net/minecraft/client/gui/components/EditBox": [
-        "com/luneruniverse/minecraft/mod/nbteditor/screens/InjectableTickable"
+        "com/luneruniverse/minecraft/mod/nbteditor/screens/InjectableTickable",
+        "com/luneruniverse/minecraft/mod/nbteditor/screens/FilterableTextField"
       ],
       "net/minecraft/network/syncher/SynchedEntityData": [
         "com/luneruniverse/minecraft/mod/nbteditor/misc/ResetableDataTracker"

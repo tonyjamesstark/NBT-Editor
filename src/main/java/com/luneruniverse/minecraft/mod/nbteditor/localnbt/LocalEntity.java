@@ -142,7 +142,7 @@ public class LocalEntity implements LocalNBT {
 		state.outlineColor = 0;
 		
 		float scale = 16 / Math.max(Math.max(state.boundingBoxWidth, state.boundingBoxHeight), 1.0E-4F);
-		context.submitEntityRenderState(state, scale, new Vector3f(0, state.boundingBoxHeight / 2, 0),
+		context.entity(state, scale, new Vector3f(0, state.boundingBoxHeight / 2, 0),
 				new Quaternionf().rotateZ((float) Math.PI), LocalNBT.iconSpin(),
 				x, y, x + 16, y + 16);
 	}

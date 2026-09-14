@@ -23,6 +23,7 @@
     "HandledScreenAccessor",
     "TextFieldWidgetMixin",
     "MinecraftClientMixin",
+    "GuiMixin",
     "ScreenMixin",
     "BookScreenMixin",
     "HandledScreenMixin",

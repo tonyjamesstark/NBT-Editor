@@ -6,6 +6,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStackTemplate;
 
 public class BundleContentsComponentContainerIO implements ContainerIO<ItemStack> {
 	
@@ -44,7 +45,7 @@ public class BundleContentsComponentContainerIO implements ContainerIO<ItemStack
 	@Override
 	public int write(ItemStack container, ItemStack[] contents) {
 		container.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(
-				Arrays.stream(contents).filter(item -> item != null && !item.isEmpty()).map(ItemStack::copy).toList()));
+				Arrays.stream(contents).filter(item -> item != null && !item.isEmpty()).map(ItemStackTemplate::fromStack).toList()));
 		return contents.length;
 	}
 	

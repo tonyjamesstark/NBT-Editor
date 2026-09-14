@@ -44,11 +44,11 @@ public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScre
 		MainUtil.renderLogo(context);
 	}
 	@Override
-	public void renderBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (MainUtil.client.level == null)
-			super.renderBackground(context, mouseX, mouseY, delta);
+			super.extractBackground(context, mouseX, mouseY, delta);
 		else
-			renderTransparentBackground(context);
+			extractTransparentBackground(context);
 	}
 	
 }

@@ -99,6 +99,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.util.profiling.Profiler;
+import net.minecraft.core.component.DataComponentPatch;
+import java.util.Map;
 
 public class MVMisc {
 	
@@ -271,7 +273,7 @@ public class MVMisc {
 	}
 	
 	public static void showToast(Component title, Component description) {
-		MainUtil.client.getToastManager().addToast(new SystemToast(SystemToast.SystemToastId.PACK_LOAD_FAILURE, title, description));
+		MainUtil.client.gui.toastManager().addToast(new SystemToast(SystemToast.SystemToastId.PACK_LOAD_FAILURE, title, description));
 	}
 	
 	public static void setInitialFocus(Screen screen, GuiEventListener element, Consumer<GuiEventListener> superCall) {
@@ -353,8 +355,22 @@ public class MVMisc {
 						player, player.connection.enabledFeatures(), MainUtil.client.options.operatorItemsTab().get());
 	}
 	
-	public static Component getName(Item item) {
-		return item.getName();
+	/**
+	 * 26.2 folded a prototype lookup into {@link DataComponentPatch#get}, which
+	 * loses the distinction the mod needs: absent from the patch (null) versus
+	 * explicitly removed by it ({@link Optional#empty()}).
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Optional<? extends T> getPatched(DataComponentPatch patch, DataComponentType<? extends T> type) {
+		for (Map.Entry<DataComponentType<?>, Optional<?>> entry : patch.entrySet()) {
+			if (entry.getKey() == type)
+				return (Optional<? extends T>) entry.getValue();
+		}
+		return null;
+	}
+	
+	public static Component getName(ItemStack item) {
+		return item.getItem().getName(item);
 	}
 	
 	public static boolean isSignItem(Item item) {
@@ -413,7 +429,7 @@ public class MVMisc {
 	}
 	
 	public static ContainerInput getActionType(ServerboundContainerClickPacket packet) {
-		return packet.clickType();
+		return packet.containerInput();
 	}
 	
 	public static int getButton(ServerboundContainerClickPacket packet) {
