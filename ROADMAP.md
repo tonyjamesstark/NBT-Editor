@@ -275,11 +275,45 @@ Each step ends in a build. Do not start the next until the previous compiles.
   interface, `MVRegistry` reflected over `Registry` for the same reason, `MVRegistryKeys` held one
   constant, and `MVElementParent` grafted a three-argument `mouseScrolled` onto a `GuiEventListener`
   that declares the four-argument one itself. `Reflection` went from 191 lines to 66.
-- [ ] **4.5 Bump 1.21.11 to 26.2.** Loom 1.10-SNAPSHOT to 1.16.x, fabric-api 0.160.0+26.2, loader
-  0.19.5, and *remove* the `mappings` line rather than repointing it. Relax
-  `Version.parseVersion`, which rejects any version whose first component is not `1` and runs
-  inside `NBTEditorMixinPlugin.getMixins()` with `"required": true`. Add 26.x entries to
-  `data_versions.json`. Raise `fabric.mod.json`'s `"java": ">=16"` to `>=25`.
+- [ ] **4.5 Bump 1.21.11 to 26.2.** The build configuration is done; see "What 26.2 actually
+  changes" below for the part that is not.
+
+  Original scope: Loom 1.10-SNAPSHOT to 1.16.x, fabric-api 0.160.0+26.2, loader 0.19.5, and
+  *remove* the `mappings` line rather than repointing it. Relax `Version.parseVersion`, which
+  rejects any version whose first component is not `1`. Add 26.x entries to `data_versions.json`.
+  Raise `fabric.mod.json`'s `"java": ">=16"` to `>=25`.
+
+  `Version.parseVersion` no longer exists - 4.2 deleted it along with the rest of the version
+  gating - so that part of the step is already satisfied. `data_versions.json` still needs its
+  26.2 entry, which has to be read out of the game's own `version.json` once the build is green.
+
+### What 26.2 actually changes (2026-09-14)
+
+The configuration bump landed in one pass and behaved as the notes above predicted:
+`net.fabricmc.fabric-loom` in place of `fabric-loom-remap`, no `mappings` line, `implementation`
+in place of `modImplementation`, no `remapJar` (the git-hash classifier moved to `jar`), and the
+access widener header changed from `named` to `official` because there is no longer a named
+namespace to widen against. `loom:injected_interfaces` still works: the injected parent shows up
+on `ServerboundContainerClickPacket` in the 26.2 jar.
+
+What the notes did not predict is the size of the API change behind it. **468 compile errors
+across 134 files**, and they are not renames. 26.2 replaced immediate-mode GUI drawing with
+retained-mode render-state extraction:
+
+- `Renderable.render(GuiGraphics, int, int, float)` is now
+  `extractRenderState(GuiGraphicsExtractor, int, int, float)`, and `GuiGraphics` no longer exists.
+- `AbstractWidget.renderWidget` is now `extractWidgetRenderState`, and `extractRenderState` is
+  final, so widgets hook the extractor instead of the draw call.
+- `Screen.render`, `renderBackground` and friends follow the same shape: `extractRenderState`,
+  `extractBackground`, `extractMenuBackground`, `extractTransparentBackground`.
+
+Alongside it, a set of ordinary renames: `Minecraft.setScreen` to `setScreenAndShow`,
+`Player.displayClientMessage(Component, boolean)` split into `sendSystemMessage` and
+`sendOverlayMessage`, `ClickType` to `ContainerInput` (same seven constants, now with an `id()`),
+and `Minecraft.screen` no longer exposed as a field.
+
+This is the bulk of the remaining work and it is a rewrite of the mod's rendering, not a
+migration of it. It wants its own phase rather than a line in 4.5.
 
 ### The version-guard failure mode, unchanged
 
