@@ -213,7 +213,7 @@ public class LocalEntity implements LocalNBT {
 	@Override
 	public Component toHoverableText() {
 		UUID uuid = nbt.nbte$getUuid("UUID").orElseGet(() -> new UUID(0, 0));
-		return TextInst.bracketed(getName()).styled(
+		return TextInst.bracketed(getName()).withStyle(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ENTITY.newEvent(new HoverEvent.EntityTooltipInfo(
 						entityType, uuid, MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null)))));
 	}

@@ -304,7 +304,7 @@ public class MixinLink {
 			TextColor sizeColor = (sizeFormat != null ? TextColor.fromLegacyFormat(sizeFormat) :
 				TextColor.fromRgb(Color.HSBtoRGB((System.currentTimeMillis() % 1000) / 1000.0f, 1, 1)));
 			tooltip.add(TextInst.translatable("nbteditor.item_size." + (sizeConfig.isCompressed() ? "compressed" : "uncompressed"),
-					TextInst.literal(displaySize).styled(style -> style.withColor(sizeColor))));
+					TextInst.literal(displaySize).withStyle(style -> style.withColor(sizeColor))));
 		}
 		
 		if (!ConfigScreen.isKeybindsHidden()) {

@@ -24,7 +24,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.LargeClientChestPageCache;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.SmallClientChestPageCache;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVEnchantments;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
@@ -42,6 +41,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestS
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -425,8 +425,8 @@ public class ConfigScreen extends TickableSupportingScreen {
 		return creativeTabsPos;
 	}
 	
-	private static EditableText getEnchantName(Enchantment enchant, int level) {
-		EditableText output = TextInst.copy(MVEnchantments.getEnchantmentName(enchant));
+	private static MutableComponent getEnchantName(Enchantment enchant, int level) {
+		MutableComponent output = TextInst.copy(MVEnchantments.getEnchantmentName(enchant));
         if (level != 1 || enchant.getMaxLevel() != 1 || enchantLevelMax == EnchantLevelMax.ALWAYS) {
             output.append(" ");
             if (isEnchantNumberTypeArabic())
@@ -437,14 +437,14 @@ public class ConfigScreen extends TickableSupportingScreen {
         return output;
 	}
 	public static Component getEnchantNameWithMax(Enchantment enchant, int level, EnchantLevelMax display) {
-		EditableText text = getEnchantName(enchant, level);
+		MutableComponent text = getEnchantName(enchant, level);
 		if (display.shouldShowMax(level, enchant.getMaxLevel())) {
 			text = text.append("/").append(
 					ConfigScreen.isEnchantNumberTypeArabic() ?
 							TextInst.of("" + enchant.getMaxLevel()) :
 							TextInst.translatable("enchantment.level." + enchant.getMaxLevel()));
 		}
-		return text.getInternalValue(); // Allows Enchantment Descriptions to detect the enchantments
+		return text;
 	}
 	public static Component getEnchantNameWithMax(Enchantment enchant, int level) {
 		return getEnchantNameWithMax(enchant, level, enchantLevelMax);

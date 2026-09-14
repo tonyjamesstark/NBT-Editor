@@ -39,7 +39,7 @@ public class RandomUUIDCommand extends ClientCommand {
 			nbt.nbte$putUuid("UUID", uuid);
 			ItemTagReferences.CUSTOM_DATA.set(item, nbt);
 			ref.saveItem(item, TextInst.translatable("nbteditor.random_uuid.added",
-					TextInst.literal(uuid.toString()).formatted(ChatFormatting.GOLD)));
+					TextInst.literal(uuid.toString()).withStyle(ChatFormatting.GOLD)));
 			return Command.SINGLE_SUCCESS;
 		};
 		Command<FabricClientCommandSource> remove = context -> {

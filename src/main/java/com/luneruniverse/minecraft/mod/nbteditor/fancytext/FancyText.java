@@ -7,12 +7,12 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.StringReader;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
@@ -32,12 +32,12 @@ public class FancyText {
 		List<FancyTextNode> nodes = FancyTextNode.parse(tokens);
 		return gen(nodes, base.applyTo(StyleUtil.RESET_STYLE));
 	}
-	private static EditableText gen(List<FancyTextNode> nodes, Style base) {
+	private static MutableComponent gen(List<FancyTextNode> nodes, Style base) {
 		int numberOfTextNodes = nodes.stream().mapToInt(FancyTextNode::getNumberOfTextNodes).sum();
 		if (numberOfTextNodes == 0)
 			return TextInst.literal("");
 		
-		EditableText output = TextInst.literal("");
+		MutableComponent output = TextInst.literal("");
 		Style style = base;
 		for (FancyTextNode node : nodes) {
 			if (node instanceof FancyTextTextNode text)
@@ -45,14 +45,14 @@ public class FancyText {
 			else if (node instanceof FancyTextStyleOptionNode event) {
 				if (numberOfTextNodes != 1 || event.getNumberOfTextNodes() == 1) {
 					Style eventStyle = event.modifyStyle(style);
-					output.append(gen(event.contents(), eventStyle).styled(
+					output.append(gen(event.contents(), eventStyle).withStyle(
 							genStyle -> StyleUtil.minus(genStyle.applyTo(eventStyle), base)));
 				}
 			} else
 				style = node.modifyStyle(style);
 		}
 		if (numberOfTextNodes == 1)
-			return (EditableText) output.getSiblings().get(0);
+			return (MutableComponent) output.getSiblings().get(0);
 		return output;
 	}
 	

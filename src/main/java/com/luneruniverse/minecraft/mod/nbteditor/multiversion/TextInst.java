@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.nbt.NbtFormatException;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
@@ -22,21 +23,21 @@ public class TextInst {
 	public static Component of(String msg) {
 		return Component.nullToEmpty(msg);
 	}
-	public static EditableText literal(String msg) {
-		return new EditableText(Component.literal(msg));
+	public static MutableComponent literal(String msg) {
+		return Component.literal(msg);
 	}
-	public static EditableText translatable(String key, Object... args) {
-		return new EditableText(Component.translatableEscape(key, args));
-	}
-	
-	public static EditableText copy(Component text) {
-		return new EditableText(text.copy());
-	}
-	public static EditableText copyContentOnly(Component text) {
-		return new EditableText(text.plainCopy());
+	public static MutableComponent translatable(String key, Object... args) {
+		return Component.translatableEscape(key, args);
 	}
 	
-	public static EditableText bracketed(Component text) {
+	public static MutableComponent copy(Component text) {
+		return text.copy();
+	}
+	public static MutableComponent copyContentOnly(Component text) {
+		return text.plainCopy();
+	}
+	
+	public static MutableComponent bracketed(Component text) {
 		return translatable("chat.square_brackets", text);
 	}
 	

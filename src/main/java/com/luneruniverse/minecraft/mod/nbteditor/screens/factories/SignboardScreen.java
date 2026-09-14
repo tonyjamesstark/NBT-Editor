@@ -188,7 +188,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		ClickEvent event = getClickEvent(line);
 		if (event == null)
 			return line;
-		return TextInst.copy(line).styled(style -> style.withClickEvent(event));
+		return TextInst.copy(line).withStyle(style -> style.withClickEvent(event));
 	}
 	private ClickEvent getClickEvent(Component text) {
 		ClickEvent event = text.getStyle().getClickEvent();
@@ -241,18 +241,18 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			}
 		});
 		for (DyeColor color : DyeColor.values()) {
-			colors.addButton(TextInst.literal("⬛").styled(style -> style.withColor(getRenderedColor(color))), btn -> {
+			colors.addButton(TextInst.literal("⬛").withStyle(style -> style.withColor(getRenderedColor(color))), btn -> {
 				setColor(color);
 				colors.setOpen(false);
 				glowingBtn.get().setMessage(TextInst.translatable("nbteditor.signboard.glowing.enabled")
-						.styled(style -> style.withColor(getRenderedColor(getColor()))));
+						.withStyle(style -> style.withColor(getRenderedColor(getColor()))));
 			}, new MVTooltip(TextInst.of(color.getSerializedName())));
 		}
 		colors.build();
 		
 		glowingBtn.set(addRenderableWidget(MVMisc.newButton(glowingBtnX, glowingBtnY, 100, 20,
 				TextInst.translatable("nbteditor.signboard.glowing." + (isGlowing() ? "enabled" : "disabled"))
-				.styled(style -> style.withColor(getRenderedColor(getColor()))), btn -> {
+				.withStyle(style -> style.withColor(getRenderedColor(getColor()))), btn -> {
 			boolean prevGlowing = isGlowing();
 			if (prevGlowing && MVMisc.hasShiftDown()) {
 				colors.setOpen(true);
@@ -260,7 +260,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			}
 			setGlowing(!prevGlowing);
 			btn.setMessage(TextInst.translatable("nbteditor.signboard.glowing." + (prevGlowing ? "disabled" : "enabled"))
-					.styled(style -> style.withColor(getRenderedColor(getColor()))));
+					.withStyle(style -> style.withColor(getRenderedColor(getColor()))));
 			if (!prevGlowing)
 				colors.setOpen(true);
 		}, new MVTooltip("nbteditor.signboard.glowing.desc"))));

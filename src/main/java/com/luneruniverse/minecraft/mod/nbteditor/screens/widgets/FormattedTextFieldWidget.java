@@ -11,7 +11,6 @@ import java.util.function.UnaryOperator;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
@@ -27,6 +26,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
@@ -554,7 +554,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			
 			String afterEdit = new StringBuilder(getText()).replace(pos, pos + overwrittenLen, insertedText).toString();
-			EditableText text = TextInst.literal("");
+			MutableComponent text = TextInst.literal("");
 			String part = "";
 			Style style = !styles.isEmpty() && styles.get(0) != null ? styles.get(0) : base;
 			for (int i = 0; i < afterEdit.length(); i++) {
@@ -714,11 +714,11 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	private void init() {
 		if (width < 16 * 20 + (ConfigScreen.isHideFormatButtons() ? 0 : 20 + 4 + 5 * 20 + (4 + 20) * 2)) {
-			colors = addElement(new ButtonDropdownWidget(x, y, 20, 20, TextInst.literal("⬛").formatted(ChatFormatting.AQUA), 20, 20));
+			colors = addElement(new ButtonDropdownWidget(x, y, 20, 20, TextInst.literal("⬛").withStyle(ChatFormatting.AQUA), 20, 20));
 			for (ChatFormatting formatting : ChatFormatting.values()) {
 				if (!formatting.isColor())
 					break;
-				colors.addButton(TextInst.literal("⬛").formatted(formatting), btn -> {
+				colors.addButton(TextInst.literal("⬛").withStyle(formatting), btn -> {
 					field.applyColor(formatting, hasShadowKeyDown());
 					colors.setOpen(false);
 				}, createColorButtonTooltip(formatting));
@@ -730,7 +730,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			for (ChatFormatting formatting : ChatFormatting.values()) {
 				if (!formatting.isColor())
 					break;
-				addWidget(MVMisc.newButton(x + i * 20, y, 20, 20, TextInst.literal("⬛").formatted(formatting),
+				addWidget(MVMisc.newButton(x + i * 20, y, 20, 20, TextInst.literal("⬛").withStyle(formatting),
 						btn -> field.applyColor(formatting, hasShadowKeyDown()), createColorButtonTooltip(formatting)));
 				i++;
 			}
@@ -754,7 +754,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 								TextInst.translatable("nbteditor.keybind.formatted_text.reset"));
 					}
 				} else {
-					btnText = TextInst.literal(formatting.name().substring(0, 1)).formatted(formatting);
+					btnText = TextInst.literal(formatting.name().substring(0, 1)).withStyle(formatting);
 					btnTooltip = new MVTooltip(TextInst.of(formatting.getName()));
 				}
 				addWidget(MVMisc.newButton(
@@ -877,7 +877,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				lastFontChange = time;
 				lastFont += Math.floor(Math.random() * 2) + 1;
 				font.setMessage(TextInst.literal(lastFont % 3 + "")
-						.styled(style -> style.withFont(new FontDescription.Resource(IdentifierInst.of("nbteditor", "fancy_f")))));
+						.withStyle(style -> style.withFont(new FontDescription.Resource(IdentifierInst.of("nbteditor", "fancy_f")))));
 			}
 		}
 		

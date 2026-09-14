@@ -27,7 +27,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -39,6 +38,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SaveQueue;
 import com.luneruniverse.minecraft.mod.nbteditor.util.lock.PartitionedReadWriteLock;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -841,8 +841,8 @@ public class ClientChest {
 			return;
 		MainUtil.client.player.displayClientMessage(attachShowFolder(TextInst.translatable("nbteditor.client_chest.corrupt_warning")), false);
 	}
-	public static Component attachShowFolder(EditableText text) {
-		return text.append(" ").append(TextInst.translatable("nbteditor.file_options.show").styled(
+	public static Component attachShowFolder(MutableComponent text) {
+		return text.append(" ").append(TextInst.translatable("nbteditor.file_options.show").withStyle(
 				style -> style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(CLIENT_CHEST_FOLDER.getAbsolutePath()))));
 	}
 	

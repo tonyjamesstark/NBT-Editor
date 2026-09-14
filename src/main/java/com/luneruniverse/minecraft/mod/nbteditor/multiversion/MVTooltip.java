@@ -11,6 +11,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FormattedCharSequence;
@@ -56,7 +57,7 @@ public class MVTooltip {
 	}
 	
 	private static Component combine(List<Component> lines) {
-		EditableText combined = TextInst.literal("");
+		MutableComponent combined = TextInst.literal("");
 		for (int i = 0; i < lines.size(); i++) {
 			if (i > 0)
 				combined = combined.append(" ");
@@ -79,7 +80,7 @@ public class MVTooltip {
 		this(Arrays.stream(lines).flatMap(line -> TextUtil.splitText(line).stream()).toList());
 	}
 	public MVTooltip(String... keys) {
-		this(Arrays.asList(keys).stream().map(TextInst::translatable).toList().toArray(new EditableText[0]));
+		this(Arrays.asList(keys).stream().map(TextInst::translatable).toList().toArray(new MutableComponent[0]));
 	}
 	
 	public List<FormattedCharSequence> getLines() {

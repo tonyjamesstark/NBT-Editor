@@ -60,7 +60,7 @@ public class BookScreenMixin extends Screen {
 		try {
 			return CompletableFuture.completedFuture(Optional.of(ItemReference.getHeldItem()));
 		} catch (CommandSyntaxException e) {
-			MainUtil.client.player.displayClientMessage(TextInst.literal(e.getMessage()).formatted(ChatFormatting.RED), false);
+			MainUtil.client.player.displayClientMessage(TextInst.literal(e.getMessage()).withStyle(ChatFormatting.RED), false);
 			return CompletableFuture.completedFuture(Optional.empty());
 		}
 	}

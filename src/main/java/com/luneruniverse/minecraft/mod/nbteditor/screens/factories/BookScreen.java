@@ -8,7 +8,6 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
@@ -26,6 +25,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldW
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.TranslatedGroupWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.WrittenBookTagReferences;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess;
 import net.minecraft.client.gui.GuiGraphics;
@@ -152,7 +152,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		return MVMisc.getBookContents(pages);
 	}
 	private Component makePreviewText(Component text) {
-		EditableText output = TextInst.copy(text);
+		MutableComponent output = TextInst.copy(text);
 		output.setStyle(makePreviewStyle(output.getStyle()));
 		output.getSiblings().replaceAll(this::makePreviewText);
 		return output;
@@ -230,10 +230,10 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		
 		group.addDrawable(gen);
 		
-		EditableText prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
-		EditableText nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
+		MutableComponent prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
+		MutableComponent nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
 		if (ConfigScreen.isInvertedPageKeybinds()) {
-			EditableText temp = prevKeybind;
+			MutableComponent temp = prevKeybind;
 			prevKeybind = nextKeybind;
 			nextKeybind = temp;
 		}

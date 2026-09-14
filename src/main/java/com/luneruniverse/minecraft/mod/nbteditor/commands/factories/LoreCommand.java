@@ -113,22 +113,22 @@ public class LoreCommand extends ClientCommand {
 			ItemReference heldItem = ItemReference.getHeldItem(item -> true, TextInst.translatable("nbteditor.no_hand.no_item.to_view"));
 			ItemStack item = heldItem.getItem();
 			
-			context.getSource().sendFeedback(TextInst.literal("[").formatted(ChatFormatting.GRAY).append(TextInst.literal("+").formatted(ChatFormatting.GREEN)).append(TextInst.literal("] ").formatted(ChatFormatting.GRAY))
-					.styled(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore add "))
+			context.getSource().sendFeedback(TextInst.literal("[").withStyle(ChatFormatting.GRAY).append(TextInst.literal("+").withStyle(ChatFormatting.GREEN)).append(TextInst.literal("] ").withStyle(ChatFormatting.GRAY))
+					.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore add "))
 							.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore add"))))
-					.append(TextInst.literal("[").formatted(ChatFormatting.GRAY).append(TextInst.literal("Clear").formatted(ChatFormatting.RED)).append(TextInst.literal("] ").formatted(ChatFormatting.GRAY))
-					.styled(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore clear"))
+					.append(TextInst.literal("[").withStyle(ChatFormatting.GRAY).append(TextInst.literal("Clear").withStyle(ChatFormatting.RED)).append(TextInst.literal("] ").withStyle(ChatFormatting.GRAY))
+					.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore clear"))
 							.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore clear"))))));
 			
 			List<Component> lore = ItemTagReferences.LORE.get(item);
 			int i = 0;
 			for (Component line : lore) {
 				final int finalI = i;
-				context.getSource().sendFeedback(TextInst.literal("[").formatted(ChatFormatting.GRAY).append(TextInst.literal("-").formatted(ChatFormatting.RED)).append(TextInst.literal("]").formatted(ChatFormatting.GRAY))
-						.styled(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
+				context.getSource().sendFeedback(TextInst.literal("[").withStyle(ChatFormatting.GRAY).append(TextInst.literal("-").withStyle(ChatFormatting.RED)).append(TextInst.literal("]").withStyle(ChatFormatting.GRAY))
+						.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
 								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore remove " + finalI))))
-						.append(TextInst.literal(" ").formatted(ChatFormatting.DARK_PURPLE).formatted(ChatFormatting.ITALIC).append(line)
-						.styled(style -> MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreen(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
+						.append(TextInst.literal(" ").withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.ITALIC).append(line)
+						.withStyle(style -> MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreen(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
 								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore set " + finalI))))));
 				i++;
 			}

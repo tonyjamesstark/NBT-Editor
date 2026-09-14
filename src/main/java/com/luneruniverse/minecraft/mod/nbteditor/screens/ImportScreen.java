@@ -63,7 +63,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 					});
 				} catch (Exception e) {
 					NBTEditor.LOGGER.error("Error while importing a .nbt file", e);
-					MainUtil.client.player.displayClientMessage(TextInst.literal(e.getClass().getName() + ": " + e.getMessage()).formatted(ChatFormatting.RED), false);
+					MainUtil.client.player.displayClientMessage(TextInst.literal(e.getClass().getName() + ": " + e.getMessage()).withStyle(ChatFormatting.RED), false);
 				}
 				continue;
 			}
@@ -82,7 +82,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 				name = name.substring(0, nameDot);
 			
 			ItemStack painting = new ItemStack(Items.PAINTING);
-			painting.nbte$setCustomName(TextInst.literal(name).styled(style -> style.withItalic(false).withColor(ChatFormatting.GOLD)));
+			painting.nbte$setCustomName(TextInst.literal(name).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GOLD)));
 			ItemTagReferences.LORE.set(painting, imgLore);
 			MainUtil.getWithMessage(painting);
 		}, () -> {});

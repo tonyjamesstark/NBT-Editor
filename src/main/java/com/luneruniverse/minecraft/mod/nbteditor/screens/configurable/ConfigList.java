@@ -129,7 +129,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 				}
 				Component msg = action.msg;
 				if (action == ListContextMenuAction.REMOVE)
-					msg = TextInst.copy(msg).formatted(color == -1 ? ChatFormatting.RED : ChatFormatting.GOLD);
+					msg = TextInst.copy(msg).withStyle(color == -1 ? ChatFormatting.RED : ChatFormatting.GOLD);
 				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, msg, contextMenuX + 25, y + 2, color);
 				y += MainUtil.client.font.lineHeight + 2;
 			}

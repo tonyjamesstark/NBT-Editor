@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
@@ -16,6 +15,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Blocks;
@@ -207,14 +207,14 @@ public class LocalBlock implements LocalNBT {
 	}
 	@Override
 	public Component toHoverableText() {
-		EditableText tooltip = TextInst.translatable("gui.entity_tooltip.type", block.getName());
+		MutableComponent tooltip = TextInst.translatable("gui.entity_tooltip.type", block.getName());
 		if (!state.getProperties().isEmpty())
 			tooltip.append("\n" + state);
 		Component customName = MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null);
 		if (customName != null)
 			tooltip = TextInst.literal("").append(customName).append("\n").append(tooltip);
 		final Component finalTooltip = tooltip;
-		return TextInst.bracketed(getName()).styled(
+		return TextInst.bracketed(getName()).withStyle(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(finalTooltip)));
 	}
 	

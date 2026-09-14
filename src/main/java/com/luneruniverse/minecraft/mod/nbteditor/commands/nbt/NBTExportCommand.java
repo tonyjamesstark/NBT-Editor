@@ -106,7 +106,7 @@ public class NBTExportCommand extends ClientCommand {
 			nbt.putInt("DataVersion", Version.getDataVersion());
 			MVMisc.writeCompressedNbt(nbt, output);
 			MainUtil.client.player.displayClientMessage(TextUtil.attachFileTextOptions(TextInst.translatable("nbteditor.nbt.export.file.success",
-					TextInst.literal(output.getName()).formatted(ChatFormatting.UNDERLINE).styled(style ->
+					TextInst.literal(output.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(style ->
 					style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output), false);
 		} catch (Exception e) {
 			NBTEditor.LOGGER.error("Error while exporting item", e);

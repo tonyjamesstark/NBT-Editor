@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChest;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
@@ -20,6 +19,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphics;
@@ -51,10 +51,10 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	
 	@Override
 	protected void init() {
-		EditableText prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
-		EditableText nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
+		MutableComponent prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
+		MutableComponent nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
 		if (ConfigScreen.isInvertedPageKeybinds()) {
-			EditableText temp = prevKeybind;
+			MutableComponent temp = prevKeybind;
 			prevKeybind = nextKeybind;
 			nextKeybind = temp;
 		}
@@ -196,12 +196,12 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	private CompletableFuture<Boolean> addSuccessMessage(CompletableFuture<Boolean> future, boolean all) {
 		future.thenAccept(success -> {
 			if (success) {
-				EditableText msg;
+				MutableComponent msg;
 				if (all) {
 					msg = TextInst.translatable("nbteditor.client_chest.data_version.update_all_pages_success");
 				} else {
 					msg = TextInst.translatable("nbteditor.client_chest.data_version.update_page_success",
-							TextInst.literal(ClientChestScreen.PAGE + 1 + "").formatted(ChatFormatting.GREEN));
+							TextInst.literal(ClientChestScreen.PAGE + 1 + "").withStyle(ChatFormatting.GREEN));
 				}
 				MainUtil.client.player.displayClientMessage(ClientChest.attachShowFolder(msg), false);
 			}

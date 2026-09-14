@@ -29,7 +29,7 @@ public class GetLostItemCommand extends ClientCommand {
 		LOST_ITEM = new SingleDynamicItem(item);
 		addToHistory(item);
 		MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.get.lost_item").append(TextInst.literal("§6/get lostitem")
-				.styled(style -> style.withClickEvent(MVTextEvents.ClickAction.RUN_COMMAND.newEvent("/get lostitem"))
+				.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.RUN_COMMAND.newEvent("/get lostitem"))
 						.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.translatable("nbteditor.get.lost_item.hover"))))), false);
 	}
 	

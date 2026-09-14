@@ -16,7 +16,6 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
@@ -25,6 +24,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -37,10 +37,10 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		img = MainUtil.scaleImage(img, width, height);
 		List<Component> output = new ArrayList<>();
 		for (int line = 0; line < height; line++) {
-			EditableText lineText = TextInst.literal("").styled(style -> style.withItalic(false));
+			MutableComponent lineText = TextInst.literal("").withStyle(style -> style.withItalic(false));
 			for (int i = 0; i < width; i++) {
 				final int color = img.getRGB(i, line) & 0xFFFFFF;
-				lineText.append(TextInst.literal("█").styled(style -> style.withColor(color)));
+				lineText.append(TextInst.literal("█").withStyle(style -> style.withColor(color)));
 			}
 			output.add(lineText);
 		}

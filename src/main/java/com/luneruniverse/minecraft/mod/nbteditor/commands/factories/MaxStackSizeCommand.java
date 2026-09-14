@@ -57,7 +57,7 @@ public class MaxStackSizeCommand extends ClientCommand {
 					item.setCount(size);
 				item.set(DataComponents.MAX_STACK_SIZE, size);
 				ref.saveItem(item, TextInst.translatable("nbteditor.max_stack_size.added",
-						TextInst.literal(size + "").formatted(ChatFormatting.GOLD)));
+						TextInst.literal(size + "").withStyle(ChatFormatting.GOLD)));
 			}
 			return Command.SINGLE_SUCCESS;
 		}));

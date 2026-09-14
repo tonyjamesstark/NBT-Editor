@@ -7,7 +7,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestPage;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.DynamicItems;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageLoadLevel;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -19,6 +18,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Button;
@@ -146,10 +146,10 @@ public class ClientChestScreen extends ClientHandledScreen {
 		pageField.setFilter(MainUtil.intPredicate(() -> 0, NBTEditorClient.CLIENT_CHEST::getPageCount, true));
 		this.addRenderableWidget(pageField);
 		
-		EditableText prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
-		EditableText nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
+		MutableComponent prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
+		MutableComponent nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
 		if (ConfigScreen.isInvertedPageKeybinds()) {
-			EditableText temp = prevKeybind;
+			MutableComponent temp = prevKeybind;
 			prevKeybind = nextKeybind;
 			nextKeybind = temp;
 		}
@@ -319,7 +319,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 	
 	@Override
 	protected Component getRenderedTitle() {
-		EditableText title = TextInst.copy(this.title).append(" (" + (PAGE + 1) + ")");
+		MutableComponent title = TextInst.copy(this.title).append(" (" + (PAGE + 1) + ")");
 		return NBTEditorClient.CLIENT_CHEST.isProcessingPage(PAGE) ? title.append("*") : title;
 	}
 	
