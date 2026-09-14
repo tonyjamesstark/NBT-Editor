@@ -302,15 +302,10 @@ public class MVMisc {
 	
 	
 	public static <T> T withDefaultRegistryManager(Supplier<T> callback) {
-		if (NBTManagers.COMPONENTS_EXIST)
-			return DynamicRegistryManagerHolder.withDefaultManager(callback);
-		return callback.get();
+		return DynamicRegistryManagerHolder.withDefaultManager(callback);
 	}
 	public static void withDefaultRegistryManager(Runnable callback) {
-		if (NBTManagers.COMPONENTS_EXIST)
-			DynamicRegistryManagerHolder.withDefaultManager(callback);
-		else
-			callback.run();
+		DynamicRegistryManagerHolder.withDefaultManager(callback);
 	}
 	
 	public static int getTooltipComponentHeight(ClientTooltipComponent line) {

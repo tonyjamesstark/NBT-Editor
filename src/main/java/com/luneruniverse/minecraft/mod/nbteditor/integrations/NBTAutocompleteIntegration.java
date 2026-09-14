@@ -53,7 +53,7 @@ public class NBTAutocompleteIntegration extends Integration {
 		if (key == null && value == null)
 			throw new IllegalArgumentException("Both key and value can't be null at the same time!");
 		
-		boolean components = NBTManagers.COMPONENTS_EXIST && type.equals("item");
+		boolean components = type.equals("item");
 		
 		boolean nextTagAllowed;
 		if (value == null) {

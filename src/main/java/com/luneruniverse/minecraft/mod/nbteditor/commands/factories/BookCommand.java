@@ -60,8 +60,7 @@ public class BookCommand extends ClientCommand {
 			convertedPages.add(page.getString());
 		}
 		ItemTagReferences.WRITABLE_BOOK_PAGES.set(item, convertedPages);
-		if (NBTManagers.COMPONENTS_EXIST)
-			item.remove(MVComponentType.WRITTEN_BOOK_CONTENT);
+		item.remove(MVComponentType.WRITTEN_BOOK_CONTENT);
 		if (formatted) {
 			MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.book.convert.formatting_saved"), false);
 			MainUtil.get(item, true);

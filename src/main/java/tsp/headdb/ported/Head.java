@@ -39,7 +39,7 @@ public class Head {
         ItemStack item = new ItemStack(Items.PLAYER_HEAD);
         item.nbte$setCustomName(TextInst.of(Utils.colorize(category != null ? category.getColor() + name : "&8" + name)));
         // set skull owner
-        GameProfile profile = new GameProfile(uuid, NBTManagers.COMPONENTS_EXIST ? "HDB_Head" : name);
+        GameProfile profile = new GameProfile(uuid, "HDB_Head");
         profile.properties().put("textures", new Property("textures", value));
         ItemTagReferences.PROFILE.set(item, Optional.of(profile));
         

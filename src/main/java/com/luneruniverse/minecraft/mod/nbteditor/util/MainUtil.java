@@ -249,20 +249,13 @@ public class MainUtil {
 	
 	
 	public static Component getBaseItemNameSafely(ItemStack item) {
-		if (NBTManagers.COMPONENTS_EXIST) {
-			Component name = item.get(MVComponentType.ITEM_NAME);
-			if (name != null)
-				return name;
-		}
+		Component name = item.get(MVComponentType.ITEM_NAME);
+		if (name != null)
+			return name;
 		return MVMisc.getName(item.getItem());
 	}
 	public static Component getCustomItemNameSafely(ItemStack item) {
-		if (NBTManagers.COMPONENTS_EXIST)
-			return item.getHoverName();
-		CompoundTag nbt = item.nbte$getNbt();
-		if (nbt != null)
-			nbt = nbt.nbte$getCompoundOrDefault("display");
-		return getNbtNameSafely(nbt, "Name", () -> item.getItem().getName(item));
+		return item.getHoverName();
 	}
 	public static Component getNbtNameSafely(CompoundTag nbt, String key, Supplier<Component> defaultName) {
 		if (nbt != null) {
@@ -320,28 +313,14 @@ public class MainUtil {
 	
 	
 	public static ItemStack copyAirable(ItemStack item) {
-		if (NBTManagers.COMPONENTS_EXIST) {
-			ItemStack output = item.transmuteCopy(item.getItem(), item.getCount());
-			output.setPopTime(item.getPopTime());
-			return output;
-		}
-		
-		ItemStack output = new ItemStack(item.getItem(), item.getCount());
+		ItemStack output = item.transmuteCopy(item.getItem(), item.getCount());
 		output.setPopTime(item.getPopTime());
-		if (item.nbte$hasNbt())
-			output.nbte$setNbt(item.nbte$getNbt());
 		return output;
 	}
 	
 	
 	public static ItemStack setType(Item type, ItemStack item, int count) {
-		if (NBTManagers.COMPONENTS_EXIST)
-			return item.transmuteCopy(type, count);
-		
-		CompoundTag fullData = item.nbte$serialize(true);
-		fullData.putString("id", MVRegistry.ITEM.getId(type).toString());
-		fullData.putInt("Count", count);
-		return NBTManagers.ITEM.deserialize(fullData, true);
+		return item.transmuteCopy(type, count);
 	}
 	public static ItemStack setType(Item type, ItemStack item) {
 		return setType(type, item, item.getCount());
@@ -482,8 +461,6 @@ public class MainUtil {
 	}
 	
 	public static CompoundTag fillId(CompoundTag nbt, String id) {
-		if (!NBTManagers.COMPONENTS_EXIST)
-			return nbt;
 		if (!nbt.nbte$contains("id", Tag.TAG_STRING))
 			nbt.putString("id", id);
 		return nbt;

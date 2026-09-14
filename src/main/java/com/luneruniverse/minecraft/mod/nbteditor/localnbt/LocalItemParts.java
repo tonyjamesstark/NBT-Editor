@@ -101,26 +101,15 @@ public class LocalItemParts extends LocalItem {
 	}
 	@Override
 	public void setName(Component name) {
-		if (NBTManagers.COMPONENTS_EXIST) {
-			if (name == null) {
-				if (nbt != null) {
-					nbt.remove("custom_name");
-					nbt.remove("minecraft:custom_name");
-				}
-			} else {
-				CompoundTag nbt = getOrCreateNBT();
-				nbt.put(nbt.contains("minecraft:custom_name") || !nbt.contains("custom_name") ?
-						"minecraft:custom_name" : "custom_name", TextInst.toMinecraft(name));
+		if (name == null) {
+			if (nbt != null) {
+				nbt.remove("custom_name");
+				nbt.remove("minecraft:custom_name");
 			}
 		} else {
 			CompoundTag nbt = getOrCreateNBT();
-			CompoundTag display = nbt.nbte$getCompoundOrDefault("display");
-			if (name == null)
-				display.remove("Name");
-			else {
-				display.putString("Name", TextInst.toJson(name));
-				nbt.put("display", display);
-			}
+			nbt.put(nbt.contains("minecraft:custom_name") || !nbt.contains("custom_name") ?
+					"minecraft:custom_name" : "custom_name", TextInst.toMinecraft(name));
 		}
 	}
 	@Override
@@ -182,7 +171,7 @@ public class LocalItemParts extends LocalItem {
 	public CompoundTag serialize() {
 		CompoundTag output = new CompoundTag();
 		output.putString("id", getId().toString());
-		output.put(NBTManagers.COMPONENTS_EXIST ? "components" : "tag", nbt);
+		output.put("components", nbt);
 		output.putInt("count", count);
 		output.putString("type", "item");
 		return output;

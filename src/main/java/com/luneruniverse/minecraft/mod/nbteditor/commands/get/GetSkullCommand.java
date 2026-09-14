@@ -34,7 +34,7 @@ public class GetSkullCommand extends ClientCommand {
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		builder.then(argument("player", StringArgumentType.word()).executes(context -> {
 			String player = context.getArgument("player", String.class);
-			if (NBTManagers.COMPONENTS_EXIST && !StringUtil.isValidPlayerName(player)) {
+			if (!StringUtil.isValidPlayerName(player)) {
 				MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.skull.invalid_player_name"), false);
 				return Command.SINGLE_SUCCESS;
 			}

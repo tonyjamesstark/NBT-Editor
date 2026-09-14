@@ -168,8 +168,6 @@ public class NBTValue extends List2D.List2DValue {
 		this.invalidComponent = invalidComponent;
 	}
 	public void updateInvalidComponent(LocalNBT localNBT, String component) {
-		if (!NBTManagers.COMPONENTS_EXIST)
-			return;
 		if (localNBT instanceof LocalItem localItem) {
 			CompoundTag nbtOutput = localItem.getReadableItem().nbte$getNbt();
 			if (component == null)

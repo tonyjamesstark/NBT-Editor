@@ -175,19 +175,11 @@ public class LocalBlock implements LocalNBT {
 		for (Item item : MVRegistry.ITEM) {
 			if (item instanceof BlockItem blockItem && blockItem.getBlock() == block) {
 				ItemStack output = new ItemStack(blockItem);
-				if (nbt != null) {
-					if (NBTManagers.COMPONENTS_EXIST) {
-						if (block instanceof EntityBlock provider) {
-							BlockEntity entity = provider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
-							entity.setLevel(MainUtil.client.level);
-							NBTManagers.BLOCK_ENTITY.setNbt(entity, nbt);
-							MVMisc.addBlockEntityNbtWithoutXYZ(output, entity);
-						}
-					} else {
-						CompoundTag nbt = new CompoundTag();
-						nbt.put("BlockEntityTag", this.nbt);
-						output.nbte$setNbt(nbt);
-					}
+				if (nbt != null && block instanceof EntityBlock provider) {
+					BlockEntity entity = provider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
+					entity.setLevel(MainUtil.client.level);
+					NBTManagers.BLOCK_ENTITY.setNbt(entity, nbt);
+					MVMisc.addBlockEntityNbtWithoutXYZ(output, entity);
 				}
 				ItemTagReferences.BLOCK_STATE.set(output, state.getValuesMap());
 				return Optional.of(output);

@@ -40,23 +40,13 @@ public class ItemStackMixin implements IntegratedNBTManager, MVItemStackParent {
 	}
 	
 	
-	private static final Supplier<Reflection.MethodInvoker> ItemStack_hasCustomName =
-			Reflection.getOptionalMethod(ItemStack.class, "method_7938", MethodType.methodType(boolean.class));
 	@Override
 	public boolean nbte$hasCustomName() {
-		if (NBTManagers.COMPONENTS_EXIST)
-			return ((ItemStack) (Object) this).contains(MVComponentType.CUSTOM_NAME);
-		else
-			return ItemStack_hasCustomName.get().invoke(this);
+		return ((ItemStack) (Object) this).contains(MVComponentType.CUSTOM_NAME);
 	}
-	private static final Supplier<Reflection.MethodInvoker> ItemStack_setCustomName =
-			Reflection.getOptionalMethod(ItemStack.class, "method_7977", MethodType.methodType(ItemStack.class, Component.class));
 	@Override
 	public ItemStack nbte$setCustomName(Component name) {
-		if (NBTManagers.COMPONENTS_EXIST)
-			((ItemStack) (Object) this).set(MVComponentType.CUSTOM_NAME, name);
-		else
-			ItemStack_setCustomName.get().invoke(this, name);
+		((ItemStack) (Object) this).set(MVComponentType.CUSTOM_NAME, name);
 		return (ItemStack) (Object) this;
 	}
 }

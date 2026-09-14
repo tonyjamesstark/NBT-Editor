@@ -74,7 +74,7 @@ public class MVComponentType<T> {
 	private final Object component;
 	
 	public MVComponentType(Supplier<Object> component) {
-		this.component = (NBTManagers.COMPONENTS_EXIST ? component.get() : null);
+		this.component = component.get();
 	}
 	
 	public Object getInternalValue() {

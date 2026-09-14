@@ -83,13 +83,11 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			textureName = woodType + "_planks";
 		texture = IdentifierInst.of("minecraft", "textures/block/" + textureName + ".png");
 		
-		if (NBTManagers.COMPONENTS_EXIST) {
-			if (localNBT instanceof LocalItem localItem) {
-				CompoundTag nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
-				nbt.putString("id",
-						localItem.getItemType() instanceof HangingSignItem ? "minecraft:hanging_sign" : "minecraft:sign");
-				ItemTagReferences.BLOCK_ENTITY_DATA.set(localItem.getEditableItem(), nbt);
-			}
+		if (localNBT instanceof LocalItem localItem) {
+			CompoundTag nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
+			nbt.putString("id",
+					localItem.getItemType() instanceof HangingSignItem ? "minecraft:hanging_sign" : "minecraft:sign");
+			ItemTagReferences.BLOCK_ENTITY_DATA.set(localItem.getEditableItem(), nbt);
 		}
 	}
 	
