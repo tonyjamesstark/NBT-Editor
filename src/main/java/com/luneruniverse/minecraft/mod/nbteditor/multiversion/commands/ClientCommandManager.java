@@ -113,19 +113,13 @@ public final class ClientCommandManager {
 	
 	
 	// NBT Editor stuff
-	private static final Supplier<Reflection.MethodInvoker> ClientPlayNetworkHandler_getRegistryManager_Immutable =
-			Reflection.getOptionalMethod(() -> ClientPacketListener.class, () -> "method_29091",
-					() -> MethodType.methodType(Reflection.getClass("net.minecraft.class_5455$class_6890")));
-	private static final Supplier<Reflection.MethodInvoker> ClientCommonNetworkHandler_getRegistryManager =
-			Reflection.getOptionalMethod(() -> ClientCommonPacketListenerImpl.class, () -> "method_29091",
-					() -> MethodType.methodType(Reflection.getClass("net.minecraft.class_5455$class_6890"))); // Prevent Innerclasses entry
 	public static ClientboundLoginPacket lastGamePacket;
 	public static ClientboundCommandsPacket lastCommandPacket;
 	public static void createDispatcher() {
 		final CommandDispatcher<FabricClientCommandSource> dispatcher = new CommandDispatcher<>();
 		ClientCommandInternals.setActiveDispatcher(dispatcher);
 		Object registryAccess = CommandBuildContext.simple(
-						ClientPlayNetworkHandler_getRegistryManager_Immutable.get().invoke(MainUtil.client.getConnection()),
+						MainUtil.client.getConnection().registryAccess(),
 						MainUtil.client.getConnection().enabledFeatures());
 		ClientCommandRegistrationCallback.EVENT.invoker().register(dispatcher, registryAccess);
 		ClientCommandInternals.finalizeInit();

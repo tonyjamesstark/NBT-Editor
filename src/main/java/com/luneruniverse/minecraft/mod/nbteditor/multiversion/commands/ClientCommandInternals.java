@@ -61,9 +61,6 @@ public final class ClientCommandInternals {
 	private static final String API_COMMAND_NAME;
 	private static final String SHORT_API_COMMAND_NAME = "fcc";
 	private static @Nullable CommandDispatcher<FabricClientCommandSource> activeDispatcher;
-	private static final Supplier<Class<?>> CommandException = () -> Reflection.getClass("net.minecraft.class_2164");
-	private static final Supplier<MethodInvoker> CommandException_getTextMessage =
-			Reflection.getOptionalMethod(CommandException, () -> "method_9199", () -> MethodType.methodType(Component.class));
 	static {
 		API_COMMAND_NAME = "fabric-command-api-v2:client";
 		activeDispatcher = null;
@@ -112,16 +109,9 @@ public final class ClientCommandInternals {
 			commandSource.sendError(getErrorMessage(e));
 			return true;
 		} catch (RuntimeException e) {
-			if (false &&
-					CommandException.get().isInstance(e)) {
-				LOGGER.warn("Error while executing client-sided command '{}'", command, e);
-				commandSource.sendError(CommandException_getTextMessage.get().invoke(e));
-				return true;
-			} else {
-				LOGGER.warn("Error while executing client-sided command '{}'", command, e);
-				commandSource.sendError(TextInst.of(e.getMessage()));
-				return true;
-			}
+			LOGGER.warn("Error while executing client-sided command '{}'", command, e);
+			commandSource.sendError(TextInst.of(e.getMessage()));
+			return true;
 		} finally {
 			MVMisc.getProfiler().pop();
 		}
