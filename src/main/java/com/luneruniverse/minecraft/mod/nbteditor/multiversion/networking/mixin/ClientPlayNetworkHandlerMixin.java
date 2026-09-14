@@ -12,8 +12,8 @@ import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 
 @Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
-	@Inject(method = "onGameJoin", at = @At("RETURN"))
-	private void onGameJoin(ClientboundLoginPacket packet, CallbackInfo info) {
+	@Inject(method = "handleLogin", at = @At("RETURN"))
+	private void handleLogin(ClientboundLoginPacket packet, CallbackInfo info) {
 		MVClientNetworking.onPlayJoin();
 	}
 }

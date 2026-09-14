@@ -11,8 +11,8 @@ import net.minecraft.client.player.LocalPlayer;
 
 @Mixin(LocalPlayer.class)
 public class ClientPlayerEntityMixin {
-	@Inject(method = "closeScreen", at = @At("HEAD"))
-	private void closeScreen(CallbackInfo info) {
+	@Inject(method = "clientSideCloseContainer", at = @At("HEAD"))
+	private void clientSideCloseContainer(CallbackInfo info) {
 		NBTEditorClient.SERVER_CONN.closeContainerScreen();
 	}
 }

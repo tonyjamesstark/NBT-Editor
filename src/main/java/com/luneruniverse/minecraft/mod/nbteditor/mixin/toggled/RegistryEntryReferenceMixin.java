@@ -20,7 +20,7 @@ import net.minecraft.tags.TagKey;
 public abstract class RegistryEntryReferenceMixin<T> {
 	
 	@Shadow
-	public abstract ResourceKey<T> registryKey();
+	public abstract ResourceKey<T> key();
 	
 	@Inject(method = "value", at = @At("HEAD"), cancellable = true)
 	private void value(CallbackInfoReturnable<T> info) {
@@ -34,8 +34,8 @@ public abstract class RegistryEntryReferenceMixin<T> {
 		}
 	}
 	
-	@Inject(method = "isIn", at = @At("HEAD"), cancellable = true)
-	private void isIn(TagKey<T> tag, CallbackInfoReturnable<Boolean> info) {
+	@Inject(method = "is", at = @At("HEAD"), cancellable = true)
+	private void is(TagKey<T> tag, CallbackInfoReturnable<Boolean> info) {
 		@SuppressWarnings("unchecked")
 		Holder.Reference<T> source = (Holder.Reference<T>) (Object) this;
 		
@@ -46,16 +46,16 @@ public abstract class RegistryEntryReferenceMixin<T> {
 		}
 	}
 	
-	@Inject(method = "ownerEquals", at = @At("RETURN"), cancellable = true)
-	private void ownerEquals(HolderOwner<?> owner, CallbackInfoReturnable<Boolean> info) {
+	@Inject(method = "canSerializeIn", at = @At("RETURN"), cancellable = true)
+	private void canSerializeIn(HolderOwner<?> owner, CallbackInfoReturnable<Boolean> info) {
 		if (!info.getReturnValueZ()) {
 			if (DynamicRegistryManagerHolder.isOwnedByDefaultManager((Holder.Reference<?>) (Object) this))
 				info.setReturnValue(true);
 		}
 	}
 	
-	@Inject(method = "streamTags", at = @At("HEAD"), cancellable = true)
-	private void streamTags(CallbackInfoReturnable<Stream<TagKey<T>>> info) {
+	@Inject(method = "tags", at = @At("HEAD"), cancellable = true)
+	private void tags(CallbackInfoReturnable<Stream<TagKey<T>>> info) {
 		@SuppressWarnings("unchecked")
 		Holder.Reference<T> source = (Holder.Reference<T>) (Object) this;
 		
@@ -74,8 +74,8 @@ public abstract class RegistryEntryReferenceMixin<T> {
 		if (obj instanceof Holder.Reference<?> ref &&
 				(DynamicRegistryManagerHolder.isOwnedByDefaultManager((Holder.Reference<?>) (Object) this) ||
 						DynamicRegistryManagerHolder.isOwnedByDefaultManager(ref))) {
-			return registryKey().registry().equals(ref.key().registry()) &&
-					registryKey().identifier().equals(ref.key().identifier());
+			return key().registry().equals(ref.key().registry()) &&
+					key().identifier().equals(ref.key().identifier());
 		}
 		
 		return false;
@@ -83,7 +83,7 @@ public abstract class RegistryEntryReferenceMixin<T> {
 	
 	@Override
 	public int hashCode() {
-		return 31 * registryKey().registry().hashCode() + registryKey().identifier().hashCode();
+		return 31 * key().registry().hashCode() + key().identifier().hashCode();
 	}
 	
 }

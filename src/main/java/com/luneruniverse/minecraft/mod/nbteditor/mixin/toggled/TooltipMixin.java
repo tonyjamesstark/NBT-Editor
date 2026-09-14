@@ -18,12 +18,12 @@ import net.minecraft.util.FormattedCharSequence;
 public class TooltipMixin {
 	
 	@Shadow
-	private List<FormattedCharSequence> lines;
+	private List<FormattedCharSequence> cachedTooltip;
 	
-	@Inject(method = "getLines", at = @At("HEAD"), cancellable = true)
-	private void getLines(Minecraft client, CallbackInfoReturnable<List<FormattedCharSequence>> info) {
+	@Inject(method = "toCharSequence", at = @At("HEAD"), cancellable = true)
+	private void toCharSequence(Minecraft client, CallbackInfoReturnable<List<FormattedCharSequence>> info) {
 		if (MixinLink.NEW_TOOLTIPS.containsKey((Tooltip) (Object) this))
-			info.setReturnValue(lines);
+			info.setReturnValue(cachedTooltip);
 	}
 	
 }

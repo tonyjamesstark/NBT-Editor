@@ -24,8 +24,8 @@ public class ClientPlayNetworkHandlerMixin {
 	
 	private static boolean updatingClientInventory;
 	
-	@Inject(method = "onInventory", at = @At("HEAD"), cancellable = true)
-	private void onInventory(ClientboundContainerSetContentPacket packet, CallbackInfo info) {
+	@Inject(method = "handleContainerContent", at = @At("HEAD"), cancellable = true)
+	private void handleContainerContent(ClientboundContainerSetContentPacket packet, CallbackInfo info) {
 		if (!MainUtil.client.isSameThread() || updatingClientInventory)
 			return;
 		
@@ -49,8 +49,8 @@ public class ClientPlayNetworkHandlerMixin {
 		}
 	}
 	
-	@Inject(method = "onScreenHandlerSlotUpdate", at = @At("HEAD"), cancellable = true)
-	private void onScreenHandlerSlotUpdate(ClientboundContainerSetSlotPacket packet, CallbackInfo info) {
+	@Inject(method = "handleContainerSetSlot", at = @At("HEAD"), cancellable = true)
+	private void handleContainerSetSlot(ClientboundContainerSetSlotPacket packet, CallbackInfo info) {
 		if (!MainUtil.client.isSameThread() || updatingClientInventory)
 			return;
 		
@@ -80,20 +80,20 @@ public class ClientPlayNetworkHandlerMixin {
 		}
 	}
 	
-	@Inject(method = "onInventory", at = @At("RETURN"), cancellable = true)
+	@Inject(method = "handleContainerContent", at = @At("RETURN"), cancellable = true)
 	private void onInventory_return(ClientboundContainerSetContentPacket packet, CallbackInfo info) {
 		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onInventoryPacket(packet);
 	}
 	
-	@Inject(method = "onScreenHandlerSlotUpdate", at = @At("RETURN"), cancellable = true)
+	@Inject(method = "handleContainerSetSlot", at = @At("RETURN"), cancellable = true)
 	private void onScreenHandlerSlotUpdate_return(ClientboundContainerSetSlotPacket packet, CallbackInfo info) {
 		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onScreenHandlerSlotUpdatePacket(packet);
 	}
 	
-	@Inject(method = "onCloseScreen", at = @At("HEAD"), cancellable = true)
-	private void onCloseScreen(ClientboundContainerClosePacket packet, CallbackInfo info) {
+	@Inject(method = "handleContainerClose", at = @At("HEAD"), cancellable = true)
+	private void handleContainerClose(ClientboundContainerClosePacket packet, CallbackInfo info) {
 		if (!MainUtil.client.isSameThread())
 			return;
 		

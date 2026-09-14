@@ -34,9 +34,9 @@ import net.minecraft.ChatFormatting;
 public class BookScreenMixin extends Screen {
 	
 	@Shadow
-	private BookAccess contents;
+	private BookAccess bookAccess;
 	@Shadow
-	private int pageIndex;
+	private int currentPage;
 	
 	private boolean renderLogo;
 	private Button openBtn;
@@ -68,9 +68,9 @@ public class BookScreenMixin extends Screen {
 		getReference().thenAccept(ref -> MainUtil.client.execute(() -> ref.ifPresent(consumer)));
 	}
 	
-	private void updateButtons(BookAccess contents) {
+	private void updateButtons(BookAccess bookAccess) {
 		boolean editable = (!((Object) this instanceof LecternScreen) || NBTEditorClient.SERVER_CONN.isEditingExpanded()) &&
-				NBTEditorClient.SERVER_CONN.isEditingAllowed() && MVMisc.isWrittenBookContents(contents);
+				NBTEditorClient.SERVER_CONN.isEditingAllowed() && MVMisc.isWrittenBookContents(bookAccess);
 		renderLogo = editable;
 		openBtn.visible = editable;
 		convertBtn.visible = editable;
@@ -89,7 +89,7 @@ public class BookScreenMixin extends Screen {
 				if ((Object) this instanceof LecternScreen)
 					MainUtil.client.player.closeContainer();
 				MainUtil.client.setScreen(
-						new com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen(ref, Math.max(0, pageIndex)));
+						new com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen(ref, Math.max(0, currentPage)));
 			});
 		}));
 		convertBtn = addRenderableWidget(MVMisc.newButton(16, 64 + 24, 100, 20, TextInst.translatable("nbteditor.book.convert"),
@@ -102,16 +102,16 @@ public class BookScreenMixin extends Screen {
 					}
 				})));
 		
-		updateButtons(contents);
+		updateButtons(bookAccess);
 	}
 	
-	@Inject(method = "setPageProvider", at = @At("HEAD"))
-	private void setPageProvider(BookAccess contents, CallbackInfo info) {
-		updateButtons(contents);
+	@Inject(method = "setBookAccess", at = @At("HEAD"))
+	private void setBookAccess(BookAccess bookAccess, CallbackInfo info) {
+		updateButtons(bookAccess);
 	}
 	
-	@Inject(method = "addCloseButton", at = @At("HEAD"), cancellable = true)
-	private void addCloseButton(CallbackInfo info) {
+	@Inject(method = "createMenuControls", at = @At("HEAD"), cancellable = true)
+	private void createMenuControls(CallbackInfo info) {
 		if (MainUtil.client.screen instanceof
 				com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen) { // Preview mode
 			info.cancel();

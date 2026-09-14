@@ -155,7 +155,7 @@ public class MixinLink {
 		if (!ConfigScreen.isChatLimitExtended())
 			return;
 		
-		EditBox chatField = ((ChatScreenAccessor) source).getChatField();
+		EditBox chatField = ((ChatScreenAccessor) source).getInput();
 		if (chatField.getValue().length() > 256) {
 			MVDrawableHelper.fill(context, source.width - 202, source.height - 40, source.width - 2, source.height - 14, 0xAAFFAA00);
 			Font textRenderer = MainUtil.client.font;
@@ -220,7 +220,7 @@ public class MixinLink {
 	public static void keyPressed(AbstractContainerScreen<?> source, KeyEvent input, CallbackInfoReturnable<Boolean> info) {
 		boolean creativeInv = (source instanceof CreativeModeInventoryScreen);
 		
-		Slot hoveredSlot = ((HandledScreenAccessor) source).getFocusedSlot();
+		Slot hoveredSlot = ((HandledScreenAccessor) source).getHoveredSlot();
 		
 		if (hoveredSlot instanceof CreativeModeInventoryScreen.SlotWrapper creativeSlot)
 			hoveredSlot = creativeSlot.target;

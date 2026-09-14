@@ -26,13 +26,13 @@ import net.minecraft.resources.Identifier;
 public abstract class DrawContextMixin {
 	
 	@Shadow
-	public abstract Matrix3x2fStack getMatrices();
+	public abstract Matrix3x2fStack pose();
 	
-	// 1.21.9 split tooltip drawing out of drawTooltip into drawTooltipImmediately,
+	// 1.21.9 split tooltip drawing out of drawTooltip into renderTooltip,
 	// and the matrix it pushes is the 2D GUI stack.
-	@Inject(method = "drawTooltipImmediately", at = @At(value = "INVOKE",
+	@Inject(method = "renderTooltip", at = @At(value = "INVOKE",
 			target = "Lorg/joml/Matrix3x2fStack;pushMatrix()Lorg/joml/Matrix3x2fStack;", shift = At.Shift.AFTER))
-	private void drawTooltipImmediately(Font textRenderer, List<ClientTooltipComponent> tooltip, int x, int y,
+	private void renderTooltip(Font textRenderer, List<ClientTooltipComponent> tooltip, int x, int y,
 			ClientTooltipPositioner positioner, Identifier texture, CallbackInfo info) {
 		if (!ConfigScreen.isTooltipOverflowFix())
 			return;
@@ -46,13 +46,13 @@ public abstract class DrawContextMixin {
 				pos.x(), pos.y(), size[0], size[1], screenWidth, screenHeight);
 	}
 	
-	@ModifyVariable(method = "scissorContains", at = @At("HEAD"), ordinal = 0, require = 0)
+	@ModifyVariable(method = "containsPointInScissor", at = @At("HEAD"), ordinal = 0, require = 0)
 	private int scissorContainsX(int x) {
-		return x + (int) getMatrices().m20();
+		return x + (int) pose().m20();
 	}
-	@ModifyVariable(method = "scissorContains", at = @At("HEAD"), ordinal = 1, require = 0)
+	@ModifyVariable(method = "containsPointInScissor", at = @At("HEAD"), ordinal = 1, require = 0)
 	private int scissorContainsY(int y) {
-		return y + (int) getMatrices().m21();
+		return y + (int) pose().m21();
 	}
 	
 }

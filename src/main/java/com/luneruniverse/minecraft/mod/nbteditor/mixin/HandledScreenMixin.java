@@ -19,13 +19,13 @@ import net.minecraft.world.inventory.ClickType;
 
 @Mixin(AbstractContainerScreen.class)
 public class HandledScreenMixin {
-	@Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/ClickType;)V", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V", at = @At("HEAD"), cancellable = true)
 	private void onMouseClick(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
 		if ((AbstractContainerScreen<?>) (Object) this instanceof ClientHandledScreen)
 			return;
 		MixinLink.onMouseClick((AbstractContainerScreen<?>) (Object) this, slot, slotId, button, actionType, info);
 	}
-	@Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/ClickType;)V", at = @At("RETURN"))
+	@Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V", at = @At("RETURN"))
 	private void onMouseClickReturn(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
 		if ((AbstractContainerScreen<?>) (Object) this instanceof ClientHandledScreen)
 			return;

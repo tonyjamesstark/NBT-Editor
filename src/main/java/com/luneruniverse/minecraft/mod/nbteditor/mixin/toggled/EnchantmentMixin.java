@@ -13,8 +13,8 @@ import net.minecraft.network.chat.Component;
 
 @Mixin(Enchantment.class)
 public class EnchantmentMixin {
-	@Inject(method = "getName(Lnet/minecraft/registry/entry/Holder;I)Lnet/minecraft/text/Component;", at = @At("HEAD"), cancellable = true)
-	private static void getName(Holder<Enchantment> enchantment, int level, CallbackInfoReturnable<Component> info) {
+	@Inject(method = "getFullname(Lnet/minecraft/core/Holder;I)Lnet/minecraft/network/chat/Component;", at = @At("HEAD"), cancellable = true)
+	private static void getFullname(Holder<Enchantment> enchantment, int level, CallbackInfoReturnable<Component> info) {
 		info.setReturnValue(ConfigScreen.getEnchantNameWithMax(enchantment.value(), level));
 	}
 }

@@ -12,7 +12,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 @Mixin(AbstractContainerMenu.class)
 public class ScreenHandlerMixin {
 	// <= 1.17.1: patches item getting thrown & deleted when creative inventory is closed
-	@Inject(method = "onClosed", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "removed", at = @At("HEAD"), cancellable = true)
 	private void close(Player player, CallbackInfo info) {
 	}
 }

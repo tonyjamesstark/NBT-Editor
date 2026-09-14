@@ -16,7 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class ServerPlayNetworkHandlerMixin {
 	@Shadow
 	public ServerPlayer player;
-	@Redirect(method = "onCreativeInventoryAction", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemEnabled(Lnet/minecraft/resource/featuretoggle/FeatureFlagSet;)Z"))
+	@Redirect(method = "handleSetCreativeModeSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/ItemStack;isItemEnabled(Lnet/minecraft/world/flag/FeatureFlagSet;)Z"))
 	private boolean isItemEnabled(ItemStack item, FeatureFlagSet features) {
 		if (ServerMVMisc.hasPermissionLevel(player, 2))
 			return true;

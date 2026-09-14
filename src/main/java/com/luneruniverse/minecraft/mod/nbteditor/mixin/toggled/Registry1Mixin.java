@@ -12,8 +12,8 @@ import net.minecraft.core.Holder;
 @Mixin(targets = "net.minecraft.core.Registry$1")
 public class Registry1Mixin {
 	
-	@ModifyVariable(method = "getRawId", at = @At("HEAD"))
-	private Holder<?> getRawId(Holder<?> entry) {
+	@ModifyVariable(method = "getId", at = @At("HEAD"))
+	private Holder<?> getId(Holder<?> entry) {
 		if (entry instanceof Holder.Reference<?> ref && DynamicRegistryManagerHolder.isOwnedByDefaultManager(ref)) {
 			Holder.Reference<?> convertedRef = RegistryCache.convertManagerWithCache(ref);
 			if (convertedRef != null)

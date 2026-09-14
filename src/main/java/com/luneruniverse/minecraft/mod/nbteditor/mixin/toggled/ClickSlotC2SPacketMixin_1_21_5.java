@@ -18,21 +18,21 @@ public class ClickSlotC2SPacketMixin_1_21_5 implements ClickSlotC2SPacketParent 
 	private static final byte NO_SLOT_RESTRICTIONS_FLAG = 0b01000000;
 	
 	@Shadow
-	private byte button;
+	private byte buttonNum;
 	
-	@ModifyVariable(method = "<init>(IISBLnet/minecraft/screen/slot/SlotActionType;Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;Lnet/minecraft/screen/sync/ItemStackHash;)V", at = @At("HEAD"))
-	private static byte init(byte button) {
+	@ModifyVariable(method = "<init>(IISBLnet/minecraft/world/inventory/ClickType;Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;Lnet/minecraft/network/HashedStack;)V", at = @At("HEAD"))
+	private static byte init(byte buttonNum) {
 		if (ConfigScreen.isNoSlotRestrictions() && NBTEditorClient.SERVER_CONN.isEditingExpanded())
-			return (byte) (button | NO_SLOT_RESTRICTIONS_FLAG);
-		return button;
+			return (byte) (buttonNum | NO_SLOT_RESTRICTIONS_FLAG);
+		return buttonNum;
 	}
 	
-	@Inject(method = "button", at = @At("RETURN"), cancellable = true)
-	private void button(CallbackInfoReturnable<Byte> info) {
+	@Inject(method = "buttonNum", at = @At("RETURN"), cancellable = true)
+	private void buttonNum(CallbackInfoReturnable<Byte> info) {
 		info.setReturnValue((byte) (info.getReturnValue() & ~NO_SLOT_RESTRICTIONS_FLAG));
 	}
 	@Override
 	public boolean isNoSlotRestrictions() {
-		return (button & NO_SLOT_RESTRICTIONS_FLAG) != 0;
+		return (buttonNum & NO_SLOT_RESTRICTIONS_FLAG) != 0;
 	}
 }

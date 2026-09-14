@@ -14,7 +14,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 
 @Mixin(AbstractContainerMenu.class)
 public class ScreenHandlerMixin {
-	@Redirect(method = "internalOnSlotClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/Player;dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;"))
+	@Redirect(method = "doClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/Player;dropItem(Lnet/minecraft/world/item/ItemStack;Z)Lnet/minecraft/world/entity/item/ItemEntity;"))
 	private ItemEntity dropItem(Player player, ItemStack stack, boolean retainOwnership) {
 		if (!(MainUtil.client.screen instanceof ClientHandledScreen))
 			return player.drop(stack, retainOwnership);

@@ -16,7 +16,7 @@ public class MVMixinPlugin extends BasicMixinPlugin {
 		if (FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER)
 			return;
 		
-		output.add("toggled.ScreenMixin");
+		output.add("toggled.GuiGraphicsTooltipMixin");
 		output.add("toggled.BookScreenContentsMixin");
 	}
 	

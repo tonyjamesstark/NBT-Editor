@@ -15,8 +15,8 @@ import net.minecraft.world.inventory.Slot;
 
 @Mixin(value = {ShulkerBoxSlot.class, FurnaceFuelSlot.class, FurnaceResultSlot.class}, targets = {"net.minecraft.world.inventory.BrewingStandMenu$PotionSlot", "net.minecraft.world.inventory.BrewingStandMenu$IngredientSlot", "net.minecraft.world.inventory.BrewingStandMenu$FuelSlot"})
 public class ManySlotMixin {
-	@Inject(method = "canInsert(Lnet/minecraft/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
-	private void canInsert(ItemStack item, CallbackInfoReturnable<Boolean> info) {
+	@Inject(method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
+	private void mayPlace(ItemStack item, CallbackInfoReturnable<Boolean> info) {
 		ServerMixinLink.slotCanInsertOrTake((Slot) (Object) this, info, false);
 	}
 }

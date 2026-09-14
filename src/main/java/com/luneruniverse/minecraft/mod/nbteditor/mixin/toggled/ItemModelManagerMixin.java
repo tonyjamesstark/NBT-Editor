@@ -17,8 +17,8 @@ import net.minecraft.world.level.Level;
 @Mixin(ItemModelResolver.class)
 public class ItemModelManagerMixin {
 	
-	@Inject(method = "update(Lnet/minecraft/client/render/item/ItemStackRenderState;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/world/Level;Lnet/minecraft/entity/LivingEntity;I)V", at = @At("HEAD"))
-	private void update(ItemStackRenderState renderState, ItemStack stack, ItemDisplayContext displayContext, Level world, LivingEntity entity, final int seed, CallbackInfo info) {
+	@Inject(method = "appendItemLayers(Lnet/minecraft/client/renderer/item/ItemStackRenderState;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/ItemDisplayContext;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/ItemOwner;I)V", at = @At("HEAD"))
+	private void appendItemLayers(ItemStackRenderState renderState, ItemStack stack, ItemDisplayContext displayContext, Level world, LivingEntity entity, final int seed, CallbackInfo info) {
 		MixinLink.ITEM_BEING_RENDERED.put(Thread.currentThread(), stack);
 	}
 	

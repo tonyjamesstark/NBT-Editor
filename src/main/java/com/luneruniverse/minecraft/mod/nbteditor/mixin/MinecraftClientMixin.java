@@ -41,7 +41,7 @@ public class MinecraftClientMixin {
 		}
 	}
 	
-	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/thread/ReentrantThreadExecutor;<init>(Ljava/lang/String;)V", shift = At.Shift.AFTER))
+	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/thread/ReentrantBlockableEventLoop;<init>(Ljava/lang/String;)V", shift = At.Shift.AFTER))
 	private void init(GameConfig args, CallbackInfo info) {
 		MixinLink.MAIN_THREAD = Thread.currentThread();
 	}

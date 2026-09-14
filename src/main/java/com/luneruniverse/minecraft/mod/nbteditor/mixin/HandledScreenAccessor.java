@@ -9,5 +9,5 @@ import net.minecraft.world.inventory.Slot;
 @Mixin(AbstractContainerScreen.class)
 public interface HandledScreenAccessor {
 	@Accessor
-	public Slot getFocusedSlot();
+	public Slot getHoveredSlot();
 }

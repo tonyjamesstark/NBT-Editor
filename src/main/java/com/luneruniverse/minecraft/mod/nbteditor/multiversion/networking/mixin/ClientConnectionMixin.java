@@ -28,11 +28,11 @@ public abstract class ClientConnectionMixin {
 	@Shadow
 	private PacketListener packetListener;
 	@Shadow
-	public abstract boolean isOpen();
+	public abstract boolean isConnected();
 	
 	@Inject(method = "disconnect", at = @At("HEAD"))
 	private void disconnect(Component reason, CallbackInfo info) {
-		if (isOpen()) {
+		if (isConnected()) {
 			if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(packetListener))
 				MVClientNetworking.onPlayStop();
 			if (packetListener instanceof ServerGamePacketListenerImpl handler)
@@ -40,8 +40,8 @@ public abstract class ClientConnectionMixin {
 		}
 	}
 	
-	@Inject(method = "handlePacket", at = @At("HEAD"), cancellable = true)
-	private static void handlePacket(Packet<?> packet, PacketListener listener, CallbackInfo info) {
+	@Inject(method = "genericsFtw", at = @At("HEAD"), cancellable = true)
+	private static void genericsFtw(Packet<?> packet, PacketListener listener, CallbackInfo info) {
 		if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(listener) && packet instanceof ClientboundCustomPayloadPacket customPacket) {
 			MVPacket mvPacket = MVPacketCustomPayload.unwrapS2C(customPacket);
 			if (mvPacket != null) {

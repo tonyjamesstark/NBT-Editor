@@ -24,33 +24,33 @@ import net.minecraft.world.phys.Vec3;
 public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 	
 	@Shadow
-	private ByteBuf parent;
+	private ByteBuf source;
 	@Shadow
-	public abstract String readString();
+	public abstract String readUtf();
 	@Shadow
-	public abstract FriendlyByteBuf writeString(String str);
+	public abstract FriendlyByteBuf writeUtf(String str);
 	@Shadow
 	public abstract double readDouble();
 	
 	@Override
 	public FriendlyByteBuf writeBoolean(boolean value) {
-		parent.writeBoolean(value);
+		source.writeBoolean(value);
 		return (FriendlyByteBuf) (Object) this;
 	}
 	
 	@Override
 	public FriendlyByteBuf writeDouble(double value) {
-		parent.writeDouble(value);
+		source.writeDouble(value);
 		return (FriendlyByteBuf) (Object) this;
 	}
 	
 	@Override
 	public Identifier readIdentifier() {
-		return IdentifierInst.of(readString());
+		return IdentifierInst.of(readUtf());
 	}
 	@Override
 	public FriendlyByteBuf writeIdentifier(Identifier id) {
-		return writeString(id.toString());
+		return writeUtf(id.toString());
 	}
 	
 	@Override
@@ -91,7 +91,7 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 	private Object createRegistryByteBuf() {
 		return Reflection.newInstance("net.minecraft.class_9129",
 				new Class<?>[] {ByteBuf.class, RegistryAccess.class},
-				parent, DynamicRegistryManagerHolder.get());
+				source, DynamicRegistryManagerHolder.get());
 	}
 	
 }

@@ -23,16 +23,16 @@ import net.minecraft.network.chat.Component;
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
 	
-	@Inject(method = "getTooltip", at = @At("RETURN"))
-	private void getTooltip(Item.TooltipContext context, Player player, TooltipFlag type, CallbackInfoReturnable<List<Component>> info) {
+	@Inject(method = "getTooltipLines", at = @At("RETURN"))
+	private void getTooltipLines(Item.TooltipContext context, Player player, TooltipFlag type, CallbackInfoReturnable<List<Component>> info) {
 		MixinLink.modifyTooltip((ItemStack) (Object) this, info.getReturnValue());
 	}
 	
 	@Shadow
 	private @Final PatchedDataComponentMap components;
 	
-	@Inject(method = "applyChanges", at = @At(value = "INVOKE", target = "Lnet/minecraft/component/PatchedDataComponentMap;applyChanges(Lnet/minecraft/component/DataComponentPatch;)V"))
-	private void applyChanges(DataComponentPatch changes, CallbackInfo info) {
+	@Inject(method = "applyComponentsAndValidate", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/component/PatchedDataComponentMap;applyPatch(Lnet/minecraft/core/component/DataComponentPatch;)V"))
+	private void applyComponentsAndValidate(DataComponentPatch changes, CallbackInfo info) {
 		if (MixinLink.SET_CHANGES.contains(Thread.currentThread())) {
 			MixinLink.SET_CHANGES.remove(Thread.currentThread());
 			components.restorePatch(DataComponentPatch.EMPTY);

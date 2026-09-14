@@ -13,8 +13,8 @@ import com.mojang.blaze3d.platform.NativeImage;
 
 @Mixin(NativeImage.class)
 public class NativeImageMixin {
-	@Inject(method = "writeTo(Ljava/io/File;)V", at = @At("HEAD"))
-	private void writeTo(File file, CallbackInfo info) {
+	@Inject(method = "writeToFile(Ljava/io/File;)V", at = @At("HEAD"))
+	private void writeToFile(File file, CallbackInfo info) {
 		MixinLink.screenshotTarget = file;
 	}
 }

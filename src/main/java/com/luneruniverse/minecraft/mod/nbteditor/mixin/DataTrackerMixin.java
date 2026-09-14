@@ -13,7 +13,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 @Mixin(SynchedEntityData.class)
 public class DataTrackerMixin implements ResetableDataTracker {
 	@Shadow
-	private boolean dirty;
+	private boolean isDirty;
 	private static final Supplier<Reflection.FieldReference> DataTracker_entries_array =
 			Reflection.getOptionalField(SynchedEntityData.class, "field_13331", "[Lnet/minecraft/class_2945$class_2946;");
 	@Override
@@ -24,7 +24,7 @@ public class DataTrackerMixin implements ResetableDataTracker {
 			resetEntry(entry);
 			entry.setDirty(true);
 		}
-		dirty = true;
+		isDirty = true;
 	}
 	private <T> void resetEntry(SynchedEntityData.DataItem<T> entry) {
 		entry.setValue(entry.initialValue);

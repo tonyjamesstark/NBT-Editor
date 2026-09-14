@@ -8,5 +8,5 @@ import net.minecraft.nbt.StringTagVisitor;
 @Mixin(StringTagVisitor.class)
 public interface StringNbtWriterAccessor {
     @Accessor
-    StringBuilder getResult();
+    StringBuilder getBuilder();
 }

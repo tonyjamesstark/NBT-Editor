@@ -15,8 +15,8 @@ import net.minecraft.resources.Identifier;
 @SuppressWarnings("deprecation")
 @Mixin(targets = "net.minecraft.network.protocol.common.custom.CustomPacketPayload$1")
 public class CustomPayload1Mixin {
-	@Inject(method = "getCodec", at = @At("HEAD"), cancellable = true)
-	private void getCodec(Identifier id, CallbackInfoReturnable<StreamCodec<FriendlyByteBuf, MVPacketCustomPayload>> info) {
+	@Inject(method = "findCodec", at = @At("HEAD"), cancellable = true)
+	private void findCodec(Identifier id, CallbackInfoReturnable<StreamCodec<FriendlyByteBuf, MVPacketCustomPayload>> info) {
 		if (!MVNetworking.isPacket(id))
 			return;
 		info.setReturnValue(StreamCodec.of((payload, packet) -> packet.getPacket().write(payload),

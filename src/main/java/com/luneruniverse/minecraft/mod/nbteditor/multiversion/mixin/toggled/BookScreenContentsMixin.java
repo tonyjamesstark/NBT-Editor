@@ -13,8 +13,8 @@ import net.minecraft.world.item.ItemStack;
 
 @Mixin(BookViewScreen.BookAccess.class)
 public class BookScreenContentsMixin {
-	@Inject(method = "create", at = @At("RETURN"))
-	private static void create(ItemStack item, CallbackInfoReturnable<BookViewScreen.BookAccess> info) {
+	@Inject(method = "fromItem", at = @At("RETURN"))
+	private static void fromItem(ItemStack item, CallbackInfoReturnable<BookViewScreen.BookAccess> info) {
 		if (item.contains(MVComponentType.WRITTEN_BOOK_CONTENT))
 			MixinLink.WRITTEN_BOOK_CONTENTS.put(info.getReturnValue(), true);
 	}

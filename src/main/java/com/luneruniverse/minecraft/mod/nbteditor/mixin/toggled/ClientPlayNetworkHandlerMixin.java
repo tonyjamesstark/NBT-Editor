@@ -17,8 +17,8 @@ import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
 @Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
 	
-	@Inject(method = "onSetCursorItem", at = @At("HEAD"), cancellable = true)
-	private void onSetCursorItem(ClientboundSetCursorItemPacket packet, CallbackInfo info) {
+	@Inject(method = "handleSetCursorItem", at = @At("HEAD"), cancellable = true)
+	private void handleSetCursorItem(ClientboundSetCursorItemPacket packet, CallbackInfo info) {
 		if (!MainUtil.client.isSameThread())
 			return;
 		
@@ -30,7 +30,7 @@ public class ClientPlayNetworkHandlerMixin {
 		}
 	}
 	
-	@Inject(method = "onSetPlayerInventory", at = @At("RETURN"), cancellable = true)
+	@Inject(method = "handleSetPlayerInventory", at = @At("RETURN"), cancellable = true)
 	private void onSetPlayerInventory_return(ClientboundSetPlayerInventoryPacket packet, CallbackInfo info) {
 		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onSetPlayerInventoryPacket(packet);

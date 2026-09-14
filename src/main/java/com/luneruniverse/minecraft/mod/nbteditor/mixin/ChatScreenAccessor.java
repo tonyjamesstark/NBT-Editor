@@ -9,5 +9,5 @@ import net.minecraft.client.gui.components.EditBox;
 @Mixin(ChatScreen.class)
 public interface ChatScreenAccessor {
 	@Accessor
-	public EditBox getChatField();
+	public EditBox getInput();
 }

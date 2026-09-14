@@ -18,20 +18,20 @@ import net.minecraft.world.inventory.Slot;
 @Mixin(targets = "net.minecraft.world.inventory.ArmorSlot")
 public class ArmorSlotMixin {
 	@Shadow
-	private @Final LivingEntity entity;
+	private @Final LivingEntity owner;
 	
-	@Inject(method = "canInsert", at = @At("HEAD"), cancellable = true)
-	private void canInsert(ItemStack stack, CallbackInfoReturnable<Boolean> info) {
-		if (entity instanceof Player)
+	@Inject(method = "mayPlace", at = @At("HEAD"), cancellable = true)
+	private void mayPlace(ItemStack stack, CallbackInfoReturnable<Boolean> info) {
+		if (owner instanceof Player)
 			ServerMixinLink.slotCanInsertOrTake((Slot) (Object) this, info, true);
-		else if (entity instanceof AbstractHorse)
+		else if (owner instanceof AbstractHorse)
 			ServerMixinLink.slotCanInsertOrTake((Slot) (Object) this, info, false);
 	}
-	@Inject(method = "canTakeItems", at = @At("HEAD"), cancellable = true)
-	private void canTakeItems(Player player, CallbackInfoReturnable<Boolean> info) {
-		if (entity instanceof Player)
+	@Inject(method = "mayPickup", at = @At("HEAD"), cancellable = true)
+	private void mayPickup(Player player, CallbackInfoReturnable<Boolean> info) {
+		if (owner instanceof Player)
 			ServerMixinLink.slotCanInsertOrTake((Slot) (Object) this, info, true);
-		else if (entity instanceof AbstractHorse)
+		else if (owner instanceof AbstractHorse)
 			ServerMixinLink.slotCanInsertOrTake((Slot) (Object) this, info, false);
 	}
 }

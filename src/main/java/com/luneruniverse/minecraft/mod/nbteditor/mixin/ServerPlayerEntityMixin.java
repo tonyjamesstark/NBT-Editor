@@ -27,14 +27,14 @@ import net.minecraft.server.level.ServerPlayer;
 
 @Mixin(ServerPlayer.class)
 public class ServerPlayerEntityMixin {
-	@Inject(method = "openHandledScreen", at = @At("HEAD"))
-	private void openHandledScreen(MenuProvider factory, CallbackInfoReturnable<OptionalInt> info) {
+	@Inject(method = "openMenu", at = @At("HEAD"))
+	private void openMenu(MenuProvider factory, CallbackInfoReturnable<OptionalInt> info) {
 		if (factory instanceof BaseContainerBlockEntity ||
 				ServerMainUtil.getRootEnclosingClass(factory.getClass()) == ChestBlock.class || // Double chests
 				ServerMVMisc.isInstanceOfVehicleInventory(factory))
 			MVServerNetworking.send((ServerPlayer) (Object) this, new ContainerScreenS2CPacket());
 	}
-	@ModifyVariable(method = "openHandledScreen", at = @At("STORE"), ordinal = 0)
+	@ModifyVariable(method = "openMenu", at = @At("STORE"), ordinal = 0)
 	private AbstractContainerMenu openHandledScreen_screenHandler(AbstractContainerMenu screenHandler) {
 		ServerPlayer source = (ServerPlayer) (Object) this;
 		if (screenHandler instanceof ChestMenu generic && generic.getContainer() == source.getEnderChestInventory())
@@ -46,8 +46,8 @@ public class ServerPlayerEntityMixin {
 		MVServerNetworking.send((ServerPlayer) (Object) this, new ContainerScreenS2CPacket());
 	}
 	
-	@Inject(method = "onScreenHandlerOpened", at = @At("HEAD"))
-	private void onScreenHandlerOpened(AbstractContainerMenu screenHandler, CallbackInfo info) {
+	@Inject(method = "initMenu", at = @At("HEAD"))
+	private void initMenu(AbstractContainerMenu screenHandler, CallbackInfo info) {
 		for (Slot slot : screenHandler.slots)
 			ServerMixinLink.SLOT_OWNER.put(slot, (ServerPlayer) (Object) this);
 	}

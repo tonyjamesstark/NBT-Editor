@@ -21,11 +21,11 @@ import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 public abstract class ClientConnectionMixin {
 	
 	@Shadow
-	public abstract PacketFlow getSide();
+	public abstract PacketFlow getReceiving();
 	
-	@Inject(method = "send(Lnet/minecraft/network/packet/Packet;)V", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "send(Lnet/minecraft/network/protocol/Packet;)V", at = @At("HEAD"), cancellable = true)
 	private void send(Packet<?> packet, CallbackInfo info) {
-		if (getSide() != PacketFlow.CLIENTBOUND)
+		if (getReceiving() != PacketFlow.CLIENTBOUND)
 			return;
 		
 		if (MainUtil.client.screen instanceof ClientHandledScreen) {
@@ -39,9 +39,9 @@ public abstract class ClientConnectionMixin {
 	}
 	
 	@Inject(method = "<init>", at = @At("HEAD"))
-	private static void init(PacketFlow side, CallbackInfo info) {
+	private static void init(PacketFlow receiving, CallbackInfo info) {
 		// When on a dedicated server, all threads are already server threads
-		if (side == PacketFlow.SERVERBOUND)
+		if (receiving == PacketFlow.SERVERBOUND)
 			NBTEditorServer.registerServerThread(Thread.currentThread());
 	}
 	

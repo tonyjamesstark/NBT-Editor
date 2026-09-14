@@ -17,7 +17,7 @@ import net.minecraft.client.gui.screens.ChatScreen;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin {
-	@ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/TextFieldWidget;setMaxLength(I)V"), index = 0)
+	@ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/EditBox;setMaxLength(I)V"), index = 0)
 	private int setMaxLength(int length) {
 		if (ConfigScreen.isChatLimitExtended())
 			return Integer.MAX_VALUE;
@@ -28,7 +28,7 @@ public class ChatScreenMixin {
 		MixinLink.renderChatLimitWarning((ChatScreen) (Object) this, context);
 	}
 	
-	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setScreen(Lnet/minecraft/client/gui/screen/Screen;)V"), cancellable = true)
+	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"), cancellable = true)
 	private void keyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> info) {
 		if (!(MainUtil.client.screen instanceof ChatScreen)) {
 			info.setReturnValue(true);

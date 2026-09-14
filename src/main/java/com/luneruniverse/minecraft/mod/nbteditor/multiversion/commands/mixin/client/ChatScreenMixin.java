@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Group;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -12,32 +11,20 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCom
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.components.EditBox;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin {
 	@Shadow
-	protected EditBox chatField;
+	protected EditBox input;
 	
-	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ChatScreen;sendMessage(Ljava/lang/String;Z)V"), cancellable = true)
-	@Group(name = "keyPressed", min = 1)
-	private void enterPressed_new(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> info) {
-		enterPressed_impl(info);
-	}
-	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/class_408;method_44056(Ljava/lang/String;Z)Z"), cancellable = true, remap = false)
-	@Group(name = "keyPressed", min = 1)
-	@SuppressWarnings("target")
-	private void enterPressed_mid(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> info) {
-		enterPressed_impl(info);
-	}
-	@Inject(method = "method_25404(III)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/class_408;method_25427(Ljava/lang/String;)V"), cancellable = true, remap = false)
-	@Group(name = "keyPressed", min = 1)
-	@SuppressWarnings("target")
-	private void enterPressed_old(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> info) {
+	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/ChatScreen;handleChatInput(Ljava/lang/String;Z)V"), cancellable = true)
+	private void enterPressed(KeyEvent event, CallbackInfoReturnable<Boolean> info) {
 		enterPressed_impl(info);
 	}
 	private void enterPressed_impl(CallbackInfoReturnable<Boolean> info) {
-		String text = StringUtils.normalizeSpace(chatField.getValue().trim());
+		String text = StringUtils.normalizeSpace(input.getValue().trim());
 		if (text.isEmpty() || text.length() <= 256)
 			return;
 		if (text.charAt(0) == '/' && ClientCommandInternals.executeCommand(text.substring(1))) {
@@ -46,6 +33,6 @@ public class ChatScreenMixin {
 				MainUtil.client.setScreen(null);
 			info.setReturnValue(true);
 		} else
-			chatField.value = (text.length() <= 256 ? text : text.substring(0, 256));
+			input.value = (text.length() <= 256 ? text : text.substring(0, 256));
 	}
 }

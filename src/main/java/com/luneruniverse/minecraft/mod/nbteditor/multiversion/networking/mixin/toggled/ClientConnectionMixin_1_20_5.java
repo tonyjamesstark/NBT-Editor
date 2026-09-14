@@ -21,26 +21,26 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 @Mixin(Connection.class)
 public class ClientConnectionMixin_1_20_5 {
 	@Shadow
-	private PacketFlow side;
+	private PacketFlow receiving;
 	@Shadow
 	private PacketListener packetListener;
 	
 	private PacketListener prevListener;
 	
-	@Inject(method = "setPacketListener", at = @At("HEAD"))
+	@Inject(method = "validateListener", at = @At("HEAD"))
 	private void setPacketListener_head(ProtocolInfo<?> state, PacketListener listener, CallbackInfo info) {
 		prevListener = packetListener;
 	}
 	
-	@Inject(method = "transitionInbound", at = @At("RETURN"))
+	@Inject(method = "setupInboundProtocol", at = @At("RETURN"))
 	private void transitionInbound_return(ProtocolInfo<?> state, PacketListener listener, CallbackInfo info) {
-		if (side == PacketFlow.CLIENTBOUND && !NBTEditorServer.IS_DEDICATED) {
+		if (receiving == PacketFlow.CLIENTBOUND && !NBTEditorServer.IS_DEDICATED) {
 			if (ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(listener))
 				MVClientNetworking.onPlayStart((ClientPacketListener) listener);
 			else if (ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(prevListener))
 				MVClientNetworking.onPlayStop();
 		}
-		if (side == PacketFlow.SERVERBOUND) {
+		if (receiving == PacketFlow.SERVERBOUND) {
 			if (listener instanceof ServerGamePacketListenerImpl handler)
 				MVServerNetworking.onPlayStart(handler.player);
 			else if (prevListener instanceof ServerGamePacketListenerImpl handler)

@@ -19,10 +19,10 @@ import net.minecraft.world.item.ItemStack;
 public class ItemRenderStateLayerRenderStateMixin {
 	
 	@Shadow
-	private ItemStackRenderState.FoilType glint;
+	private ItemStackRenderState.FoilType foilType;
 	
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/model/special/SpecialModelRenderer;render(Ljava/lang/Object;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/MultiBufferSource;IIZ)V"))
-	private MultiBufferSource render(MultiBufferSource provider) {
+	@ModifyArg(method = "submit", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/special/SpecialModelRenderer;submit(Ljava/lang/Object;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/submit/MultiBufferSource;IIZ)V"))
+	private MultiBufferSource submit(MultiBufferSource provider) {
 		ItemStack item = MixinLink.ITEM_BEING_RENDERED.remove(Thread.currentThread());
 		if (item == null)
 			return provider;
@@ -30,7 +30,7 @@ public class ItemRenderStateLayerRenderStateMixin {
 		if (!(item.getItem() instanceof BlockItem) ||
 				(!MixinLink.ENCHANT_GLINT_FIX.contains(item) && !ConfigScreen.isEnchantGlintFix()))
 			return provider;
-		return layer -> ItemRenderer.getFoilBuffer(provider, layer, true, glint != FoilType.NONE);
+		return layer -> ItemRenderer.getFoilBuffer(provider, layer, true, foilType != FoilType.NONE);
 	}
 	
 }

@@ -20,27 +20,27 @@ public class StringJsonWriterQuoted extends StringTagVisitor {
 	// From StringTagVisitor.apply in <= 1.21.4
 	public String apply(Tag element) {
 		element.accept(this);
-		return ((StringNbtWriterAccessor) this).getResult().toString();
+		return ((StringNbtWriterAccessor) this).getBuilder().toString();
 	}
 	
 	@Override
 	public void visitByte(ByteTag element) {
 		if (element.nbte$byteValue() == 0)
-			((StringNbtWriterAccessor) this).getResult().append(false);
+			((StringNbtWriterAccessor) this).getBuilder().append(false);
 		else if (element.nbte$byteValue() == 1)
-			((StringNbtWriterAccessor) this).getResult().append(true);
+			((StringNbtWriterAccessor) this).getBuilder().append(true);
 		else
 			super.visitByte(element);
 	}
 	
 	@Override
 	public void visitString(StringTag element) {
-		((StringNbtWriterAccessor) this).getResult().append(escape(MVMisc.value(element)));
+		((StringNbtWriterAccessor) this).getBuilder().append(escape(MVMisc.value(element)));
 	}
 	
     @Override
     public void visitList(ListTag element) {
-		StringBuilder result = ((StringNbtWriterAccessor) this).getResult();
+		StringBuilder result = ((StringNbtWriterAccessor) this).getBuilder();
 		
         result.append('[');
         for (int i = 0; i < element.nbte$size(); ++i) {
@@ -54,7 +54,7 @@ public class StringJsonWriterQuoted extends StringTagVisitor {
 	
 	@Override
 	public void visitCompound(CompoundTag compound) {
-		StringBuilder result = ((StringNbtWriterAccessor) this).getResult();
+		StringBuilder result = ((StringNbtWriterAccessor) this).getBuilder();
 		
 		result.append('{');
         ArrayList<String> list = Lists.newArrayList(compound.keySet());

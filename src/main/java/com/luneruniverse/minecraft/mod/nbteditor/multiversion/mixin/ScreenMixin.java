@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screens.Screen;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;renderBackground(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"), require = 0)
+	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderBackground(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"), require = 0)
 	private void render_renderBackground(Screen screen, GuiGraphics context, int mouseX, int mouseY, float delta) {
 		if (!((Object) this instanceof MVScreen))
 			screen.renderBackground(context, mouseX, mouseY, delta);
