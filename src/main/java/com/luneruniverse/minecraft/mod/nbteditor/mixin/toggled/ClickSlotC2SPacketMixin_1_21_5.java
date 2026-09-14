@@ -11,9 +11,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.ClickSlotC2SPacketParent;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
-import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 
-@Mixin(ClickSlotC2SPacket.class)
+@Mixin(ServerboundContainerClickPacket.class)
 public class ClickSlotC2SPacketMixin_1_21_5 implements ClickSlotC2SPacketParent {
 	private static final byte NO_SLOT_RESTRICTIONS_FLAG = 0b01000000;
 	

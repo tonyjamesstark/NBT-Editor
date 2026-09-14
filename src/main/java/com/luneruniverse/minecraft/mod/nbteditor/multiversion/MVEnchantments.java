@@ -4,16 +4,16 @@ package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.tag.EnchantmentTags;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.Formatting;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.EnchantmentTags;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.ChatFormatting;
 
 public class MVEnchantments {
 	
@@ -24,7 +24,7 @@ public class MVEnchantments {
 		Object output = Reflection.getField(Enchantments.class, field,
 				DATA_PACK_ENCHANTMENTS ? "Lnet/minecraft/class_5321;" : "Lnet/minecraft/class_1887;").get(null);
 		if (DATA_PACK_ENCHANTMENTS)
-			return MVRegistry.getEnchantmentRegistry().get(((RegistryKey<Enchantment>) output).getValue());
+			return MVRegistry.getEnchantmentRegistry().get(((ResourceKey<Enchantment>) output).identifier());
 		return (Enchantment) output;
 	}
 	
@@ -32,7 +32,7 @@ public class MVEnchantments {
 	public static final Enchantment FIRE_ASPECT = getEnchantment("field_9124");
 	
 	public static boolean isCursed(Enchantment enchant) {
-		return MVRegistry.getEnchantmentRegistry().getInternalValue().getEntry(enchant).isIn(EnchantmentTags.CURSE);
+		return MVRegistry.getEnchantmentRegistry().getInternalValue().wrapAsHolder(enchant).is(EnchantmentTags.CURSE);
 	}
 	
 	public static void addEnchantment(ItemStack item, Enchantment enchant, int level) {
@@ -41,10 +41,10 @@ public class MVEnchantments {
 		ItemTagReferences.ENCHANTMENTS.set(item, enchants);
 	}
 	
-	public static Text getEnchantmentName(Enchantment enchant) {
-		Formatting color = (isCursed(enchant) ? Formatting.RED : Formatting.GRAY);
-		MutableText output = enchant.description().copy();
-		Texts.setStyleIfAbsent(output, Style.EMPTY.withColor(color));
+	public static Component getEnchantmentName(Enchantment enchant) {
+		ChatFormatting color = (isCursed(enchant) ? ChatFormatting.RED : ChatFormatting.GRAY);
+		MutableComponent output = enchant.description().copy();
+		ComponentUtils.mergeStyles(output, Style.EMPTY.withColor(color));
 		return output;
 	}
 	

@@ -12,8 +12,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.resources.Identifier;
 
 public class MVClientNetworking {
 	
@@ -23,7 +23,7 @@ public class MVClientNetworking {
 				for (Start listener : listeners)
 					listener.onPlayStart(networkHandler);
 			});
-			public void onPlayStart(ClientPlayNetworkHandler networkHandler);
+			public void onPlayStart(ClientPacketListener networkHandler);
 		}
 		public static interface Join {
 			public static final Event<Join> EVENT = EventFactory.createArrayBacked(Join.class, listeners -> () -> {
@@ -41,7 +41,7 @@ public class MVClientNetworking {
 		}
 	}
 	
-	public static void onPlayStart(ClientPlayNetworkHandler networkHandler) {
+	public static void onPlayStart(ClientPacketListener networkHandler) {
 		DynamicRegistryManagerHolder.setClientManager(networkHandler);
 		
 		PlayNetworkStateEvents.Start.EVENT.invoker().onPlayStart(networkHandler);
@@ -68,7 +68,7 @@ public class MVClientNetworking {
 	}
 	
 	public static void callListeners(MVPacket packet) {
-		if (!MainUtil.client.isOnThread()) {
+		if (!MainUtil.client.isSameThread()) {
 			MainUtil.client.execute(() -> callListeners(packet));
 			return;
 		}

@@ -9,19 +9,19 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.AbstractParentElement;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.components.EditBox;
 
-@Mixin(AbstractParentElement.class)
+@Mixin(AbstractContainerEventHandler.class)
 public class AbstractParentElementMixin {
 	@Inject(method = "setFocused", at = @At("RETURN"))
-	private void setFocused(Element element, CallbackInfo info) {
-		boolean oldEvents = MainUtil.client.currentScreen instanceof OldEventBehavior;
-		for (Element child : ((AbstractParentElement) (Object) this).children()) {
+	private void setFocused(GuiEventListener element, CallbackInfo info) {
+		boolean oldEvents = MainUtil.client.screen instanceof OldEventBehavior;
+		for (GuiEventListener child : ((AbstractContainerEventHandler) (Object) this).children()) {
 			if (child instanceof MVElement multiChild)
 				multiChild.setMultiFocused(child == element);
-			if (oldEvents && child instanceof TextFieldWidget textChild)
+			if (oldEvents && child instanceof EditBox textChild)
 				textChild.setFocused(child == element);
 		}
 	}

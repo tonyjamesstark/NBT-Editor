@@ -21,8 +21,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
@@ -38,18 +38,18 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	protected void initEditor() {
 		MVMisc.setKeyboardRepeatEvents(true);
 		
-		nameFormatted = FormattedTextFieldWidget.create(nameFormatted, 16, 64, width - 32, 24 + textRenderer.fontHeight * 3,
+		nameFormatted = FormattedTextFieldWidget.create(nameFormatted, 16, 64, width - 32, 24 + font.lineHeight * 3,
 				itemNameType ? MainUtil.getBaseItemNameSafely(((LocalItem) localNBT).getEditableItem()) : localNBT.getName(),
 						false, StyleUtil.getBaseNameStyle(localNBT, itemNameType), text -> {
 			if (itemNameType)
 				((LocalItem) localNBT).getEditableItem().set(MVComponentType.ITEM_NAME, text);
 			else
 				localNBT.setName(text);
-			name.setText(localNBT.getName().getString());
+			name.setValue(localNBT.getName().getString());
 			checkSave();
 		}).setOverscroll(false).setShadow(localNBT instanceof LocalItem);
 		
-		int nextY = 64 + 24 + textRenderer.fontHeight * 3 + 4;
+		int nextY = 64 + 24 + font.lineHeight * 3 + 4;
 		
 		if (localNBT instanceof LocalItem item) {
 			lore = FormattedTextFieldWidget.create(lore, 16, nextY, width - 32, height - 16 - 20 - 4 - nextY,
@@ -60,26 +60,26 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 					ItemTagReferences.LORE.set(item.getEditableItem(), lines);
 				checkSave();
 			});
-			addSelectableChild(nameFormatted);
-			addSelectableChild(lore);
-			addDrawableChild(MVMisc.newButton(16, height - 16 - 20, 100, 20, TextInst.translatable("nbteditor.hide_flags"),
-					btn -> closeSafely(() -> client.setScreen(new HideFlagsScreen((ItemReference) ref)))));
+			addWidget(nameFormatted);
+			addWidget(lore);
+			addRenderableWidget(MVMisc.newButton(16, height - 16 - 20, 100, 20, TextInst.translatable("nbteditor.hide_flags"),
+					btn -> closeSafely(() -> minecraft.setScreen(new HideFlagsScreen((ItemReference) ref)))));
 			if (NBTManagers.COMPONENTS_EXIST) {
-				addDrawableChild(MVMisc.newButton(124, height - 16 - 20, 150, 20,
+				addRenderableWidget(MVMisc.newButton(124, height - 16 - 20, 150, 20,
 						TextInst.translatable("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")), btn -> {
 							itemNameType = !itemNameType;
 							btn.setMessage(TextInst.translatable("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")));
 							nameFormatted = null;
-							clearChildren();
+							clearWidgets();
 							init();
 						}));
 			}
-			addDrawable(lore);
+			addRenderableOnly(lore);
 		} else
-			addSelectableChild(nameFormatted);
+			addWidget(nameFormatted);
 		
 		if (localNBT instanceof LocalEntity entity) {
-			addDrawableChild(MVMisc.newButton(16, nextY, 150, 20,
+			addRenderableWidget(MVMisc.newButton(16, nextY, 150, 20,
 					TextInst.translatable("nbteditor.display.custom_name_visible." +
 							(EntityTagReferences.CUSTOM_NAME_VISIBLE.get(entity) ? "enabled" : "disabled")), btn -> {
 				boolean customNameVisible = !EntityTagReferences.CUSTOM_NAME_VISIBLE.get(entity);
@@ -91,18 +91,18 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	protected void renderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.getMatrices().pushMatrix();
-		context.getMatrices().translate((float) (0.0), (float) (0.0));
+	protected void renderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		context.pose().pushMatrix();
+		context.pose().translate((float) (0.0), (float) (0.0));
 		nameFormatted.render(context, mouseX, mouseY, delta);
-		context.getMatrices().popMatrix();
+		context.pose().popMatrix();
 	}
 	
 	@Override
-	public void onFilesDropped(List<Path> paths) {
+	public void onFilesDrop(List<Path> paths) {
 		if (!(localNBT instanceof LocalItem))
 			return;
-		List<Text> lines = new ArrayList<>();
+		List<Component> lines = new ArrayList<>();
 		lines.add(lore.getText());
 		ImageToLoreWidget.openImportFiles(paths, (file, imgLines) -> lines.addAll(imgLines), () -> {
 			if (lines.size() > 1)

@@ -13,20 +13,20 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandle
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientScreenHandler;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
-import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
+import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
 	
 	private static boolean updatingClientInventory;
 	
 	@Inject(method = "onInventory", at = @At("HEAD"), cancellable = true)
-	private void onInventory(InventoryS2CPacket packet, CallbackInfo info) {
-		if (!MainUtil.client.isOnThread() || updatingClientInventory)
+	private void onInventory(ClientboundContainerSetContentPacket packet, CallbackInfo info) {
+		if (!MainUtil.client.isSameThread() || updatingClientInventory)
 			return;
 		
 		if (MVMisc.getSyncId(packet) == ClientScreenHandler.SYNC_ID) {
@@ -40,21 +40,21 @@ public class ClientPlayNetworkHandlerMixin {
 			
 			try {
 				updatingClientInventory = true;
-				MainUtil.client.player.currentScreenHandler = NBTEditorClient.CURSOR_MANAGER.getCurrentRoot().getScreenHandler();
-				((ClientPlayNetworkHandler) (Object) this).onInventory(packet);
+				MainUtil.client.player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentRoot().getMenu();
+				((ClientPacketListener) (Object) this).handleContainerContent(packet);
 			} finally {
 				updatingClientInventory = false;
-				MainUtil.client.player.currentScreenHandler = NBTEditorClient.CURSOR_MANAGER.getCurrentBranch().getScreenHandler();
+				MainUtil.client.player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentBranch().getMenu();
 			}
 		}
 	}
 	
 	@Inject(method = "onScreenHandlerSlotUpdate", at = @At("HEAD"), cancellable = true)
-	private void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo info) {
-		if (!MainUtil.client.isOnThread() || updatingClientInventory)
+	private void onScreenHandlerSlotUpdate(ClientboundContainerSetSlotPacket packet, CallbackInfo info) {
+		if (!MainUtil.client.isSameThread() || updatingClientInventory)
 			return;
 		
-		if (packet.getSyncId() == ClientScreenHandler.SYNC_ID) {
+		if (packet.getContainerId() == ClientScreenHandler.SYNC_ID) {
 			NBTEditor.LOGGER.warn("Ignoring a slot update packet with a ClientHandledScreen sync id!");
 			info.cancel();
 			return;
@@ -63,41 +63,41 @@ public class ClientPlayNetworkHandlerMixin {
 		if (NBTEditorClient.CURSOR_MANAGER.isBranched()) {
 			info.cancel();
 			
-			if (packet.getSyncId() == -1) {
-				if (!(NBTEditorClient.CURSOR_MANAGER.getCurrentRoot() instanceof CreativeInventoryScreen))
-					MainUtil.client.player.currentScreenHandler.setCursorStack(packet.getStack());
+			if (packet.getContainerId() == -1) {
+				if (!(NBTEditorClient.CURSOR_MANAGER.getCurrentRoot() instanceof CreativeModeInventoryScreen))
+					MainUtil.client.player.containerMenu.setCarried(packet.getItem());
 				return;
 			}
 			
 			try {
 				updatingClientInventory = true;
-				MainUtil.client.player.currentScreenHandler = NBTEditorClient.CURSOR_MANAGER.getCurrentRoot().getScreenHandler();
-				((ClientPlayNetworkHandler) (Object) this).onScreenHandlerSlotUpdate(packet);
+				MainUtil.client.player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentRoot().getMenu();
+				((ClientPacketListener) (Object) this).handleContainerSetSlot(packet);
 			} finally {
 				updatingClientInventory = false;
-				MainUtil.client.player.currentScreenHandler = NBTEditorClient.CURSOR_MANAGER.getCurrentBranch().getScreenHandler();
+				MainUtil.client.player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentBranch().getMenu();
 			}
 		}
 	}
 	
 	@Inject(method = "onInventory", at = @At("RETURN"), cancellable = true)
-	private void onInventory_return(InventoryS2CPacket packet, CallbackInfo info) {
-		if (MainUtil.client.currentScreen instanceof ClientHandledScreen clientHandledScreen)
+	private void onInventory_return(ClientboundContainerSetContentPacket packet, CallbackInfo info) {
+		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onInventoryPacket(packet);
 	}
 	
 	@Inject(method = "onScreenHandlerSlotUpdate", at = @At("RETURN"), cancellable = true)
-	private void onScreenHandlerSlotUpdate_return(ScreenHandlerSlotUpdateS2CPacket packet, CallbackInfo info) {
-		if (MainUtil.client.currentScreen instanceof ClientHandledScreen clientHandledScreen)
+	private void onScreenHandlerSlotUpdate_return(ClientboundContainerSetSlotPacket packet, CallbackInfo info) {
+		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onScreenHandlerSlotUpdatePacket(packet);
 	}
 	
 	@Inject(method = "onCloseScreen", at = @At("HEAD"), cancellable = true)
-	private void onCloseScreen(CloseScreenS2CPacket packet, CallbackInfo info) {
-		if (!MainUtil.client.isOnThread())
+	private void onCloseScreen(ClientboundContainerClosePacket packet, CallbackInfo info) {
+		if (!MainUtil.client.isSameThread())
 			return;
 		
-		if (packet.getSyncId() == ClientScreenHandler.SYNC_ID) {
+		if (packet.getContainerId() == ClientScreenHandler.SYNC_ID) {
 			NBTEditor.LOGGER.warn("Ignoring a close screen packet with a ClientHandledScreen sync id!");
 			info.cancel();
 			return;
@@ -105,7 +105,7 @@ public class ClientPlayNetworkHandlerMixin {
 		
 		NBTEditorClient.CURSOR_MANAGER.onCloseScreenPacket();
 		
-		if (MainUtil.client.currentScreen instanceof IgnoreCloseScreenPacket)
+		if (MainUtil.client.screen instanceof IgnoreCloseScreenPacket)
 			info.cancel();
 	}
 	

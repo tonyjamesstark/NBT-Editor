@@ -16,13 +16,13 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.resources.Identifier;
 
-@Mixin(DrawContext.class)
+@Mixin(GuiGraphics.class)
 public abstract class DrawContextMixin {
 	
 	@Shadow
@@ -32,17 +32,17 @@ public abstract class DrawContextMixin {
 	// and the matrix it pushes is the 2D GUI stack.
 	@Inject(method = "drawTooltipImmediately", at = @At(value = "INVOKE",
 			target = "Lorg/joml/Matrix3x2fStack;pushMatrix()Lorg/joml/Matrix3x2fStack;", shift = At.Shift.AFTER))
-	private void drawTooltipImmediately(TextRenderer textRenderer, List<TooltipComponent> tooltip, int x, int y,
-			TooltipPositioner positioner, Identifier texture, CallbackInfo info) {
+	private void drawTooltipImmediately(Font textRenderer, List<ClientTooltipComponent> tooltip, int x, int y,
+			ClientTooltipPositioner positioner, Identifier texture, CallbackInfo info) {
 		if (!ConfigScreen.isTooltipOverflowFix())
 			return;
 		
 		int[] size = MixinLink.getTooltipSize(tooltip);
-		Vector2ic pos = MVMisc.getPosition(positioner, MainUtil.client.currentScreen, x, y, size[0], size[1]);
-		int screenWidth = MainUtil.client.getWindow().getScaledWidth();
-		int screenHeight = MainUtil.client.getWindow().getScaledHeight();
+		Vector2ic pos = MVMisc.getPosition(positioner, MainUtil.client.screen, x, y, size[0], size[1]);
+		int screenWidth = MainUtil.client.getWindow().getGuiScaledWidth();
+		int screenHeight = MainUtil.client.getWindow().getGuiScaledHeight();
 		
-		MixinLink.renderTooltipFromComponents((DrawContext) (Object) this,
+		MixinLink.renderTooltipFromComponents((GuiGraphics) (Object) this,
 				pos.x(), pos.y(), size[0], size[1], screenWidth, screenHeight);
 	}
 	

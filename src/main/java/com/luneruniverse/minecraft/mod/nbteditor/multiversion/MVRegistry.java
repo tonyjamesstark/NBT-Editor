@@ -13,20 +13,20 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
-import net.minecraft.block.Block;
-import net.minecraft.component.ComponentType;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.item.Item;
-import net.minecraft.potion.Potion;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.resources.Identifier;
 
 public class MVRegistry<T> implements Iterable<T> {
 	
@@ -49,18 +49,18 @@ public class MVRegistry<T> implements Iterable<T> {
 	}
 	
 	public static final MVRegistry<? extends Registry<?>> REGISTRIES = getRegistry("field_11144", "field_41167", false);
-	public static final MVRegistry<ScreenHandlerType<?>> SCREEN_HANDLER = getRegistry("field_17429", "field_41187", false);
+	public static final MVRegistry<MenuType<?>> SCREEN_HANDLER = getRegistry("field_17429", "field_41187", false);
 	public static final MVRegistry<Item> ITEM = getRegistry("field_11142", "field_41178", true);
 	public static final MVRegistry<Block> BLOCK = getRegistry("field_11146", "field_41175", true);
 	public static final MVRegistry<EntityType<?>> ENTITY_TYPE = getRegistry("field_11145", "field_41177", true);
-	public static final MVRegistry<EntityAttribute> ATTRIBUTE = getRegistry("field_23781", "field_41190", false);
+	public static final MVRegistry<Attribute> ATTRIBUTE = getRegistry("field_23781", "field_41190", false);
 	public static final MVRegistry<Potion> POTION = getRegistry("field_11143", "field_41179", false);
-	public static final MVRegistry<StatusEffect> STATUS_EFFECT = getRegistry("field_11159", "field_41174", false);
+	public static final MVRegistry<MobEffect> STATUS_EFFECT = getRegistry("field_11159", "field_41174", false);
 	
 	private static MVRegistry<Enchantment> ENCHANTMENT;
 	public static MVRegistry<Enchantment> getEnchantmentRegistry() {
 		if (MVEnchantments.DATA_PACK_ENCHANTMENTS) {
-			Registry<Enchantment> registry = DynamicRegistryManagerHolder.getManager().getOrThrow(RegistryKeys.ENCHANTMENT);
+			Registry<Enchantment> registry = DynamicRegistryManagerHolder.getManager().lookupOrThrow(Registries.ENCHANTMENT);
 			if (ENCHANTMENT == null || ENCHANTMENT.getInternalValue() != registry)
 				ENCHANTMENT = new MVRegistry<>(registry);
 		} else {
@@ -70,10 +70,10 @@ public class MVRegistry<T> implements Iterable<T> {
 		return ENCHANTMENT;
 	}
 	
-	private static MVRegistry<ComponentType<?>> COMPONENTS;
-	public static MVRegistry<ComponentType<?>> getComponentsRegistry() {
+	private static MVRegistry<DataComponentType<?>> COMPONENTS;
+	public static MVRegistry<DataComponentType<?>> getComponentsRegistry() {
 		if (COMPONENTS == null)
-			COMPONENTS = new MVRegistry<>(Registries.DATA_COMPONENT_TYPE);
+			COMPONENTS = new MVRegistry<>(BuiltInRegistries.DATA_COMPONENT_TYPE);
 		return COMPONENTS;
 	}
 	
@@ -122,7 +122,7 @@ public class MVRegistry<T> implements Iterable<T> {
 				.collect(Collectors.toUnmodifiableSet());
 	}
 	private static Identifier getRegistryKeyValue(Object key) {
-		return ((RegistryKey<?>) key).getValue();
+		return ((ResourceKey<?>) key).identifier();
 	}
 	
 	public boolean containsId(Identifier id) {

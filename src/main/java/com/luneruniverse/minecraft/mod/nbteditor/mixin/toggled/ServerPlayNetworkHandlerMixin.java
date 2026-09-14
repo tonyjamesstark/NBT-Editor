@@ -7,17 +7,17 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.level.ServerPlayer;
 
-@Mixin(ServerPlayNetworkHandler.class)
+@Mixin(ServerGamePacketListenerImpl.class)
 public class ServerPlayNetworkHandlerMixin {
 	@Shadow
-	public ServerPlayerEntity player;
-	@Redirect(method = "onCreativeInventoryAction", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemEnabled(Lnet/minecraft/resource/featuretoggle/FeatureSet;)Z"))
-	private boolean isItemEnabled(ItemStack item, FeatureSet features) {
+	public ServerPlayer player;
+	@Redirect(method = "onCreativeInventoryAction", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemEnabled(Lnet/minecraft/resource/featuretoggle/FeatureFlagSet;)Z"))
+	private boolean isItemEnabled(ItemStack item, FeatureFlagSet features) {
 		if (ServerMVMisc.hasPermissionLevel(player, 2))
 			return true;
 		return item.isItemEnabled(features);

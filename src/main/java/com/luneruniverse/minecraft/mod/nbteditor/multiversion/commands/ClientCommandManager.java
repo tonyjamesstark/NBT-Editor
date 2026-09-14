@@ -31,11 +31,11 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.network.ClientCommonNetworkHandler;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
+import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 
 /**
  * Manages client-sided commands and provides some related helper methods.
@@ -51,7 +51,7 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
  * For example, you can move heavy code to another thread.
  *
  * <p>This class also has alternatives to the server-side helper methods in
- * {@link net.minecraft.server.command.CommandManager}:
+ * {@link net.minecraft.commands.Commands}:
  * {@link #literal(String)} and {@link #argument(String, ArgumentType)}.
  *
  * <p>The precedence rules of client-sided and server-sided commands with the same name
@@ -114,26 +114,26 @@ public final class ClientCommandManager {
 	
 	// NBT Editor stuff
 	private static final Supplier<Reflection.MethodInvoker> ClientPlayNetworkHandler_getRegistryManager_Immutable =
-			Reflection.getOptionalMethod(() -> ClientPlayNetworkHandler.class, () -> "method_29091",
+			Reflection.getOptionalMethod(() -> ClientPacketListener.class, () -> "method_29091",
 					() -> MethodType.methodType(Reflection.getClass("net.minecraft.class_5455$class_6890")));
 	private static final Supplier<Reflection.MethodInvoker> ClientCommonNetworkHandler_getRegistryManager =
-			Reflection.getOptionalMethod(() -> ClientCommonNetworkHandler.class, () -> "method_29091",
+			Reflection.getOptionalMethod(() -> ClientCommonPacketListenerImpl.class, () -> "method_29091",
 					() -> MethodType.methodType(Reflection.getClass("net.minecraft.class_5455$class_6890"))); // Prevent Innerclasses entry
-	public static GameJoinS2CPacket lastGamePacket;
-	public static CommandTreeS2CPacket lastCommandPacket;
+	public static ClientboundLoginPacket lastGamePacket;
+	public static ClientboundCommandsPacket lastCommandPacket;
 	public static void createDispatcher() {
 		final CommandDispatcher<FabricClientCommandSource> dispatcher = new CommandDispatcher<>();
 		ClientCommandInternals.setActiveDispatcher(dispatcher);
-		Object registryAccess = CommandRegistryAccess.of(
-						ClientPlayNetworkHandler_getRegistryManager_Immutable.get().invoke(MainUtil.client.getNetworkHandler()),
-						MainUtil.client.getNetworkHandler().getEnabledFeatures());
+		Object registryAccess = CommandBuildContext.simple(
+						ClientPlayNetworkHandler_getRegistryManager_Immutable.get().invoke(MainUtil.client.getConnection()),
+						MainUtil.client.getConnection().enabledFeatures());
 		ClientCommandRegistrationCallback.EVENT.invoker().register(dispatcher, registryAccess);
 		ClientCommandInternals.finalizeInit();
 	}
 	public static void reregisterClientCommands() {
-		if (MainUtil.client.getNetworkHandler() == null)
+		if (MainUtil.client.getConnection() == null)
 			return;
 		createDispatcher();
-		MainUtil.client.getNetworkHandler().onCommandTree(lastCommandPacket);
+		MainUtil.client.getConnection().handleCommands(lastCommandPacket);
 	}
 }

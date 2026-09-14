@@ -7,11 +7,11 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
 
-public class ScrollBarWidget implements Drawable, MVElement {
+public class ScrollBarWidget implements Renderable, MVElement {
 	
 	private final int x;
 	private final int y;
@@ -33,7 +33,7 @@ public class ScrollBarWidget implements Drawable, MVElement {
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		int scroll = getScroll.get();
 		
 		double maxScroll = -Math.min(scroll - height, getMaxScroll.get() - height);
@@ -46,7 +46,7 @@ public class ScrollBarWidget implements Drawable, MVElement {
 	}
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y();
 		if (mouseX >= x && mouseX <= x + 8) {
 			dragging = true;
@@ -60,7 +60,7 @@ public class ScrollBarWidget implements Drawable, MVElement {
 	}
 	
 	@Override
-	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseY = click.y();
 		if (!dragging)
 			return false;

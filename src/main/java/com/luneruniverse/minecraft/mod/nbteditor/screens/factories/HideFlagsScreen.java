@@ -40,7 +40,7 @@ public class HideFlagsScreen extends LocalEditorScreen<LocalItem> {
 		}
 		
 		List<ConfigValueBoolean> mainFlagConfigs = new ArrayList<>();
-		Consumer<Boolean> setAll = hidden -> mainFlagConfigs.forEach(flagConfig -> flagConfig.setValue(hidden));
+		Consumer<Boolean> setAll = hidden -> mainFlagConfigs.forEach(flagConfig -> flagConfig.setConfigValue(hidden));
 		
 		ConfigBar globalConfig = new ConfigBar();
 		globalConfig.setConfigurable("show_all", new ConfigButton(100, TextInst.translatable("nbteditor.hide_flags.show_all"), btn -> setAll.accept(false)));
@@ -76,7 +76,7 @@ public class HideFlagsScreen extends LocalEditorScreen<LocalItem> {
 	
 	@Override
 	protected void initEditor() {
-		ConfigPanel newPanel = addDrawableChild(new ConfigPanel(16, 64, width - 32, height - 80, config));
+		ConfigPanel newPanel = addRenderableWidget(new ConfigPanel(16, 64, width - 32, height - 80, config));
 		if (panel != null)
 			newPanel.setScroll(panel.getScroll());
 		panel = newPanel;

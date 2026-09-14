@@ -25,10 +25,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandInternals;
 
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.text.Text;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 
-@Mixin(ClientPlayerEntity.class)
+@Mixin(LocalPlayer.class)
 abstract class ClientPlayerEntityMixin {
 	// 1.19.1
 	@Inject(target = @Desc(value = "method_44099", args = String.class, ret = boolean.class), at = @At("HEAD"), cancellable = true, remap = false, require = 0) // boolean sendCommand(String)
@@ -50,10 +50,10 @@ abstract class ClientPlayerEntityMixin {
 	}
 	
 	// 1.19.2 - 1.19.0
-	@Inject(method = "method_44098(Ljava/lang/String;Lnet/minecraft/text/Text;)V", at = @At("HEAD"), cancellable = true, require = 0) // void sendCommand(String, Text)
+	@Inject(method = "method_44098(Ljava/lang/String;Lnet/minecraft/text/Component;)V", at = @At("HEAD"), cancellable = true, require = 0) // void sendCommand(String, Component)
 //	@Group(name = "sendChatMessage", min = 1)
 	@SuppressWarnings("target")
-	private void onSendCommand(String command, Text preview, CallbackInfo info) {
+	private void onSendCommand(String command, Component preview, CallbackInfo info) {
 		if (ClientCommandInternals.executeCommand(command)) {
 			info.cancel();
 		}

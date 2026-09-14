@@ -22,21 +22,21 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.SignSideTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 
-import net.minecraft.block.AbstractSignBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.HangingSignBlock;
-import net.minecraft.block.WallHangingSignBlock;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.HangingSignItem;
-import net.minecraft.item.SignItem;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.level.block.SignBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CeilingHangingSignBlock;
+import net.minecraft.world.level.block.WallHangingSignBlock;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.item.HangingSignItem;
+import net.minecraft.world.item.SignItem;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.Identifier;
 
 public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
@@ -46,7 +46,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	private static int getRenderedColor(DyeColor dye) {
 		if (dye == DyeColor.BLACK)
 			return 0xFFF0EBCC;
-		return MVMisc.scaleRgb(dye.getSignColor(), 0.4);
+		return MVMisc.scaleRgb(dye.getTextColor(), 0.4);
 	}
 	
 	private final Identifier texture;
@@ -64,8 +64,8 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				block = ((SignItem) itemRef.getItem().getItem()).getBlock();
 			else if (ref instanceof BlockReference blockRef)
 				block = blockRef.getBlock();
-			woodType = AbstractSignBlock.getWoodType(block).name();
-			hanging = block instanceof HangingSignBlock || block instanceof WallHangingSignBlock;
+			woodType = SignBlock.getWoodType(block).name();
+			hanging = block instanceof CeilingHangingSignBlock || block instanceof WallHangingSignBlock;
 		} else {
 			String id = ref.getId().getPath();
 			woodType = id.replaceAll("(_wall)?(_hanging)?_sign$", "");
@@ -85,7 +85,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		
 		if (NBTManagers.COMPONENTS_EXIST) {
 			if (localNBT instanceof LocalItem localItem) {
-				NbtCompound nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
+				CompoundTag nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
 				nbt.putString("id",
 						localItem.getItemType() instanceof HangingSignItem ? "minecraft:hanging_sign" : "minecraft:sign");
 				ItemTagReferences.BLOCK_ENTITY_DATA.set(localItem.getEditableItem(), nbt);
@@ -93,21 +93,21 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		}
 	}
 	
-	private NbtCompound getSideNbt() {
-		NbtCompound nbt;
+	private CompoundTag getSideNbt() {
+		CompoundTag nbt;
 		if (localNBT instanceof LocalItem localItem)
 			nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
 		else {
 			nbt = localNBT.getNBT();
 			if (nbt == null)
-				return new NbtCompound();
+				return new CompoundTag();
 		}
 		
 		if (NEW_FEATURES)
 			return nbt.nbte$getCompoundOrDefault(back ? "back_text" : "front_text");
 		return nbt;
 	}
-	private void setSideNbt(NbtCompound sideNbt) {
+	private void setSideNbt(CompoundTag sideNbt) {
 		if (!NEW_FEATURES) {
 			if (localNBT instanceof LocalItem localItem)
 				ItemTagReferences.BLOCK_ENTITY_DATA.set(localItem.getEditableItem(), sideNbt);
@@ -117,17 +117,17 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		}
 		
 		if (localNBT instanceof LocalItem localItem) {
-			NbtCompound nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
+			CompoundTag nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
 			nbt.put(back ? "back_text" : "front_text", sideNbt);
 			ItemTagReferences.BLOCK_ENTITY_DATA.set(localItem.getEditableItem(), nbt);
 		} else {
-			NbtCompound nbt = localNBT.getNBT();
+			CompoundTag nbt = localNBT.getNBT();
 			nbt.put(back ? "back_text" : "front_text", sideNbt);
 			localNBT.setNBT(nbt);
 		}
 	}
-	private void modifySideNbt(Consumer<NbtCompound> modifier) {
-		NbtCompound sideNbt = getSideNbt();
+	private void modifySideNbt(Consumer<CompoundTag> modifier) {
+		CompoundTag sideNbt = getSideNbt();
 		modifier.accept(sideNbt);
 		setSideNbt(sideNbt);
 	}
@@ -137,18 +137,18 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			throw new IllegalStateException("Incorrect version!");
 		
 		if (localNBT instanceof LocalItem localItem) {
-			NbtCompound nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
+			CompoundTag nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
 			nbt.putBoolean("is_waxed", waxed);
 			ItemTagReferences.BLOCK_ENTITY_DATA.set(localItem.getEditableItem(), nbt);
 		} else {
-			NbtCompound nbt = localNBT.getNBT();
+			CompoundTag nbt = localNBT.getNBT();
 			nbt.putBoolean("is_waxed", waxed);
 			localNBT.setNBT(nbt);
 		}
 		checkSave();
 	}
 	private boolean isWaxed() {
-		NbtCompound nbt;
+		CompoundTag nbt;
 		if (localNBT instanceof LocalItem localItem)
 			nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
 		else
@@ -165,36 +165,36 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	private void setColor(DyeColor color) {
-		modifySideNbt(nbt -> SignSideTagReferences.COLOR.set(nbt, color.getId()));
+		modifySideNbt(nbt -> SignSideTagReferences.COLOR.set(nbt, color.getSerializedName()));
 		checkSave();
 	}
 	private DyeColor getColor() {
-		return DyeColor.byId(SignSideTagReferences.COLOR.get(getSideNbt()), DyeColor.BLACK);
+		return DyeColor.byName(SignSideTagReferences.COLOR.get(getSideNbt()), DyeColor.BLACK);
 	}
 	
-	private void setLines(List<Text> lines) {
+	private void setLines(List<Component> lines) {
 		modifySideNbt(nbt -> SignSideTagReferences.TEXT.set(nbt, lines.stream()
 				.map(this::fixClickEvent).map(line -> NEW_FEATURES ? fixEditable(line) : line).toList()));
 		checkSave();
 	}
-	private List<Text> getLines() {
-		List<Text> output = SignSideTagReferences.TEXT.get(getSideNbt());
+	private List<Component> getLines() {
+		List<Component> output = SignSideTagReferences.TEXT.get(getSideNbt());
 		while (output.size() < 4)
 			output.add(TextInst.of(""));
 		return output;
 	}
 	
-	private Text fixClickEvent(Text line) { // https://bugs.mojang.com/browse/MC-62833
+	private Component fixClickEvent(Component line) { // https://bugs.mojang.com/browse/MC-62833
 		ClickEvent event = getClickEvent(line);
 		if (event == null)
 			return line;
 		return TextInst.copy(line).styled(style -> style.withClickEvent(event));
 	}
-	private ClickEvent getClickEvent(Text text) {
+	private ClickEvent getClickEvent(Component text) {
 		ClickEvent event = text.getStyle().getClickEvent();
 		if (event != null)
 			return event;
-		for (Text child : text.getSiblings()) {
+		for (Component child : text.getSiblings()) {
 			event = getClickEvent(child);
 			if (event != null)
 				return event;
@@ -202,7 +202,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		return null;
 	}
 	
-	private Text fixEditable(Text line) { // {"extra":[{...}]} makes the sign uneditable
+	private Component fixEditable(Component line) { // {"extra":[{...}]} makes the sign uneditable
 		if (StyleUtil.identical(line.getStyle(), Style.EMPTY) && line.getSiblings().size() == 1 &&
 				line.getSiblings().get(0).getSiblings().isEmpty()) {
 			return line.getSiblings().get(0);
@@ -213,13 +213,13 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	@Override
 	protected void initEditor() {
 		if (NEW_FEATURES) {
-			addDrawableChild(MVMisc.newButton(16, 64, 100, 20,
+			addRenderableWidget(MVMisc.newButton(16, 64, 100, 20,
 					TextInst.translatable("nbteditor.signboard.side." + (back ? "back" : "front")), btn -> {
 				back = !back;
-				clearChildren();
+				clearWidgets();
 				init();
 			}));
-			addDrawableChild(MVMisc.newButton(16 + 104, 64, 100, 20,
+			addRenderableWidget(MVMisc.newButton(16 + 104, 64, 100, 20,
 					TextInst.translatable("nbteditor.signboard.wax." + (isWaxed() ? "enabled" : "disabled")), btn -> {
 				boolean prevWaxed = isWaxed();
 				setWaxed(!prevWaxed);
@@ -229,15 +229,15 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		
 		int glowingBtnX = 16 + (NEW_FEATURES ? 104 * 2 : 0);
 		int glowingBtnY = 64;
-		AtomicReference<ButtonWidget> glowingBtn = new AtomicReference<>();
+		AtomicReference<Button> glowingBtn = new AtomicReference<>();
 		
-		ButtonDropdownWidget colors = addSelectableChild(new ButtonDropdownWidget(glowingBtnX, glowingBtnY + 20, 20, 20, null, 20, 20) {
+		ButtonDropdownWidget colors = addWidget(new ButtonDropdownWidget(glowingBtnX, glowingBtnY + 20, 20, 20, null, 20, 20) {
 			@Override
-			public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-				context.getMatrices().pushMatrix();
-				context.getMatrices().translate((float) (0.0), (float) (0.0));
+			public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+				context.pose().pushMatrix();
+				context.pose().translate((float) (0.0), (float) (0.0));
 				super.render(context, mouseX, mouseY, delta);
-				context.getMatrices().popMatrix();
+				context.pose().popMatrix();
 			}
 		});
 		for (DyeColor color : DyeColor.values()) {
@@ -246,11 +246,11 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				colors.setOpen(false);
 				glowingBtn.get().setMessage(TextInst.translatable("nbteditor.signboard.glowing.enabled")
 						.styled(style -> style.withColor(getRenderedColor(getColor()))));
-			}, new MVTooltip(TextInst.of(color.getId())));
+			}, new MVTooltip(TextInst.of(color.getSerializedName())));
 		}
 		colors.build();
 		
-		glowingBtn.set(addDrawableChild(MVMisc.newButton(glowingBtnX, glowingBtnY, 100, 20,
+		glowingBtn.set(addRenderableWidget(MVMisc.newButton(glowingBtnX, glowingBtnY, 100, 20,
 				TextInst.translatable("nbteditor.signboard.glowing." + (isGlowing() ? "enabled" : "disabled"))
 				.styled(style -> style.withColor(getRenderedColor(getColor()))), btn -> {
 			boolean prevGlowing = isGlowing();
@@ -265,17 +265,17 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				colors.setOpen(true);
 		}, new MVTooltip("nbteditor.signboard.glowing.desc"))));
 		
-		lines = addDrawableChild(FormattedTextFieldWidget.create(lines, 16, 64 + 24, width - 32, height - 80 - 24,
-				getLines(), Style.EMPTY.withColor(Formatting.BLACK), this::setLines));
+		lines = addRenderableWidget(FormattedTextFieldWidget.create(lines, 16, 64 + 24, width - 32, height - 80 - 24,
+				getLines(), Style.EMPTY.withColor(ChatFormatting.BLACK), this::setLines));
 		lines.setMaxLines(4);
 		lines.setBackgroundColor(0);
 		lines.setShadow(false);
 		
-		addDrawable(colors); // Render on top of FormattedTextFieldWidget highlights
+		addRenderableOnly(colors); // Render on top of FormattedTextFieldWidget highlights
 	}
 	
 	@Override
-	protected void preRenderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected void preRenderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.drawTexture(context, texture, 16, 64 + 24 * 2, 0, 0, width - 32, height - 80 - 24 * 2);
 	}
 	

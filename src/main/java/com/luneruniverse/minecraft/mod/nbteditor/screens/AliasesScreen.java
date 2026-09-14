@@ -22,8 +22,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPane
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPath;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueText;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class AliasesScreen extends TickableSupportingScreen {
 	
@@ -76,28 +76,28 @@ public class AliasesScreen extends TickableSupportingScreen {
 	
 	@Override
 	protected void init() {
-		ConfigPanel newPanel = addDrawableChild(new ConfigPanel(16, 16, width - 32, height - 32, config));
+		ConfigPanel newPanel = addRenderableWidget(new ConfigPanel(16, 16, width - 32, height - 32, config));
 		if (panel != null)
 			newPanel.setScroll(panel.getScroll());
 		panel = newPanel;
 		
-		this.addDrawableChild(MVMisc.newButton(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
-		this.addDrawableChild(MVMisc.newButton(this.width - 134, this.height - 36 - 24, 100, 20, ScreenTexts.CANCEL, btn -> {
+		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
+		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36 - 24, 100, 20, ScreenTexts.CANCEL, btn -> {
 			cancel = true;
 			close();
 		}));
-		this.addDrawableChild(MVMisc.newButton(this.width - 134, this.height - 36 - 24 * 2, 100, 20,
+		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36 - 24 * 2, 100, 20,
 				TextInst.translatable("nbteditor.config.aliases.extreme"), btn -> addExtremeAliases(CommandHandler.COMMANDS.values(), ""),
 				new MVTooltip("nbteditor.config.aliases.extreme.desc")));
 	}
 	
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(this, context);
 		super.render(context, mouseX, mouseY, delta);
 	}
 	
 	public void close() {
-		client.setScreen(this.parent);
+		minecraft.setScreen(this.parent);
 	}
 	
 	@Override

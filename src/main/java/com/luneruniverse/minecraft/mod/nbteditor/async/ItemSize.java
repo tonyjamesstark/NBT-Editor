@@ -9,8 +9,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
 public class ItemSize {
 	
@@ -63,7 +63,7 @@ public class ItemSize {
 	private static long calcItemSize(ItemStack stack, boolean compressed) {
 		ByteCountingOutputStream stream = new ByteCountingOutputStream();
 		try {
-			NbtCompound nbt = stack.nbte$serialize(true);
+			CompoundTag nbt = stack.nbte$serialize(true);
 			if (compressed)
 				MVMisc.writeCompressedNbt(nbt, stream);
 			else

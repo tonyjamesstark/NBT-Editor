@@ -13,11 +13,11 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.world.Container;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ClickType;
 import tsp.headdb.ported.Category;
 import tsp.headdb.ported.Head;
 import tsp.headdb.ported.HeadAPI;
@@ -143,18 +143,18 @@ public class InventoryUtils {
     	ClientHandledScreen screen = new ClientHandledScreen(6,
     			TextInst.of(Utils.colorize("&c&lHeadDB &8(" + HeadAPI.getHeads().size() + ")"))) {
     		@Override
-    		protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
+    		protected void slotClicked(Slot slot, int slotId, int button, ClickType actionType) {
     			if (slot == null)
     				return;
-    			slotId = slot.id;
+    			slotId = slot.index;
     			
-    			Inventory inventory = this.handler.getInventory();
+    			Container inventory = this.menu.getContainer();
     			
                 if (inventory != null) {
-                    ItemStack item = slot.getStack();
+                    ItemStack item = slot.getItem();
 
                     if (item != null && !item.isEmpty()) {
-                        String name = MainUtil.stripColor(item.getName().getString().toLowerCase());
+                        String name = MainUtil.stripColor(item.getHoverName().getString().toLowerCase());
                         if (name.equalsIgnoreCase("favorites")) {
                             InventoryUtils.openFavoritesMenu();
                             return;
@@ -181,21 +181,21 @@ public class InventoryUtils {
     		}
     		@Override
     		public void close() {
-    			MainUtil.client.player.closeHandledScreen();
+    			MainUtil.client.player.closeContainer();
     		}
     	};
-        Inventory inventory = screen.getScreenHandler().getInventory();
+        Container inventory = screen.getMenu().getContainer();
 
         for (Category category : Category.getValues()) {
             ItemStack item = getUIItem(category.getName(), category.getItem());
             item.nbte$setCustomName(TextInst.of(Utils.colorize(category.getColor() + "&l" + category.getTranslatedName().toUpperCase())));
             ItemTagReferences.LORE.set(item, List.of(TextInst.of(
             		Utils.colorize("&e" + TextInst.translatable("nbteditor.hdb.head_count", HeadAPI.getHeads(category).size()).getString()))));
-            inventory.setStack(getUILocation(category.getName(), category.getLocation()), item);
+            inventory.setItem(getUILocation(category.getName(), category.getLocation()), item);
         }
 
         if (true) {
-            inventory.setStack(getUILocation("favorites", 39), buildButton(
+            inventory.setItem(getUILocation("favorites", 39), buildButton(
                 getUIItem("favorites", new ItemStack(Items.BOOK)),
                 "&eFavorites",
                 "",
@@ -204,7 +204,7 @@ public class InventoryUtils {
         }
 
         if (true) {
-            inventory.setStack(getUILocation("search", 40), buildButton(
+            inventory.setItem(getUILocation("search", 40), buildButton(
                 getUIItem("search", new ItemStack(Items.DARK_OAK_SIGN)),
                 "&9Search",
                 "",
@@ -213,7 +213,7 @@ public class InventoryUtils {
         }
 
         if (true) {
-            inventory.setStack(getUILocation("local", 41), buildButton(
+            inventory.setItem(getUILocation("local", 41), buildButton(
                 getUIItem("local", new ItemStack(Items.COMPASS)),
                 "&aLocal",
                 "",
@@ -225,7 +225,7 @@ public class InventoryUtils {
         MainUtil.client.setScreen(screen);
     }
 
-    public static void fill(Inventory inv) {
+    public static void fill(Container inv) {
         ItemStack item = getUIItem("fill", new ItemStack(Items.BLACK_STAINED_GLASS_PANE));
         // Do not bother filling the inventory if item to fill it with is AIR.
         if (item == null || item.isEmpty()) return;
@@ -234,11 +234,11 @@ public class InventoryUtils {
         	ItemTagReferences.HIDE_FLAGS.set(item, Map.of(HideFlag.TOOLTIP, true));
 
         // Fill any non-empty inventory slots with the given item.
-        int size = inv.size();
+        int size = inv.getContainerSize();
         for (int i = 0; i < size; i++) {
-            ItemStack slotItem = inv.getStack(i);
+            ItemStack slotItem = inv.getItem(i);
             if (slotItem == null || slotItem.isEmpty()) {
-                inv.setStack(i, item);
+                inv.setItem(i, item);
             }
         }
     }

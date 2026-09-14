@@ -11,16 +11,16 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.Vec3;
 
-@Mixin(PacketByteBuf.class)
+@Mixin(FriendlyByteBuf.class)
 public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 	
 	@Shadow
@@ -28,20 +28,20 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 	@Shadow
 	public abstract String readString();
 	@Shadow
-	public abstract PacketByteBuf writeString(String str);
+	public abstract FriendlyByteBuf writeString(String str);
 	@Shadow
 	public abstract double readDouble();
 	
 	@Override
-	public PacketByteBuf writeBoolean(boolean value) {
+	public FriendlyByteBuf writeBoolean(boolean value) {
 		parent.writeBoolean(value);
-		return (PacketByteBuf) (Object) this;
+		return (FriendlyByteBuf) (Object) this;
 	}
 	
 	@Override
-	public PacketByteBuf writeDouble(double value) {
+	public FriendlyByteBuf writeDouble(double value) {
 		parent.writeDouble(value);
-		return (PacketByteBuf) (Object) this;
+		return (FriendlyByteBuf) (Object) this;
 	}
 	
 	@Override
@@ -49,48 +49,48 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 		return IdentifierInst.of(readString());
 	}
 	@Override
-	public PacketByteBuf writeIdentifier(Identifier id) {
+	public FriendlyByteBuf writeIdentifier(Identifier id) {
 		return writeString(id.toString());
 	}
 	
 	@Override
-	public <T> RegistryKey<T> readRegistryKey(RegistryKey<? extends Registry<T>> registryRef) {
-		return RegistryKey.of(registryRef, readIdentifier());
+	public <T> ResourceKey<T> readRegistryKey(ResourceKey<? extends Registry<T>> registryRef) {
+		return ResourceKey.create(registryRef, readIdentifier());
 	}
 	@Override
-	public void writeRegistryKey(RegistryKey<?> key) {
-		writeIdentifier(key.getValue());
-	}
-	
-	@Override
-	public PacketByteBuf writeNbtCompound(NbtCompound element) {
-		return ((PacketByteBuf) (Object) this).writeNbt(element);
+	public void writeRegistryKey(ResourceKey<?> key) {
+		writeIdentifier(key.identifier());
 	}
 	
 	@Override
-	public Vec3d readVec3d() {
-		return new Vec3d(readDouble(), readDouble(), readDouble());
+	public FriendlyByteBuf writeNbtCompound(CompoundTag element) {
+		return ((FriendlyByteBuf) (Object) this).writeNbt(element);
+	}
+	
+	@Override
+	public Vec3 readVec3d() {
+		return new Vec3(readDouble(), readDouble(), readDouble());
 	}
 	@Override
-	public void writeVec3d(Vec3d vector) {
-		writeDouble(vector.getX());
-		writeDouble(vector.getY());
-		writeDouble(vector.getZ());
+	public void writeVec3d(Vec3 vector) {
+		writeDouble(vector.x());
+		writeDouble(vector.y());
+		writeDouble(vector.z());
 	}
 	
 	@Override
 	public ItemStack readItemStack() {
-		return ServerMVMisc.packetCodecDecode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf());
+		return ServerMVMisc.packetCodecDecode(ItemStack.OPTIONAL_STREAM_CODEC, createRegistryByteBuf());
 	}
 	@Override
-	public PacketByteBuf writeItemStack(ItemStack item) {
-		ServerMVMisc.packetCodecEncode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf(), item);
-		return (PacketByteBuf) (Object) this;
+	public FriendlyByteBuf writeItemStack(ItemStack item) {
+		ServerMVMisc.packetCodecEncode(ItemStack.OPTIONAL_STREAM_CODEC, createRegistryByteBuf(), item);
+		return (FriendlyByteBuf) (Object) this;
 	}
 	
 	private Object createRegistryByteBuf() {
 		return Reflection.newInstance("net.minecraft.class_9129",
-				new Class<?>[] {ByteBuf.class, DynamicRegistryManager.class},
+				new Class<?>[] {ByteBuf.class, RegistryAccess.class},
 				parent, DynamicRegistryManagerHolder.get());
 	}
 	

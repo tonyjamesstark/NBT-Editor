@@ -12,16 +12,16 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.text.Text;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.network.chat.Component;
 
 public class InputOverlay<T> extends GroupWidget implements InitializableOverlay<Screen> {
 	
-	public static interface Input<T> extends Drawable, MVElement {
+	public static interface Input<T> extends Renderable, MVElement {
 		public void init(int x, int y);
 		public int getWidth();
 		public int getHeight();
@@ -29,20 +29,20 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 		public boolean isValid();
 	}
 	
-	public static <T> void show(Text title, Input<T> input, Consumer<T> valueConsumer) {
+	public static <T> void show(Component title, Input<T> input, Consumer<T> valueConsumer) {
 		OverlayScreen.setOverlayOrScreen(
 				new InputOverlay<>(title, input, valueConsumer, () -> OverlaySupportingScreen.setOverlayStatic(null)), true);
 	}
 	
-	private final Text title;
+	private final Component title;
 	private final Input<T> input;
 	private final Consumer<T> valueConsumer;
 	private final Runnable close;
 	private int x;
 	private int y;
-	private ButtonWidget ok;
+	private Button ok;
 	
-	public InputOverlay(Text title, Input<T> input, Consumer<T> valueConsumer, Runnable close) {
+	public InputOverlay(Component title, Input<T> input, Consumer<T> valueConsumer, Runnable close) {
 		this.title = title;
 		this.input = input;
 		this.valueConsumer = valueConsumer;
@@ -71,23 +71,23 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		ok.active = input.isValid();
 		
-		context.getMatrices().pushMatrix();
-		context.getMatrices().translate((float) (0.0), (float) (0.0));
-		MVDrawableHelper.renderBackground(MainUtil.client.currentScreen, context);
+		context.pose().pushMatrix();
+		context.pose().translate((float) (0.0), (float) (0.0));
+		MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
 		if (title != null) {
-			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer, title,
-					x + input.getWidth() / 2, y - 4 - MainUtil.client.textRenderer.fontHeight, -1);
+			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, title,
+					x + input.getWidth() / 2, y - 4 - MainUtil.client.font.lineHeight, -1);
 		}
 		super.render(context, mouseX, mouseY, delta);
 		MainUtil.renderLogo(context);
-		context.getMatrices().popMatrix();
+		context.pose().popMatrix();
 	}
 	
 	@Override
-	public boolean keyPressed(KeyInput keyInput) {
+	public boolean keyPressed(KeyEvent keyInput) {
 		int keyCode = keyInput.key();
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			close.run();

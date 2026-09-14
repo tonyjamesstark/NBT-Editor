@@ -14,16 +14,16 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVServe
 import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMixinLink;
 
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.listener.PacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
-import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.text.Text;
+import net.minecraft.network.Connection;
+import net.minecraft.network.PacketListener;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.network.chat.Component;
 
 @SuppressWarnings("deprecation")
-@Mixin(ClientConnection.class)
+@Mixin(Connection.class)
 public abstract class ClientConnectionMixin {
 	@Shadow
 	private PacketListener packetListener;
@@ -31,25 +31,25 @@ public abstract class ClientConnectionMixin {
 	public abstract boolean isOpen();
 	
 	@Inject(method = "disconnect", at = @At("HEAD"))
-	private void disconnect(Text reason, CallbackInfo info) {
+	private void disconnect(Component reason, CallbackInfo info) {
 		if (isOpen()) {
 			if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(packetListener))
 				MVClientNetworking.onPlayStop();
-			if (packetListener instanceof ServerPlayNetworkHandler handler)
+			if (packetListener instanceof ServerGamePacketListenerImpl handler)
 				MVServerNetworking.onPlayStop(handler.player);
 		}
 	}
 	
 	@Inject(method = "handlePacket", at = @At("HEAD"), cancellable = true)
 	private static void handlePacket(Packet<?> packet, PacketListener listener, CallbackInfo info) {
-		if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(listener) && packet instanceof CustomPayloadS2CPacket customPacket) {
+		if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(listener) && packet instanceof ClientboundCustomPayloadPacket customPacket) {
 			MVPacket mvPacket = MVPacketCustomPayload.unwrapS2C(customPacket);
 			if (mvPacket != null) {
 				MVClientNetworking.callListeners(mvPacket);
 				info.cancel();
 			}
 		}
-		if (listener instanceof ServerPlayNetworkHandler handler && packet instanceof CustomPayloadC2SPacket customPacket) {
+		if (listener instanceof ServerGamePacketListenerImpl handler && packet instanceof ServerboundCustomPayloadPacket customPacket) {
 			MVPacket mvPacket = MVPacketCustomPayload.unwrapC2S(customPacket);
 			if (mvPacket != null) {
 				MVServerNetworking.callListeners(mvPacket, handler.player);

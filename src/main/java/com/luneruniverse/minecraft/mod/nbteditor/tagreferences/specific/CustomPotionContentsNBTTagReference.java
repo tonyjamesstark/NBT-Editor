@@ -11,9 +11,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundP
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.CustomPotionContents;
 
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
 public class CustomPotionContentsNBTTagReference implements TagReference<CustomPotionContents, ItemStack> {
 	
@@ -25,11 +25,11 @@ public class CustomPotionContentsNBTTagReference implements TagReference<CustomP
 	public CustomPotionContents get(ItemStack object) {
 		Integer color = null;
 		if (object.nbte$hasNbt()) {
-			NbtCompound nbt = object.nbte$getNbt();
+			CompoundTag nbt = object.nbte$getNbt();
 			if (nbt.nbte$contains("CustomPotionColor", MVNbtCompoundParent.NUMBER_TYPE))
 				color = nbt.nbte$getIntOrDefault("CustomPotionColor");
 		}
-		List<StatusEffectInstance> effects = PotionUtil_getCustomPotionEffects.get().invoke(null, object);
+		List<MobEffectInstance> effects = PotionUtil_getCustomPotionEffects.get().invoke(null, object);
 		return new CustomPotionContents(Optional.ofNullable(color), effects);
 	}
 	

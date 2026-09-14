@@ -11,14 +11,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Text;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Component;
 
 public class MVTextEvents {
 	
@@ -63,7 +63,7 @@ public class MVTextEvents {
 				Reflection.getOptionalMethod(ClickEvent.class, "method_10845", MethodType.methodType(ClickEvent.Action.class));
 		/** Null for an action the fancy-text format cannot express (SHOW_DIALOG, CUSTOM). */
 		public static ClickAction<?> getAction(ClickEvent event) {
-			return switch (event.getAction()) {
+			return switch (event.action()) {
 				case OPEN_URL -> OPEN_URL;
 				case OPEN_FILE -> OPEN_FILE;
 				case RUN_COMMAND -> RUN_COMMAND;
@@ -115,9 +115,9 @@ public class MVTextEvents {
 	}
 	
 	public static class HoverAction<T> {
-		public static final HoverAction<Text> SHOW_TEXT = new HoverAction<>("show_text", HoverEvent.Action.SHOW_TEXT, HoverEvent.ShowText::value, HoverEvent.ShowText::new);
+		public static final HoverAction<Component> SHOW_TEXT = new HoverAction<>("show_text", HoverEvent.Action.SHOW_TEXT, HoverEvent.ShowText::value, HoverEvent.ShowText::new);
 		public static final HoverAction<ItemStack> SHOW_ITEM = new HoverAction<>("show_item", HoverEvent.Action.SHOW_ITEM, HoverEvent.ShowItem::item, HoverEvent.ShowItem::new);
-		public static final HoverAction<HoverEvent.EntityContent> SHOW_ENTITY = new HoverAction<>("show_entity", HoverEvent.Action.SHOW_ENTITY, HoverEvent.ShowEntity::entity, HoverEvent.ShowEntity::new);
+		public static final HoverAction<HoverEvent.EntityTooltipInfo> SHOW_ENTITY = new HoverAction<>("show_entity", HoverEvent.Action.SHOW_ENTITY, HoverEvent.ShowEntity::entity, HoverEvent.ShowEntity::new);
 		public static final HoverAction<?>[] VALUES = new HoverAction<?>[] {SHOW_TEXT, SHOW_ITEM, SHOW_ENTITY};
 		
 		public static HoverAction<?> fromName(String name) {
@@ -131,7 +131,7 @@ public class MVTextEvents {
 		private static final Supplier<Reflection.MethodInvoker> HoverEvent_getAction =
 				Reflection.getOptionalMethod(HoverEvent.class, "method_10892", MethodType.methodType(HoverEvent.Action.class));
 		public static HoverAction<?> getAction(HoverEvent event) {
-			return switch (event.getAction()) {
+			return switch (event.action()) {
 				case SHOW_TEXT -> SHOW_TEXT;
 				case SHOW_ITEM -> SHOW_ITEM;
 				case SHOW_ENTITY -> SHOW_ENTITY;
@@ -173,7 +173,7 @@ public class MVTextEvents {
 		private static final Supplier<Reflection.MethodInvoker> HoverEvent$Action_contentsToJson =
 				Reflection.getOptionalMethod(HoverEvent.Action.class, "method_27669", MethodType.methodType(JsonElement.class, Object.class));
 		public String getStringifiedValue(HoverEvent event) {
-			NbtCompound nbt = (NbtCompound) MVMisc.result(HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event)).orElseThrow();
+			CompoundTag nbt = (CompoundTag) MVMisc.result(HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event)).orElseThrow();
 			if (this == SHOW_TEXT)
 				return nbt.get("value").toString();
 			nbt.remove("action");
@@ -186,19 +186,19 @@ public class MVTextEvents {
 		private static final Supplier<Reflection.MethodInvoker> HoverEvent_fromJson =
 				Reflection.getOptionalMethod(HoverEvent.class, "method_27664", MethodType.methodType(HoverEvent.class, JsonObject.class));
 		public Optional<HoverEvent> newEventParse(String valueStr) {
-			NbtElement valueNbt;
+			Tag valueNbt;
 			try {
-				valueNbt = StringNbtReader.fromOps(NbtOps.INSTANCE).read(valueStr);
+				valueNbt = TagParser.create(NbtOps.INSTANCE).parseFully(valueStr);
 			} catch (CommandSyntaxException e) {
 				return Optional.empty();
 			}
 
-			NbtCompound nbt = new NbtCompound();
+			CompoundTag nbt = new CompoundTag();
 			nbt.putString("action", name);
 			if (this == SHOW_TEXT)
 				nbt.put("value", valueNbt);
-			else if (valueNbt instanceof NbtCompound valueNbtCompound)
-				nbt.copyFrom(valueNbtCompound);
+			else if (valueNbt instanceof CompoundTag valueNbtCompound)
+				nbt.merge(valueNbtCompound);
 			else
 				return Optional.empty();
 

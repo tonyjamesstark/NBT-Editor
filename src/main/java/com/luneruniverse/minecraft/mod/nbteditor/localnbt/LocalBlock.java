@@ -16,40 +16,40 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtString;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.datafix.fixes.References;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.BlockPos;
 
 public class LocalBlock implements LocalNBT {
 	
-	public static LocalBlock deserialize(NbtCompound nbt, int defaultDataVersion) {
-		NbtElement dataVersion = nbt.get("DataVersion");
+	public static LocalBlock deserialize(CompoundTag nbt, int defaultDataVersion) {
+		Tag dataVersion = nbt.get("DataVersion");
 		
-		String id = MVMisc.value(MainUtil.updateDynamic(TypeReferences.BLOCK_NAME,
-				NbtString.of(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion));
+		String id = MVMisc.value(MainUtil.updateDynamic(References.BLOCK_NAME,
+				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion));
 		Block block = MVRegistry.BLOCK.get(IdentifierInst.of(id));
 		
-		BlockStateProperties state = new BlockStateProperties(block.getDefaultState());
-		state.setValues(MainUtil.updateDynamic(TypeReferences.BLOCK_STATE,
+		BlockStateProperties state = new BlockStateProperties(block.defaultBlockState());
+		state.setValues(MainUtil.updateDynamic(References.BLOCK_STATE,
 				nbt.nbte$getCompoundOrDefault("state"), dataVersion, defaultDataVersion));
 		
-		NbtCompound tag = null;
-		if (nbt.nbte$contains("tag", NbtElement.COMPOUND_TYPE)) {
+		CompoundTag tag = null;
+		if (nbt.nbte$contains("tag", Tag.TAG_COMPOUND)) {
 			tag = nbt.nbte$getCompoundOrDefault("tag");
 			tag.putString("id", nbt.nbte$getStringOrDefault("id"));
-			tag = MainUtil.updateDynamic(TypeReferences.BLOCK_ENTITY, tag, dataVersion, defaultDataVersion);
+			tag = MainUtil.updateDynamic(References.BLOCK_ENTITY, tag, dataVersion, defaultDataVersion);
 			tag.remove("id");
 		}
 		
@@ -58,29 +58,29 @@ public class LocalBlock implements LocalNBT {
 	
 	private Block block;
 	private BlockStateProperties state;
-	private NbtCompound nbt;
+	private CompoundTag nbt;
 	
 	private BlockEntity cachedBlockEntity;
 	private BlockStateProperties cachedState;
-	private NbtCompound cachedNbt;
+	private CompoundTag cachedNbt;
 	
-	public LocalBlock(Block block, BlockStateProperties state, NbtCompound nbt) {
+	public LocalBlock(Block block, BlockStateProperties state, CompoundTag nbt) {
 		this.block = block;
 		this.state = state;
 		this.nbt = nbt;
 	}
 	
 	private BlockEntity getCachedBlockEntity() {
-		if (!(block instanceof BlockEntityProvider entityProvider))
+		if (!(block instanceof EntityBlock entityProvider))
 			return null;
 		
-		if (cachedBlockEntity != null && cachedBlockEntity.getCachedState().getBlock() == block &&
+		if (cachedBlockEntity != null && cachedBlockEntity.getBlockState().getBlock() == block &&
 				cachedState.equals(state) && Objects.equals(cachedNbt, nbt)) {
 			return cachedBlockEntity;
 		}
 		
-		cachedBlockEntity = entityProvider.createBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.getDefaultState()));
-		cachedBlockEntity.setWorld(MainUtil.client.world);
+		cachedBlockEntity = entityProvider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
+		cachedBlockEntity.setLevel(MainUtil.client.level);
 		if (nbt != null)
 			NBTManagers.BLOCK_ENTITY.setNbt(cachedBlockEntity, nbt);
 		
@@ -91,7 +91,7 @@ public class LocalBlock implements LocalNBT {
 	}
 	
 	public boolean isBlockEntity() {
-		return block instanceof BlockEntityProvider;
+		return block instanceof EntityBlock;
 	}
 	
 	@Override
@@ -100,11 +100,11 @@ public class LocalBlock implements LocalNBT {
 	}
 	
 	@Override
-	public Text getName() {
+	public Component getName() {
 		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> TextInst.of(getDefaultName()));
 	}
 	@Override
-	public void setName(Text name) {
+	public void setName(Component name) {
 		if (name == null)
 			getOrCreateNBT().remove("CustomName");
 		else
@@ -112,7 +112,7 @@ public class LocalBlock implements LocalNBT {
 	}
 	@Override
 	public String getDefaultName() {
-		return ((Text) block.getName()).getString();
+		return ((Component) block.getName()).getString();
 	}
 	
 	@Override
@@ -122,7 +122,7 @@ public class LocalBlock implements LocalNBT {
 	@Override
 	public void setId(Identifier id) {
 		this.block = MVRegistry.BLOCK.get(id);
-		this.state = this.state.mapTo(block.getDefaultState());
+		this.state = this.state.mapTo(block.defaultBlockState());
 	}
 	@Override
 	public Set<Identifier> getIdOptions() {
@@ -144,20 +144,20 @@ public class LocalBlock implements LocalNBT {
 	}
 	
 	@Override
-	public NbtCompound getNBT() {
+	public CompoundTag getNBT() {
 		return nbt;
 	}
 	@Override
-	public void setNBT(NbtCompound nbt) {
+	public void setNBT(CompoundTag nbt) {
 		this.nbt = nbt;
 	}
 	
 	private ItemStack cachedItem;
 	private BlockStateProperties cachedItemState;
-	private NbtCompound cachedItemNbt;
+	private CompoundTag cachedItemNbt;
 	
 	@Override
-	public void renderIcon(DrawContext context, int x, int y, float tickDelta) {
+	public void renderIcon(GuiGraphics context, int x, int y, float tickDelta) {
 		// The GUI lost its world-space rendering path in 1.21.9. Drawing the block's
 		// item form keeps block entity detail (shulker colour, banner patterns) without
 		// a hand-rolled render pipeline.
@@ -167,7 +167,7 @@ public class LocalBlock implements LocalNBT {
 			cachedItemState = state.copy();
 			cachedItemNbt = nbt == null ? null : nbt.copy();
 		}
-		context.drawItem(cachedItem, x, y);
+		context.renderItem(cachedItem, x, y);
 	}
 	
 	@Override
@@ -177,14 +177,14 @@ public class LocalBlock implements LocalNBT {
 				ItemStack output = new ItemStack(blockItem);
 				if (nbt != null) {
 					if (NBTManagers.COMPONENTS_EXIST) {
-						if (block instanceof BlockEntityProvider provider) {
-							BlockEntity entity = provider.createBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.getDefaultState()));
-							entity.setWorld(MainUtil.client.world);
+						if (block instanceof EntityBlock provider) {
+							BlockEntity entity = provider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
+							entity.setLevel(MainUtil.client.level);
 							NBTManagers.BLOCK_ENTITY.setNbt(entity, nbt);
 							MVMisc.addBlockEntityNbtWithoutXYZ(output, entity);
 						}
 					} else {
-						NbtCompound nbt = new NbtCompound();
+						CompoundTag nbt = new CompoundTag();
 						nbt.put("BlockEntityTag", this.nbt);
 						output.nbte$setNbt(nbt);
 					}
@@ -196,8 +196,8 @@ public class LocalBlock implements LocalNBT {
 		return Optional.empty();
 	}
 	@Override
-	public NbtCompound serialize() {
-		NbtCompound output = new NbtCompound();
+	public CompoundTag serialize() {
+		CompoundTag output = new CompoundTag();
 		output.putString("id", getId().toString());
 		output.put("state", state.getValues());
 		if (nbt != null && (!nbt.isEmpty() || isBlockEntity()))
@@ -206,14 +206,14 @@ public class LocalBlock implements LocalNBT {
 		return output;
 	}
 	@Override
-	public Text toHoverableText() {
+	public Component toHoverableText() {
 		EditableText tooltip = TextInst.translatable("gui.entity_tooltip.type", block.getName());
 		if (!state.getProperties().isEmpty())
 			tooltip.append("\n" + state);
-		Text customName = MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null);
+		Component customName = MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null);
 		if (customName != null)
 			tooltip = TextInst.literal("").append(customName).append("\n").append(tooltip);
-		final Text finalTooltip = tooltip;
+		final Component finalTooltip = tooltip;
 		return TextInst.bracketed(getName()).styled(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(finalTooltip)));
 	}

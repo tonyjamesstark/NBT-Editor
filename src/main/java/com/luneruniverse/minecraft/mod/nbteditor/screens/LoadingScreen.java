@@ -15,7 +15,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class LoadingScreen extends MVScreen {
 	
@@ -65,7 +65,7 @@ public class LoadingScreen extends MVScreen {
 	
 	@Override
 	protected void init() {
-		addDrawableChild(MVMisc.newButton(width / 2 - 75, height / 2, 150, 20, TextInst.translatable("nbteditor.hide"), btn -> close()));
+		addRenderableWidget(MVMisc.newButton(width / 2 - 75, height / 2, 150, 20, TextInst.translatable("nbteditor.hide"), btn -> onClose()));
 	}
 	
 	@Override
@@ -86,13 +86,13 @@ public class LoadingScreen extends MVScreen {
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(this, context);
 		super.render(context, mouseX, mouseY, delta);
 		MainUtil.renderLogo(context);
 		
-		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.loading"),
-				width / 2, height / 2 - textRenderer.fontHeight / 2 - 10, -1);
+		MVDrawableHelper.drawCenteredTextWithShadow(context, font, TextInst.translatable("nbteditor.loading"),
+				width / 2, height / 2 - font.lineHeight / 2 - 10, -1);
 	}
 	
 }

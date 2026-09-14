@@ -6,21 +6,22 @@ import java.util.function.UnaryOperator;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.narration.NarratableEntry.NarrationPriority;
 
 public class List2D extends Panel<List2D.List2DValue> {
 	
-	public static abstract class List2DValue implements Drawable, MVElement {
+	public static abstract class List2DValue implements Renderable, MVElement {
 		
-		protected static final MinecraftClient client = MinecraftClient.getInstance();
-		protected static final TextRenderer textRenderer = client.textRenderer;
+		protected static final Minecraft client = Minecraft.getInstance();
+		protected static final Font textRenderer = client.font;
 		
 		private boolean insideList;
 		
@@ -40,7 +41,7 @@ public class List2D extends Panel<List2D.List2DValue> {
 	private int itemPadding;
 	
 	private final List<PositionedPanelElement<List2DValue>> elements;
-	private Element finalEventHandler;
+	private GuiEventListener finalEventHandler;
 	
 	public List2D(int x, int y, int width, int height, int outerPadding, int itemWidth, int itemHeight, int itemPadding) {
 		super(x, y, width, height, outerPadding, true);
@@ -51,7 +52,7 @@ public class List2D extends Panel<List2D.List2DValue> {
 		
 		this.elements = new ArrayList<>();
 	}
-	public List2D setFinalEventHandler(Element finalEventHandler) {
+	public List2D setFinalEventHandler(GuiEventListener finalEventHandler) {
 		this.finalEventHandler = finalEventHandler;
 		return this;
 	}
@@ -95,14 +96,14 @@ public class List2D extends Panel<List2D.List2DValue> {
 	}
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-		return super.mouseClicked(click, doubled) || finalEventHandler.mouseClicked(new Click(mouseX - x, mouseY - y, click.buttonInfo()), doubled);
+		return super.mouseClicked(click, doubled) || finalEventHandler.mouseClicked(new MouseButtonEvent(mouseX - x, mouseY - y, click.buttonInfo()), doubled);
 	}
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(MouseButtonEvent click) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-		return super.mouseReleased(click) || finalEventHandler.mouseReleased(new Click(mouseX - x, mouseY - y, click.buttonInfo()));
+		return super.mouseReleased(click) || finalEventHandler.mouseReleased(new MouseButtonEvent(mouseX - x, mouseY - y, click.buttonInfo()));
 	}
 	
 	@Override
@@ -111,9 +112,9 @@ public class List2D extends Panel<List2D.List2DValue> {
 		finalEventHandler.mouseMoved(mouseX, mouseY);
 	}
 	@Override
-	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-		return super.mouseDragged(click, deltaX, deltaY) || finalEventHandler.mouseDragged(new Click(mouseX - x, mouseY - y, click.buttonInfo()), deltaX, deltaY);
+		return super.mouseDragged(click, deltaX, deltaY) || finalEventHandler.mouseDragged(new MouseButtonEvent(mouseX - x, mouseY - y, click.buttonInfo()), deltaX, deltaY);
 	}
 	@Override
 	protected void updateMousePos(double mouseX, double mouseY) {
@@ -138,30 +139,30 @@ public class List2D extends Panel<List2D.List2DValue> {
 	}
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return super.keyPressed(input) || finalEventHandler.keyPressed(input);
 	}
 	@Override
-	public boolean keyReleased(KeyInput input) {
+	public boolean keyReleased(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return super.keyReleased(input) || finalEventHandler.keyReleased(input);
 	}
 	@Override
-	public boolean charTyped(CharInput input) {
+	public boolean charTyped(CharacterEvent input) {
 		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		return super.charTyped(input) || finalEventHandler.charTyped(input);
 	}
 	
 	
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void updateNarration(NarrationElementOutput builder) {
 		
 	}
 	
 	@Override
-	public SelectionType getType() {
-		return SelectionType.FOCUSED;
+	public NarrationPriority narrationPriority() {
+		return NarrationPriority.FOCUSED;
 	}
 	
 }

@@ -20,21 +20,21 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.vehicle.ChestBoatEntity;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.BoatItem;
-import net.minecraft.item.BundleItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.vehicle.boat.ChestBoat;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.BoatItem;
+import net.minecraft.world.item.BundleItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.resources.Identifier;
 
 public class ContainerIOs {
 	
@@ -172,17 +172,17 @@ public class ContainerIOs {
 		Map<EntityType<?>, BoatItem> boatItems = new HashMap<>();
 		for (Item item : MVRegistry.ITEM) {
 			if (item instanceof BoatItem boat)
-				boatItems.put(boat.boatEntityType, boat);
+				boatItems.put(boat.entityType, boat);
 		}
 		registerEntityIO(EntityType.ALLAY, ALLAY_IO);
 		MVClientNetworking.PlayNetworkStateEvents.Join.EVENT.register(() -> {
 			for (EntityType<?> entityType : MVRegistry.ENTITY_TYPE) {
 				if (ENTITY_IO.containsKey(entityType))
 					continue;
-				Entity entity = ServerMVMisc.createEntity(entityType, MainUtil.client.world);
-				if (entity instanceof MobEntity)
+				Entity entity = ServerMVMisc.createEntity(entityType, MainUtil.client.level);
+				if (entity instanceof Mob)
 					registerEntityIO(entityType, EQUIPMENT_IO.apply(entityType).entity());
-				if (entity instanceof ChestBoatEntity) {
+				if (entity instanceof ChestBoat) {
 					registerEntityIO(entityType, CHEST_BOAT_IO.apply(entityType).entity());
 					BoatItem item = boatItems.get(entityType);
 					if (item != null)

@@ -9,17 +9,17 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVNetwo
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacketCustomPayload;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.resources.Identifier;
 
 @SuppressWarnings("deprecation")
-@Mixin(CustomPayloadC2SPacket.class)
+@Mixin(ServerboundCustomPayloadPacket.class)
 public class CustomPayloadC2SPacketMixin {
 	@Inject(method = "method_53026(Lnet/minecraft/class_2960;Lnet/minecraft/class_2540;)Lnet/minecraft/class_8710;", at = @At("HEAD"), cancellable = true, remap = false)
 	@SuppressWarnings("target")
-	private static void readPayload(Identifier id, PacketByteBuf payload, CallbackInfoReturnable<CustomPayload> info) {
+	private static void readPayload(Identifier id, FriendlyByteBuf payload, CallbackInfoReturnable<CustomPacketPayload> info) {
 		MVPacket packet = MVNetworking.readPacket(id, payload);
 		if (packet != null)
 			info.setReturnValue(new MVPacketCustomPayload(packet));

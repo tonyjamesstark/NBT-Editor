@@ -6,27 +6,27 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.command.permission.Permission;
-import net.minecraft.command.permission.PermissionLevel;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.VehicleInventory;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.state.property.Property;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.server.permissions.Permission;
+import net.minecraft.server.permissions.PermissionLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.ContainerEntity;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.Level;
 
 public class ServerMVMisc {
 	
-	public static void sendS2CPacket(ServerPlayerEntity player, Packet<?> packet) {
-		player.networkHandler.sendPacket(packet);
+	public static void sendS2CPacket(ServerPlayer player, Packet<?> packet) {
+		player.connection.send(packet);
 	}
 	
-	public static boolean isInstanceOfVehicleInventory(NamedScreenHandlerFactory factory) {
-		return (factory instanceof VehicleInventory);
+	public static boolean isInstanceOfVehicleInventory(MenuProvider factory) {
+		return (factory instanceof ContainerEntity);
 	}
 	
 	private static final Supplier<Reflection.MethodInvoker> PacketDecoder_decode =
@@ -41,16 +41,16 @@ public class ServerMVMisc {
 		PacketEncoder_encode.get().invoke(codec, buf, value);
 	}
 	
-	public static Entity createEntity(EntityType<?> entityType, World world) {
-		return entityType.create(world, SpawnReason.COMMAND);
+	public static Entity createEntity(EntityType<?> entityType, Level world) {
+		return entityType.create(world, EntitySpawnReason.COMMAND);
 	}
 	
-	public static boolean hasPermissionLevel(PlayerEntity player, int level) {
-		return player.getPermissions().hasPermission(new Permission.Level(PermissionLevel.fromLevel(level)));
+	public static boolean hasPermissionLevel(Player player, int level) {
+		return player.permissions().hasPermission(new Permission.HasCommandLevel(PermissionLevel.byId(level)));
 	}
 	
 	public static <T extends Comparable<T>> Collection<T> getValues(Property<T> property) {
-		return property.getValues();
+		return property.getPossibleValues();
 	}
 	
 }

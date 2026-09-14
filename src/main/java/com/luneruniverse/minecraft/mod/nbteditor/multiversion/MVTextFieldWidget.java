@@ -3,18 +3,18 @@ package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 
-public class MVTextFieldWidget extends TextFieldWidget implements Tickable, MVElement {
+public class MVTextFieldWidget extends EditBox implements Tickable, MVElement {
 	
 	protected MVTooltip tooltip;
 	
-	public MVTextFieldWidget(int x, int y, int width, int height, TextFieldWidget copyFrom) {
-		super(MainUtil.client.textRenderer, x, y, width, height, copyFrom, TextInst.of(""));
+	public MVTextFieldWidget(int x, int y, int width, int height, EditBox copyFrom) {
+		super(MainUtil.client.font, x, y, width, height, copyFrom, TextInst.of(""));
 	}
 	public MVTextFieldWidget(int x, int y, int width, int height) {
-		super(MainUtil.client.textRenderer, x, y, width, height, TextInst.of(""));
+		super(MainUtil.client.font, x, y, width, height, TextInst.of(""));
 	}
 	
 	public MVTextFieldWidget tooltip(MVTooltip tooltip) {
@@ -24,7 +24,7 @@ public class MVTextFieldWidget extends TextFieldWidget implements Tickable, MVEl
 	}
 	
 	
-	public void method_25352(DrawContext context, int mouseX, int mouseY) { // renderTooltip
+	public void method_25352(GuiGraphics context, int mouseX, int mouseY) { // renderTooltip
 		if (tooltip != null)
 			tooltip.render(context, mouseX, mouseY);
 	}

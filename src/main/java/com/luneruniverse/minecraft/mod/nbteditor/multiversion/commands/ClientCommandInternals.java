@@ -51,9 +51,9 @@ import com.mojang.brigadier.tree.CommandNode;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 
 @Environment(EnvType.CLIENT)
 public final class ClientCommandInternals {
@@ -63,7 +63,7 @@ public final class ClientCommandInternals {
 	private static @Nullable CommandDispatcher<FabricClientCommandSource> activeDispatcher;
 	private static final Supplier<Class<?>> CommandException = () -> Reflection.getClass("net.minecraft.class_2164");
 	private static final Supplier<MethodInvoker> CommandException_getTextMessage =
-			Reflection.getOptionalMethod(CommandException, () -> "method_9199", () -> MethodType.methodType(Text.class));
+			Reflection.getOptionalMethod(CommandException, () -> "method_9199", () -> MethodType.methodType(Component.class));
 	static {
 		API_COMMAND_NAME = "fabric-command-api-v2:client";
 		activeDispatcher = null;
@@ -86,11 +86,11 @@ public final class ClientCommandInternals {
 	 * @return true if the command should not be sent to the server, false otherwise
 	 */
 	public static boolean executeCommand(String command) {
-		MinecraftClient client = MinecraftClient.getInstance();
+		Minecraft client = Minecraft.getInstance();
 
 		// The interface is implemented on ClientCommandSource with a mixin.
 		// noinspection ConstantConditions
-		FabricClientCommandSource commandSource = (FabricClientCommandSource) client.getNetworkHandler().getCommandSource();
+		FabricClientCommandSource commandSource = (FabricClientCommandSource) client.getConnection().getSuggestionsProvider();
 
 		MVMisc.getProfiler().push(command);
 
@@ -143,9 +143,9 @@ public final class ClientCommandInternals {
 		return type == builtins.dispatcherUnknownCommand() || type == builtins.dispatcherParseException();
 	}
 
-	// See ChatInputSuggestor.formatException. That cannot be used directly as it returns an OrderedText instead of a Text.
-	public static Text getErrorMessage(CommandSyntaxException e) {
-		Text msg = Texts.toText(e.getRawMessage());
+	// See ChatInputSuggestor.formatException. That cannot be used directly as it returns an OrderedText instead of a Component.
+	public static Component getErrorMessage(CommandSyntaxException e) {
+		Component msg = ComponentUtils.fromMessage(e.getRawMessage());
 		String context = e.getContext();
 		if (context == null)
 			return msg;

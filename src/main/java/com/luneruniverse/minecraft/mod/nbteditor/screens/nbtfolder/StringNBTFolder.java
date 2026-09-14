@@ -15,28 +15,28 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.StringJsonWriterQuoted;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.StringTag;
 
-public class StringNBTFolder implements NBTFolder<NbtString> {
+public class StringNBTFolder implements NBTFolder<StringTag> {
 	
 	public static final boolean JSON = false;
 	
-	private final Supplier<NbtString> get;
-	private final Consumer<NbtString> set;
+	private final Supplier<StringTag> get;
+	private final Consumer<StringTag> set;
 	
-	public StringNBTFolder(Supplier<NbtString> get, Consumer<NbtString> set) {
+	public StringNBTFolder(Supplier<StringTag> get, Consumer<StringTag> set) {
 		this.get = get;
 		this.set = set;
 	}
 	
 	@Override
-	public NbtString getNBT() {
+	public StringTag getNBT() {
 		return get.get();
 	}
 	
 	@Override
-	public void setNBT(NbtString value) {
+	public void setNBT(StringTag value) {
 		set.accept(value);
 	}
 	
@@ -51,12 +51,12 @@ public class StringNBTFolder implements NBTFolder<NbtString> {
 	}
 	
 	@Override
-	public NbtElement getValue(String key) {
+	public Tag getValue(String key) {
 		return exec(folder -> folder.getValue(key), null, false);
 	}
 	
 	@Override
-	public void setValue(String key, NbtElement value) {
+	public void setValue(String key, Tag value) {
 		execVoid(folder -> folder.setValue(key, value), true);
 	}
 	
@@ -86,7 +86,7 @@ public class StringNBTFolder implements NBTFolder<NbtString> {
 	}
 	
 	private <R> R exec(Function<NBTFolder<?>, R> executor, R defaultReturnValue, boolean save) {
-		NbtElement parsedNbt;
+		Tag parsedNbt;
 		try {
 			parsedNbt = MixinLink.parseSpecialElement(new StringReader(MVMisc.value(getNBT())));
 		} catch (CommandSyntaxException e) {
@@ -102,7 +102,7 @@ public class StringNBTFolder implements NBTFolder<NbtString> {
 		
 		R output = executor.apply(folder);
 		if (save)
-			setNBT(NbtString.of(JSON ? new StringJsonWriterQuoted().apply(folder.getNBT()) : folder.getNBT().toString()));
+			setNBT(StringTag.valueOf(JSON ? new StringJsonWriterQuoted().apply(folder.getNBT()) : folder.getNBT().toString()));
 		return output;
 	}
 	private boolean execVoid(Consumer<NBTFolder<?>> executor, boolean save) {

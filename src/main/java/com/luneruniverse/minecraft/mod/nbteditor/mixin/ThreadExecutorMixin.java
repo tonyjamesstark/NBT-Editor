@@ -14,9 +14,9 @@ import com.google.common.cache.CacheBuilder;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 
-import net.minecraft.util.thread.ThreadExecutor;
+import net.minecraft.util.thread.BlockableEventLoop;
 
-@Mixin(ThreadExecutor.class)
+@Mixin(BlockableEventLoop.class)
 public class ThreadExecutorMixin {
 	private static final Cache<Runnable, Exception> stackTraces = CacheBuilder.newBuilder().weakKeys().build();
 	

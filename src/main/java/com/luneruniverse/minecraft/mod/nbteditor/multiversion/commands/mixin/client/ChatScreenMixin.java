@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandInternals;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.components.EditBox;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin {
 	@Shadow
-	protected TextFieldWidget chatField;
+	protected EditBox chatField;
 	
 	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ChatScreen;sendMessage(Ljava/lang/String;Z)V"), cancellable = true)
 	@Group(name = "keyPressed", min = 1)
@@ -37,15 +37,15 @@ public class ChatScreenMixin {
 		enterPressed_impl(info);
 	}
 	private void enterPressed_impl(CallbackInfoReturnable<Boolean> info) {
-		String text = StringUtils.normalizeSpace(chatField.getText().trim());
+		String text = StringUtils.normalizeSpace(chatField.getValue().trim());
 		if (text.isEmpty() || text.length() <= 256)
 			return;
 		if (text.charAt(0) == '/' && ClientCommandInternals.executeCommand(text.substring(1))) {
-			MainUtil.client.inGameHud.getChatHud().addToMessageHistory(text);
-			if (MainUtil.client.currentScreen instanceof ChatScreen)
+			MainUtil.client.gui.getChat().addRecentChat(text);
+			if (MainUtil.client.screen instanceof ChatScreen)
 				MainUtil.client.setScreen(null);
 			info.setReturnValue(true);
 		} else
-			chatField.text = (text.length() <= 256 ? text : text.substring(0, 256));
+			chatField.value = (text.length() <= 256 ? text : text.substring(0, 256));
 	}
 }

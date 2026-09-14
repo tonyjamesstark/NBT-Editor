@@ -9,9 +9,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtFormatter;
 import com.mojang.serialization.DynamicOps;
 
-import net.minecraft.nbt.SnbtParsing;
+import net.minecraft.nbt.SnbtGrammar;
 
-@Mixin(SnbtParsing.class)
+@Mixin(SnbtGrammar.class)
 public class SnbtParsingMixin {
 	@Redirect(method = "method_68722", at = @At(value = "INVOKE", target = "Lcom/mojang/serialization/DynamicOps;createString(Ljava/lang/String;)Ljava/lang/Object;", remap = false))
 	private static Object createParser$method_68722_createString(DynamicOps<?> ops, String str) {

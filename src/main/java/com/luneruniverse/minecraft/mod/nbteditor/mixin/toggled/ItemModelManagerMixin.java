@@ -7,18 +7,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 
-import net.minecraft.client.item.ItemModelManager;
-import net.minecraft.client.render.item.ItemRenderState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemDisplayContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.client.renderer.item.ItemModelResolver;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
-@Mixin(ItemModelManager.class)
+@Mixin(ItemModelResolver.class)
 public class ItemModelManagerMixin {
 	
-	@Inject(method = "update(Lnet/minecraft/client/render/item/ItemRenderState;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V", at = @At("HEAD"))
-	private void update(ItemRenderState renderState, ItemStack stack, ItemDisplayContext displayContext, World world, LivingEntity entity, final int seed, CallbackInfo info) {
+	@Inject(method = "update(Lnet/minecraft/client/render/item/ItemStackRenderState;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/world/Level;Lnet/minecraft/entity/LivingEntity;I)V", at = @At("HEAD"))
+	private void update(ItemStackRenderState renderState, ItemStack stack, ItemDisplayContext displayContext, Level world, LivingEntity entity, final int seed, CallbackInfo info) {
 		MixinLink.ITEM_BEING_RENDERED.put(Thread.currentThread(), stack);
 	}
 	

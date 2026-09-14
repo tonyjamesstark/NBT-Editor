@@ -13,12 +13,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Att
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.Operation;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.Slot;
 
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.ListTag;
 
-public class AttributesNBTTagReference implements TagReference<List<AttributeData>, NbtCompound> {
+public class AttributesNBTTagReference implements TagReference<List<AttributeData>, CompoundTag> {
 	
 	public enum NBTLayout {
 		/**
@@ -67,13 +67,13 @@ public class AttributesNBTTagReference implements TagReference<List<AttributeDat
 	}
 	
 	@Override
-	public List<AttributeData> get(NbtCompound object) {
-		NbtList attributesNbt = object.nbte$getListOrDefault(layout.getAttributeListTag(), NbtElement.COMPOUND_TYPE);
+	public List<AttributeData> get(CompoundTag object) {
+		ListTag attributesNbt = object.nbte$getListOrDefault(layout.getAttributeListTag(), Tag.TAG_COMPOUND);
 		List<AttributeData> output = new ArrayList<>();
-		for (NbtElement attributeNbtElement : attributesNbt.nbte$iterable()) {
-			NbtCompound attributeNbt = (NbtCompound) attributeNbtElement;
+		for (Tag attributeNbtElement : attributesNbt.nbte$iterable()) {
+			CompoundTag attributeNbt = (CompoundTag) attributeNbtElement;
 			
-			EntityAttribute attribute = attributeNbt.nbte$getString(layout.getAttributeNameTag())
+			Attribute attribute = attributeNbt.nbte$getString(layout.getAttributeNameTag())
 					.map(IdentifierInst::of).map(MVRegistry.ATTRIBUTE::get).orElse(null);
 			if (attribute == null)
 				continue;
@@ -90,7 +90,7 @@ public class AttributesNBTTagReference implements TagReference<List<AttributeDat
 					continue;
 				
 				Slot slot = Slot.ANY;
-				if (attributeNbt.nbte$contains("Slot", NbtElement.STRING_TYPE)) {
+				if (attributeNbt.nbte$contains("Slot", Tag.TAG_STRING)) {
 					try {
 						slot = Slot.valueOf(attributeNbt.nbte$getStringOrDefault("Slot").toUpperCase());
 					} catch (IllegalArgumentException e) {
@@ -110,14 +110,14 @@ public class AttributesNBTTagReference implements TagReference<List<AttributeDat
 	}
 	
 	@Override
-	public void set(NbtCompound object, List<AttributeData> value) {
+	public void set(CompoundTag object, List<AttributeData> value) {
 		if (value.isEmpty()) {
 			object.remove(layout.getAttributeListTag());
 			return;
 		}
-		NbtList output = new NbtList();
+		ListTag output = new ListTag();
 		for (AttributeData attribute : value) {
-			NbtCompound attributeNbt = new NbtCompound();
+			CompoundTag attributeNbt = new CompoundTag();
 			
 			attributeNbt.putString(layout.getAttributeNameTag(), MVRegistry.ATTRIBUTE.getId(attribute.attribute()).toString());
 			attributeNbt.putDouble(layout.getAmountTag(), attribute.value());

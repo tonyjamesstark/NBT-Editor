@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.Unit;
 
 public class ComponentTagReference<T, C> implements TagReference<T, ItemStack> {

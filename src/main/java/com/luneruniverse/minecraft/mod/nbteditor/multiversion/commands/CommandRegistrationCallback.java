@@ -20,8 +20,8 @@ import com.mojang.brigadier.CommandDispatcher;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.CommandSourceStack;
 
 /**
  * Callback for when a server registers all commands.
@@ -31,7 +31,7 @@ import net.minecraft.server.command.ServerCommandSource;
  * <pre><code>
  * CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
  *     // For example, this command is only registered on an integrated server like the vanilla publish command
- *     if (environment.integrated) dispatcher.register(CommandManager.literal("integrated_command").executes(context -> {...}));
+ *     if (environment.integrated) dispatcher.register(Commands.literal("integrated_command").executes(context -> {...}));
  * })};
  * </code></pre>
  */
@@ -49,5 +49,5 @@ public interface CommandRegistrationCallback {
 	 * @param registryAccess object exposing access to the game's registries
 	 * @param environment environment the registrations should be done for, used for commands that are dedicated or integrated server only
 	 */
-	void register(CommandDispatcher<ServerCommandSource> dispatcher, Object registryAccess, CommandManager.RegistrationEnvironment environment);
+	void register(CommandDispatcher<CommandSourceStack> dispatcher, Object registryAccess, Commands.CommandSelection environment);
 }

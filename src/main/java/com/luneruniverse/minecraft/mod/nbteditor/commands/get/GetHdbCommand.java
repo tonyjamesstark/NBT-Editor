@@ -18,10 +18,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Formatting;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.ChatFormatting;
 import tsp.headdb.ported.Category;
 import tsp.headdb.ported.Head;
 import tsp.headdb.ported.HeadAPI;
@@ -76,8 +76,8 @@ public class GetHdbCommand extends ClientCommand {
 					if (!HeadAPI.checkUpdated())
 						return Command.SINGLE_SUCCESS;
 					Category category = context.getArgument("category", Category.class);
-					ItemStack shulker = ShulkerBoxBlock.getItemStack(MainUtil.getDyeColor(category.getColor()));
-					shulker.nbte$setCustomName(TextInst.of(Formatting.RESET.toString() + category.getColor() + Formatting.BOLD + category.getTranslatedName().toUpperCase()));
+					ItemStack shulker = ShulkerBoxBlock.getColoredItemStack(MainUtil.getDyeColor(category.getColor()));
+					shulker.nbte$setCustomName(TextInst.of(ChatFormatting.RESET.toString() + category.getColor() + ChatFormatting.BOLD + category.getTranslatedName().toUpperCase()));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeads(category).stream().map(Head::getItemStack).toList());
 					MainUtil.getWithMessage(shulker);
@@ -87,7 +87,7 @@ public class GetHdbCommand extends ClientCommand {
 						return Command.SINGLE_SUCCESS;
 					String query = context.getArgument("query", String.class);
 					ItemStack shulker = new ItemStack(Items.BROWN_SHULKER_BOX);
-					shulker.nbte$setCustomName(TextInst.of(Formatting.RESET.toString() + Formatting.GOLD + Formatting.BOLD + TextInst.translatable("nbteditor.hdb.search").getString() + ": " + query));
+					shulker.nbte$setCustomName(TextInst.of(ChatFormatting.RESET.toString() + ChatFormatting.GOLD + ChatFormatting.BOLD + TextInst.translatable("nbteditor.hdb.search").getString() + ": " + query));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeadsByName(query).stream().map(Head::getItemStack).toList());
 					MainUtil.getWithMessage(shulker);

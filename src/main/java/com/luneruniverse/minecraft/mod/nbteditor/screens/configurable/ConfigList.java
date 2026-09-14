@@ -17,12 +17,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 	
@@ -33,8 +33,8 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			DUPLICATE("nbteditor.configurable.list.duplicate", "nbteditor.configurable.list.duplicate.any_amount"),
 			REMOVE("nbteditor.configurable.list.remove");
 			
-			private final Text msg;
-			private final Text tooltip;
+			private final Component msg;
+			private final Component tooltip;
 			private ListContextMenuAction(String msg, String tooltip) {
 				this.msg = TextInst.translatable(msg);
 				this.tooltip = tooltip == null ? null : TextInst.translatable(tooltip);
@@ -44,14 +44,14 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			}
 		}
 		
-		private static final int LIST_CONTEXT_MENU_HEIGHT = (MainUtil.client.textRenderer.fontHeight + 2) * 3 + 2;
+		private static final int LIST_CONTEXT_MENU_HEIGHT = (MainUtil.client.font.lineHeight + 2) * 3 + 2;
 		
 		private final ConfigList parent;
 		private final ConfigPath value;
 		private final boolean named;
 		private final boolean indexed;
 		private int index;
-		private Text indexText;
+		private Component indexText;
 		private int indexTextOffset;
 		
 		private boolean contextMenuOpen;
@@ -73,7 +73,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			this.index = index;
 			if (indexed) {
 				this.indexText = TextInst.literal("(#" + (index + 1) + ") ");
-				this.indexTextOffset = named ? 0 : MainUtil.client.textRenderer.getWidth(this.indexText);
+				this.indexTextOffset = named ? 0 : MainUtil.client.font.width(this.indexText);
 				if (named)
 					((ConfigPathNamed) value).setNamePrefix(this.indexText);
 			} else {
@@ -97,24 +97,24 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		}
 		
 		@Override
-		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 			if (named)
 				value.render(context, mouseX, mouseY, delta);
 			else {
-				MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, indexText, 0, (getSpacingHeight() - MainUtil.client.textRenderer.fontHeight) / 2, -1);
-				context.getMatrices().pushMatrix();
-				context.getMatrices().translate((float) (indexTextOffset), (float) (0.0));
+				MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, indexText, 0, (getSpacingHeight() - MainUtil.client.font.lineHeight) / 2, -1);
+				context.pose().pushMatrix();
+				context.pose().translate((float) (indexTextOffset), (float) (0.0));
 				value.render(context, mouseX - indexTextOffset, mouseY, delta);
-				context.getMatrices().popMatrix();
+				context.pose().popMatrix();
 			}
 		}
 		
-		public void renderContextMenu(DrawContext context, int mouseX, int mouseY, float delta) {
+		public void renderContextMenu(GuiGraphics context, int mouseX, int mouseY, float delta) {
 			if (!contextMenuOpen)
 				return;
 			
-			context.getMatrices().pushMatrix();
-			context.getMatrices().translate((float) (0.0), (float) (0.0));
+			context.pose().pushMatrix();
+			context.pose().translate((float) (0.0), (float) (0.0));
 			
 			MVDrawableHelper.fill(context, contextMenuX - 1, contextMenuY - 1, contextMenuX + 51, contextMenuY + LIST_CONTEXT_MENU_HEIGHT + 1, -1);
 			MVDrawableHelper.fill(context, contextMenuX, contextMenuY, contextMenuX + 50, contextMenuY + LIST_CONTEXT_MENU_HEIGHT, 0xFF000000);
@@ -122,19 +122,19 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			int y = contextMenuY;
 			for (ListContextMenuAction action : ListContextMenuAction.values()) {
 				int color = -1;
-				if (xHover && mouseY >= y && mouseY <= y + MainUtil.client.textRenderer.fontHeight) {
+				if (xHover && mouseY >= y && mouseY <= y + MainUtil.client.font.lineHeight) {
 					color = 0xFF257789;
 					if (action.tooltip != null && !ConfigScreen.isKeybindsHidden())
 						new MVTooltip(action.tooltip).render(context, mouseX, mouseY);
 				}
-				Text msg = action.msg;
+				Component msg = action.msg;
 				if (action == ListContextMenuAction.REMOVE)
-					msg = TextInst.copy(msg).formatted(color == -1 ? Formatting.RED : Formatting.GOLD);
-				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer, msg, contextMenuX + 25, y + 2, color);
-				y += MainUtil.client.textRenderer.fontHeight + 2;
+					msg = TextInst.copy(msg).formatted(color == -1 ? ChatFormatting.RED : ChatFormatting.GOLD);
+				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, msg, contextMenuX + 25, y + 2, color);
+				y += MainUtil.client.font.lineHeight + 2;
 			}
 			
-			context.getMatrices().popMatrix();
+			context.pose().popMatrix();
 		}
 		
 		@Override
@@ -174,14 +174,14 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		
 		
 		@Override
-		public boolean mouseClicked(Click click, boolean doubled) {
+		public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 			if (contextMenuOpen) {
 				if (mouseX >= contextMenuX && mouseX <= contextMenuX + 50 && mouseY >= contextMenuY && mouseY <= contextMenuY + LIST_CONTEXT_MENU_HEIGHT) {
 					if (mouseX > contextMenuX && mouseX < contextMenuX + 50) {
 						int y = contextMenuY;
 						for (ListContextMenuAction action : ListContextMenuAction.values()) {
-							if (mouseY >= y && mouseY <= y + MainUtil.client.textRenderer.fontHeight) {
+							if (mouseY >= y && mouseY <= y + MainUtil.client.font.lineHeight) {
 								switch (action) {
 									case MOVE -> {
 										InputOverlay.show(
@@ -235,7 +235,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 								contextMenuOpen = false;
 								break;
 							}
-							y += MainUtil.client.textRenderer.fontHeight + 2;
+							y += MainUtil.client.font.lineHeight + 2;
 						}
 					}
 					return true;
@@ -244,7 +244,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			}
 			
 			int height = getSpacingHeight();
-			if (mouseX >= -PADDING * 2 && mouseX <= -PADDING && mouseY >= 0 && mouseY <= height) { // Click on the bar
+			if (mouseX >= -PADDING * 2 && mouseX <= -PADDING && mouseY >= 0 && mouseY <= height) { // MouseButtonEvent on the bar
 				if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
 					if (mouseY <= PADDING) { // Move up
 						if (index > 0) {
@@ -282,21 +282,21 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 				}
 			}
 			
-			return value.mouseClicked(new Click(mouseX - indexTextOffset, mouseY, click.buttonInfo()), doubled);
+			return value.mouseClicked(new MouseButtonEvent(mouseX - indexTextOffset, mouseY, click.buttonInfo()), doubled);
 		}
 		@Override
-		public boolean mouseReleased(Click click) {
+		public boolean mouseReleased(MouseButtonEvent click) {
 			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-			return value.mouseReleased(new Click(mouseX - indexTextOffset, mouseY, click.buttonInfo()));
+			return value.mouseReleased(new MouseButtonEvent(mouseX - indexTextOffset, mouseY, click.buttonInfo()));
 		}
 		@Override
 		public void mouseMoved(double mouseX, double mouseY) {
 			value.mouseMoved(mouseX - indexTextOffset, mouseY);
 		}
 		@Override
-		public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-			return value.mouseDragged(new Click(mouseX - indexTextOffset, mouseY, click.buttonInfo()), deltaX, deltaY);
+			return value.mouseDragged(new MouseButtonEvent(mouseX - indexTextOffset, mouseY, click.buttonInfo()), deltaX, deltaY);
 		}
 		@Override
 		public boolean mouseScrolled(double mouseX, double mouseY, double xAmount, double yAmount) {
@@ -304,17 +304,17 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		}
 		
 		@Override
-		public boolean keyPressed(KeyInput input) {
+		public boolean keyPressed(KeyEvent input) {
 			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 			return value.keyPressed(input);
 		}
 		@Override
-		public boolean keyReleased(KeyInput input) {
+		public boolean keyReleased(KeyEvent input) {
 			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 			return value.keyReleased(input);
 		}
 		@Override
-		public boolean charTyped(CharInput input) {
+		public boolean charTyped(CharacterEvent input) {
 			char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 			return value.charTyped(input);
 		}
@@ -328,7 +328,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 	
 	private final boolean indexed;
 	
-	public ConfigList(Text name, boolean indexed, ConfigPath defaultEntry) {
+	public ConfigList(Component name, boolean indexed, ConfigPath defaultEntry) {
 		super(name, name2 -> new ConfigList(name2, indexed, defaultEntry));
 		this.indexed = indexed;
 		
@@ -398,7 +398,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 		
 		if (isValueValid()) {
@@ -409,13 +409,13 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 					MVDrawableHelper.fill(context, 0, yOffset, PADDING, yOffset + height, 0xFF000000);
 					MVDrawableHelper.fill(context, 0, yOffset + PADDING, PADDING, yOffset + height - PADDING, 0xFF257789);
 					
-					context.getMatrices().pushMatrix();
-					context.getMatrices().translate((float) (-PADDING / 2), (float) (-(yOffset + height / 2)));
-					context.getMatrices().scale((float) (2), (float) (2));
-					context.getMatrices().translate((float) (PADDING / 2 - 0.5), (float) (yOffset + height / 2));
-					MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, TextInst.of("⋮"), 0,
-							-MainUtil.client.textRenderer.fontHeight / 2, -1);
-					context.getMatrices().popMatrix();
+					context.pose().pushMatrix();
+					context.pose().translate((float) (-PADDING / 2), (float) (-(yOffset + height / 2)));
+					context.pose().scale((float) (2), (float) (2));
+					context.pose().translate((float) (PADDING / 2 - 0.5), (float) (yOffset + height / 2));
+					MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, TextInst.of("⋮"), 0,
+							-MainUtil.client.font.lineHeight / 2, -1);
+					context.pose().popMatrix();
 				}
 				yOffset += height + PADDING;
 			}
@@ -424,10 +424,10 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		int yOffset = getNameHeight();
 		for (ConfigPath path : paths.values()) {
 			if (path instanceof ConfigListEntry entry) {
-				context.getMatrices().pushMatrix();
-				context.getMatrices().translate((float) (PADDING * 2), (float) (yOffset));
+				context.pose().pushMatrix();
+				context.pose().translate((float) (PADDING * 2), (float) (yOffset));
 				entry.renderContextMenu(context, mouseX - PADDING * 2, mouseY - yOffset, delta);
-				context.getMatrices().popMatrix();
+				context.pose().popMatrix();
 			}
 			yOffset += path.getSpacingHeight() + PADDING;
 		}

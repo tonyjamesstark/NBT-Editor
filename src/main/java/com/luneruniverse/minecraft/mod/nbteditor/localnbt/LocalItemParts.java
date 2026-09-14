@@ -11,22 +11,22 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 public class LocalItemParts extends LocalItem {
 	
 	private Item item;
-	private NbtCompound nbt;
+	private CompoundTag nbt;
 	private int count;
 	
 	private ItemStack cachedItem;
-	private NbtCompound cachedNbt;
+	private CompoundTag cachedNbt;
 	
 	public LocalItemParts(ItemStack item) {
 		this.item = item.getItem();
@@ -57,7 +57,7 @@ public class LocalItemParts extends LocalItem {
 	}
 	
 	private void setCachedItemCount() {
-		cachedItem.setCount(Math.min(count, cachedItem.getMaxCount()));
+		cachedItem.setCount(Math.min(count, cachedItem.getMaxStackSize()));
 	}
 	private ItemStack getCachedItem() {
 		if (cachedItem.getItem() == item && Objects.equals(cachedNbt, nbt)) {
@@ -96,11 +96,11 @@ public class LocalItemParts extends LocalItem {
 	}
 	
 	@Override
-	public Text getName() {
+	public Component getName() {
 		return MainUtil.getCustomItemNameSafely(getCachedItem());
 	}
 	@Override
-	public void setName(Text name) {
+	public void setName(Component name) {
 		if (NBTManagers.COMPONENTS_EXIST) {
 			if (name == null) {
 				if (nbt != null) {
@@ -108,13 +108,13 @@ public class LocalItemParts extends LocalItem {
 					nbt.remove("minecraft:custom_name");
 				}
 			} else {
-				NbtCompound nbt = getOrCreateNBT();
+				CompoundTag nbt = getOrCreateNBT();
 				nbt.put(nbt.contains("minecraft:custom_name") || !nbt.contains("custom_name") ?
 						"minecraft:custom_name" : "custom_name", TextInst.toMinecraft(name));
 			}
 		} else {
-			NbtCompound nbt = getOrCreateNBT();
-			NbtCompound display = nbt.nbte$getCompoundOrDefault("display");
+			CompoundTag nbt = getOrCreateNBT();
+			CompoundTag display = nbt.nbte$getCompoundOrDefault("display");
 			if (name == null)
 				display.remove("Name");
 			else {
@@ -155,22 +155,22 @@ public class LocalItemParts extends LocalItem {
 	}
 	
 	@Override
-	public NbtCompound getNBT() {
+	public CompoundTag getNBT() {
 		return nbt;
 	}
 	@Override
-	public void setNBT(NbtCompound nbt) {
+	public void setNBT(CompoundTag nbt) {
 		this.nbt = nbt;
 	}
 	@Override
-	public NbtCompound getOrCreateNBT() {
+	public CompoundTag getOrCreateNBT() {
 		if (nbt == null)
-			nbt = new NbtCompound();
+			nbt = new CompoundTag();
 		return nbt;
 	}
 	
 	@Override
-	public void renderIcon(DrawContext context, int x, int y, float tickDelta) {
+	public void renderIcon(GuiGraphics context, int x, int y, float tickDelta) {
 		MVDrawableHelper.renderItem(context, 200.0F, true, getCachedItem(), x, y);
 	}
 	
@@ -179,8 +179,8 @@ public class LocalItemParts extends LocalItem {
 		return Optional.of(getCachedItem().copy());
 	}
 	@Override
-	public NbtCompound serialize() {
-		NbtCompound output = new NbtCompound();
+	public CompoundTag serialize() {
+		CompoundTag output = new CompoundTag();
 		output.putString("id", getId().toString());
 		output.put(NBTManagers.COMPONENTS_EXIST ? "components" : "tag", nbt);
 		output.putInt("count", count);
@@ -188,8 +188,8 @@ public class LocalItemParts extends LocalItem {
 		return output;
 	}
 	@Override
-	public Text toHoverableText() {
-		return getCachedItem().toHoverableText();
+	public Component toHoverableText() {
+		return getCachedItem().getDisplayName();
 	}
 	
 	@Override

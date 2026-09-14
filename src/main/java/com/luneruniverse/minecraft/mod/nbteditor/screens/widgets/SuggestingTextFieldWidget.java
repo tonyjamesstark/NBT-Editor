@@ -10,86 +10,86 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.screen.ChatInputSuggestor;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.components.CommandSuggestions;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
 
 public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	
-	private final ChatInputSuggestor suggestor;
+	private final CommandSuggestions suggestor;
 	private BiFunction<String, Integer, CompletableFuture<Suggestions>> suggestions;
 	
-	public SuggestingTextFieldWidget(Screen screen, int x, int y, int width, int height, TextFieldWidget copyFrom) {
+	public SuggestingTextFieldWidget(Screen screen, int x, int y, int width, int height, EditBox copyFrom) {
 		super(x, y, width, height, copyFrom);
-		suggestor = new ChatInputSuggestor(MainUtil.client, screen, this, MainUtil.client.textRenderer, false, true, 0, 7, false, 0x80000000) {
+		suggestor = new CommandSuggestions(MainUtil.client, screen, this, MainUtil.client.font, false, true, 0, 7, false, 0x80000000) {
 			@Override
-			public void refresh() {
-				if (!this.completingSuggestions) {
+			public void updateCommandInfo() {
+				if (!this.keepSuggestions) {
 					SuggestingTextFieldWidget.this.setSuggestion(null);
-					this.window = null;
+					this.suggestions = null;
 				}
-				this.messages.clear();
-				if (this.window == null || !this.completingSuggestions) {
-					if (suggestions == null)
+				this.commandUsage.clear();
+				if (this.suggestions == null || !this.keepSuggestions) {
+					if (SuggestingTextFieldWidget.this.suggestions == null)
 						this.pendingSuggestions = new SuggestionsBuilder("", 0).buildFuture();
 					else
-						this.pendingSuggestions = suggestions.apply(SuggestingTextFieldWidget.this.text, SuggestingTextFieldWidget.this.getCursor());
+						this.pendingSuggestions = SuggestingTextFieldWidget.this.suggestions.apply(SuggestingTextFieldWidget.this.value, SuggestingTextFieldWidget.this.getCursorPosition());
 					this.pendingSuggestions.thenRun(() -> {
 						if (!this.pendingSuggestions.isDone())
 							return;
-						showCommandSuggestions();
+						showSuggestions(false);
 					});
 				}
 			}
 			@Override
-			protected OrderedText provideRenderText(String original, int firstCharacterIndex) {
-				return OrderedText.styledForwardsVisitedString(original, Style.EMPTY);
+			protected FormattedCharSequence formatChat(String original, int firstCharacterIndex) {
+				return FormattedCharSequence.forward(original, Style.EMPTY);
 			}
 		};
-		suggestor.parse = new ParseResults<>(null);
+		suggestor.currentParse = new ParseResults<>(null);
 		
-		setChangedListener(null);
+		setResponder(null);
 	}
 	public SuggestingTextFieldWidget(Screen screen, int x, int y, int width, int height) {
 		this(screen, x, y, width, height, null);
 	}
 	
 	@Override
-	public void setChangedListener(Consumer<String> listener) {
-		super.setChangedListener(str -> {
-			suggestor.refresh();
+	public void setResponder(Consumer<String> listener) {
+		super.setResponder(str -> {
+			suggestor.updateCommandInfo();
 			if (listener != null)
 				listener.accept(str);
 		});
 	}
 	
 	@Override
-	public SuggestingTextFieldWidget name(Text name) {
+	public SuggestingTextFieldWidget name(Component name) {
 		super.name(name);
 		return this;
 	}
 	
 	public SuggestingTextFieldWidget suggest(BiFunction<String, Integer, CompletableFuture<Suggestions>> suggestions) {
 		this.suggestions = suggestions;
-		suggestor.refresh();
+		suggestor.updateCommandInfo();
 		return this;
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		if (!isDropdownOnly())
 			super.render(context, mouseX, mouseY, delta);
 		suggestor.render(context, mouseX, mouseY);
 	}
 	@Override
 	protected boolean shouldShowName() {
-		return suggestor.window == null;
+		return suggestor.suggestions == null;
 	}
 	public boolean isDropdownOnly() {
 		return false;
@@ -99,7 +99,7 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		return suggestor.mouseClicked(click) || !isDropdownOnly() && super.mouseClicked(click, doubled);
 	}
@@ -110,7 +110,7 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (!isMultiFocused())
 			return false;
@@ -119,8 +119,8 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		if (suggestor.window != null) {
-			if (suggestor.window.area.contains((int) mouseX, (int) mouseY))
+		if (suggestor.suggestions != null) {
+			if (suggestor.suggestions.rect.contains((int) mouseX, (int) mouseY))
 				return true;
 		}
 		return !isDropdownOnly() && super.isMouseOver(mouseX, mouseY);
@@ -128,8 +128,8 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	
 	@Override
 	public void onMultiFocusedSet(boolean focused, boolean prevFocused) {
-		suggestor.setWindowActive(focused);
-		suggestor.refresh();
+		suggestor.setAllowSuggestions(focused);
+		suggestor.updateCommandInfo();
 	}
 	
 }

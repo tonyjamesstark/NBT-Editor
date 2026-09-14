@@ -2,10 +2,10 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 
 import java.util.function.BiFunction;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	
@@ -31,7 +31,7 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		visible.render(context, mouseX, mouseY, delta);
 	}
 	
@@ -74,12 +74,12 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		return visible.mouseClicked(click, doubled);
 	}
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(MouseButtonEvent click) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		return visible.mouseReleased(click);
 	}
@@ -88,7 +88,7 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 		visible.mouseMoved(mouseX, mouseY);
 	}
 	@Override
-	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		return visible.mouseDragged(click, deltaX, deltaY);
 	}
@@ -102,17 +102,17 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	}
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return visible.keyPressed(input);
 	}
 	@Override
-	public boolean keyReleased(KeyInput input) {
+	public boolean keyReleased(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return visible.keyReleased(input);
 	}
 	@Override
-	public boolean charTyped(CharInput input) {
+	public boolean charTyped(CharacterEvent input) {
 		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		return visible.charTyped(input);
 	}

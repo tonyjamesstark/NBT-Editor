@@ -1,22 +1,22 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import net.minecraft.util.Identifier;
-import net.minecraft.util.InvalidIdentifierException;
+import net.minecraft.resources.Identifier;
+import net.minecraft.IdentifierException;
 
 public class IdentifierInst {
 	
-	public static Identifier of(String id) throws InvalidIdentifierException {
-		return Identifier.of(id);
+	public static Identifier of(String id) throws IdentifierException {
+		return Identifier.parse(id);
 	}
-	public static Identifier of(String namespace, String path) throws InvalidIdentifierException {
-		return Identifier.of(namespace, path);
+	public static Identifier of(String namespace, String path) throws IdentifierException {
+		return Identifier.fromNamespaceAndPath(namespace, path);
 	}
 	
 	public static boolean isValid(String id) {
 		try {
 			of(id);
 			return true;
-		} catch (InvalidIdentifierException e) {
+		} catch (IdentifierException e) {
 			return false;
 		}
 	}
@@ -24,7 +24,7 @@ public class IdentifierInst {
 		try {
 			of(namespace, path);
 			return true;
-		} catch (InvalidIdentifierException e) {
+		} catch (IdentifierException e) {
 			return false;
 		}
 	}

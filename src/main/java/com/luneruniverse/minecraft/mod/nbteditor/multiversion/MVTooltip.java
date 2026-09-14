@@ -11,14 +11,14 @@ import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.network.chat.Component;
 
 public class MVTooltip {
 	
-	public static final MVTooltip EMPTY = new MVTooltip(new Text[0]);
+	public static final MVTooltip EMPTY = new MVTooltip(new Component[0]);
 	private static boolean oneTooltip = false;
 	private static boolean lastTooltip = false;
 	private static MVTooltip theOneTooltip;
@@ -39,7 +39,7 @@ public class MVTooltip {
 	public static MVTooltip getTheOneTooltip() {
 		return theOneTooltip;
 	}
-	public static boolean setExternalOneTooltip(List<OrderedText> tooltip) {
+	public static boolean setExternalOneTooltip(List<FormattedCharSequence> tooltip) {
 		if (isOneTooltip()) {
 			if (lastTooltip || theOneTooltip == null)
 				theOneTooltip = new MVTooltip(tooltip, null);
@@ -47,7 +47,7 @@ public class MVTooltip {
 		}
 		return false;
 	}
-	public static boolean renderOneTooltip(DrawContext context, int mouseX, int mouseY) {
+	public static boolean renderOneTooltip(GuiGraphics context, int mouseX, int mouseY) {
 		MVTooltip tooltip = setOneTooltip(false, false);
 		if (tooltip == null)
 			return false;
@@ -55,7 +55,7 @@ public class MVTooltip {
 		return true;
 	}
 	
-	private static Text combine(List<Text> lines) {
+	private static Component combine(List<Component> lines) {
 		EditableText combined = TextInst.literal("");
 		for (int i = 0; i < lines.size(); i++) {
 			if (i > 0)
@@ -65,28 +65,28 @@ public class MVTooltip {
 		return combined;
 	}
 	
-	private final List<OrderedText> lines;
-	private final Text combined;
+	private final List<FormattedCharSequence> lines;
+	private final Component combined;
 	
-	private MVTooltip(List<OrderedText> lines, Text combined) {
+	private MVTooltip(List<FormattedCharSequence> lines, Component combined) {
 		this.lines = lines;
 		this.combined = combined;
 	}
-	public MVTooltip(List<Text> lines) {
-		this(lines.stream().map(Text::asOrderedText).collect(Collectors.toList()), combine(lines));
+	public MVTooltip(List<Component> lines) {
+		this(lines.stream().map(Component::getVisualOrderText).collect(Collectors.toList()), combine(lines));
 	}
-	public MVTooltip(Text... lines) {
+	public MVTooltip(Component... lines) {
 		this(Arrays.stream(lines).flatMap(line -> TextUtil.splitText(line).stream()).toList());
 	}
 	public MVTooltip(String... keys) {
 		this(Arrays.asList(keys).stream().map(TextInst::translatable).toList().toArray(new EditableText[0]));
 	}
 	
-	public List<OrderedText> getLines() {
+	public List<FormattedCharSequence> getLines() {
 		return lines;
 	}
 	
-	public Text getCombined() {
+	public Component getCombined() {
 		return combined;
 	}
 	
@@ -98,13 +98,13 @@ public class MVTooltip {
 		if (isEmpty())
 			return null;
 		
-		Tooltip output = Tooltip.of(combined);
+		Tooltip output = Tooltip.create(combined);
 		Reflection.getField(Tooltip.class, "field_41103", "Ljava/util/List;").set(output, lines);
 		MixinLink.NEW_TOOLTIPS.put(output, true);
 		return output;
 	}
 	
-	public void render(DrawContext context, int mouseX, int mouseY) {
+	public void render(GuiGraphics context, int mouseX, int mouseY) {
 		if (oneTooltip) {
 			if (lastTooltip || theOneTooltip == null)
 				theOneTooltip = this;
@@ -113,14 +113,14 @@ public class MVTooltip {
 		
 		// Undo translations and render at actual position
 		// This allows Screen#renderTooltip to adjust for window height
-		Matrix3x2fStack matrices = context.getMatrices();
+		Matrix3x2fStack matrices = context.pose();
 		float dx = matrices.m20();
 		float dy = matrices.m21();
 		matrices.pushMatrix();
 		matrices.translate(-dx, -dy);
 		// ponytail: reads and pokes raw GL scissor state. 1.21.9 defers GUI draws through
 		// GuiRenderState, so this needs an in-game check before it can be trusted.
-		boolean scissor = GlStateManager.SCISSOR.capState.state;
+		boolean scissor = GlStateManager.SCISSOR.mode.enabled;
 		if (scissor)
 			GL20.glDisable(GL20.GL_SCISSOR_TEST);
 		

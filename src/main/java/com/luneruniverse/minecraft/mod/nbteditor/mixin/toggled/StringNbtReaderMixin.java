@@ -9,23 +9,23 @@ import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtFormatter;
 
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.StringNbtReader;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.TagParser;
 
-@Mixin(StringNbtReader.class)
+@Mixin(TagParser.class)
 public class StringNbtReaderMixin {
 	@Inject(method = "method_10731(Ljava/lang/String;)Lnet/minecraft/class_2520;", at = @At("HEAD"), cancellable = true, remap = false)
 	@SuppressWarnings("target")
-	private void parsePrimitive(String input, CallbackInfoReturnable<NbtElement> info) {
+	private void parsePrimitive(String input, CallbackInfoReturnable<Tag> info) {
 		if (ConfigScreen.isSpecialNumbers() && MixinLink.specialNumbers.contains(Thread.currentThread())) {
 			Number specialNum = NbtFormatter.SPECIAL_NUMS.get(input);
 			if (specialNum != null) {
 				if (specialNum instanceof Double d)
-					info.setReturnValue(NbtDouble.of(d));
+					info.setReturnValue(DoubleTag.valueOf(d));
 				else if (specialNum instanceof Float f)
-					info.setReturnValue(NbtFloat.of(f));
+					info.setReturnValue(FloatTag.valueOf(f));
 				else
 					throw new IllegalStateException("Number of invalid type: " + specialNum.getClass().getName());
 			}

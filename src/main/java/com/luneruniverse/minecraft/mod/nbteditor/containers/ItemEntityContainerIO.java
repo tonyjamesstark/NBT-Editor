@@ -2,18 +2,18 @@ package com.luneruniverse.minecraft.mod.nbteditor.containers;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 
 public record ItemEntityContainerIO(ContainerIO<ItemStack> item, ContainerIO<LocalEntity> entity) {
 	
-	public static ItemEntityContainerIO forEntityTagIO(ContainerIO<NbtCompound> io, String entityId) {
+	public static ItemEntityContainerIO forEntityTagIO(ContainerIO<CompoundTag> io, String entityId) {
 		return new ItemEntityContainerIO(ContainerIO.forItemStackEntityTag(io, entityId), ContainerIO.forLocalNBT(io));
 	}
-	public static ItemEntityContainerIO forEntityTagIO(ContainerIO<NbtCompound> io, EntityType<?> entityId) {
-		return forEntityTagIO(io, EntityType.getId(entityId).toString());
+	public static ItemEntityContainerIO forEntityTagIO(ContainerIO<CompoundTag> io, EntityType<?> entityId) {
+		return forEntityTagIO(io, EntityType.getKey(entityId).toString());
 	}
 	
 	public static ItemEntityContainerIO forSlotKeyItems(int numSlots) {
@@ -28,7 +28,7 @@ public record ItemEntityContainerIO(ContainerIO<ItemStack> item, ContainerIO<Loc
 				ContainerIO.forLocalNBT(new KeysContainerIO(false, keys)));
 	}
 	public static ItemEntityContainerIO forKeys(EntityType<?> entityId, String... keys) {
-		return forKeys(EntityType.getId(entityId).toString(), keys);
+		return forKeys(EntityType.getKey(entityId).toString(), keys);
 	}
 	
 	public ItemEntityContainerIO withTextures(Identifier... textures) {

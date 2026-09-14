@@ -7,20 +7,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.ParentElement;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
 
-@Mixin(ParentElement.class)
+@Mixin(ContainerEventHandler.class)
 public interface ParentElementMixin {
 	@Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-	private void mouseClicked(Click click, boolean doubled, CallbackInfoReturnable<Boolean> info) {
+	private void mouseClicked(MouseButtonEvent click, boolean doubled, CallbackInfoReturnable<Boolean> info) {
 		if (!(this instanceof OldEventBehavior))
 			return;
 		
-		ParentElement source = (ParentElement) (Object) this;
+		ContainerEventHandler source = (ContainerEventHandler) (Object) this;
 		
-		for (Element element : source.children()) {
+		for (GuiEventListener element : source.children()) {
 			if (element.mouseClicked(click, doubled)) {
 				source.setFocused(element);
 				if (click.button() == 0)

@@ -4,9 +4,9 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElementParent;
 
-import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 
-@Mixin(Element.class)
+@Mixin(GuiEventListener.class)
 public interface ElementMixin extends MVElementParent {
 	// Needed for some reason ...
 	// Prevents crash in 1.17 that's trying to find this method

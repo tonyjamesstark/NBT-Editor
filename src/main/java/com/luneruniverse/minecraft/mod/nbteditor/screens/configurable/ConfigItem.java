@@ -8,15 +8,15 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	
-	private final Text name;
+	private final Component name;
 	private final V value;
 	private final int valueOffsetX;
 	private final int valueOffsetY;
@@ -25,17 +25,17 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	
 	private MVTooltip tooltip;
 	
-	public ConfigItem(Text name, V value) {
+	public ConfigItem(Component name, V value) {
 		this.name = name;
 		this.value = value;
-		this.valueOffsetX = MainUtil.client.textRenderer.getWidth(name) + PADDING;
+		this.valueOffsetX = MainUtil.client.font.width(name) + PADDING;
 		this.valueOffsetY = (getSpacingHeight() - value.getSpacingHeight()) / 2;
 		
 		this.onChanged = new ArrayList<>();
 		value.addValueListener(source -> onChanged.forEach(listener -> listener.onValueChanged(source)));
 		value.setParent(this);
 	}
-	private ConfigItem(Text name, V value, List<ConfigValueListener<ConfigValue<?, ?>>> onChanged) {
+	private ConfigItem(Component name, V value, List<ConfigValueListener<ConfigValue<?, ?>>> onChanged) {
 		this(name, value);
 		this.onChanged.addAll(onChanged);
 	}
@@ -54,13 +54,13 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, name, 0, (getSpacingHeight() - MainUtil.client.textRenderer.fontHeight) / 2, 0xFFFFFFFF);
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, name, 0, (getSpacingHeight() - MainUtil.client.font.lineHeight) / 2, 0xFFFFFFFF);
 		
-		context.getMatrices().pushMatrix();
-		context.getMatrices().translate((float) (valueOffsetX), (float) (valueOffsetY));
+		context.pose().pushMatrix();
+		context.pose().translate((float) (valueOffsetX), (float) (valueOffsetY));
 		value.render(context, mouseX - valueOffsetX, mouseY - valueOffsetY, delta);
-		context.getMatrices().popMatrix();
+		context.pose().popMatrix();
 		
 		if (tooltip != null && mouseX >= 0 && mouseX <= valueOffsetX && isMouseOver(mouseX, mouseY))
 			tooltip.render(context, mouseX, mouseY);
@@ -105,23 +105,23 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-		return value.mouseClicked(new Click(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()), doubled);
+		return value.mouseClicked(new MouseButtonEvent(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()), doubled);
 	}
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(MouseButtonEvent click) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-		return value.mouseReleased(new Click(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()));
+		return value.mouseReleased(new MouseButtonEvent(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()));
 	}
 	@Override
 	public void mouseMoved(double mouseX, double mouseY) {
 		value.mouseMoved(mouseX - valueOffsetX, mouseY - valueOffsetY);
 	}
 	@Override
-	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
-		return value.mouseDragged(new Click(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()), deltaX, deltaY);
+		return value.mouseDragged(new MouseButtonEvent(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()), deltaX, deltaY);
 	}
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double xAmount, double yAmount) {
@@ -129,17 +129,17 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	}
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return value.keyPressed(input);
 	}
 	@Override
-	public boolean keyReleased(KeyInput input) {
+	public boolean keyReleased(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return value.keyReleased(input);
 	}
 	@Override
-	public boolean charTyped(CharInput input) {
+	public boolean charTyped(CharacterEvent input) {
 		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		return value.charTyped(input);
 	}

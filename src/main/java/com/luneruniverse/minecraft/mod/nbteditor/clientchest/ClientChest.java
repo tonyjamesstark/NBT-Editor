@@ -39,12 +39,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SaveQueue;
 import com.luneruniverse.minecraft.mod.nbteditor.util.lock.PartitionedReadWriteLock;
 
-import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.text.Text;
+import net.minecraft.util.datafix.fixes.References;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 
 public class ClientChest {
 	
@@ -607,7 +607,7 @@ public class ClientChest {
 			return new ClientChestPage();
 		}
 		
-		NbtCompound pageNbt = MVMisc.readNbt(file);
+		CompoundTag pageNbt = MVMisc.readNbt(file);
 		if (!pageNbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE)) {
 			ClientChestPage output = ClientChestPage.unknownDataVersion();
 			cache.cachePage(page, output);
@@ -620,16 +620,16 @@ public class ClientChest {
 			return output;
 		}
 		
-		NbtList itemsNbt = pageNbt.nbte$getList("items", NbtElement.COMPOUND_TYPE)
+		ListTag itemsNbt = pageNbt.nbte$getList("items", Tag.TAG_COMPOUND)
 				.orElseThrow(() -> new Exception("Invalid items list"));
 		ItemStack[] items = new ItemStack[54];
 		DynamicItems dynamicItems = new DynamicItems();
 		boolean empty = true;
 		int i = -1;
-		for (NbtElement itemElementNbt : itemsNbt.nbte$iterable()) {
+		for (Tag itemElementNbt : itemsNbt.nbte$iterable()) {
 			i++;
-			NbtCompound itemNbt = (NbtCompound) itemElementNbt;
-			if (itemNbt.nbte$contains("dynamic", NbtElement.BYTE_TYPE) && itemNbt.nbte$getBooleanOrDefault("dynamic")) {
+			CompoundTag itemNbt = (CompoundTag) itemElementNbt;
+			if (itemNbt.nbte$contains("dynamic", Tag.TAG_BYTE) && itemNbt.nbte$getBooleanOrDefault("dynamic")) {
 				itemNbt.remove("dynamic");
 				dynamicItems.add(i, itemNbt, false);
 				empty = false;
@@ -667,12 +667,12 @@ public class ClientChest {
 		ItemStack[] items = pageData.getItemsOrThrow();
 		DynamicItems dynamicItems = pageData.dynamicItems();
 		
-		NbtCompound pageNbt = new NbtCompound();
+		CompoundTag pageNbt = new CompoundTag();
 		pageNbt.putInt("DataVersion", Version.getDataVersion());
 		
-		NbtList itemsNbt = new NbtList();
+		ListTag itemsNbt = new ListTag();
 		for (int i = 0; i < items.length; i++) {
-			NbtCompound itemNbt;
+			CompoundTag itemNbt;
 			if (dynamicItems.isSlot(i))
 				itemNbt = dynamicItems.getOriginalNbt(i);
 			else
@@ -723,7 +723,7 @@ public class ClientChest {
 			throw new IllegalStateException("Cannot import an up to date page!");
 		}
 		
-		NbtCompound pageNbt = MVMisc.readNbt(file);
+		CompoundTag pageNbt = MVMisc.readNbt(file);
 		if (pageNbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE)) {
 			if (ignoreInvalidDataVersion)
 				return;
@@ -751,7 +751,7 @@ public class ClientChest {
 			throw new IllegalStateException("Cannot update an already up to date page!");
 		}
 		
-		NbtCompound pageNbt = MVMisc.readNbt(file);
+		CompoundTag pageNbt = MVMisc.readNbt(file);
 		int dataVersion;
 		try {
 			dataVersion = pageNbt.nbte$getInt("DataVersion").or(() -> defaultDataVersion)
@@ -768,27 +768,27 @@ public class ClientChest {
 		
 		Files.copy(file.toPath(), new File(CLIENT_CHEST_FOLDER, "updating_page" + page + "_" + System.currentTimeMillis() + ".nbt").toPath());
 		
-		NbtList itemsNbt = pageNbt.nbte$getList("items", NbtElement.COMPOUND_TYPE)
+		ListTag itemsNbt = pageNbt.nbte$getList("items", Tag.TAG_COMPOUND)
 				.orElseThrow(() -> new Exception("Invalid items list"));
 		ItemStack[] items = new ItemStack[54];
 		DynamicItems dynamicItems = new DynamicItems();
 		boolean empty = true;
 		int i = -1;
-		for (NbtElement itemElementNbt : itemsNbt.nbte$iterable()) {
+		for (Tag itemElementNbt : itemsNbt.nbte$iterable()) {
 			i++;
-			NbtCompound itemNbt = (NbtCompound) itemElementNbt;
-			boolean dynamic = (itemNbt.nbte$contains("dynamic", NbtElement.BYTE_TYPE) &&
+			CompoundTag itemNbt = (CompoundTag) itemElementNbt;
+			boolean dynamic = (itemNbt.nbte$contains("dynamic", Tag.TAG_BYTE) &&
 					itemNbt.nbte$getBooleanOrDefault("dynamic"));
 			if (dynamic)
 				itemNbt.remove("dynamic");
 			
-			itemNbt = MainUtil.updateDynamic(TypeReferences.ITEM_STACK, itemNbt, dataVersion);
+			itemNbt = MainUtil.updateDynamic(References.ITEM_STACK, itemNbt, dataVersion);
 			
 			if (dynamic) {
 				dynamicItems.add(i, itemNbt, false);
 				empty = false;
 			} else {
-				final NbtCompound finalItemNbt = itemNbt;
+				final CompoundTag finalItemNbt = itemNbt;
 				items[i] = MVMisc.withDefaultRegistryManager(() -> NBTManagers.ITEM.deserialize(finalItemNbt, true));
 				if (empty && items[i] != null && !items[i].isEmpty())
 					empty = false;
@@ -811,7 +811,7 @@ public class ClientChest {
 		if (!file.exists())
 			throw new IllegalStateException("Cannot discard an up to date page!");
 		
-		NbtCompound pageNbt = MVMisc.readNbt(file);
+		CompoundTag pageNbt = MVMisc.readNbt(file);
 		if (pageNbt.nbte$getInt("DataVersion").filter(dataVersion -> dataVersion == Version.getDataVersion()).isPresent())
 			throw new IllegalStateException("Cannot discard an up to date page!");
 		
@@ -839,9 +839,9 @@ public class ClientChest {
 	private void warnCorrupt() {
 		if (MainUtil.client.player == null)
 			return;
-		MainUtil.client.player.sendMessage(attachShowFolder(TextInst.translatable("nbteditor.client_chest.corrupt_warning")), false);
+		MainUtil.client.player.displayClientMessage(attachShowFolder(TextInst.translatable("nbteditor.client_chest.corrupt_warning")), false);
 	}
-	public static Text attachShowFolder(EditableText text) {
+	public static Component attachShowFolder(EditableText text) {
 		return text.append(" ").append(TextInst.translatable("nbteditor.file_options.show").styled(
 				style -> style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(CLIENT_CHEST_FOLDER.getAbsolutePath()))));
 	}

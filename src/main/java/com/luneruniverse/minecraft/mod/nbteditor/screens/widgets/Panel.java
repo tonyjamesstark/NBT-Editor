@@ -7,17 +7,17 @@ import java.util.stream.StreamSupport;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.GuiGraphics;
 
-public abstract class Panel<T extends Drawable & Element> implements Drawable, MVElement, Selectable {
+public abstract class Panel<T extends Renderable & GuiEventListener> implements Renderable, MVElement, NarratableEntry {
 	
-	public static record PositionedPanelElement<T extends Drawable & Element>(T element, int x, int y) {
+	public static record PositionedPanelElement<T extends Renderable & GuiEventListener>(T element, int x, int y) {
 	}
 	
 	protected int x;
@@ -55,7 +55,7 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		updateMousePos(mouseX, mouseY);
 		
 		checkOverScroll();
@@ -65,10 +65,10 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
 			T element = pos.element();
 			
-			context.getMatrices().pushMatrix();
-			context.getMatrices().translate((float) (pos.x() + x), (float) (pos.y() + y + scroll));
+			context.pose().pushMatrix();
+			context.pose().translate((float) (pos.x() + x), (float) (pos.y() + y + scroll));
 			element.render(context, mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, delta);
-			context.getMatrices().popMatrix();
+			context.pose().popMatrix();
 		}
 		
 		MVDrawableHelper.disableScissor(context);
@@ -101,7 +101,7 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 	
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		updateMousePos(mouseX, mouseY);
 		
@@ -110,7 +110,7 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 		
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().mouseClicked(new Click(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()), doubled)) {
+			if (pos.element().mouseClicked(new MouseButtonEvent(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()), doubled)) {
 				success = true;
 				if (!continueEvents())
 					break;
@@ -120,13 +120,13 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 	}
 	
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(MouseButtonEvent click) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		updateMousePos(mouseX, mouseY);
 		
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().mouseReleased(new Click(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()))) {
+			if (pos.element().mouseReleased(new MouseButtonEvent(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()))) {
 				success = true;
 				if (!continueEvents())
 					break;
@@ -144,7 +144,7 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 	}
 	
 	@Override
-	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		updateMousePos(mouseX, mouseY);
 		
@@ -153,7 +153,7 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 		
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
-			if (pos.element().mouseDragged(new Click(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()), deltaX, deltaY)) {
+			if (pos.element().mouseDragged(new MouseButtonEvent(mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, click.buttonInfo()), deltaX, deltaY)) {
 				success = true;
 				if (!continueEvents())
 					break;
@@ -191,7 +191,7 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 	
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
@@ -204,7 +204,7 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 		return success;
 	}
 	@Override
-	public boolean keyReleased(KeyInput input) {
+	public boolean keyReleased(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
@@ -217,7 +217,7 @@ public abstract class Panel<T extends Drawable & Element> implements Drawable, M
 		return success;
 	}
 	@Override
-	public boolean charTyped(CharInput input) {
+	public boolean charTyped(CharacterEvent input) {
 		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {

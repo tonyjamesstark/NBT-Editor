@@ -14,16 +14,16 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.SuggestingTextFieldWidget;
 
-import net.minecraft.client.gui.screen.ChatInputSuggestor;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.Formatting;
+import net.minecraft.client.gui.components.CommandSuggestions;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.ChatFormatting;
 
-@Mixin(ChatInputSuggestor.class)
+@Mixin(CommandSuggestions.class)
 public class ChatInputSuggestorMixin {
 	@Shadow
-	TextFieldWidget textField;
+	EditBox textField;
 	
-	@ModifyArgs(method = "show", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ChatInputSuggestor$SuggestionWindow;<init>(Lnet/minecraft/client/gui/screen/ChatInputSuggestor;IIILjava/util/List;Z)V"))
+	@ModifyArgs(method = "show", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/CommandSuggestions$SuggestionWindow;<init>(Lnet/minecraft/client/gui/screen/CommandSuggestions;IIILjava/util/List;Z)V"))
 	private void SuggestionWindow(Args args) {
 		if (!(textField instanceof SuggestingTextFieldWidget suggestor))
 			return;
@@ -38,7 +38,7 @@ public class ChatInputSuggestorMixin {
 	
 	@Inject(method = "showUsages", at = @At("HEAD"), cancellable = true)
 	@Group(name = "showUsages", min = 1)
-	private void showUsages(Formatting formatting, CallbackInfoReturnable<Boolean> info) {
+	private void showUsages(ChatFormatting formatting, CallbackInfoReturnable<Boolean> info) {
 		if (!(textField instanceof SuggestingTextFieldWidget))
 			return;
 		
@@ -47,7 +47,7 @@ public class ChatInputSuggestorMixin {
 	@Inject(method = "method_23929(Lnet/minecraft/class_124;)V", at = @At("HEAD"), cancellable = true)
 	@Group(name = "showUsages", min = 1)
 	@SuppressWarnings("target")
-	private void showUsages(Formatting formatting, CallbackInfo info) {
+	private void showUsages(ChatFormatting formatting, CallbackInfo info) {
 		if (!(textField instanceof SuggestingTextFieldWidget))
 			return;
 		

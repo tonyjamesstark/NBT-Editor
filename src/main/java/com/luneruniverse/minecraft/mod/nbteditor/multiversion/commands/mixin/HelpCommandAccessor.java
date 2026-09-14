@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
-import net.minecraft.server.command.HelpCommand;
+import net.minecraft.server.commands.HelpCommand;
 
 @Mixin(HelpCommand.class)
 public interface HelpCommandAccessor {

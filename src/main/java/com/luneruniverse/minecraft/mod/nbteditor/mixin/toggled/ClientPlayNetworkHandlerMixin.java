@@ -9,30 +9,30 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.s2c.play.SetCursorItemS2CPacket;
-import net.minecraft.network.packet.s2c.play.SetPlayerInventoryS2CPacket;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
 	
 	@Inject(method = "onSetCursorItem", at = @At("HEAD"), cancellable = true)
-	private void onSetCursorItem(SetCursorItemS2CPacket packet, CallbackInfo info) {
-		if (!MainUtil.client.isOnThread())
+	private void onSetCursorItem(ClientboundSetCursorItemPacket packet, CallbackInfo info) {
+		if (!MainUtil.client.isSameThread())
 			return;
 		
 		if (NBTEditorClient.CURSOR_MANAGER.isBranched()) {
 			info.cancel();
 			
-			if (!(NBTEditorClient.CURSOR_MANAGER.getCurrentRoot() instanceof CreativeInventoryScreen))
-				MainUtil.client.player.currentScreenHandler.setCursorStack(packet.contents());
+			if (!(NBTEditorClient.CURSOR_MANAGER.getCurrentRoot() instanceof CreativeModeInventoryScreen))
+				MainUtil.client.player.containerMenu.setCarried(packet.contents());
 		}
 	}
 	
 	@Inject(method = "onSetPlayerInventory", at = @At("RETURN"), cancellable = true)
-	private void onSetPlayerInventory_return(SetPlayerInventoryS2CPacket packet, CallbackInfo info) {
-		if (MainUtil.client.currentScreen instanceof ClientHandledScreen clientHandledScreen)
+	private void onSetPlayerInventory_return(ClientboundSetPlayerInventoryPacket packet, CallbackInfo info) {
+		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onSetPlayerInventoryPacket(packet);
 	}
 	
