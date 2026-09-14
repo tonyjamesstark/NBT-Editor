@@ -256,10 +256,25 @@ Each step ends in a build. Do not start the next until the previous compiles.
   pass looked for silent mis-binding. `ConfigValue`'s `getValue`/`setValue` were renamed to
   `getConfigValue`/`setConfigValue`: they collided with `EditBox.getValue()`, which Yarn had
   called `getText`.
-- [ ] **4.4 Retire the intermediary layer.** Replace the 8 `loom:injected_interfaces` keys and
-  the ~75 `method_NNNNN`/`field_NNNNN` lookups with real names. Kept separate from 4.3 because it
-  is a different kind of edit: 4.3 is mechanical renaming, this is deciding whether each
-  reflective lookup still needs to be reflective once the name is stable and readable.
+- [x] **4.4 Retire the intermediary layer.** Kept separate from 4.3 because it is a different
+  kind of edit: 4.3 is mechanical renaming, this is deciding whether each reflective lookup still
+  needs to be reflective once the name is stable and readable. The estimates in this line were
+  low. There were 9 `loom:injected_interfaces` keys, not 8, and 248 `method_NNNNN`/`field_NNNNN`
+  lookups, not ~75. `remapJar` emitted 94 distinct `Cannot remap` warnings rather than the ~25
+  guessed below, and each one was a mixin that would have failed at runtime.
+
+  Five intermediary names survive, each with a comment saying why: `SnbtGrammar.method_68722` and
+  `LecternBlockEntity$1.field_17391` are synthetic members with no Mojang name, and
+  `ServerMixinLink`'s `class_634` is a client class a dedicated server cannot link against.
+
+  Most of the layer turned out to be dead rather than in need of translation. Two version flags
+  had been hardcoded true for several releases - `MVNbtCompoundParent.NBT_CODE_REFACTORED` and
+  `NBTManagers.COMPONENTS_EXIST` - and collapsing them removed the whole pre-component item model
+  and the List-backed NBT collection path. Several wrappers existed only to span a signature
+  change that is now behind us: `EditableText` wrapped `MutableComponent` from when it was an
+  interface, `MVRegistry` reflected over `Registry` for the same reason, `MVRegistryKeys` held one
+  constant, and `MVElementParent` grafted a three-argument `mouseScrolled` onto a `GuiEventListener`
+  that declares the four-argument one itself. `Reflection` went from 191 lines to 66.
 - [ ] **4.5 Bump 1.21.11 to 26.2.** Loom 1.10-SNAPSHOT to 1.16.x, fabric-api 0.160.0+26.2, loader
   0.19.5, and *remove* the `mappings` line rather than repointing it. Relax
   `Version.parseVersion`, which rejects any version whose first component is not `1` and runs
