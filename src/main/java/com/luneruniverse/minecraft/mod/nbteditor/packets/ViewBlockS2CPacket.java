@@ -1,9 +1,9 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistryKeys;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
@@ -38,7 +38,7 @@ public class ViewBlockS2CPacket implements ResponsePacket {
 	public ViewBlockS2CPacket(FriendlyByteBuf payload) {
 		this.requestId = payload.readVarInt();
 		if (payload.readBoolean()) {
-			this.world = payload.readRegistryKey(MVRegistryKeys.WORLD);
+			this.world = payload.readRegistryKey(Registries.DIMENSION);
 			this.pos = payload.readBlockPos();
 		} else {
 			this.world = null;

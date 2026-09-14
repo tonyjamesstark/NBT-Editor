@@ -1,10 +1,10 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistryKeys;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
@@ -35,7 +35,7 @@ public class SetBlockC2SPacket implements MVPacket {
 		this.triggerUpdate = triggerUpdate;
 	}
 	public SetBlockC2SPacket(FriendlyByteBuf payload) {
-		this.world = payload.readRegistryKey(MVRegistryKeys.WORLD);
+		this.world = payload.readRegistryKey(Registries.DIMENSION);
 		this.pos = payload.readBlockPos();
 		this.id = payload.readIdentifier();
 		this.state = new BlockStateProperties(payload);

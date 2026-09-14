@@ -3,9 +3,9 @@ package com.luneruniverse.minecraft.mod.nbteditor.packets;
 import java.util.UUID;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistryKeys;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
@@ -30,7 +30,7 @@ public class SetEntityC2SPacket implements MVPacket {
 		this.recreate = recreate;
 	}
 	public SetEntityC2SPacket(FriendlyByteBuf payload) {
-		this.world = payload.readRegistryKey(MVRegistryKeys.WORLD);
+		this.world = payload.readRegistryKey(Registries.DIMENSION);
 		this.uuid = payload.readUUID();
 		this.id = payload.readIdentifier();
 		this.nbt = payload.readNbt();

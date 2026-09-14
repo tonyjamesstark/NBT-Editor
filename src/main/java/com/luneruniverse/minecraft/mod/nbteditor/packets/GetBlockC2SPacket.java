@@ -1,9 +1,9 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistryKeys;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
@@ -25,7 +25,7 @@ public class GetBlockC2SPacket implements MVPacket {
 	}
 	public GetBlockC2SPacket(FriendlyByteBuf payload) {
 		this.requestId = payload.readVarInt();
-		this.world = payload.readRegistryKey(MVRegistryKeys.WORLD);
+		this.world = payload.readRegistryKey(Registries.DIMENSION);
 		this.pos = payload.readBlockPos();
 	}
 	

@@ -17,19 +17,12 @@ import net.minecraft.ChatFormatting;
 
 public class MVEnchantments {
 	
-	public static final boolean DATA_PACK_ENCHANTMENTS = true;
-	
-	@SuppressWarnings("unchecked")
-	private static Enchantment getEnchantment(String field) {
-		Object output = Reflection.getField(Enchantments.class, field,
-				DATA_PACK_ENCHANTMENTS ? "Lnet/minecraft/class_5321;" : "Lnet/minecraft/class_1887;").get(null);
-		if (DATA_PACK_ENCHANTMENTS)
-			return MVRegistry.getEnchantmentRegistry().get(((ResourceKey<Enchantment>) output).identifier());
-		return (Enchantment) output;
+	private static Enchantment getEnchantment(ResourceKey<Enchantment> key) {
+		return MVRegistry.getEnchantmentRegistry().get(key.identifier());
 	}
 	
-	public static final Enchantment LOYALTY = getEnchantment("field_9120");
-	public static final Enchantment FIRE_ASPECT = getEnchantment("field_9124");
+	public static final Enchantment LOYALTY = getEnchantment(Enchantments.LOYALTY);
+	public static final Enchantment FIRE_ASPECT = getEnchantment(Enchantments.FIRE_ASPECT);
 	
 	public static boolean isCursed(Enchantment enchant) {
 		return MVRegistry.getEnchantmentRegistry().getInternalValue().wrapAsHolder(enchant).is(EnchantmentTags.CURSE);
