@@ -36,7 +36,7 @@ public class LocalFactoryScreen<L extends LocalNBT> extends LocalEditorScreen<L>
 	public static final List<LocalFactoryReference> BASIC_FACTORIES = new ArrayList<>();
 	private static void addFactory(String key, Predicate<NBTReference<?>> supported, Function<NBTReference<?>, Screen> screen) {
 		BASIC_FACTORIES.add(new LocalFactoryReference(TextInst.translatable(key), supported,
-				ref -> MainUtil.client.setScreen(screen.apply(ref))));
+				ref -> MainUtil.client.setScreenAndShow(screen.apply(ref))));
 	}
 	private static <T extends NBTReference<?>> void addFactory(String key, Predicate<T> supported, Function<T, Screen> screen, Class<T> clazz) {
 		addFactory(key, ref -> clazz.isInstance(ref) && supported.test(clazz.cast(ref)), ref -> screen.apply(clazz.cast(ref)));

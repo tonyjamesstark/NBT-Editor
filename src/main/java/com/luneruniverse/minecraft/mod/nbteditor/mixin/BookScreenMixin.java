@@ -50,7 +50,7 @@ public class BookScreenMixin extends Screen {
 		if ((Object) this instanceof LecternScreen) {
 			return BlockReference.getLecternBlock().thenApply(optionalRef -> {
 				if (optionalRef.isEmpty()) {
-					MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.no_ref.unknown"), false);
+					MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.no_ref.unknown"));
 					return Optional.empty();
 				}
 				return optionalRef.map(ref -> new ContainerItemReference<>(ref, 0));
@@ -60,7 +60,7 @@ public class BookScreenMixin extends Screen {
 		try {
 			return CompletableFuture.completedFuture(Optional.of(ItemReference.getHeldItem()));
 		} catch (CommandSyntaxException e) {
-			MainUtil.client.player.displayClientMessage(TextInst.literal(e.getMessage()).withStyle(ChatFormatting.RED), false);
+			MainUtil.client.player.sendSystemMessage(TextInst.literal(e.getMessage()).withStyle(ChatFormatting.RED));
 			return CompletableFuture.completedFuture(Optional.empty());
 		}
 	}
@@ -78,7 +78,7 @@ public class BookScreenMixin extends Screen {
 	
 	@Inject(method = "init", at = @At("TAIL"))
 	private void init(CallbackInfo info) {
-		if (MainUtil.client.screen instanceof
+		if (MainUtil.client.gui.screen() instanceof
 				com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen) { // Preview mode
 			renderLogo = true;
 			return;
@@ -88,7 +88,7 @@ public class BookScreenMixin extends Screen {
 			getReference(ref -> {
 				if ((Object) this instanceof LecternScreen)
 					MainUtil.client.player.closeContainer();
-				MainUtil.client.setScreen(
+				MainUtil.client.setScreenAndShow(
 						new com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen(ref, Math.max(0, currentPage)));
 			});
 		}));
@@ -112,7 +112,7 @@ public class BookScreenMixin extends Screen {
 	
 	@Inject(method = "createMenuControls", at = @At("HEAD"), cancellable = true)
 	private void createMenuControls(CallbackInfo info) {
-		if (MainUtil.client.screen instanceof
+		if (MainUtil.client.gui.screen() instanceof
 				com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen) { // Preview mode
 			info.cancel();
 			addRenderableWidget(MVMisc.newButton(width / 2 - 100, 196, 200, 20, ScreenTexts.DONE,

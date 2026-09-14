@@ -76,7 +76,7 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 		
 		context.pose().pushMatrix();
 		context.pose().translate((float) (0.0), (float) (0.0));
-		MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
+		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 		if (title != null) {
 			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, title,
 					x + input.getWidth() / 2, y - 4 - MainUtil.client.font.lineHeight, -1);

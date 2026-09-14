@@ -133,7 +133,7 @@ public class NBTEditorAPI {
 			if (supported.test(ref))
 				factory.accept(ref);
 			else if (MainUtil.client.player != null)
-				MainUtil.client.player.displayClientMessage(unsupportedMsg, false);
+				MainUtil.client.player.sendSystemMessage(unsupportedMsg);
 		});
 		LocalFactoryScreen.BASIC_FACTORIES.add(new LocalFactoryScreen.LocalFactoryReference(buttonMsg, supported, factory));
 	}

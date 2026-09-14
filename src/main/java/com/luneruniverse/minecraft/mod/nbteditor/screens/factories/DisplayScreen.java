@@ -63,7 +63,7 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			addWidget(nameFormatted);
 			addWidget(lore);
 			addRenderableWidget(MVMisc.newButton(16, height - 16 - 20, 100, 20, TextInst.translatable("nbteditor.hide_flags"),
-					btn -> closeSafely(() -> minecraft.setScreen(new HideFlagsScreen((ItemReference) ref)))));
+					btn -> closeSafely(() -> minecraft.setScreenAndShow(new HideFlagsScreen((ItemReference) ref)))));
 			addRenderableWidget(MVMisc.newButton(124, height - 16 - 20, 150, 20,
 					TextInst.translatable("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")), btn -> {
 						itemNameType = !itemNameType;

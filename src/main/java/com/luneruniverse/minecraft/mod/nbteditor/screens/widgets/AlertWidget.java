@@ -41,7 +41,7 @@ public class AlertWidget extends GroupWidget implements InitializableOverlay<Scr
 	
 	@Override
 	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
+		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 		for (int i = 0; i < lines.length; i++) {
 			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, lines[i],
 					x, y + i * MainUtil.client.font.lineHeight, -1);

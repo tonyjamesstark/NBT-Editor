@@ -15,11 +15,11 @@ public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScre
 	
 	public FancyConfirmScreen(BooleanConsumer callback, Component title, Component message, Component yesTranslated, Component noTranslated) {
 		super(callback, title, message, yesTranslated, noTranslated);
-		parent = MainUtil.client.screen;
+		parent = MainUtil.client.gui.screen();
 	}
 	public FancyConfirmScreen(BooleanConsumer callback, Component title, Component message) {
 		super(callback, title, message);
-		parent = MainUtil.client.screen;
+		parent = MainUtil.client.gui.screen();
 	}
 	
 	public FancyConfirmScreen setParent(Screen parent) {

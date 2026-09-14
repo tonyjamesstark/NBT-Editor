@@ -89,11 +89,11 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	@Override
 	protected void initEditor() {
 		if (realPath.isEmpty() && baseFolder.hasEmptyKey()) {
-			minecraft.setScreen(new FancyConfirmScreen(value -> {
+			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value) {
 					baseFolder.removeKey("");
 					save();
-					minecraft.setScreen(this);
+					minecraft.setScreenAndShow(this);
 				} else
 					onClose();
 			}, TextInst.translatable("nbteditor.nbt.empty_key.title"), TextInst.translatable("nbteditor.nbt.empty_key.desc"),
@@ -233,7 +233,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		
 		addRenderableWidget(MVMisc.newButton(16 + 288 + 10, 16 + 8 + 32 + (16 + 8) * 2 - 2, 75, 20, TextInst.translatable("nbteditor.nbt.value_expand"), btn -> {
 			if (selectedValue == null) {
-				minecraft.setScreen(new TextAreaScreen(this, currentFolder.getNBT().toString(), NbtFormatter.FORMATTER, false, str -> {
+				minecraft.setScreenAndShow(new TextAreaScreen(this, currentFolder.getNBT().toString(), NbtFormatter.FORMATTER, false, str -> {
 					try {
 						Tag nbt = MixinLink.parseSpecialElement(new StringReader(str));
 						if (realPath.isEmpty()) {
@@ -256,7 +256,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 						.map(ac -> ac.getSuggestions(localNBT, realPath, null, str, cursor))
 						.orElseGet(() -> new SuggestionsBuilder("", 0).buildFuture())));
 			} else
-				minecraft.setScreen(new TextAreaScreen(this, selectedValue.getValueText(json), NbtFormatter.FORMATTER,
+				minecraft.setScreenAndShow(new TextAreaScreen(this, selectedValue.getValueText(json), NbtFormatter.FORMATTER,
 						false, str -> value.setValue(str)).suggest((str, cursor) -> NBTAutocompleteIntegration.INSTANCE
 								.map(ac -> ac.getSuggestions(localNBT, realPath, selectedValue.getKey(), str, cursor))
 								.orElseGet(() -> new SuggestionsBuilder("", 0).buildFuture())));
@@ -379,11 +379,11 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	@Override
 	protected boolean save() {
 		if (localNBT.isEmpty() && localNBT.getNBT() != null && !localNBT.getNBT().isEmpty()) {
-			MainUtil.client.setScreen(new FancyConfirmScreen(value -> {
+			MainUtil.client.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value)
 					super.save();
 				
-				MainUtil.client.setScreen(this);
+				MainUtil.client.setScreenAndShow(this);
 			}, TextInst.translatable("nbteditor.nbt.saving_air.title"), TextInst.translatable("nbteditor.nbt.saving_air.desc"),
 					TextInst.translatable("nbteditor.nbt.saving_air.yes"), TextInst.translatable("nbteditor.nbt.saving_air.no"))
 					.setParent(this));
@@ -394,11 +394,11 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			List<NBTValue> elements = baseFolder.getEntries(this);
 			elements.forEach(element -> element.updateInvalidComponent(localNBT, null));
 			if (elements.stream().anyMatch(NBTValue::isInvalidComponent)) {
-				MainUtil.client.setScreen(new FancyConfirmScreen(value -> {
+				MainUtil.client.setScreenAndShow(new FancyConfirmScreen(value -> {
 					if (value)
 						super.save();
 					
-					MainUtil.client.setScreen(this);
+					MainUtil.client.setScreenAndShow(this);
 				}, TextInst.translatable("nbteditor.nbt.saving_invalid_components.title"), TextInst.translatable("nbteditor.nbt.saving_invalid_components.desc"),
 						TextInst.translatable("nbteditor.nbt.saving_invalid_components.yes"), TextInst.translatable("nbteditor.nbt.saving_invalid_components.no"))
 						.setParent(this));
@@ -557,11 +557,11 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			return;
 		}
 		
-		minecraft.setScreen(new FancyConfirmScreen(value -> {
+		minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 			if (value)
 				keyConsumer.accept(key);
 			
-			minecraft.setScreen(this);
+			minecraft.setScreenAndShow(this);
 		}, TextInst.translatable("nbteditor.nbt.overwrite.title"), TextInst.translatable("nbteditor.nbt.overwrite.desc"),
 				TextInst.translatable("nbteditor.nbt.overwrite.yes"), TextInst.translatable("nbteditor.nbt.overwrite.no")));
 	}

@@ -91,7 +91,7 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.FormattedText;
@@ -162,7 +162,7 @@ public class MVMisc {
 	}
 	
 	public static boolean isCreativeInventoryTabSelected() {
-		if (MainUtil.client.screen instanceof CreativeModeInventoryScreen screen) {
+		if (MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen screen) {
 			return screen.isInventoryOpen();
 		}
 		return false;
@@ -412,7 +412,7 @@ public class MVMisc {
 		handler.remoteCarried.force(item);
 	}
 	
-	public static ClickType getActionType(ServerboundContainerClickPacket packet) {
+	public static ContainerInput getActionType(ServerboundContainerClickPacket packet) {
 		return packet.clickType();
 	}
 	

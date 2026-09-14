@@ -192,7 +192,6 @@ public abstract class Panel<T extends Renderable & GuiEventListener> implements 
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
 			if (pos.element().keyPressed(input)) {
@@ -205,7 +204,6 @@ public abstract class Panel<T extends Renderable & GuiEventListener> implements 
 	}
 	@Override
 	public boolean keyReleased(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
 			if (pos.element().keyReleased(input)) {
@@ -218,7 +216,6 @@ public abstract class Panel<T extends Renderable & GuiEventListener> implements 
 	}
 	@Override
 	public boolean charTyped(CharacterEvent input) {
-		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		boolean success = false;
 		for (PositionedPanelElement<T> pos : getPanelElementsSafe()) {
 			if (pos.element().charTyped(input)) {

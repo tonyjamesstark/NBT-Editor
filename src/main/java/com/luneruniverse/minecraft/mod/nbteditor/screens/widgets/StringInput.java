@@ -72,7 +72,7 @@ public class StringInput extends GroupWidget implements InputOverlay.Input<Strin
 		clearWidgets();
 		
 		String prevValue = (value == null ? defaultValue : value.getValue());
-		value = new SuggestingTextFieldWidget(MainUtil.client.screen, x, y, getWidth(), getHeight());
+		value = new SuggestingTextFieldWidget(MainUtil.client.gui.screen(), x, y, getWidth(), getHeight());
 		value.setMaxLength(Integer.MAX_VALUE);
 		value.setValue(prevValue);
 		if (placeholder != null)

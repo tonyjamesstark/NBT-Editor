@@ -17,7 +17,7 @@ import net.minecraft.client.gui.components.EditBox;
 public class AbstractParentElementMixin {
 	@Inject(method = "setFocused", at = @At("RETURN"))
 	private void setFocused(GuiEventListener element, CallbackInfo info) {
-		boolean oldEvents = MainUtil.client.screen instanceof OldEventBehavior;
+		boolean oldEvents = MainUtil.client.gui.screen() instanceof OldEventBehavior;
 		for (GuiEventListener child : ((AbstractContainerEventHandler) (Object) this).children()) {
 			if (child instanceof MVElement multiChild)
 				multiChild.setMultiFocused(child == element);

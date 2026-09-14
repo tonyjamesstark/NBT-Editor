@@ -118,7 +118,7 @@ public class BlockReference implements NBTReference<LocalBlock> {
 		onFinished.run();
 	}
 	public void saveState(BlockStateProperties state, Component msg) {
-		saveState(state, () -> MainUtil.client.player.displayClientMessage(msg, false));
+		saveState(state, () -> MainUtil.client.player.sendSystemMessage(msg));
 	}
 	public void saveState(BlockStateProperties state) {
 		saveState(state, () -> {});

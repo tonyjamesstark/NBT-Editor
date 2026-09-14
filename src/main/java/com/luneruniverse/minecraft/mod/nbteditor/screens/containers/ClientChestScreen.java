@@ -25,7 +25,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 
 public class ClientChestScreen extends ClientHandledScreen {
@@ -48,11 +48,11 @@ public class ClientChestScreen extends ClientHandledScreen {
 					
 					if (!pageData.isInThisVersion()) {
 						NBTEditorClient.CURSOR_MANAGER.closeRoot();
-						MainUtil.client.setScreen(new ClientChestDataVersionScreen(pageData.dataVersion()));
+						MainUtil.client.setScreenAndShow(new ClientChestDataVersionScreen(pageData.dataVersion()));
 						return;
 					}
 					
-					if (MainUtil.client.screen instanceof ClientChestScreen screen) {
+					if (MainUtil.client.gui.screen() instanceof ClientChestScreen screen) {
 						screen.setPageData(pageData);
 						MainUtil.setTextFieldValueSilently(screen.pageField, (PAGE + 1) + "", true);
 						screen.updatePageNavigation();
@@ -195,14 +195,14 @@ public class ClientChestScreen extends ClientHandledScreen {
 		
 		this.addRenderableWidget(MVMisc.newButton(this.leftPos - 87, this.topPos + 116, 83, 20, TextInst.translatable("nbteditor.client_chest.clear_page"), btn -> {
 			navigationClicked = true;
-			minecraft.setScreen(new FancyConfirmScreen(value -> {
+			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value) {
 					menu.getContainer().clearContent();
 					dynamicItems = new DynamicItems();
 					save();
 				}
 				
-				minecraft.setScreen(ClientChestScreen.this);
+				minecraft.setScreenAndShow(ClientChestScreen.this);
 			}, TextInst.translatable("nbteditor.client_chest.clear_page.title"), TextInst.translatable("nbteditor.client_chest.clear_page.desc"),
 					TextInst.translatable("nbteditor.client_chest.clear_page.yes"), TextInst.translatable("nbteditor.client_chest.clear_page.no")));
 		}));
@@ -285,7 +285,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 	}
 	
 	@Override
-	protected void slotClicked(Slot slot, int slotId, int button, ClickType actionType) {
+	protected void slotClicked(Slot slot, int slotId, int button, ContainerInput actionType) {
 		if (navigationClicked)
 			return;
 		

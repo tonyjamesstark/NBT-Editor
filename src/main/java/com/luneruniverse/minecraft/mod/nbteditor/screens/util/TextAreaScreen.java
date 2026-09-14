@@ -80,7 +80,6 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (getOverlay() == null && textArea.keyPressed(input))
 			return true;
 		return super.keyPressed(input);
@@ -93,7 +92,7 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	
 	@Override
 	public void onClose() {
-		this.minecraft.setScreen(parent);
+		this.minecraft.setScreenAndShow(parent);
 	}
 	
 	@Override

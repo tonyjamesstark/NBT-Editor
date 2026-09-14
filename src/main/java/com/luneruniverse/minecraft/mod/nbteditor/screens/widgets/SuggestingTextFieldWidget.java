@@ -111,7 +111,6 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (!isMultiFocused())
 			return false;
 		return suggestor.keyPressed(input) || !isDropdownOnly() && super.keyPressed(input);

@@ -95,7 +95,7 @@ public class NBTExportCommand extends ClientCommand {
 	
 	private static void exportToClipboard(String str) {
 		MainUtil.client.keyboardHandler.setClipboard(str);
-		MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.nbt.export.copied"), false);
+		MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.copied"));
 	}
 	
 	private static void exportToFile(CompoundTag nbt, String name) {
@@ -105,12 +105,12 @@ public class NBTExportCommand extends ClientCommand {
 			File output = new File(exportDir, FileUtil.findAvailableName(exportDir.toPath(), name, ".nbt"));
 			nbt.putInt("DataVersion", Version.getDataVersion());
 			MVMisc.writeCompressedNbt(nbt, output);
-			MainUtil.client.player.displayClientMessage(TextUtil.attachFileTextOptions(TextInst.translatable("nbteditor.nbt.export.file.success",
+			MainUtil.client.player.sendSystemMessage(TextUtil.attachFileTextOptions(TextInst.translatable("nbteditor.nbt.export.file.success",
 					TextInst.literal(output.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(style ->
-					style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output), false);
+					style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output));
 		} catch (Exception e) {
 			NBTEditor.LOGGER.error("Error while exporting item", e);
-			MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.nbt.export.file.error", e.getMessage()), false);
+			MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.file.error", e.getMessage()));
 		}
 	}
 	
@@ -146,7 +146,7 @@ public class NBTExportCommand extends ClientCommand {
 			})).then(literal("item").executes(context -> {
 				NBTReference.getReference(EXPORT_ITEM_FILTER, false, ref -> {
 					ref.getLocalNBT().toItem(true).ifPresentOrElse(MainUtil::getWithMessage,
-							() -> MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.nbt.export.item.error"), false));
+							() -> MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.item.error")));
 				});
 				return Command.SINGLE_SUCCESS;
 			})).then(literal("file").then(argument("name", StringArgumentType.greedyString()).executes(context -> {

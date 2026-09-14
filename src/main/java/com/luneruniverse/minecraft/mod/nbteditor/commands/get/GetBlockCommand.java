@@ -46,11 +46,11 @@ public class GetBlockCommand extends ClientCommand {
 			
 			if (pos == null) {
 				block.toItem(false).ifPresentOrElse(MainUtil::getWithMessage,
-						() -> MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.nbt.export.item.error"), false));
+						() -> MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.item.error")));
 			} else if (NBTEditorClient.SERVER_CONN.isEditingExpanded())
 				block.place(pos);
 			else
-				MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.requires_server"), false);
+				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.requires_server"));
 			
 			return Command.SINGLE_SUCCESS;
 		};

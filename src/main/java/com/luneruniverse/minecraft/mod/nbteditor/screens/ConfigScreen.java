@@ -560,10 +560,10 @@ public class ConfigScreen extends TickableSupportingScreen {
 		// ---------- FUNCTIONAL ----------
 		
 		functional.setConfigurable("aliases", new ConfigButton(100, TextInst.translatable("nbteditor.config.aliases"),
-				btn -> minecraft.setScreen(new AliasesScreen(this)), new MVTooltip("nbteditor.config.aliases.desc")));
+				btn -> minecraft.setScreenAndShow(new AliasesScreen(this)), new MVTooltip("nbteditor.config.aliases.desc")));
 		
 		functional.setConfigurable("shortcuts", new ConfigButton(100, TextInst.translatable("nbteditor.config.shortcuts"),
-				btn -> minecraft.setScreen(new ShortcutsScreen(this)), new MVTooltip("nbteditor.config.shortcuts.desc")));
+				btn -> minecraft.setScreenAndShow(new ShortcutsScreen(this)), new MVTooltip("nbteditor.config.shortcuts.desc")));
 		
 		functional.setConfigurable("recreateBlocksAndEntities", new ConfigItem<>(TextInst.translatable("nbteditor.config.recreate_blocks_and_entities"),
 				new ConfigValueBoolean(recreateBlocksAndEntities, false, 100, TextInst.translatable("nbteditor.config.recreate_blocks_and_entities.enabled"), TextInst.translatable("nbteditor.config.recreate_blocks_and_entities.disabled"))
@@ -620,7 +620,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 	}
 	
 	public void close() {
-		minecraft.setScreen(this.parent);
+		minecraft.setScreenAndShow(this.parent);
 	}
 	
 	@Override

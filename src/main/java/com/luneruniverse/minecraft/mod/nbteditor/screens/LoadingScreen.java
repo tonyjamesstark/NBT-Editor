@@ -39,7 +39,7 @@ public class LoadingScreen extends MVScreen {
 		}
 		
 		onLoading.run();
-		MainUtil.client.setScreen(new LoadingScreen(future, value -> onFinish.accept(true, value), e -> onException.accept(true, e)));
+		MainUtil.client.setScreenAndShow(new LoadingScreen(future, value -> onFinish.accept(true, value), e -> onException.accept(true, e)));
 	}
 	public static <T> void show(CompletableFuture<T> future, Runnable onLoading, BiConsumer<Boolean, T> onFinish) {
 		show(future, onLoading, onFinish, (loaded, e) -> NBTEditor.LOGGER.error("Error processing something", e));

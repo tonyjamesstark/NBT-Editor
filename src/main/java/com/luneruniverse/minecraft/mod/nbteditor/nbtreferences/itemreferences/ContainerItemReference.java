@@ -27,7 +27,7 @@ public class ContainerItemReference<L extends LocalNBT> implements ItemReference
 			contents[slot] = toSave;
 			ContainerIOs.write(containerValue, contents);
 			
-			if (MainUtil.client.screen instanceof ContainerScreen screen && screen.getReference() == container)
+			if (MainUtil.client.gui.screen() instanceof ContainerScreen screen && screen.getReference() == container)
 				screen.getMenu().getSlot(slot).set(toSave);
 			
 			AtomicBoolean done = new AtomicBoolean();

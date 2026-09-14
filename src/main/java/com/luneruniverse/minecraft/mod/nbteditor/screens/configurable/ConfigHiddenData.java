@@ -103,17 +103,14 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return visible.keyPressed(input);
 	}
 	@Override
 	public boolean keyReleased(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return visible.keyReleased(input);
 	}
 	@Override
 	public boolean charTyped(CharacterEvent input) {
-		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		return visible.charTyped(input);
 	}
 	

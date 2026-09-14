@@ -33,7 +33,7 @@ public class ClientScreenHandler extends ChestMenu {
 	}
 	
 	public void setScreen(ClientHandledScreen screen) {
-		slots.forEach(slot -> ((ClientScreenHandlerSlot) slot).setScreen(screen));
+		slots.forEach(slot -> ((ClientScreenHandlerSlot) slot).setScreenAndShow(screen));
 	}
 	
 	public void setSlotTextures(Identifier... textures) {

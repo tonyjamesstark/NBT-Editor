@@ -28,9 +28,9 @@ public class GetLostItemCommand extends ClientCommand {
 			return;
 		LOST_ITEM = new SingleDynamicItem(item);
 		addToHistory(item);
-		MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.get.lost_item").append(TextInst.literal("§6/get lostitem")
+		MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.lost_item").append(TextInst.literal("§6/get lostitem")
 				.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.RUN_COMMAND.newEvent("/get lostitem"))
-						.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.translatable("nbteditor.get.lost_item.hover"))))), false);
+						.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.translatable("nbteditor.get.lost_item.hover"))))));
 	}
 	
 	private static final LinkedList<SingleDynamicItem> history = new LinkedList<>();
@@ -63,9 +63,9 @@ public class GetLostItemCommand extends ClientCommand {
 					IntStream.range(0, 54).filter(slot -> slot < history.size() && history.get(slot).isLocked()).boxed().toList());
 			return Command.SINGLE_SUCCESS;
 		})).executes(context -> {
-			MainUtil.client.player.displayClientMessage(TextUtil.parseTranslatableFormatted("nbteditor.get.lost_item.history_hint"), false);
+			MainUtil.client.player.sendSystemMessage(TextUtil.parseTranslatableFormatted("nbteditor.get.lost_item.history_hint"));
 			if (LOST_ITEM == null)
-				MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.get.lost_item.none"), false);
+				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.lost_item.none"));
 			else
 				MainUtil.getWithMessage(LOST_ITEM.getItem());
 			return Command.SINGLE_SUCCESS;

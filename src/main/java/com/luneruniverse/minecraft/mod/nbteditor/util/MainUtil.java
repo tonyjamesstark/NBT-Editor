@@ -127,7 +127,7 @@ public class MainUtil {
 	}
 	public static void getWithMessage(ItemStack item) {
 		get(item, true);
-		client.player.displayClientMessage(TextInst.translatable("nbteditor.get.item").append(item.getDisplayName()), false);
+		client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.item").append(item.getDisplayName()));
 	}
 	
 	

@@ -138,7 +138,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	
 	@Override
 	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
+		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 		super.render(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);

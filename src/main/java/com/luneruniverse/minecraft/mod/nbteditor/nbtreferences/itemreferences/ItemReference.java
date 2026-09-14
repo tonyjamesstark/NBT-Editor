@@ -116,7 +116,7 @@ public interface ItemReference extends NBTReference<LocalItem> {
 	public ItemStack getItem();
 	public void saveItem(ItemStack toSave, Runnable onFinished);
 	public default void saveItem(ItemStack toSave, Component msg) {
-		saveItem(toSave, () -> MainUtil.client.player.displayClientMessage(msg, false));
+		saveItem(toSave, () -> MainUtil.client.player.sendSystemMessage(msg));
 	}
 	public default void saveItem(ItemStack toSave) {
 		saveItem(toSave, () -> {});

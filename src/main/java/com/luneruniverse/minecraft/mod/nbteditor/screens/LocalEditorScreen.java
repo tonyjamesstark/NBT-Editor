@@ -93,7 +93,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		if (link != null) {
 			addRenderableWidget(MVMisc.newTexturedButton(width - 36, 22, 20, 20, 20,
 					LocalFactoryScreen.FACTORY_ICON,
-					btn -> closeSafely(() -> minecraft.setScreen(link.factory().apply(ItemReference.toItemStackRef(ref)))),
+					btn -> closeSafely(() -> minecraft.setScreenAndShow(link.factory().apply(ItemReference.toItemStackRef(ref)))),
 					new MVTooltip(link.langName())));
 		}
 		
@@ -189,7 +189,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		if (saved)
 			onClose.run();
 		else {
-			minecraft.setScreen(new FancyConfirmScreen(value -> {
+			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (!value || save())
 					onClose.run();
 			}, TextInst.translatable("nbteditor.editor.unsaved.title"), TextInst.translatable("nbteditor.editor.unsaved.desc"),

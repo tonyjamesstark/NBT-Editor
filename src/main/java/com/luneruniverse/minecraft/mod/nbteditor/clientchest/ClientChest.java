@@ -839,7 +839,7 @@ public class ClientChest {
 	private void warnCorrupt() {
 		if (MainUtil.client.player == null)
 			return;
-		MainUtil.client.player.displayClientMessage(attachShowFolder(TextInst.translatable("nbteditor.client_chest.corrupt_warning")), false);
+		MainUtil.client.player.sendSystemMessage(attachShowFolder(TextInst.translatable("nbteditor.client_chest.corrupt_warning")));
 	}
 	public static Component attachShowFolder(MutableComponent text) {
 		return text.append(" ").append(TextInst.translatable("nbteditor.file_options.show").withStyle(

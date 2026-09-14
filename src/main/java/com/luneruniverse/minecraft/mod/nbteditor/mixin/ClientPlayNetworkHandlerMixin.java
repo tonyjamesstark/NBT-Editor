@@ -82,13 +82,13 @@ public class ClientPlayNetworkHandlerMixin {
 	
 	@Inject(method = "handleContainerContent", at = @At("RETURN"), cancellable = true)
 	private void onInventory_return(ClientboundContainerSetContentPacket packet, CallbackInfo info) {
-		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
+		if (MainUtil.client.gui.screen() instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onInventoryPacket(packet);
 	}
 	
 	@Inject(method = "handleContainerSetSlot", at = @At("RETURN"), cancellable = true)
 	private void onScreenHandlerSlotUpdate_return(ClientboundContainerSetSlotPacket packet, CallbackInfo info) {
-		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
+		if (MainUtil.client.gui.screen() instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onScreenHandlerSlotUpdatePacket(packet);
 	}
 	
@@ -105,7 +105,7 @@ public class ClientPlayNetworkHandlerMixin {
 		
 		NBTEditorClient.CURSOR_MANAGER.onCloseScreenPacket();
 		
-		if (MainUtil.client.screen instanceof IgnoreCloseScreenPacket)
+		if (MainUtil.client.gui.screen() instanceof IgnoreCloseScreenPacket)
 			info.cancel();
 	}
 	

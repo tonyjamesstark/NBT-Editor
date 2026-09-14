@@ -103,7 +103,6 @@ public abstract class ConfigGrouping<K, T extends ConfigGrouping<K, T>> implemen
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
 			if (path.keyPressed(input))
 				return true;
@@ -112,7 +111,6 @@ public abstract class ConfigGrouping<K, T extends ConfigGrouping<K, T>> implemen
 	}
 	@Override
 	public boolean keyReleased(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
 			if (path.keyReleased(input))
 				return true;
@@ -121,7 +119,6 @@ public abstract class ConfigGrouping<K, T extends ConfigGrouping<K, T>> implemen
 	}
 	@Override
 	public boolean charTyped(CharacterEvent input) {
-		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
 			if (path.charTyped(input))
 				return true;

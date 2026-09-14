@@ -29,8 +29,8 @@ public class ChatScreenMixin {
 			return;
 		if (text.charAt(0) == '/' && ClientCommandInternals.executeCommand(text.substring(1))) {
 			MainUtil.client.gui.getChat().addRecentChat(text);
-			if (MainUtil.client.screen instanceof ChatScreen)
-				MainUtil.client.setScreen(null);
+			if (MainUtil.client.gui.screen() instanceof ChatScreen)
+				MainUtil.client.setScreenAndShow(null);
 			info.setReturnValue(true);
 		} else
 			input.value = (text.length() <= 256 ? text : text.substring(0, 256));

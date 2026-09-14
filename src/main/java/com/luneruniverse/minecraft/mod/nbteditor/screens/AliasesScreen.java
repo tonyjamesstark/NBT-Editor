@@ -97,7 +97,7 @@ public class AliasesScreen extends TickableSupportingScreen {
 	}
 	
 	public void close() {
-		minecraft.setScreen(this.parent);
+		minecraft.setScreenAndShow(this.parent);
 	}
 	
 	@Override

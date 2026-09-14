@@ -71,7 +71,7 @@ public final class HeadAPI {
     
     public static boolean checkUpdated() {
     	if (HeadAPI.getDatabase().isLastUpdateOld()) {
-			MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.hdb.unloaded_database"), false);
+			MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.hdb.unloaded_database"));
 			return false;
     	}
     	

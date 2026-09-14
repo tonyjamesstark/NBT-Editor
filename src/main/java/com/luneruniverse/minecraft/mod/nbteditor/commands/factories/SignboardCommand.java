@@ -44,10 +44,10 @@ public class SignboardCommand extends ClientCommand {
 		builder.then(literal("new").then(argument("sign", SignboardArgumentType.signboard()).executes(context -> {
 			ItemReference ref = ItemReference.getHeldAir();
 			ref.saveItem(new ItemStack(context.getArgument("sign", Item.class)));
-			MainUtil.client.setScreen(new SignboardScreen<>(ref));
+			MainUtil.client.setScreenAndShow(new SignboardScreen<>(ref));
 			return Command.SINGLE_SUCCESS;
 		}))).executes(context -> {
-			NBTReference.getReference(SIGNBOARD_FILTER, false, ref -> MainUtil.client.setScreen(new SignboardScreen<>(ref)));
+			NBTReference.getReference(SIGNBOARD_FILTER, false, ref -> MainUtil.client.setScreenAndShow(new SignboardScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

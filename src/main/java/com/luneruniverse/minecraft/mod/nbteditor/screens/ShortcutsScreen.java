@@ -59,7 +59,7 @@ public class ShortcutsScreen extends TickableSupportingScreen {
 	}
 	
 	public void close() {
-		minecraft.setScreen(this.parent);
+		minecraft.setScreenAndShow(this.parent);
 	}
 	
 	@SuppressWarnings("unchecked")

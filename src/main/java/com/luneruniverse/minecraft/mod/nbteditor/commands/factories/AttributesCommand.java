@@ -48,16 +48,16 @@ public class AttributesCommand extends ClientCommand {
 			ItemStack item = ref.getItem();
 			List<AttributeData> attributes = ItemTagReferences.ATTRIBUTES.get(item);
 			if (attributes.isEmpty())
-				MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.attributes.new_uuids.no_attributes"), false);
+				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.attributes.new_uuids.no_attributes"));
 			else {
 				attributes.replaceAll(attribute -> new AttributeData(attribute.attribute(), attribute.value(),
 						attribute.modifierData().get().operation(), attribute.modifierData().get().slot(), AttributeModifierId.randomUUID()));
 				ItemTagReferences.ATTRIBUTES.set(item, attributes);
-				ref.saveItem(item, () -> MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.attributes.new_uuids.success"), false));
+				ref.saveItem(item, () -> MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.attributes.new_uuids.success")));
 			}
 			return Command.SINGLE_SUCCESS;
 		})).executes(context -> {
-			NBTReference.getReference(ATTRIBUTES_FILTER, false, ref -> MainUtil.client.setScreen(new AttributesScreen<>(ref)));
+			NBTReference.getReference(ATTRIBUTES_FILTER, false, ref -> MainUtil.client.setScreenAndShow(new AttributesScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

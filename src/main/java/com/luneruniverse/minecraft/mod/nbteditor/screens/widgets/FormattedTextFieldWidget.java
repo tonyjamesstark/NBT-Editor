@@ -187,7 +187,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			
 			@Override
 			public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-				MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
+				MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font,
 						TextInst.translatable("nbteditor.formatted_text.events"),
 						x, y - 38 - MainUtil.client.font.lineHeight, -1);

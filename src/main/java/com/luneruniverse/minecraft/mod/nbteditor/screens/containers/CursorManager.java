@@ -102,7 +102,7 @@ public class CursorManager {
 		currentBranch = branch;
 		MainUtil.client.player.containerMenu = branch.getMenu();
 		branch.skipNextRelease = true;
-		MainUtil.client.setScreen(branch);
+		MainUtil.client.setScreenAndShow(branch);
 	}
 	public void showRoot() {
 		showBranch(currentRoot);
@@ -110,7 +110,7 @@ public class CursorManager {
 	
 	public void closeRoot() {
 		if (currentRoot == null) {
-			MainUtil.client.setScreen(null);
+			MainUtil.client.setScreenAndShow(null);
 			return;
 		}
 		

@@ -28,7 +28,7 @@ public abstract class ClientConnectionMixin {
 		if (getReceiving() != PacketFlow.CLIENTBOUND)
 			return;
 		
-		if (MainUtil.client.screen instanceof ClientHandledScreen) {
+		if (MainUtil.client.gui.screen() instanceof ClientHandledScreen) {
 			if (packet instanceof ServerboundContainerClickPacket slotPacket) {
 				info.cancel();
 				NBTEditor.LOGGER.warn("Tried to send a slot click packet while on a ClientHandledScreen: slot=" +

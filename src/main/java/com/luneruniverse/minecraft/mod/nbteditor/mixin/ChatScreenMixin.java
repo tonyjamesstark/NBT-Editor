@@ -30,7 +30,7 @@ public class ChatScreenMixin {
 	
 	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"), cancellable = true)
 	private void keyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> info) {
-		if (!(MainUtil.client.screen instanceof ChatScreen)) {
+		if (!(MainUtil.client.gui.screen() instanceof ChatScreen)) {
 			info.setReturnValue(true);
 			info.cancel();
 		}

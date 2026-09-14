@@ -77,7 +77,7 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 	
 	@Override
 	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
+		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 		super.render(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.nbt.import.pos"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);

@@ -58,7 +58,7 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 		
 		Map.Entry<String, Boolean> output = FancyText.stringify(text, base);
 		if (output.getValue() && printErrors)
-			MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.fancy_text_arg_type.stringify_unsupported"), false);
+			MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.fancy_text_arg_type.stringify_unsupported"));
 		return output.getKey();
 	}
 	

@@ -15,13 +15,13 @@ import net.minecraft.network.chat.Component;
 public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	public static <T extends Renderable & GuiEventListener> T setOverlayStatic(T overlay, double z) {
-		return ((OverlaySupportingScreen) MainUtil.client.screen).setOverlay(overlay, z);
+		return ((OverlaySupportingScreen) MainUtil.client.gui.screen()).setOverlay(overlay, z);
 	}
 	public static <T extends Renderable & GuiEventListener> T setOverlayStatic(T overlay) {
 		return setOverlayStatic(overlay, 0);
 	}
 	public static <T extends Screen> T setOverlayScreenStatic(T overlay, double z) {
-		return ((OverlaySupportingScreen) MainUtil.client.screen).setOverlayScreen(overlay, z);
+		return ((OverlaySupportingScreen) MainUtil.client.gui.screen()).setOverlayScreen(overlay, z);
 	}
 	public static <T extends Screen> T setOverlayScreenStatic(T overlay) {
 		return setOverlayScreenStatic(overlay, 0);
@@ -143,7 +143,6 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.keyPressed(input);
 		return super.keyPressed(input);
@@ -151,7 +150,6 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	@Override
 	public boolean keyReleased(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.keyReleased(input);
 		return super.keyReleased(input);
@@ -159,7 +157,6 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	@Override
 	public boolean charTyped(CharacterEvent input) {
-		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.charTyped(input);
 		return super.charTyped(input);

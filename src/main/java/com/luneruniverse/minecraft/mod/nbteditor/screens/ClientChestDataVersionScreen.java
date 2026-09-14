@@ -78,13 +78,13 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		}));
 		addRenderableWidget(MVMisc.newButton(dontUpdatePageX, height / 2 + 14, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.clear_page"), btn -> {
-			minecraft.setScreen(new FancyConfirmScreen(value -> {
+			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value) {
 					LoadingScreen.show(ClientChestHelper.discardPage(ClientChestScreen.PAGE), success -> ClientChestScreen.show());
 					return;
 				}
 				
-				minecraft.setScreen(this);
+				minecraft.setScreenAndShow(this);
 			}, TextInst.translatable("nbteditor.client_chest.clear_page.title"), TextInst.translatable("nbteditor.client_chest.clear_page.desc"),
 					TextInst.translatable("nbteditor.client_chest.clear_page.yes"), TextInst.translatable("nbteditor.client_chest.clear_page.no")));
 		}));
@@ -203,7 +203,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 					msg = TextInst.translatable("nbteditor.client_chest.data_version.update_page_success",
 							TextInst.literal(ClientChestScreen.PAGE + 1 + "").withStyle(ChatFormatting.GREEN));
 				}
-				MainUtil.client.player.displayClientMessage(ClientChest.attachShowFolder(msg), false);
+				MainUtil.client.player.sendSystemMessage(ClientChest.attachShowFolder(msg));
 			}
 		});
 		return future;

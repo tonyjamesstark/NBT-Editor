@@ -26,7 +26,7 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -65,9 +65,9 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 				ContainerScreen.show(ref);
 		} else if (MVMisc.hasShiftDown()) {
 			if (notAir)
-				MainUtil.client.setScreen(new LocalFactoryScreen<>(ref));
+				MainUtil.client.setScreenAndShow(new LocalFactoryScreen<>(ref));
 		} else
-			MainUtil.client.setScreen(new NBTEditorScreen<>(ref));
+			MainUtil.client.setScreenAndShow(new NBTEditorScreen<>(ref));
 		
 		return true;
 	}
@@ -76,7 +76,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	
 	protected ClientHandledScreen(int rows, Component title) {
 		super(new ClientScreenHandler(rows), MainUtil.client.player.getInventory(), title);
-		((ClientScreenHandler) menu).setScreen(this);
+		((ClientScreenHandler) menu).setScreenAndShow(this);
 		menu.suppressRemoteUpdates();
 	}
 	
@@ -145,7 +145,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	
 	
 	@Override
-	protected void slotClicked(Slot slot, int slotId, int button, ClickType actionType) {
+	protected void slotClicked(Slot slot, int slotId, int button, ContainerInput actionType) {
 		if (slot != null) {
 			LockedSlotsInfo lockedSlotsInfo = getLockedSlotsInfo();
 			if (lockedSlotsInfo.isBlocked(slot, button, actionType, false)) {
@@ -194,7 +194,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 							MainUtil.dropCreativeStack(item);
 						}
 						case SWAP -> {}
-						case QUICK_CRAFT -> throw new IllegalArgumentException("Invalid ClickType: " + actionType);
+						case QUICK_CRAFT -> throw new IllegalArgumentException("Invalid ContainerInput: " + actionType);
 					}
 				}
 				return;
@@ -214,8 +214,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 		onChange();
 	}
 	
-	private boolean tryCombineEnchantments(Slot slot, ClickType actionType) {
-		if (actionType == ClickType.PICKUP && slot != null) {
+	private boolean tryCombineEnchantments(Slot slot, ContainerInput actionType) {
+		if (actionType == ContainerInput.PICKUP && slot != null) {
 			ItemStack cursor = menu.getCarried();
 			ItemStack item = slot.getItem();
 			if (cursor == null || cursor.isEmpty() || item == null || item.isEmpty())
