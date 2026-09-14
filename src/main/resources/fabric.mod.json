@@ -54,9 +54,6 @@
       "net/minecraft/client/gui/components/EditBox": [
         "com/luneruniverse/minecraft/mod/nbteditor/screens/InjectableTickable"
       ],
-      "net/minecraft/client/gui/components/events/GuiEventListener": [
-        "com/luneruniverse/minecraft/mod/nbteditor/multiversion/MVElementParent"
-      ],
       "net/minecraft/network/syncher/SynchedEntityData": [
         "com/luneruniverse/minecraft/mod/nbteditor/misc/ResetableDataTracker"
       ],

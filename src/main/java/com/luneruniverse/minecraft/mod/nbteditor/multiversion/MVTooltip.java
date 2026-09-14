@@ -8,6 +8,7 @@ import org.joml.Matrix3x2fStack;
 import org.lwjgl.opengl.GL20;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
+import com.luneruniverse.minecraft.mod.nbteditor.mixin.TooltipAccessor;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
@@ -100,7 +101,7 @@ public class MVTooltip {
 			return null;
 		
 		Tooltip output = Tooltip.create(combined);
-		Reflection.getField(Tooltip.class, "field_41103", "Ljava/util/List;").set(output, lines);
+		((TooltipAccessor) (Object) output).setCachedTooltip(lines);
 		MixinLink.NEW_TOOLTIPS.put(output, true);
 		return output;
 	}

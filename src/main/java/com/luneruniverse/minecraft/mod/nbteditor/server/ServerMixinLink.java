@@ -48,7 +48,8 @@ public class ServerMixinLink {
 	public static final Set<Thread> BLOCK_ENTITY_WRITE_NBT_WITHOUT_IDENTIFYING_DATA = Collections.synchronizedSet(new HashSet<>());
 	
 	
-	// Fake players show as a clientbound ClientConnection
+	// Fake players show as a clientbound ClientConnection. Looked up by name because
+	// a dedicated server has no client classes to link against.
 	private static final Class<?> ClientPlayNetworkHandler;
 	static {
 		Class<?> ClientPlayNetworkHandler_holder;

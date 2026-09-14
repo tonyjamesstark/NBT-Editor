@@ -144,7 +144,8 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 			return;
 		
 		if (player.containerMenu instanceof LecternMenu handler) {
-			// Get the LecternBlockEntity from the inventory's synthetic reference to its enclosing class
+			// Get the LecternBlockEntity from the inventory's synthetic reference to its
+			// enclosing class. Synthetic members have no Mojang name, so this stays intermediary.
 			Container inv = handler.lectern;
 			LecternBlockEntity lectern = Reflection.getField(inv.getClass(), "field_17391", "Lnet/minecraft/class_3722;").get(inv);
 			if (lectern != null) {

@@ -3,7 +3,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 
 public class MVTextFieldWidget extends EditBox implements Tickable, MVElement {
@@ -23,11 +22,6 @@ public class MVTextFieldWidget extends EditBox implements Tickable, MVElement {
 		return this;
 	}
 	
-	
-	public void method_25352(GuiGraphics context, int mouseX, int mouseY) { // renderTooltip
-		if (tooltip != null)
-			tooltip.render(context, mouseX, mouseY);
-	}
 	
 	@Override
 	@Deprecated

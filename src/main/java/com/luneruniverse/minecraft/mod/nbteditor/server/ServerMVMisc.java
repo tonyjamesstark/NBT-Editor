@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 
+import net.minecraft.network.codec.StreamDecoder;
+import net.minecraft.network.codec.StreamEncoder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -29,16 +31,13 @@ public class ServerMVMisc {
 		return (factory instanceof ContainerEntity);
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> PacketDecoder_decode =
-			Reflection.getOptionalMethod(() -> Reflection.getClass("net.minecraft.class_9141"), () -> "decode", () -> MethodType.methodType(Object.class, Object.class));
 	@SuppressWarnings("unchecked")
 	public static <T> T packetCodecDecode(Object codec, Object buf) {
-		return (T) PacketDecoder_decode.get().invoke(codec, buf);
+		return (T) ((StreamDecoder<Object, T>) codec).decode(buf);
 	}
-	private static final Supplier<Reflection.MethodInvoker> PacketEncoder_encode =
-			Reflection.getOptionalMethod(() -> Reflection.getClass("net.minecraft.class_9142"), () -> "encode", () -> MethodType.methodType(void.class, Object.class, Object.class));
+	@SuppressWarnings("unchecked")
 	public static void packetCodecEncode(Object codec, Object buf, Object value) {
-		PacketEncoder_encode.get().invoke(codec, buf, value);
+		((StreamEncoder<Object, Object>) codec).encode(buf, value);
 	}
 	
 	public static Entity createEntity(EntityType<?> entityType, Level world) {

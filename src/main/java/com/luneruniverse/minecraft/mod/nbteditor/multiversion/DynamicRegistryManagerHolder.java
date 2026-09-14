@@ -131,9 +131,6 @@ public class DynamicRegistryManagerHolder {
 		});
 	}
 	
-	private static final boolean getReadOnlyWrapperExists = false;
-	private static final Supplier<Reflection.MethodInvoker> Registry_getReadOnlyWrapper =
-			Reflection.getOptionalMethod(Registry.class, "method_46771", MethodType.methodType(HolderLookup.RegistryLookup.class));
 	public static <T> boolean isOwnedByDefaultManager(Holder.Reference<T> entry) {
 		if (NBTEditorServer.isOnServerThread() || defaultManagerCache.getStatus() != CompletableFutureCache.Status.LOADED)
 			return false;
@@ -151,7 +148,7 @@ public class DynamicRegistryManagerHolder {
 		if (RegistryCache.isRegistryStatic(registry))
 			return false;
 		
-		return entry.owner.canSerializeIn(getReadOnlyWrapperExists ? Registry_getReadOnlyWrapper.get().invoke(registry) : registry);
+		return entry.owner.canSerializeIn(registry);
 	}
 	
 }

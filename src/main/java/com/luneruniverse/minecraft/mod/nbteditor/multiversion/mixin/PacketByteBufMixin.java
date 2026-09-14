@@ -11,6 +11,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -89,9 +90,7 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 	}
 	
 	private Object createRegistryByteBuf() {
-		return Reflection.newInstance("net.minecraft.class_9129",
-				new Class<?>[] {ByteBuf.class, RegistryAccess.class},
-				source, DynamicRegistryManagerHolder.get());
+		return new RegistryFriendlyByteBuf(source, DynamicRegistryManagerHolder.getManager());
 	}
 	
 }
