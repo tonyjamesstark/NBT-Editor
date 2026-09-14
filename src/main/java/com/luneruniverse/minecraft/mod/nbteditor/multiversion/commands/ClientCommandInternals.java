@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Iterables;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection.MethodInvoker;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.mixin.HelpCommandAccessor;
