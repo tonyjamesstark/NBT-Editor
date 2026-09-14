@@ -51,32 +51,32 @@
       }
     },
     "loom:injected_interfaces": {
-      "net/minecraft/class_342": [
+      "net/minecraft/client/gui/components/EditBox": [
         "com/luneruniverse/minecraft/mod/nbteditor/screens/InjectableTickable"
       ],
-      "net/minecraft/class_364": [
+      "net/minecraft/client/gui/components/events/GuiEventListener": [
         "com/luneruniverse/minecraft/mod/nbteditor/multiversion/MVElementParent"
       ],
-      "net/minecraft/class_2945": [
+      "net/minecraft/network/syncher/SynchedEntityData": [
         "com/luneruniverse/minecraft/mod/nbteditor/misc/ResetableDataTracker"
       ],
-      "net/minecraft/class_2540": [
+      "net/minecraft/network/FriendlyByteBuf": [
         "com/luneruniverse/minecraft/mod/nbteditor/multiversion/MVPacketByteBufParent"
       ],
-      "net/minecraft/class_1799": [
+      "net/minecraft/world/item/ItemStack": [
         "com/luneruniverse/minecraft/mod/nbteditor/multiversion/nbt/manager/IntegratedNBTManager",
         "com/luneruniverse/minecraft/mod/nbteditor/multiversion/nbt/MVItemStackParent"
       ],
-      "net/minecraft/class_2813": [
+      "net/minecraft/network/protocol/game/ServerboundContainerClickPacket": [
         "com/luneruniverse/minecraft/mod/nbteditor/packets/ClickSlotC2SPacketParent"
       ],
-      "net/minecraft/class_2487": [
+      "net/minecraft/nbt/CompoundTag": [
         "com/luneruniverse/minecraft/mod/nbteditor/multiversion/nbt/MVNbtCompoundParent"
       ],
-      "net/minecraft/class_2483": [
+      "net/minecraft/nbt/CollectionTag": [
         "com/luneruniverse/minecraft/mod/nbteditor/multiversion/nbt/MVAbstractNbtListParent"
       ],
-      "net/minecraft/class_2514": [
+      "net/minecraft/nbt/NumericTag": [
         "com/luneruniverse/minecraft/mod/nbteditor/multiversion/nbt/MVAbstractNbtNumberParent"
       ]
     }
