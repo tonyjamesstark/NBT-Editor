@@ -1,19 +1,12 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt;
 
-import java.lang.invoke.MethodType;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-
-import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.Tag;
 
 public interface MVAbstractNbtListParent {
 	
-	static final Supplier<Reflection.MethodInvoker> AbstractNbtList_getHeldType =
-			Reflection.getOptionalMethod(CollectionTag.class, "method_10601", MethodType.methodType(byte.class));
 	public default Optional<Byte> nbte$getHeldType() {
 		throw new RuntimeException("Missing implementation for MVAbstractNbtListParent#nbte$getHeldType");
 	}

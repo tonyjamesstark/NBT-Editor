@@ -79,19 +79,11 @@ public class ListNBTFolder implements NBTFolder<CollectionTag> {
 		CollectionTag nbt = getNBT();
 		int i = Integer.parseInt(key);
 		if (nbt.nbte$size() == 1 && i == 0 && nbt instanceof ListTag list) {
-			if (MVNbtCompoundParent.NBT_CODE_REFACTORED) {
-				list.setTag(0, value);
-			} else {
-				list.remove(0);
-				list.add(value);
-			}
+			list.setTag(0, value);
 			setNBT(nbt);
 		} else {
-			Tag convertedValue = convertToType(nbt, value);
-			if (convertedValue != null) {
-				nbt.nbte$set(i, convertedValue);
-				setNBT(nbt);
-			}
+			nbt.nbte$set(i, value);
+			setNBT(nbt);
 		}
 	}
 	
@@ -117,46 +109,6 @@ public class ListNBTFolder implements NBTFolder<CollectionTag> {
 	@Override
 	public Optional<String> getNextKey(Optional<String> pastingKey) {
 		return Optional.of(getNBT().nbte$size() + "");
-	}
-	
-	private Tag convertToType(CollectionTag nbt, Tag value) {
-		if (MVNbtCompoundParent.NBT_CODE_REFACTORED)
-			return value;
-		
-		int heldType = nbt.nbte$getHeldType().get();
-		
-		if (heldType == 0 || heldType == value.getId())
-			return value;
-		
-		if (heldType == Tag.TAG_COMPOUND) {
-			CompoundTag output = new CompoundTag();
-			output.put("value", value);
-			return output;
-		}
-		if (heldType == Tag.TAG_LIST) {
-			ListTag output = new ListTag();
-			output.add(value);
-			return output;
-		}
-		if (heldType == Tag.TAG_STRING)
-			return StringTag.valueOf(value.toString());
-		
-		if (value instanceof NumericTag num) {
-			return switch (heldType) {
-				case Tag.TAG_BYTE -> ByteTag.valueOf(num.nbte$byteValue());
-				case Tag.TAG_SHORT -> ShortTag.valueOf(num.nbte$shortValue());
-				case Tag.TAG_INT -> IntTag.valueOf(num.nbte$intValue());
-				case Tag.TAG_LONG -> LongTag.valueOf(num.nbte$longValue());
-				case Tag.TAG_FLOAT -> FloatTag.valueOf(num.nbte$floatValue());
-				case Tag.TAG_DOUBLE -> DoubleTag.valueOf(num.nbte$doubleValue());
-				case Tag.TAG_BYTE_ARRAY -> new ByteArrayTag(new byte[] {num.nbte$byteValue()});
-				case Tag.TAG_INT_ARRAY -> new IntArrayTag(new int[] {num.nbte$intValue()});
-				case Tag.TAG_LONG_ARRAY -> new LongArrayTag(new long[] {num.nbte$longValue()});
-				default -> null;
-			};
-		}
-		
-		return null;
 	}
 	
 	private Tag getDefaultValue(CollectionTag nbt) {

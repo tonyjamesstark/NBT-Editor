@@ -88,8 +88,7 @@ public class NBTValue extends List2D.List2DValue {
 		
 		int color = -1;
 		String tooltip = null;
-		if (unsafe && selected || parentList != null &&
-				!MVNbtCompoundParent.NBT_CODE_REFACTORED && parentList.nbte$getHeldType().get() != value.getId()) {
+		if (unsafe && selected) {
 			color = 0xFFFFAA33;
 			tooltip = "nbteditor.nbt.marker.unsafe";
 		} else if (invalidComponent) {

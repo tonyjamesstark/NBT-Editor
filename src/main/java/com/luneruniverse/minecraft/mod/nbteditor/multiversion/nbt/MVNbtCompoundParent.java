@@ -9,8 +9,6 @@ import net.minecraft.nbt.ListTag;
 
 public interface MVNbtCompoundParent {
 	
-	public static boolean NBT_CODE_REFACTORED = true;
-	
 	public static final byte NUMBER_TYPE = 99;
 	
 	public default boolean nbte$contains(String key, byte type) {
