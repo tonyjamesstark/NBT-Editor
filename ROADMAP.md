@@ -147,7 +147,7 @@ slicing is consistent. That is a separate claim from 3.1 and does not rescue it.
 pre-existing mixin warnings and no new ones. Both bounds confirmed in the bytecode with `javap`
 rather than read off the build log. Not exercised in-game.
 
-## Phase 4: the 26.2 migration (re-scoped 2026-09-13, not started)
+## Phase 4: the 26.2 migration (re-scoped 2026-09-13, compiling on 26.2 2026-09-14)
 
 The earlier version of this section said Phase 4 was gated on Fabric shipping 26.2 support, and
 that the work was predominantly a deletion. Both were wrong. Fabric shipped 26.2 and is already
@@ -275,8 +275,8 @@ Each step ends in a build. Do not start the next until the previous compiles.
   interface, `MVRegistry` reflected over `Registry` for the same reason, `MVRegistryKeys` held one
   constant, and `MVElementParent` grafted a three-argument `mouseScrolled` onto a `GuiEventListener`
   that declares the four-argument one itself. `Reflection` went from 191 lines to 66.
-- [ ] **4.5 Bump 1.21.11 to 26.2.** The build configuration is done; see "What 26.2 actually
-  changes" below for the part that is not.
+- [x] **4.5 Bump 1.21.11 to 26.2.** Done. The build configuration and the API migration both
+  landed; see "What 26.2 actually changes" and "How it actually went" below.
 
   Original scope: Loom 1.10-SNAPSHOT to 1.16.x, fabric-api 0.160.0+26.2, loader 0.19.5, and
   *remove* the `mappings` line rather than repointing it. Relax `Version.parseVersion`, which
@@ -284,8 +284,13 @@ Each step ends in a build. Do not start the next until the previous compiles.
   Raise `fabric.mod.json`'s `"java": ">=16"` to `>=25`.
 
   `Version.parseVersion` no longer exists - 4.2 deleted it along with the rest of the version
-  gating - so that part of the step is already satisfied. `data_versions.json` still needs its
-  26.2 entry, which has to be read out of the game's own `version.json` once the build is green.
+  gating - so that part of the step was already satisfied. `data_versions.json` now carries
+  `"26.2": 4903`, read out of the game's own `version.json`.
+
+  Still outstanding: **nothing in phases 1 through 4 has been run in-game.** The flagged runtime
+  risks are the raw GL scissor save/restore in `MVTooltip.render`, the `ScreenMixin` redirect on
+  `Screen.extractBackground` (declared `require = 0`, so it fails silently if the target moved
+  again), and the cursor nudge on a filtered keystroke in `TextFieldWidgetMixin`.
 
 ### What 26.2 actually changes (2026-09-14)
 
