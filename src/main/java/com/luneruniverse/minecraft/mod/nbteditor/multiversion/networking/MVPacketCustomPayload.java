@@ -1,10 +1,8 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking;
 
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-import net.minecraft.resources.Identifier;
 
 /**
  * Used internally in multiversion.networking; DO NOT USE
@@ -55,16 +53,6 @@ public class MVPacketCustomPayload implements CustomPacketPayload {
 	@Override
 	public Type<MVPacketCustomPayload> type() {
 		return new Type<>(packet.getPacketId());
-	}
-	
-	// write
-	public void method_53028(FriendlyByteBuf payload) {
-		packet.write(payload);
-	}
-	
-	// id
-	public Identifier comp_1678() {
-		return packet.getPacketId();
 	}
 	
 }

@@ -110,18 +110,12 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 		
 		public static class AttributeModifierId {
 			
-			public static final boolean ID_IS_IDENTIFIER = true;
-			
 			public static AttributeModifierId randomUUID() {
 				return new AttributeModifierId(UUID.randomUUID());
 			}
 			
-			private static final Supplier<Reflection.MethodInvoker> EntityAttributeModifier_uuid =
-					Reflection.getOptionalMethod(AttributeModifier.class, "comp_2447", MethodType.methodType(UUID.class));
 			public static AttributeModifierId fromMinecraft(AttributeModifier modifier) {
-				if (ID_IS_IDENTIFIER)
-					return new AttributeModifierId(modifier.id());
-				return new AttributeModifierId((UUID) EntityAttributeModifier_uuid.get().invoke(modifier));
+				return new AttributeModifierId(modifier.id());
 			}
 			
 			private final Object id;
@@ -130,8 +124,6 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 				this.id = id;
 			}
 			public AttributeModifierId(Identifier id) {
-				if (!ID_IS_IDENTIFIER)
-					throw new IllegalArgumentException("Attribute IDs are UUIDs in this version!");
 				this.id = id;
 			}
 			
@@ -145,14 +137,8 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 				return (Identifier) id;
 			}
 			
-			public AttributeModifier toMinecraft(String name, double value, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation operation) {
-				if (ID_IS_IDENTIFIER)
-					return new AttributeModifier(getIdentifier(), value, operation);
-				
-				return Reflection.newInstance(
-						AttributeModifier.class,
-						new Class<?>[] {UUID.class, String.class, double.class, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.class},
-						getUUID(), name, value, operation);
+			public AttributeModifier toMinecraft(double value, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation operation) {
+				return new AttributeModifier(getIdentifier(), value, operation);
 			}
 			
 		}
@@ -164,8 +150,8 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 					AttributeModifierId.fromMinecraft(modifier));
 		}
 		
-		public AttributeModifier toMinecraft(String name, double value) {
-			return id.toMinecraft(name, value, operation.toMinecraft());
+		public AttributeModifier toMinecraft(double value) {
+			return id.toMinecraft(value, operation.toMinecraft());
 		}
 		
 	}
@@ -187,7 +173,7 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 	public ItemAttributeModifiers.Entry toComponentEntry() {
 		return new ItemAttributeModifiers.Entry(
 				BuiltInRegistries.ATTRIBUTE.wrapAsHolder(attribute),
-				modifierData.get().toMinecraft(BuiltInRegistries.ATTRIBUTE.getKey(attribute).toString(), value),
+				modifierData.get().toMinecraft(value),
 				(EquipmentSlotGroup) modifierData.get().slot().toMinecraft());
 	}
 	

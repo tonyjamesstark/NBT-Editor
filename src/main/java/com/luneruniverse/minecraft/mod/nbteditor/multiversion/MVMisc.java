@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Proxy;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +102,6 @@ import net.minecraft.util.profiling.Profiler;
 
 public class MVMisc {
 	
-	private static final Supplier<Class<?>> SequencedSet = Reflection.getOptionalClass("java.util.SequencedSet");
 	
 	
 	public static Optional<InputStream> getResource(Identifier id) throws IOException {
@@ -202,7 +200,6 @@ public class MVMisc {
 						MainUtil.client.getWindow().getGuiScaledWidth(), MainUtil.client.getWindow().getGuiScaledHeight(), x, y, width, height);
 	}
 	
-	private static final Supplier<Class<?>> SuspiciousStewItem = Reflection.getOptionalClass("net.minecraft.class_1830");
 	public static void addEffectToStew(ItemStack item, MobEffect effect, int duration) {
 		item.apply(MVComponentType.SUSPICIOUS_STEW_EFFECTS, new SuspiciousStewEffects(List.of()), effects -> effects.withEffectAdded(new Entry(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), duration)));
 	}
@@ -266,32 +263,13 @@ public class MVMisc {
 	}
 	
 	public static BookViewScreen.BookAccess getBookContents(List<Component> pages) {
-		if (NBTManagers.COMPONENTS_EXIST)
-			return new BookViewScreen.BookAccess(pages);
-		
-		return (BookViewScreen.BookAccess) Proxy.newProxyInstance(MVMisc.class.getClassLoader(),
-				new Class<?>[] {BookViewScreen.BookAccess.class}, (obj, method, args) -> {
-			if (method.getName().equals("method_17560")) // getPageCount
-				return pages.size();
-			if (method.getName().equals("method_17561")) // getPageUnchecked
-				return (FormattedText) pages.get((int) args[0]);
-			
-			if (method.getName().equals("method_17563")) { // default getPage
-				int index = (int) args[0];
-				return (index >= 0 && index < pages.size() ? pages.get(index) : FormattedText.EMPTY);
-			}
-			
-			throw new IllegalArgumentException("Unknown method: " + method);
-		});
+		return new BookViewScreen.BookAccess(pages);
 	}
 	
 	public static boolean isWrittenBookContents(BookViewScreen.BookAccess contents) {
 		return (MixinLink.WRITTEN_BOOK_CONTENTS.getIfPresent(contents) != null);
 	}
 	
-	private static final Supplier<Class<?>> SystemToast$Type = Reflection.getOptionalClass("net.minecraft.class_370$class_371");
-	private static final Object SystemToast$Type_PACK_LOAD_FAILURE =
-			null;
 	public static void showToast(Component title, Component description) {
 		MainUtil.client.getToastManager().addToast(new SystemToast(SystemToast.SystemToastId.PACK_LOAD_FAILURE, title, description));
 	}
@@ -399,13 +377,11 @@ public class MVMisc {
 	}
 	
 	public static Object newTooltipDisplayComponent(boolean hideTooltip, LinkedHashSet<DataComponentType<?>> hiddenComponents) {
-		return Reflection.newInstance(TooltipDisplay.class, new Class<?>[] {boolean.class, SequencedSet.get()}, hideTooltip, hiddenComponents);
+		return new TooltipDisplay(hideTooltip, hiddenComponents);
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> TooltipDisplayComponent_hiddenComponents =
-			Reflection.getOptionalMethod(() -> TooltipDisplay.class, () -> "comp_3601", () -> MethodType.methodType(SequencedSet.get()));
 	public static Set<DataComponentType<?>> hiddenComponents(Object tooltipDisplayComponent) {
-		return TooltipDisplayComponent_hiddenComponents.get().invoke(tooltipDisplayComponent);
+		return ((TooltipDisplay) tooltipDisplayComponent).hiddenComponents();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -461,9 +437,6 @@ public class MVMisc {
 		return packet.containerId();
 	}
 	
-	private static final Supplier<Class<?>> BoatEntity$Type = Reflection.getOptionalClass("net.minecraft.class_1690$class_1692");
-	private static final Supplier<Reflection.MethodInvoker> BoatEntity$Type_getType =
-			Reflection.getOptionalMethod(BoatEntity$Type, () -> "method_7561", () -> MethodType.methodType(BoatEntity$Type.get(), String.class));
 	public static Item getBoatItem(EntityType<?> entityType, CompoundTag nbt) {
 		for (Item item : MVRegistry.ITEM) {
 			if (item instanceof BoatItem boat && entityType == boat.entityType)
