@@ -27,7 +27,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -107,7 +107,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 	}
 	
 	@Override
-	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		dataVersion.setValid(dataVersion.getValue().isEmpty() ||
 				Version.getDataVersion(dataVersion.getValue()).filter(value -> value <= Version.getDataVersion()).isPresent());
 		

@@ -6,7 +6,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizontal<K, T>> extends ConfigGrouping<K, T> {
@@ -20,7 +20,7 @@ public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizo
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		int xOffset = 0;
 		Component fullName = getFullName();
 		if (fullName != null) {
@@ -31,7 +31,7 @@ public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizo
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
 			context.pose().pushMatrix();
 			context.pose().translate((float) (xOffset), (float) (0.0));
-			path.render(context, mouseX - xOffset, mouseY, delta);
+			path.extractRenderState(context, mouseX - xOffset, mouseY, delta);
 			context.pose().popMatrix();
 			
 			xOffset += path.getSpacingWidth() + PADDING;

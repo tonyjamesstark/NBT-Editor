@@ -43,7 +43,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.network.chat.Component;
 
@@ -614,9 +614,9 @@ public class ConfigScreen extends TickableSupportingScreen {
 		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
 	}
 	
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(this, context);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	public void close() {

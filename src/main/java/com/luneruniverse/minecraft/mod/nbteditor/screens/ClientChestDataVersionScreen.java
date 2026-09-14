@@ -22,7 +22,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
@@ -137,7 +137,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		boolean fullButtons = (dataVersionStatus != DataVersionStatus.TOO_UPDATED);
 		
 		if (fullButtons) {
@@ -149,7 +149,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		MVTooltip.setOneTooltip(true, false);
 		
 		MVDrawableHelper.renderBackground(this, context);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, font,
 				msg, width / 2, height / 2 - 44 - font.lineHeight / 2, -1);
 		if (fullButtons) {

@@ -21,7 +21,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
@@ -89,10 +89,10 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	protected void renderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void renderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		context.pose().pushMatrix();
 		context.pose().translate((float) (0.0), (float) (0.0));
-		nameFormatted.render(context, mouseX, mouseY, delta);
+		nameFormatted.extractRenderState(context, mouseX, mouseY, delta);
 		context.pose().popMatrix();
 	}
 	

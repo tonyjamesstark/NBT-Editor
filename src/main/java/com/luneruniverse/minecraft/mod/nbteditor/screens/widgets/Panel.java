@@ -13,7 +13,7 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public abstract class Panel<T extends Renderable & GuiEventListener> implements Renderable, MVElement, NarratableEntry {
 	
@@ -55,7 +55,7 @@ public abstract class Panel<T extends Renderable & GuiEventListener> implements 
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		updateMousePos(mouseX, mouseY);
 		
 		checkOverScroll();
@@ -67,13 +67,13 @@ public abstract class Panel<T extends Renderable & GuiEventListener> implements 
 			
 			context.pose().pushMatrix();
 			context.pose().translate((float) (pos.x() + x), (float) (pos.y() + y + scroll));
-			element.render(context, mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, delta);
+			element.extractRenderState(context, mouseX - pos.x() - x, mouseY - pos.y() - y - scroll, delta);
 			context.pose().popMatrix();
 		}
 		
 		MVDrawableHelper.disableScissor(context);
 		
-		scrollBar.render(context, mouseX, mouseY, delta);
+		scrollBar.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	private void checkOverScroll() {

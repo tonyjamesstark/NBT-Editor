@@ -11,7 +11,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
@@ -54,12 +54,12 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, name, 0, (getSpacingHeight() - MainUtil.client.font.lineHeight) / 2, 0xFFFFFFFF);
 		
 		context.pose().pushMatrix();
 		context.pose().translate((float) (valueOffsetX), (float) (valueOffsetY));
-		value.render(context, mouseX - valueOffsetX, mouseY - valueOffsetY, delta);
+		value.extractRenderState(context, mouseX - valueOffsetX, mouseY - valueOffsetY, delta);
 		context.pose().popMatrix();
 		
 		if (tooltip != null && mouseX >= 0 && mouseX <= valueOffsetX && isMouseOver(mouseX, mouseY))

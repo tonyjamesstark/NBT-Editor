@@ -21,7 +21,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValu
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.ItemStack;
 
@@ -100,7 +100,7 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 	}
 	
 	@Override
-	protected void renderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void renderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		renderTip(context, "nbteditor.enchantments.tip");
 	}
 	

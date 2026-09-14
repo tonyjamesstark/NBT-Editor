@@ -28,7 +28,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.WrittenBookTagRef
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
@@ -250,7 +250,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	}
 	
 	@Override
-	protected void renderEditor(GuiGraphics context, int fdf8eb, int mouseY, float delta) {
+	protected void renderEditor(GuiGraphicsExtractor context, int fdf8eb, int mouseY, float delta) {
 		MVDrawableHelper.drawTextWithShadow(context, font, TextInst.translatable("nbteditor.book.page", page + 1, getPageCount()),
 				16 + 108 * 3 - 4 + 24 * 3, 64 + 10 - font.lineHeight / 2, -1);
 	}

@@ -28,7 +28,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class ImageToLoreWidget extends GroupWidget implements InitializableOverlay<Screen> {
@@ -137,9 +137,9 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
 		MainUtil.renderLogo(context);

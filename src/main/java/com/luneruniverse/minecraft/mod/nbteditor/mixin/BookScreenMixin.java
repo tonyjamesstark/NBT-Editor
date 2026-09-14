@@ -22,7 +22,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess;
@@ -121,7 +121,7 @@ public class BookScreenMixin extends Screen {
 	}
 	
 	@Inject(method = "render", at = @At("TAIL"))
-	private void render(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo info) {
+	private void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo info) {
 		if (renderLogo)
 			MainUtil.renderLogo(context);
 	}

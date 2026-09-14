@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class OverlayScreen extends OverlaySupportingScreen {
@@ -57,9 +57,9 @@ public class OverlayScreen extends OverlaySupportingScreen {
 	}
 	
 	@Override
-	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (parent != null)
-			parent.render(context, -314, -314, delta);
+			parent.extractRenderState(context, -314, -314, delta);
 	}
 	
 }

@@ -15,7 +15,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class LoadingScreen extends MVScreen {
 	
@@ -86,9 +86,9 @@ public class LoadingScreen extends MVScreen {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(this, context);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MainUtil.renderLogo(context);
 		
 		MVDrawableHelper.drawCenteredTextWithShadow(context, font, TextInst.translatable("nbteditor.loading"),

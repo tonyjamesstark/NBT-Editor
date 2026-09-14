@@ -3,14 +3,14 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class TranslatedGroupWidget extends GroupWidget {
 	
 	public static <T extends Renderable & GuiEventListener> TranslatedGroupWidget forWidget(T widget, double x, double y, double z) {
 		TranslatedGroupWidget output = new TranslatedGroupWidget(x, y, z) {
 			@Override
-			protected void renderPre(GuiGraphics context, int mouseX, int mouseY, float delta) {
+			protected void renderPre(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 				setFocused(isMultiFocused() ? widget : null);
 			}
 		};
@@ -46,18 +46,18 @@ public class TranslatedGroupWidget extends GroupWidget {
 	}
 	
 	@Override
-	public final void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public final void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		context.pose().pushMatrix();
 		context.pose().translate((float) x, (float) y);
 		mouseX -= (int) x;
 		mouseY -= (int) y;
 		renderPre(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		renderPost(context, mouseX, mouseY, delta);
 		context.pose().popMatrix();
 	}
-	protected void renderPre(GuiGraphics context, int mouseX, int mouseY, float delta) {}
-	protected void renderPost(GuiGraphics context, int mouseX, int mouseY, float delta) {}
+	protected void renderPre(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
+	protected void renderPost(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
 	
 	@Override
 	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {

@@ -15,7 +15,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 
@@ -71,7 +71,7 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		ok.active = input.isValid();
 		
 		context.pose().pushMatrix();
@@ -81,7 +81,7 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, title,
 					x + input.getWidth() / 2, y - 4 - MainUtil.client.font.lineHeight, -1);
 		}
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MainUtil.renderLogo(context);
 		context.pose().popMatrix();
 	}

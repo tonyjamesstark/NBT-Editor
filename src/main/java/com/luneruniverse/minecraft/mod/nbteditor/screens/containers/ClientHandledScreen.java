@@ -21,7 +21,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -95,7 +95,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	}
 	
 	@Override
-	protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
+	protected void renderBg(GuiGraphicsExtractor context, float delta, int mouseX, int mouseY) {
 		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos, 0, 0, imageWidth, menu.getRowCount() * 18 + 17);
 		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos + menu.getRowCount() * 18 + 17, 0, 126, imageWidth, 96);
 		
@@ -107,7 +107,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	}
 	
 	@Override
-	protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
+	protected void renderLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
 		getLockedSlotsInfo().renderLockedHighlights(context, menu, true, false, true);
 		
 		MVDrawableHelper.drawTextWithoutShadow(context, font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752);

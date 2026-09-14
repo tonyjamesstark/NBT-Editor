@@ -48,7 +48,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -94,7 +94,7 @@ public class MixinLink {
 		}
 		return new int[] {width, height};
 	}
-	public static void renderTooltipFromComponents(GuiGraphics context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
+	public static void renderTooltipFromComponents(GuiGraphicsExtractor context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
 		x -= 5;
 		y -= 5;
 		width += 10;
@@ -151,7 +151,7 @@ public class MixinLink {
 	}
 	
 	
-	public static void renderChatLimitWarning(ChatScreen source, GuiGraphics context) {
+	public static void renderChatLimitWarning(ChatScreen source, GuiGraphicsExtractor context) {
 		if (!ConfigScreen.isChatLimitExtended())
 			return;
 		

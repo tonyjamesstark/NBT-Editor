@@ -30,7 +30,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
@@ -186,12 +186,12 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			
 			@Override
-			public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+			public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 				MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font,
 						TextInst.translatable("nbteditor.formatted_text.events"),
 						x, y - 38 - MainUtil.client.font.lineHeight, -1);
-				super.render(context, mouseX, mouseY, delta);
+				super.extractRenderState(context, mouseX, mouseY, delta);
 			}
 			
 			@Override
@@ -457,7 +457,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		}
 		
 		@Override
-		protected void renderHighlightsBelow(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		protected void renderHighlightsBelow(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 			Style initialStyle = getStyle(0);
 			int start = (initialStyle.getClickEvent() != null || initialStyle.getHoverEvent() != null || initialStyle.getInsertion() != null ? 0 : -1);
 			for (int i = 0; i < styles.size(); i++) {
@@ -860,14 +860,14 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		setFocused(isMultiFocused() ? field : null);
-		field.render(context, mouseX, mouseY, delta);
+		field.extractRenderState(context, mouseX, mouseY, delta);
 		
 		if (colors != null) {
 			context.pose().pushMatrix();
 			context.pose().translate((float) (0.0), (float) (0.0));
-			colors.render(context, mouseX, mouseY, delta);
+			colors.extractRenderState(context, mouseX, mouseY, delta);
 			context.pose().popMatrix();
 		}
 		
@@ -881,7 +881,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 		}
 		
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	@Override

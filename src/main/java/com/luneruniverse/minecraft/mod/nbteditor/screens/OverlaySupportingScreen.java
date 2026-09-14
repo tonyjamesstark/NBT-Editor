@@ -9,7 +9,7 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class OverlaySupportingScreen extends TickableSupportingScreen {
@@ -79,18 +79,18 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public final void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public final void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		int bgMouseX = (overlay == null ? mouseX : -314);
 		int bgMouseY = (overlay == null ? mouseY : -314);
 		renderMain(context, bgMouseX, bgMouseY, delta);
 		if (overlay != null) {
 			if (overlayZ != 0)
 				context.nextStratum();
-			((Renderable) overlay).render(context, mouseX, mouseY, delta);
+			((Renderable) overlay).extractRenderState(context, mouseX, mouseY, delta);
 		}
 	}
-	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
+	protected void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	@Override

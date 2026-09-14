@@ -12,7 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class AlertWidget extends GroupWidget implements InitializableOverlay<Screen> {
@@ -40,13 +40,13 @@ public class AlertWidget extends GroupWidget implements InitializableOverlay<Scr
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 		for (int i = 0; i < lines.length; i++) {
 			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, lines[i],
 					x, y + i * MainUtil.client.font.lineHeight, -1);
 		}
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MainUtil.renderLogo(context);
 	}
 	

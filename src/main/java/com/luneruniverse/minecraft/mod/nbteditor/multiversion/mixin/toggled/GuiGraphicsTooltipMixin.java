@@ -10,15 +10,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.util.FormattedCharSequence;
 
 /**
  * Collects the tooltip a widget wants drawn. 1.21.9 moved this off {@code Screen}
- * and onto {@link GuiGraphics}, which is why the mixin no longer targets a screen.
+ * and onto {@link GuiGraphicsExtractor}, which is why the mixin no longer targets a screen.
  */
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public class GuiGraphicsTooltipMixin {
 	@Inject(method = "setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Ljava/util/List;Lnet/minecraft/client/gui/screens/inventory/tooltip/ClientTooltipPositioner;IIZ)V",
 			at = @At("HEAD"), cancellable = true)

@@ -45,7 +45,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
@@ -360,13 +360,13 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	protected void preRenderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void preRenderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVTooltip.setOneTooltip(true, false);
-		editor.render(context, mouseX, mouseY, delta); // So the tab completion renders on top correctly
+		editor.extractRenderState(context, mouseX, mouseY, delta); // So the tab completion renders on top correctly
 		MVTooltip.renderOneTooltip(context, mouseX, mouseY);
 	}
 	@Override
-	protected void renderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void renderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (NBTAutocompleteIntegration.INSTANCE.isEmpty())
 			renderTip(context, "nbteditor.nbt_ac.tip");
 	}

@@ -33,7 +33,7 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
@@ -170,7 +170,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		}
 		
 		@Override
-		public void renderPre(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		public void renderPre(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 			MVDrawableHelper.fill(context, -16, -16, 216, 76, 0xC8101010);
 		}
 		
@@ -423,7 +423,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.fill(context, x, y, x + width, y + height, bgColor);
 		
 		MVDrawableHelper.enableScissor(context, x, y, width, height);
@@ -449,18 +449,18 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		
 		context.pose().popMatrix();
 		
-		scrollBar.render(context, mouseX, mouseY, delta);
+		scrollBar.extractRenderState(context, mouseX, mouseY, delta);
 		
 		if (suggestor != null) {
 			syncToSuggestor();
-			suggestor.render(context, mouseX, mouseY, delta);
+			suggestor.extractRenderState(context, mouseX, mouseY, delta);
 		}
 		
 		MVDrawableHelper.disableScissor(context);
 	}
-	protected void renderHighlightsBelow(GuiGraphics context, int mouseX, int mouseY, float delta) {}
-	protected void renderHighlightsAbove(GuiGraphics context, int mouseX, int mouseY, float delta) {}
-	protected void renderHighlight(GuiGraphics context, int start, int end, int color) {
+	protected void renderHighlightsBelow(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
+	protected void renderHighlightsAbove(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
+	protected void renderHighlight(GuiGraphicsExtractor context, int start, int end, int color) {
 		Point startPos = getXYPos(start);
 		Point endPos = getXYPos(end);
 		if (startPos.y == endPos.y)

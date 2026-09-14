@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 
 public class ScrollBarWidget implements Renderable, MVElement {
@@ -33,7 +33,7 @@ public class ScrollBarWidget implements Renderable, MVElement {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		int scroll = getScroll.get();
 		
 		double maxScroll = -Math.min(scroll - height, getMaxScroll.get() - height);

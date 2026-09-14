@@ -23,7 +23,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.entity.Entity;
@@ -131,7 +131,7 @@ public class LocalEntity implements LocalNBT {
 	}
 	
 	@Override
-	public void renderIcon(GuiGraphics context, int x, int y, float tickDelta) {
+	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta) {
 		// 1.21.9 turned GUI entity rendering into a queued render state; there is no
 		// longer a matrix stack to push the entity onto.
 		Entity entity = getCachedEntity();

@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class ConfigValueSlider<T extends Number> extends AbstractSliderButton implements ConfigValue<T, ConfigValueSlider<T>> {
@@ -46,8 +46,8 @@ public class ConfigValueSlider<T extends Number> extends AbstractSliderButton im
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	// There is no element focusing in configs, so onDrag is called for everything

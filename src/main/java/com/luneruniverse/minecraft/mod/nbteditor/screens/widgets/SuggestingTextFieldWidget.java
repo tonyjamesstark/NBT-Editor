@@ -15,7 +15,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
@@ -82,9 +82,9 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (!isDropdownOnly())
-			super.render(context, mouseX, mouseY, delta);
+			super.extractRenderState(context, mouseX, mouseY, delta);
 		suggestor.render(context, mouseX, mouseY);
 	}
 	@Override

@@ -13,7 +13,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.Identifier;
@@ -28,9 +28,9 @@ public class CreativeTabWidget implements Renderable, MVElement {
 		if (!tabs.isEmpty()) {
 			GroupWidget group = new GroupWidget() {
 				@Override
-				public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+				public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 					MVTooltip.setOneTooltip(true, false);
-					super.render(context, mouseX, mouseY, delta);
+					super.extractRenderState(context, mouseX, mouseY, delta);
 					MVTooltip.renderOneTooltip(context, mouseX, mouseY);
 				}
 			};
@@ -74,7 +74,7 @@ public class CreativeTabWidget implements Renderable, MVElement {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.drawTexture(context, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
 		
 		int xOffset = 5;

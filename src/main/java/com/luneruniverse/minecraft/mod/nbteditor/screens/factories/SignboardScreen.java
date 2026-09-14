@@ -27,7 +27,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CeilingHangingSignBlock;
 import net.minecraft.world.level.block.WallHangingSignBlock;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.HangingSignItem;
 import net.minecraft.world.item.SignItem;
 import net.minecraft.nbt.CompoundTag;
@@ -231,10 +231,10 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		
 		ButtonDropdownWidget colors = addWidget(new ButtonDropdownWidget(glowingBtnX, glowingBtnY + 20, 20, 20, null, 20, 20) {
 			@Override
-			public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+			public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 				context.pose().pushMatrix();
 				context.pose().translate((float) (0.0), (float) (0.0));
-				super.render(context, mouseX, mouseY, delta);
+				super.extractRenderState(context, mouseX, mouseY, delta);
 				context.pose().popMatrix();
 			}
 		});
@@ -273,7 +273,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	protected void preRenderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void preRenderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.drawTexture(context, texture, 16, 64 + 24 * 2, 0, 0, width - 32, height - 80 - 24 * 2);
 	}
 	

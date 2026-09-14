@@ -36,7 +36,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
@@ -134,14 +134,14 @@ public class MainUtil {
 	
 	private static final Identifier LOGO = IdentifierInst.of("nbteditor", "textures/logo.png");
 	private static final Identifier LOGO_UPDATE_AVAILABLE = IdentifierInst.of("nbteditor", "textures/logo_update_available.png");
-	public static void renderLogo(GuiGraphics context) {
+	public static void renderLogo(GuiGraphicsExtractor context) {
 		MVDrawableHelper.drawTexture(context,
 				UpdateCheckerThread.UPDATE_AVAILABLE ? LOGO_UPDATE_AVAILABLE : LOGO, 16, 16, 0, 0, 32, 32, 32, 32);
 	}
 	
 	
 	
-	public static void drawWrappingString(GuiGraphics context, Font renderer, String text, int x, int y, int maxWidth, int color, boolean centerHorizontal, boolean centerVertical) {
+	public static void drawWrappingString(GuiGraphicsExtractor context, Font renderer, String text, int x, int y, int maxWidth, int color, boolean centerHorizontal, boolean centerVertical) {
 		maxWidth = Math.max(maxWidth, renderer.width("ww"));
 		
 		// Split into breaking spots
@@ -384,7 +384,7 @@ public class MainUtil {
 	}
 	
 	
-	public static void mapMatrices(GuiGraphics context,
+	public static void mapMatrices(GuiGraphicsExtractor context,
 			int fromX, int fromY, int fromWidth, int fromHeight,
 			int toX, int toY, int toWidth, int toHeight) {
 		context.pose().translate((float) (toX), (float) (toY));

@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -110,7 +110,7 @@ public class LocalItemStack extends LocalItem {
 	}
 	
 	@Override
-	public void renderIcon(GuiGraphics context, int x, int y, float tickDelta) {
+	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta) {
 		MVDrawableHelper.renderItem(context, 200.0F, true, item, x, y);
 	}
 	
