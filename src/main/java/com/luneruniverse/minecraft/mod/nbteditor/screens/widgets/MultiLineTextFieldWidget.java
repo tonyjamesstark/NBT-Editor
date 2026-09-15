@@ -13,7 +13,6 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
@@ -22,7 +21,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextSearch;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 
-import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -31,7 +29,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
@@ -39,110 +36,6 @@ import net.minecraft.util.Util;
 import net.minecraft.client.gui.narration.NarratableEntry.NarrationPriority;
 
 public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable, NarratableEntry {
-	
-	private class FindAndReplaceWidget extends TranslatedGroupWidget {
-		private static String findValue = "";
-		private static String replaceValue = "";
-		private static boolean regex = false;
-		
-		private final NamedTextFieldWidget find;
-		private final NamedTextFieldWidget replace;
-		private final Button regexBtn;
-		private boolean dragging;
-		
-		public FindAndReplaceWidget() {
-			super(MainUtil.client.getWindow().getGuiScaledWidth() / 2 - 100,
-					MainUtil.client.getWindow().getGuiScaledHeight() / 2 - 30, 200);
-			find = addWidget(new NamedTextFieldWidget(0, 0, 176, 16)
-					.name(TextInst.translatable("nbteditor.multi_line_text.find")));
-			replace = addWidget(new NamedTextFieldWidget(0, 20, 200, 16)
-					.name(TextInst.translatable("nbteditor.multi_line_text.replace")));
-			regexBtn = addWidget(Buttons.of(180, -2, 20, 20,
-					TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")), btn -> {
-				regex = !regex;
-				btn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
-			}, new MVTooltip("nbteditor.multi_line_text.regex")));
-			addWidget(Buttons.of(0, 40, 40, 20, TextInst.translatable("nbteditor.multi_line_text.find"), btn -> {
-				findNext(findValue, regex, Keys.hasShiftDown(), true);
-			}));
-			addWidget(Buttons.of(44, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace"), btn -> {
-				if (findNext(findValue, regex, Keys.hasShiftDown(), true))
-					replaceSelection(replaceValue, regex);
-			}));
-			addWidget(Buttons.of(112, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace_all"), btn -> {
-				replaceAll(findValue, replaceValue, regex);
-			}));
-			addWidget(Buttons.of(180, 40, 20, 20, TextInst.translatable("nbteditor.multi_line_text.x"), btn -> {
-				OverlaySupportingScreen.setOverlayStatic(null);
-			}));
-			
-			if (getSelStart() != getSelEnd())
-				findValue = getSelectedText();
-			find.setMaxLength(Integer.MAX_VALUE);
-			find.setValue(findValue);
-			find.setResponder(str -> findValue = str);
-			setFocused(find);
-			
-			replace.setMaxLength(Integer.MAX_VALUE);
-			replace.setValue(replaceValue);
-			replace.setResponder(str -> replaceValue = str);
-		}
-		
-		@Override
-		public void renderPre(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-			MVDrawableHelper.fill(context, -16, -16, 216, 76, 0xC8101010);
-		}
-		
-		@Override
-		protected boolean mouseClickedPre(double mouseX, double mouseY, int button) {
-			if (isMouseOver(mouseX, mouseY) && !(mouseX >= 0 && mouseX <= 200 && mouseY >= 0 && mouseY <= 60))
-				dragging = true;
-			return false;
-		}
-		@Override
-		protected boolean mouseReleasedPre(double mouseX, double mouseY, int button) {
-			dragging = false;
-			return false;
-		}
-		@Override
-		public boolean mouseDraggedPre(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-			if (dragging)
-				addTranslation(deltaX, deltaY, 0);
-			return false;
-		}
-		
-		@Override
-		public boolean keyPressed(KeyEvent input) {
-			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
-			if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-				OverlaySupportingScreen.setOverlayStatic(null);
-				return true;
-			}
-			if (keyCode == GLFW.GLFW_KEY_ENTER) {
-				findNext(findValue, regex, Keys.hasShiftDown(), true);
-				return true;
-			}
-			if (keyCode == GLFW.GLFW_KEY_TAB) {
-				if (getFocused() == find)
-					setFocused(replace);
-				else
-					setFocused(find);
-				return true;
-			}
-			if (keyCode == GLFW.GLFW_KEY_R && Keys.hasControlDown() && !Keys.hasShiftDown() && !Keys.hasAltDown()) {
-				regex = !regex;
-				regexBtn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
-				return true;
-			}
-			
-			return super.keyPressed(input);
-		}
-		
-		@Override
-		public boolean isMouseOver(double mouseX, double mouseY) {
-			return mouseX >= -16 && mouseX <= 216 && mouseY >= -16 && mouseY <= 76;
-		}
-	}
 	
 	private static final Font textRenderer = MainUtil.client.font;
 	
@@ -737,7 +630,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			return true;
 		}
 		if (isFind(keyCode)) {
-			OverlaySupportingScreen.setOverlayStatic(new FindAndReplaceWidget());
+			OverlaySupportingScreen.setOverlayStatic(new FindAndReplaceWidget(this));
 			return true;
 		}
 		switch (keyCode) {
