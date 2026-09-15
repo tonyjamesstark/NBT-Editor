@@ -8,9 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -21,6 +18,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextSearch;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 
@@ -51,7 +49,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		private final NamedTextFieldWidget replace;
 		private final Button regexBtn;
 		private boolean dragging;
-		private Matcher lastRegexMatch;
+		private TextSearch.Match lastMatch;
 		
 		public FindAndReplaceWidget() {
 			super(MainUtil.client.getWindow().getGuiScaledWidth() / 2 - 100,
@@ -117,37 +115,12 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			return true;
 		}
 		private boolean goToRange(String str, String expr, int start, boolean last) {
-			if (regex) {
-				if (last)
-					str = str.substring(0, start);
-				try {
-					Matcher matcher = Pattern.compile(expr).matcher(str);
-					if (!matcher.find(last ? 0 : start))
-						return false;
-					int numMatches = 0;
-					do {
-						numMatches++;
-						selStart = matcher.start();
-						selEnd = matcher.end();
-						if (selStart == selEnd)
-							return false;
-					} while (last && matcher.find());
-					if (last) {
-						matcher.reset();
-						for (int i = 0; i < numMatches; i++)
-							matcher.find();
-					}
-					lastRegexMatch = matcher;
-				} catch (PatternSyntaxException e) {
-					return false;
-				}
-			} else {
-				int i = last ? str.substring(0, start).lastIndexOf(expr) : str.indexOf(expr, start);
-				if (i == -1)
-					return false;
-				selStart = i;
-				selEnd = selStart + expr.length();
-			}
+			TextSearch.Match match = TextSearch.find(str, expr, start, last, regex);
+			if (match == null)
+				return false;
+			lastMatch = match;
+			selStart = match.start();
+			selEnd = match.end();
 			cursor = selEnd;
 			cursorX = -1;
 			return true;
@@ -155,19 +128,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		private void replaceSel() {
 			if (selStart == selEnd)
 				return;
-			if (!regex) {
-				write(replaceValue);
-				return;
-			}
-			StringBuilder replacement = new StringBuilder();
-			try {
-				lastRegexMatch.appendReplacement(replacement, replaceValue);
-				replacement.delete(0, lastRegexMatch.start());
-			} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-				replacement.setLength(0);
-				replacement.append(replaceValue);
-			}
-			write(replacement.toString());
+			write(regex ? TextSearch.expandReplacement(lastMatch, replaceValue) : replaceValue);
 		}
 		
 		@Override
