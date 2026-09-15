@@ -53,7 +53,7 @@ public class KeysContainerIO implements ContainerIO<CompoundTag> {
 	public int write(CompoundTag container, ItemStack[] contents) {
 		for (int i = 0; i < keys.length; i++) {
 			ItemStack item = contents[i];
-			if (item == null || item.isEmpty()) {
+			if (ContainerIO.isEmpty(item)) {
 				if (removeWhenEmpty) {
 					container.remove(keys[i]);
 					continue;
@@ -66,14 +66,6 @@ public class KeysContainerIO implements ContainerIO<CompoundTag> {
 		return keys.length;
 	}
 	
-	@Override
-	public int getNumWritten(CompoundTag container, ItemStack[] contents) {
-		return keys.length;
-	}
 	
-	@Override
-	public int getWrittenSlotIndex(CompoundTag container, ItemStack[] contents, int slot) {
-		return slot;
-	}
 	
 }

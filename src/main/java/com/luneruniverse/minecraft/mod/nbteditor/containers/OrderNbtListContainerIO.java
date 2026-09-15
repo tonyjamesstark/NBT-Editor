@@ -53,7 +53,7 @@ public class OrderNbtListContainerIO implements ContainerIO<ListTag> {
 	public int write(ListTag container, ItemStack[] contents) {
 		container.clear();
 		int numWritten = getNumWritten(container, contents);
-		Arrays.stream(contents).limit(numWritten).filter(item -> item != null && !item.isEmpty())
+		Arrays.stream(contents).limit(numWritten).filter(item -> !ContainerIO.isEmpty(item))
 				.map(item -> item.nbte$serialize(true)).forEach(container::add);
 		return numWritten;
 	}
@@ -65,12 +65,7 @@ public class OrderNbtListContainerIO implements ContainerIO<ListTag> {
 	
 	@Override
 	public int getWrittenSlotIndex(ListTag container, ItemStack[] contents, int slot) {
-		int output = slot;
-		for (int i = 0; i < slot; i++) {
-			if (contents[i] == null || contents[i].isEmpty())
-				output--;
-		}
-		return output;
+		return ContainerIO.getCompactedSlotIndex(contents, slot);
 	}
 	
 }

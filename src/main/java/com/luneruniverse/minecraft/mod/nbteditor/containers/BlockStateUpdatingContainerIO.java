@@ -22,7 +22,7 @@ public class BlockStateUpdatingContainerIO {
 				Map<String, String> blockState = ItemTagReferences.BLOCK_STATE.get(container);
 				for (int i = 0; i < states.length; i++) {
 					ItemStack item = contents[i];
-					if (item == null || item.isEmpty())
+					if (ContainerIO.isEmpty(item))
 						blockState.remove(states[i]);
 					else
 						blockState.put(states[i], "true");
@@ -43,7 +43,7 @@ public class BlockStateUpdatingContainerIO {
 				BlockStateProperties blockState = container.getState();
 				for (int i = 0; i < states.length; i++) {
 					ItemStack item = contents[i];
-					blockState.setValue(states[i], item == null || item.isEmpty() ? "false" : "true");
+					blockState.setValue(states[i], ContainerIO.isEmpty(item) ? "false" : "true");
 				}
 				
 				return numWritten;

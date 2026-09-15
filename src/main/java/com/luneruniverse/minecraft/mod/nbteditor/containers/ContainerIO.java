@@ -55,6 +55,30 @@ public interface ContainerIO<T> {
 		return forItemStackEntityTag(io, EntityType.getKey(entityId).toString());
 	}
 	
+	/**
+	 * A slot holds nothing when it is null or when it is an empty stack. {@link #read} may produce
+	 * either, so every caller that inspects a slot has to accept both.
+	 */
+	public static boolean isEmpty(ItemStack item) {
+		return item == null || item.isEmpty();
+	}
+	
+	/**
+	 * {@link #getWrittenSlotIndex} for an io that compacts, meaning it drops empty slots rather
+	 * than recording them, so each item shifts down by the number of gaps preceding it.
+	 * @param contents
+	 * @param slot
+	 * @return The slot that the item contained within <code>slot</code> will end up in
+	 */
+	public static int getCompactedSlotIndex(ItemStack[] contents, int slot) {
+		int index = slot;
+		for (int i = 0; i < slot; i++) {
+			if (isEmpty(contents[i]))
+				index--;
+		}
+		return index;
+	}
+	
 	public static <T extends LocalNBT> ContainerIO<T> forLocalNBT(ContainerIO<CompoundTag> io) {
 		return DelegateContainerIO.map(io, item -> {
 			CompoundTag nbt = item.getNBT();
@@ -98,18 +122,26 @@ public interface ContainerIO<T> {
 	 * {@link #getWrittenSlotIndex} is not the identity. {@link ConcatContainerIO} uses this as both
 	 * the contents-space stride and the slot-space offset of the next io, so the two only agree when
 	 * this equals the number of slots occupied. A compacting io must therefore be last in a concat.
+	 * <p>Defaults to {@link #getMaxSlots}, which is the answer for every io that does not compact.
 	 * @param container
 	 * @param contents
 	 * @return The number of items in <code>contents</code> that will be written, including empty items
 	 */
-	public int getNumWritten(T container, ItemStack[] contents);
+	public default int getNumWritten(T container, ItemStack[] contents) {
+		return getMaxSlots(container);
+	}
 	/**
+	 * Defaults to the identity, which is the answer for every io that does not compact. An io that
+	 * does compact overrides this with {@link #getCompactedSlotIndex} and overrides
+	 * {@link #getNumWritten} to match.
 	 * @param container
 	 * @param contents
 	 * @param slot
 	 * @return The slot that the item contained within <code>slot</code> will end up in after being written
 	 */
-	public int getWrittenSlotIndex(T container, ItemStack[] contents, int slot);
+	public default int getWrittenSlotIndex(T container, ItemStack[] contents, int slot) {
+		return slot;
+	}
 	
 	public default ContainerIO<T> withTextures(Identifier... textures) {
 		return new DelegateContainerIO<>(this) {

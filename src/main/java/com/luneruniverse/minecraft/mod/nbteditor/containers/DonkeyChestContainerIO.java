@@ -50,7 +50,7 @@ public class DonkeyChestContainerIO implements ContainerIO<CompoundTag> {
 		delegate.write(container, contents);
 		
 		for (ItemStack item : contents) {
-			if (item != null && !item.isEmpty()) {
+			if (!ContainerIO.isEmpty(item)) {
 				container.putBoolean("ChestedHorse", true);
 				break;
 			}
@@ -59,7 +59,7 @@ public class DonkeyChestContainerIO implements ContainerIO<CompoundTag> {
 		if (llama) {
 			int columns = 1;
 			for (int i = SLOTS_PER_COLUMN; i < contents.length; i++) {
-				if (contents[i] != null && !contents[i].isEmpty())
+				if (!ContainerIO.isEmpty(contents[i]))
 					columns = (i / SLOTS_PER_COLUMN) + 1;
 			}
 			if (columns != 1 && container.nbte$getIntOrDefault("Strength") < columns)
@@ -69,14 +69,6 @@ public class DonkeyChestContainerIO implements ContainerIO<CompoundTag> {
 		return SLOTS;
 	}
 	
-	@Override
-	public int getNumWritten(CompoundTag container, ItemStack[] contents) {
-		return SLOTS;
-	}
 	
-	@Override
-	public int getWrittenSlotIndex(CompoundTag container, ItemStack[] contents, int slot) {
-		return slot;
-	}
 	
 }

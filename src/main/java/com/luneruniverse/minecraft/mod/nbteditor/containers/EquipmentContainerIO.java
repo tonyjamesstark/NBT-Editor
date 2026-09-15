@@ -58,7 +58,7 @@ public class EquipmentContainerIO implements ContainerIO<CompoundTag> {
 	public int write(CompoundTag container, ItemStack[] contents) {
 		for (int i = 0; i < 8; i++) {
 			ItemStack item = contents[i];
-			if (item == null || item.isEmpty())
+			if (ContainerIO.isEmpty(item))
 				container.remove(KEYS[i]);
 			else
 				container.put(KEYS[i], item.nbte$serialize(true));
@@ -66,14 +66,6 @@ public class EquipmentContainerIO implements ContainerIO<CompoundTag> {
 		return 8;
 	}
 	
-	@Override
-	public int getNumWritten(CompoundTag container, ItemStack[] contents) {
-		return 8;
-	}
 	
-	@Override
-	public int getWrittenSlotIndex(CompoundTag container, ItemStack[] contents, int slot) {
-		return slot;
-	}
 	
 }
