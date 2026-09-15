@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.async;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.Toasts;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -11,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
@@ -68,7 +68,7 @@ public class UpdateCheckerThread extends Thread {
 				UPDATE_AVAILABLE = true;
 				NBTEditor.LOGGER.warn("NBT Editor is outdated! (" + highestVersion + " > " + VERSION + ")");
 				if (versionDiff[1] <= ConfigScreen.getCheckUpdates().getLevel()) {
-					MVMisc.showToast(TextInst.translatable("nbteditor.outdated.title"),
+					Toasts.show(TextInst.translatable("nbteditor.outdated.title"),
 							TextInst.translatable("nbteditor.outdated.desc"));
 				}
 			} else

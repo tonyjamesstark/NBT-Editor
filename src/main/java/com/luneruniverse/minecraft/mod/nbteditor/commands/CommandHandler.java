@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.commands;
 
+import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandRegistration;
 import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandManager.literal;
 
 import java.util.Arrays;
@@ -11,7 +12,6 @@ import java.util.stream.Stream;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.FactoryCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.nbt.NBTCommand;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -19,7 +19,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 public class CommandHandler {
 	
 	public static void registerCommands() {
-		MVMisc.registerCommands(dispatcher -> {
+		CommandRegistration.register(dispatcher -> {
 			for (ClientCommand cmd : COMMANDS.values())
 				cmd.registerAll(dispatcher::register, cmd.getName());
 			

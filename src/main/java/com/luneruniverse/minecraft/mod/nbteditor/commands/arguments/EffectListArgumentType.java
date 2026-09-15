@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.mojang.brigadier.StringReader;
@@ -19,6 +18,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,13 +27,24 @@ import net.minecraft.resources.Identifier;
 
 public class EffectListArgumentType implements ArgumentType<Collection<MobEffectInstance>> {
 	
+	private static MobEffectInstance newEffectInstance(MobEffect effect, int duration) {
+		return new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), duration);
+	}
+	
+	private static MobEffectInstance newEffectInstance(MobEffect effect, int duration, int amplifier,
+			boolean ambient, boolean showParticles, boolean showIcon) {
+		return new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), duration, amplifier,
+				ambient, showParticles, showIcon);
+	}
+
+	
 	public enum Arg {
-		DURATION("-duration", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), Integer.parseInt(str) * 20, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()), false),
-		AMPLIFIER("-amplifier", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), effect.getDuration(), Integer.parseInt(str), effect.isAmbient(), effect.isVisible(), effect.showIcon()), false),
-		AMBIENT("-ambient", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), parseBoolean(str), effect.isVisible(), effect.showIcon()), true),
-		PERMANENT("-permanent", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), -1, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()), true),
-		SHOW_PARTICLES("-showparticles", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), parseBoolean(str), effect.showIcon()), true),
-		SHOW_ICON("-showicon", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), parseBoolean(str)), true);
+		DURATION("-duration", (effect, str) -> newEffectInstance(effect.getEffect().value(), Integer.parseInt(str) * 20, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()), false),
+		AMPLIFIER("-amplifier", (effect, str) -> newEffectInstance(effect.getEffect().value(), effect.getDuration(), Integer.parseInt(str), effect.isAmbient(), effect.isVisible(), effect.showIcon()), false),
+		AMBIENT("-ambient", (effect, str) -> newEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), parseBoolean(str), effect.isVisible(), effect.showIcon()), true),
+		PERMANENT("-permanent", (effect, str) -> newEffectInstance(effect.getEffect().value(), -1, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()), true),
+		SHOW_PARTICLES("-showparticles", (effect, str) -> newEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), parseBoolean(str), effect.showIcon()), true),
+		SHOW_ICON("-showicon", (effect, str) -> newEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), parseBoolean(str)), true);
 		
 		private static boolean parseBoolean(String str) {
 			if (str.equalsIgnoreCase("true"))
@@ -79,13 +90,13 @@ public class EffectListArgumentType implements ArgumentType<Collection<MobEffect
 				return INVALID_EFFECT_EXCEPTION.create(identifier);
 			});
 			if (!stringReader.canRead()) {
-				effects.add(MVMisc.newStatusEffectInstance(type, 5 * 20));
+				effects.add(newEffectInstance(type, 5 * 20));
 				break;
 			}
 			if (stringReader.read() != ' ')
 				throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.effect_list_arg_type.expected.space")).createWithContext(stringReader);
 			
-			MobEffectInstance effect = MVMisc.newStatusEffectInstance(type, 5 * 20);
+			MobEffectInstance effect = newEffectInstance(type, 5 * 20);
 			
 			while (stringReader.canRead() && stringReader.peek() == '-') {
 				StringBuilder arg = new StringBuilder();

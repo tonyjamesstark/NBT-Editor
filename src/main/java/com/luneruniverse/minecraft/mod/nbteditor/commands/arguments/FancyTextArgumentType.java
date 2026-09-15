@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.StyleOption;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -19,6 +18,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandRegistration;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
@@ -71,7 +71,7 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 	@Override
 	public Component parse(StringReader reader) throws CommandSyntaxException {
 		if (ConfigScreen.isNormalText())
-			return MVMisc.getTextArg().parse(reader);
+			return CommandRegistration.textArg().parse(reader);
 		
 		Component output = FancyText.parse(reader.getRemaining(), base);
 		reader.setCursor(reader.getTotalLength());
@@ -81,7 +81,7 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		if (ConfigScreen.isNormalText())
-			return MVMisc.getTextArg().listSuggestions(context, builder);
+			return CommandRegistration.textArg().listSuggestions(context, builder);
 		
 		if (builder.getRemaining().isEmpty())
 			return builder.buildFuture();
