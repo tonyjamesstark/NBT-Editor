@@ -283,7 +283,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	
 	protected MultiLineTextFieldWidget(int x, int y, int width, int height, String text,
 			Function<String, Component> formatter, boolean newLines, Consumer<String> onChange) {
-		text = MVMisc.stripInvalidChars(text, newLines);
+		text = TextUtil.stripInvalidChars(text, newLines);
 		
 		this.x = x;
 		this.y = y;
@@ -662,7 +662,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			undoPos--;
 		}
 		
-		text = MVMisc.stripInvalidChars(text, newLines);
+		text = TextUtil.stripInvalidChars(text, newLines);
 		onEdit(text, getSelStart(), getSelEnd() - getSelStart());
 		this.text = new StringBuilder(this.text).replace(getSelStart(), getSelEnd(), text).toString();
 		setCursor(getSelStart() + text.length());
@@ -818,7 +818,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		return false;
 	}
 	protected String pasteFilter(String toPaste) {
-		toPaste = MVMisc.stripInvalidChars(toPaste, newLines);
+		toPaste = TextUtil.stripInvalidChars(toPaste, newLines);
 		int numNewLines = getNumNewLines(text);
 		int toPasteNewLines = getNumNewLines(toPaste);
 		while (numNewLines + toPasteNewLines + 1 > maxLines) {
@@ -935,7 +935,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	@Override
 	public boolean charTyped(CharacterEvent input) {
 		char chr = (char) input.codepoint();
-		if (MVMisc.isValidChar(chr)) {
+		if (TextUtil.isValidChar(chr)) {
 			this.write(Character.toString(chr));
 			cursorX = -1;
 			return true;

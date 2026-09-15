@@ -46,7 +46,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	private static int getRenderedColor(DyeColor dye) {
 		if (dye == DyeColor.BLACK)
 			return 0xFFF0EBCC;
-		return MVMisc.scaleRgb(dye.getTextColor(), 0.4);
+		return StyleUtil.scaleRgb(dye.getTextColor(), 0.4);
 	}
 	
 	private final Identifier texture;

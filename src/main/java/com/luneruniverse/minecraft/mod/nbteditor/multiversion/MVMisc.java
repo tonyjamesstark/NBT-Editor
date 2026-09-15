@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -21,7 +20,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.lwjgl.glfw.GLFW;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -40,15 +38,10 @@ import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.BoatItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -56,11 +49,8 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.nbt.StringTagVisitor;
 import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.Holder;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -129,30 +119,6 @@ public class MVMisc {
 		return newTexturedButton(x, y, width, height, hoveredVOffset, img, onPress, null);
 	}
 	
-	public static boolean isValidChar(char c) {
-		return c != '§' && c >= ' ' && c != 127;
-	}
-	public static String stripInvalidChars(String str, boolean allowLinebreaks) {
-		StringBuilder output = new StringBuilder();
-		for (char c : str.toCharArray()) {
-			if (isValidChar(c)) {
-				output.append(c);
-			} else if (allowLinebreaks && c == '\n') {
-				output.append(c);
-			}
-		}
-		return output.toString();
-	}
-	
-	public static String getContent(Component text) {
-		StringBuilder output = new StringBuilder();
-		text.getContents().visit(str -> {
-			output.append(str);
-			return Optional.empty();
-		});
-		return output.toString();
-	}
-	
 	public static CompoundTag readNbt(InputStream stream) throws IOException {
 		return NbtIo.read(new DataInputStream(stream), NbtAccounter.unlimitedHeap());
 	}
@@ -216,14 +182,6 @@ public class MVMisc {
 		item.applyComponents(entity.collectComponents());
 	}
 	
-	public static int scaleRgb(int argb, double scale) {
-		Color color = new Color(argb, true);
-		int r = (int) (color.getRed() * scale);
-		int g = (int) (color.getGreen() * scale);
-		int b = (int) (color.getBlue() * scale);
-		return new Color(r, g, b, color.getAlpha()).getRGB();
-	}
-	
 	/**
 	 * 26.2 folded a prototype lookup into {@link DataComponentPatch#get}, which
 	 * loses the distinction the mod needs: absent from the patch (null) versus
@@ -243,27 +201,6 @@ public class MVMisc {
 	}
 	public static Tag parseNbt(String snbt) throws CommandSyntaxException {
 		return parseNbt(new StringReader(snbt));
-	}
-	
-	public static boolean isSimpleName(String name) {
-		return (!name.equalsIgnoreCase("true") && !name.equalsIgnoreCase("false") &&
-						StringTagVisitor.UNQUOTED_KEY_MATCH.matcher(name).matches());
-	}
-	
-	public static Object withEnchantments(Object component, Object2IntOpenHashMap<Holder<Enchantment>> enchantments) {
-		return new ItemEnchantments(enchantments);
-	}
-	
-	public static void setPreviousCursorStack(AbstractContainerMenu handler, ItemStack item) {
-		handler.remoteCarried.force(item);
-	}
-	
-	public static Item getBoatItem(EntityType<?> entityType, CompoundTag nbt) {
-		for (Item item : MVRegistry.ITEM) {
-			if (item instanceof BoatItem boat && entityType == boat.entityType)
-				return item;
-		}
-		throw new IllegalStateException("Unknown boat entity type: " + EntityType.getKey(entityType));
 	}
 	
 	

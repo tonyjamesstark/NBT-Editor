@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.StringReader;
 
@@ -123,7 +122,7 @@ public record FancyTextToken(Type type, Optional<Object> content) {
 						} else {
 							if (shadow) {
 									output.add(new FancyTextToken(Type.SHADOW_COLOR,
-											MVMisc.scaleRgb(StyleUtil.getColor(formatting), 0.25) | 0xFF000000));
+											StyleUtil.scaleRgb(StyleUtil.getColor(formatting), 0.25) | 0xFF000000));
 							} else
 								output.add(new FancyTextToken(Type.FORMATTING, formatting));
 						}

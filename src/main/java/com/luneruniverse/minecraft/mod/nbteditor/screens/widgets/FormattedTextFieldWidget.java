@@ -261,7 +261,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		}
 		
 		private void genStyles(Component text, Style parent, int index) {
-			int len = MVMisc.getContent(text).length();
+			int len = TextUtil.getContent(text).length();
 			Style style = text.getStyle().applyTo(parent);
 			if (len > 0) {
 				setStyle(index, style);
@@ -269,7 +269,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			for (Component child : text.getSiblings()) {
 				genStyles(child, style, index);
-				index += MVMisc.stripInvalidChars(child.getString(), allowsNewLines()).length();
+				index += TextUtil.stripInvalidChars(child.getString(), allowsNewLines()).length();
 			}
 		}
 		
@@ -371,7 +371,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		
 		private void applyColor(ChatFormatting color, boolean shadow) {
 			if (shadow) {
-				int shadowColor = (MVMisc.scaleRgb(StyleUtil.getColor(color), 0.25) | 0xFF000000);
+				int shadowColor = (StyleUtil.scaleRgb(StyleUtil.getColor(color), 0.25) | 0xFF000000);
 				applyStyleChange(style -> style.withShadowColor(shadowColor), true);
 			} else
 				applyFormatting(color);
@@ -407,7 +407,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 					(base.getColor() == null ? -1 : base.getColor().getValue()) : initialStyle.getColor().getValue());
 			if (shadow) {
 				int initialShadow = (initialStyle.getShadowColor() == null ?
-						(base.getShadowColor() == null ? MVMisc.scaleRgb(initialColor, 0.25) : base.getShadowColor()) : initialStyle.getShadowColor());
+						(base.getShadowColor() == null ? StyleUtil.scaleRgb(initialColor, 0.25) : base.getShadowColor()) : initialStyle.getShadowColor());
 				InputOverlay.show(
 						TextInst.translatable("nbteditor.formatted_text.custom_color.shadow"),
 						new ColorSelectorWidget.ColorSelectorInput(initialShadow),

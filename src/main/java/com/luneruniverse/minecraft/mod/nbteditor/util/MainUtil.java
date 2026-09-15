@@ -493,7 +493,7 @@ public class MainUtil {
 	
 	public static void setCursorStackSilently(AbstractContainerMenu handler, ItemStack item) {
 		handler.setCarried(item);
-		MVMisc.setPreviousCursorStack(handler, item);
+		AccessWidenedApi.setPreviousCursorStack(handler, item);
 	}
 	
 }
