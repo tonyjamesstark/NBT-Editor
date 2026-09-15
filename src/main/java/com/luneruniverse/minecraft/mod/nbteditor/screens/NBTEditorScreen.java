@@ -104,7 +104,6 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		}
 		
 		
-		MVMisc.setKeyboardRepeatEvents(true);
 		
 		name.setResponder(str -> {
 			if (str.equals(localNBT.getDefaultName()))
@@ -373,7 +372,6 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
 	@Override
 	public void removed() {
-		MVMisc.setKeyboardRepeatEvents(false);
 	}
 	
 	@Override

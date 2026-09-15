@@ -51,7 +51,6 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	@Override
 	protected void init() {
 		super.init();
-		MVMisc.setKeyboardRepeatEvents(true);
 		
 		Button done;
 		this.addRenderableWidget(done = MVMisc.newButton(20, 20, Math.min(200, width / 2 - 25), 20, ScreenTexts.DONE, btn -> {
@@ -97,7 +96,6 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	
 	@Override
 	public void removed() {
-		MVMisc.setKeyboardRepeatEvents(false);
 	}
 	
 }

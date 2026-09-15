@@ -47,7 +47,6 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositione
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.player.LocalPlayer;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.NbtViews;
 
@@ -170,9 +169,6 @@ public class MVMisc {
 		return false;
 	}
 	
-	public static void setKeyboardRepeatEvents(boolean repeatEvents) {
-	}
-	
 	public static boolean isValidChar(char c) {
 		return c != '§' && c >= ' ' && c != 127;
 	}
@@ -282,20 +278,8 @@ public class MVMisc {
 	}
 	
 	
-	public static VertexConsumer startVertex(VertexConsumer vertexConsumer, double x, double y, double z) {
-		return vertexConsumer.addVertex((float) x, (float) y, (float) z);
-	}
-	
 	public static float getTickDelta() {
 		return MainUtil.client.getDeltaTracker().getGameTimeDeltaPartialTick(true);
-	}
-	
-	public static EquipmentSlot getEquipmentSlot(EquipmentSlot.Type type, int entityId) {
-		for (EquipmentSlot slot : EquipmentSlot.values()) {
-			if (slot.getType() == type && slot.getIndex() == entityId)
-				return slot;
-		}
-		throw new IllegalArgumentException("Unknown equipment slot: type=" + type + ", entityId=" + entityId);
 	}
 	
 	public static void onRegistriesLoad(Runnable callback) {

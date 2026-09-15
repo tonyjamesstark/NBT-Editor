@@ -176,7 +176,6 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	
 	@Override
 	protected void initEditor() {
-		MVMisc.setKeyboardRepeatEvents(true);
 		
 		group = new GroupWidget();
 		addRenderableWidget(group);
@@ -289,7 +288,6 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	
 	@Override
 	public void removed() {
-		MVMisc.setKeyboardRepeatEvents(false);
 	}
 	
 }

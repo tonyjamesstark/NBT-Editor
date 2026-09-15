@@ -36,7 +36,6 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
 	@Override
 	protected void initEditor() {
-		MVMisc.setKeyboardRepeatEvents(true);
 		
 		nameFormatted = FormattedTextFieldWidget.create(nameFormatted, 16, 64, width - 32, 24 + font.lineHeight * 3,
 				itemNameType ? MainUtil.getBaseItemNameSafely(((LocalItem) localNBT).getEditableItem()) : localNBT.getName(),
@@ -110,7 +109,6 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
 	@Override
 	public void removed() {
-		MVMisc.setKeyboardRepeatEvents(false);
 	}
 	
 }

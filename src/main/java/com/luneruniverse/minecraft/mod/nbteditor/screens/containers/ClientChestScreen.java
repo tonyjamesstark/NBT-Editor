@@ -278,8 +278,8 @@ public class ClientChestScreen extends ClientHandledScreen {
 	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		navigationClicked = false;
-		MVMisc.setKeyboardRepeatEvents(this.nameField.mouseClicked(click, doubled) ||
-				this.pageField.mouseClicked(click, doubled));
+		if (!this.nameField.mouseClicked(click, doubled))
+			this.pageField.mouseClicked(click, doubled);
 		super.mouseClicked(click, doubled);
 		return true;
 	}
@@ -330,7 +330,6 @@ public class ClientChestScreen extends ClientHandledScreen {
 	
 	@Override
 	public void removed() {
-		MVMisc.setKeyboardRepeatEvents(false);
 	}
 	
 	private void prevPage() {
