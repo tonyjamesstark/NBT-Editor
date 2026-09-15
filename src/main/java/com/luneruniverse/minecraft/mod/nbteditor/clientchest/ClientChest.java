@@ -15,7 +15,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.google.common.cache.CacheBuilder;
@@ -25,6 +24,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
+import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageTasks.Access;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
@@ -60,7 +60,7 @@ public class ClientChest {
 	private final PartitionedReadWriteLock lock;
 	private final LoadingCache<Integer, LoadQueue<ClientChestPage>> loadQueues;
 	private final LoadingCache<Integer, SaveQueue<ClientChestPage>> saveQueues;
-	private final Map<Integer, Integer> uncachedProcessers;
+	private final PageTasks tasks;
 	
 	@SuppressWarnings("serial")
 	public ClientChest(ClientChestPageCache cache) {
@@ -119,7 +119,7 @@ public class ClientChest {
 				}, true);
 			}
 		});
-		uncachedProcessers = new ConcurrentHashMap<>();
+		tasks = new PageTasks(lock, CLIENT_CHEST_FOLDER, () -> cache.getPageCount(), NBTEditor.LOGGER);
 	}
 	
 	public CompletableFuture<Void> setCache(ClientChestPageCache cache) {
@@ -200,7 +200,7 @@ public class ClientChest {
 		return false;
 	}
 	public boolean isUncachedProcessingPage(int page) {
-		return uncachedProcessers.getOrDefault(page, 0) > 0 || uncachedProcessers.getOrDefault(-1, 0) > 0;
+		return tasks.isProcessing(page);
 	}
 	
 	public CompletableFuture<Void> loadDefaultPages(PageLoadLevel level) {
@@ -299,66 +299,25 @@ public class ClientChest {
 	}
 	
 	public CompletableFuture<Void> unloadAllPages(PageLoadLevel loadLevel) {
-		if (!CLIENT_CHEST_FOLDER.exists() || loadLevel == PageLoadLevel.DYNAMIC_ITEMS)
+		if (loadLevel == PageLoadLevel.DYNAMIC_ITEMS)
 			return CompletableFuture.completedFuture(null);
-		
-		startUncachedProcessingAll();
-		CompletableFuture<Void> future = new CompletableFuture<>();
-		Thread thread = new Thread(() -> {
-			lock.read().lockAll();
-			try {
-				Exception toThrow = new Exception("Error unloading page(s)");
-				for (File file : CLIENT_CHEST_FOLDER.listFiles()) {
-					if (!file.getName().matches("page[0-9]+\\.nbt"))
-						continue;
-					int page = Integer.parseInt(file.getName().substring("page".length(), file.getName().indexOf('.')));
-					if (page >= cache.getPageCount())
-						continue;
-					if (getDataVersionStatus(page).map(status -> status == DataVersionStatus.CURRENT).orElse(false)) {
-						try {
-							unloadPageSync(page, loadLevel);
-						} catch (Throwable e) {
-							toThrow.addSuppressed(new Exception("Page " + (page + 1), e));
-						}
-					}
-				}
-				if (toThrow.getSuppressed().length > 0) {
-					NBTEditor.LOGGER.error("Error unloading the client chest!", toThrow);
-					future.completeExceptionally(toThrow);
-				} else
-					future.complete(null);
-			} finally {
-				lock.read().unlockAll();
-				finishUncachedProcessingAll();
-			}
-		}, "NBTEditor/Async/ClientChest/Unloading");
-		thread.start();
-		return future;
+
+		return tasks.allPages(Access.READ, "Unloading",
+				page -> getDataVersionStatus(page).map(status -> status == DataVersionStatus.CURRENT).orElse(false),
+				page -> {
+					unloadPageSync(page, loadLevel);
+					return null;
+				});
 	}
-	
+
 	public CompletableFuture<ClientChestPage> unloadPage(int page, PageLoadLevel loadLevel) {
 		if (!isUncachedProcessingPage(page)) {
 			ClientChestPage cachedPage = cache.getCachedPage(page);
 			if (cachedPage.loadLevel().ordinal() <= loadLevel.ordinal() || !cachedPage.isInThisVersion())
 				return CompletableFuture.completedFuture(cachedPage);
 		}
-		
-		startUncachedProcessing(page);
-		CompletableFuture<ClientChestPage> future = new CompletableFuture<>();
-		Thread thread = new Thread(() -> {
-			lock.read().lock(page);
-			try {
-				future.complete(unloadPageSync(page, loadLevel));
-			} catch (Throwable e) {
-				NBTEditor.LOGGER.error("Error unloading client chest page " + (page + 1), e);
-				future.completeExceptionally(e);
-			} finally {
-				lock.read().unlock(page);
-				finishUncachedProcessing(page);
-			}
-		}, "NBTEditor/Async/ClientChest/Unloading/" + page);
-		thread.start();
-		return future;
+
+		return tasks.page(page, Access.READ, "Unloading", p -> unloadPageSync(p, loadLevel));
 	}
 	
 	public CompletableFuture<ClientChestPage> reloadPage(int page) {
@@ -368,109 +327,38 @@ public class ClientChest {
 	}
 	
 	public CompletableFuture<Void> importAllPages() {
-		if (!CLIENT_CHEST_FOLDER.exists())
-			return CompletableFuture.completedFuture(null);
-		
-		startUncachedProcessingAll();
-		CompletableFuture<Void> future = new CompletableFuture<>();
-		Thread thread = new Thread(() -> {
-			lock.write().lockAll();
-			try {
-				Exception toThrow = new Exception("Error importing page(s)");
-				for (File file : CLIENT_CHEST_FOLDER.listFiles()) {
-					if (!file.getName().matches("page[0-9]+\\.nbt"))
-						continue;
-					int page = Integer.parseInt(file.getName().substring("page".length(), file.getName().indexOf('.')));
-					if (page >= cache.getPageCount())
-						continue;
-					if (getDataVersionStatus(page).map(status -> status == DataVersionStatus.UNKNOWN).orElse(true)) {
-						try {
-							importPageSync(page, true);
-						} catch (Throwable e) {
-							toThrow.addSuppressed(new Exception("Page " + (page + 1), e));
-						}
-					}
-				}
-				if (toThrow.getSuppressed().length > 0) {
-					NBTEditor.LOGGER.error("Error importing the client chest!", toThrow);
-					future.completeExceptionally(toThrow);
-				} else
-					future.complete(null);
-			} finally {
-				lock.write().unlockAll();
-				finishUncachedProcessingAll();
-			}
-		}, "NBTEditor/Async/ClientChest/Importing");
-		thread.start();
-		return future;
+		return tasks.allPages(Access.WRITE, "Importing",
+				page -> getDataVersionStatus(page).map(status -> status == DataVersionStatus.UNKNOWN).orElse(true),
+				page -> {
+					importPageSync(page, true);
+					return null;
+				});
 	}
 	public CompletableFuture<Void> importPage(int page) {
 		File file = getFile(page);
 		if (!file.exists())
 			throw new IllegalStateException("Cannot import an up to date page!");
-		
+
 		if (getDataVersionStatus(page).map(status -> status != DataVersionStatus.UNKNOWN).orElse(false))
 			throw new IllegalStateException("Cannot import a page with a DataVersion tag!");
-		
-		startUncachedProcessing(page);
-		CompletableFuture<Void> future = new CompletableFuture<>();
-		Thread thread = new Thread(() -> {
-			lock.write().lock(page);
-			try {
-				importPageSync(page, false);
-				future.complete(null);
-			} catch (Throwable e) {
-				NBTEditor.LOGGER.error("Error importing client chest page " + (page + 1), e);
-				future.completeExceptionally(e);
-			} finally {
-				lock.write().unlock(page);
-				finishUncachedProcessing(page);
-			}
-		}, "NBTEditor/Async/ClientChest/Importing/" + page);
-		thread.start();
-		return future;
+
+		return tasks.page(page, Access.WRITE, "Importing", p -> {
+			importPageSync(p, false);
+			return null;
+		});
 	}
 	
 	public CompletableFuture<Void> updateAllPages(Optional<Integer> defaultDataVersion) {
-		if (!CLIENT_CHEST_FOLDER.exists())
-			return CompletableFuture.completedFuture(null);
-		
-		startUncachedProcessingAll();
-		CompletableFuture<Void> future = new CompletableFuture<>();
-		Thread thread = new Thread(() -> {
-			lock.write().lockAll();
-			try {
-				Exception toThrow = new Exception("Error updating page(s)");
-				for (File file : CLIENT_CHEST_FOLDER.listFiles()) {
-					if (!file.getName().matches("page[0-9]+\\.nbt"))
-						continue;
-					int page = Integer.parseInt(file.getName().substring("page".length(), file.getName().indexOf('.')));
-					if (page >= cache.getPageCount())
-						continue;
-					if (getDataVersionStatus(page).map(status -> status.canBeUpdated(defaultDataVersion.isPresent())).orElse(true)) {
-						try {
-							boolean unloaded = (getLoadLevel(page) == PageLoadLevel.UNLOADED);
-							if (updatePageSync(page, defaultDataVersion, true) != null) {
-								if (unloaded)
-									cache.discardPageCache(page);
-							}
-						} catch (Throwable e) {
-							toThrow.addSuppressed(new Exception("Page " + (page + 1), e));
-						}
+		return tasks.allPages(Access.WRITE, "Updating",
+				page -> getDataVersionStatus(page).map(status -> status.canBeUpdated(defaultDataVersion.isPresent())).orElse(true),
+				page -> {
+					boolean unloaded = (getLoadLevel(page) == PageLoadLevel.UNLOADED);
+					if (updatePageSync(page, defaultDataVersion, true) != null) {
+						if (unloaded)
+							cache.discardPageCache(page);
 					}
-				}
-				if (toThrow.getSuppressed().length > 0) {
-					NBTEditor.LOGGER.error("Error updating the client chest!", toThrow);
-					future.completeExceptionally(toThrow);
-				} else
-					future.complete(null);
-			} finally {
-				lock.write().unlockAll();
-				finishUncachedProcessingAll();
-			}
-		}, "NBTEditor/Async/ClientChest/Updating");
-		thread.start();
-		return future;
+					return null;
+				});
 	}
 	public CompletableFuture<ClientChestPage> updatePage(int page, Optional<Integer> defaultDataVersion) {
 		File file = new File(CLIENT_CHEST_FOLDER, "page" + page + ".nbt");
@@ -486,22 +374,7 @@ public class ClientChest {
 				throw new IllegalStateException("Cannot downgrade pages!");
 		});
 		
-		startUncachedProcessing(page);
-		CompletableFuture<ClientChestPage> future = new CompletableFuture<>();
-		Thread thread = new Thread(() -> {
-			lock.write().lock(page);
-			try {
-				future.complete(updatePageSync(page, defaultDataVersion, false));
-			} catch (Throwable e) {
-				NBTEditor.LOGGER.error("Error updating client chest page " + (page + 1), e);
-				future.completeExceptionally(e);
-			} finally {
-				lock.write().unlock(page);
-				finishUncachedProcessing(page);
-			}
-		}, "NBTEditor/Async/ClientChest/Updating/" + page);
-		thread.start();
-		return future;
+		return tasks.page(page, Access.WRITE, "Updating", p -> updatePageSync(p, defaultDataVersion, false));
 	}
 	
 	public CompletableFuture<Void> discardPage(int page) {
@@ -512,23 +385,10 @@ public class ClientChest {
 		if (getDataVersionStatus(page).map(status -> status == DataVersionStatus.CURRENT).orElse(false))
 			throw new IllegalStateException("Cannot discard an up to date page!");
 		
-		startUncachedProcessing(page);
-		CompletableFuture<Void> future = new CompletableFuture<>();
-		Thread thread = new Thread(() -> {
-			lock.write().lock(page);
-			try {
-				discardPageSync(page);
-				future.complete(null);
-			} catch (Throwable e) {
-				NBTEditor.LOGGER.error("Error discarding client chest page " + (page + 1), e);
-				future.completeExceptionally(e);
-			} finally {
-				lock.write().unlock(page);
-				finishUncachedProcessing(page);
-			}
-		}, "NBTEditor/Async/ClientChest/Discarding/" + page);
-		thread.start();
-		return future;
+		return tasks.page(page, Access.WRITE, "Discarding", p -> {
+			discardPageSync(p);
+			return null;
+		});
 	}
 	
 	public int[] getNearestPOIs(int page) {
@@ -548,19 +408,6 @@ public class ClientChest {
 		return output;
 	}
 	
-	
-	private void startUncachedProcessing(int page) {
-		uncachedProcessers.compute(page, (key, value) -> (value == null ? 0 : value) + 1);
-	}
-	private void finishUncachedProcessing(int page) {
-		uncachedProcessers.compute(page, (key, value) -> value == 1 ? null : value - 1);
-	}
-	private void startUncachedProcessingAll() {
-		startUncachedProcessing(-1);
-	}
-	private void finishUncachedProcessingAll() {
-		finishUncachedProcessing(-1);
-	}
 	
 	private File getFile(int page) {
 		return new File(CLIENT_CHEST_FOLDER, "page" + page + ".nbt");
