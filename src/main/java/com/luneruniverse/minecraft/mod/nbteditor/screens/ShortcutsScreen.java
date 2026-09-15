@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandManager;
@@ -15,6 +14,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPane
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPath;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueText;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -46,8 +46,8 @@ public class ShortcutsScreen extends TickableSupportingScreen {
 			newPanel.setScroll(panel.getScroll());
 		panel = newPanel;
 		
-		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
-		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36 - 24, 100, 20, ScreenTexts.CANCEL, btn -> {
+		this.addRenderableWidget(Buttons.of(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
+		this.addRenderableWidget(Buttons.of(this.width - 134, this.height - 36 - 24, 100, 20, ScreenTexts.CANCEL, btn -> {
 			cancel = true;
 			close();
 		}));

@@ -6,13 +6,13 @@ import java.util.function.Consumer;
 import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -71,8 +71,8 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 			z.setValue("" + defaultPos.getZ());
 		}
 		
-		addWidget(MVMisc.newButton(width / 2 - 102, height / 2 + 2, 100, 20, ScreenTexts.DONE, btn -> done()));
-		addWidget(MVMisc.newButton(width / 2 + 2, height / 2 + 2, 100, 20, ScreenTexts.CANCEL, btn -> posConsumer.accept(Optional.empty())));
+		addWidget(Buttons.of(width / 2 - 102, height / 2 + 2, 100, 20, ScreenTexts.DONE, btn -> done()));
+		addWidget(Buttons.of(width / 2 + 2, height / 2 + 2, 100, 20, ScreenTexts.CANCEL, btn -> posConsumer.accept(Optional.empty())));
 	}
 	
 	@Override

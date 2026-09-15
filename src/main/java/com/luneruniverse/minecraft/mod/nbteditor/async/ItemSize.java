@@ -6,9 +6,9 @@ import java.util.OptionalLong;
 import java.util.WeakHashMap;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 
@@ -65,9 +65,9 @@ public class ItemSize {
 		try {
 			CompoundTag nbt = stack.nbte$serialize(true);
 			if (compressed)
-				MVMisc.writeCompressedNbt(nbt, stream);
+				NbtIO.writeCompressed(nbt, stream);
 			else
-				MVMisc.writeNbt(nbt, stream);
+				NbtIO.write(nbt, stream);
 		} catch (Exception e) {
 			NBTEditor.LOGGER.error("Error while getting the size of an item", e);
 		}

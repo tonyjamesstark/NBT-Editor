@@ -96,7 +96,7 @@ public class MVTooltip {
 		return this == EMPTY || lines.isEmpty();
 	}
 	
-	Tooltip toNewTooltip() {
+	public Tooltip toNewTooltip() {
 		if (isEmpty())
 			return null;
 		

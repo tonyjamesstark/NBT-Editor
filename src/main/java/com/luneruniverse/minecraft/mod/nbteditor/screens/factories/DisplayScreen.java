@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
@@ -21,6 +20,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
@@ -61,9 +61,9 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			});
 			addWidget(nameFormatted);
 			addWidget(lore);
-			addRenderableWidget(MVMisc.newButton(16, height - 16 - 20, 100, 20, TextInst.translatable("nbteditor.hide_flags"),
+			addRenderableWidget(Buttons.of(16, height - 16 - 20, 100, 20, TextInst.translatable("nbteditor.hide_flags"),
 					btn -> closeSafely(() -> minecraft.setScreenAndShow(new HideFlagsScreen((ItemReference) ref)))));
-			addRenderableWidget(MVMisc.newButton(124, height - 16 - 20, 150, 20,
+			addRenderableWidget(Buttons.of(124, height - 16 - 20, 150, 20,
 					TextInst.translatable("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")), btn -> {
 						itemNameType = !itemNameType;
 						btn.setMessage(TextInst.translatable("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")));
@@ -76,7 +76,7 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			addWidget(nameFormatted);
 		
 		if (localNBT instanceof LocalEntity entity) {
-			addRenderableWidget(MVMisc.newButton(16, nextY, 150, 20,
+			addRenderableWidget(Buttons.of(16, nextY, 150, 20,
 					TextInst.translatable("nbteditor.display.custom_name_visible." +
 							(EntityTagReferences.CUSTOM_NAME_VISIBLE.get(entity) ? "enabled" : "disabled")), btn -> {
 				boolean customNameVisible = !EntityTagReferences.CUSTOM_NAME_VISIBLE.get(entity);

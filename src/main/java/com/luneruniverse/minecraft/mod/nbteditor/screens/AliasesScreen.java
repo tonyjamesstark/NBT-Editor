@@ -9,7 +9,6 @@ import java.util.Map;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommandGroup;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandHandler;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -22,6 +21,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPane
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPath;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueText;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -81,12 +81,12 @@ public class AliasesScreen extends TickableSupportingScreen {
 			newPanel.setScroll(panel.getScroll());
 		panel = newPanel;
 		
-		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
-		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36 - 24, 100, 20, ScreenTexts.CANCEL, btn -> {
+		this.addRenderableWidget(Buttons.of(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
+		this.addRenderableWidget(Buttons.of(this.width - 134, this.height - 36 - 24, 100, 20, ScreenTexts.CANCEL, btn -> {
 			cancel = true;
 			close();
 		}));
-		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36 - 24 * 2, 100, 20,
+		this.addRenderableWidget(Buttons.of(this.width - 134, this.height - 36 - 24 * 2, 100, 20,
 				TextInst.translatable("nbteditor.config.aliases.extreme"), btn -> addExtremeAliases(CommandHandler.COMMANDS.values(), ""),
 				new MVTooltip("nbteditor.config.aliases.extreme.desc")));
 	}

@@ -14,7 +14,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -27,6 +26,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -103,7 +103,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 				new NamedTextFieldWidget(16, 64 + font.lineHeight * msg.size() + 16, 100, 16, dataVersion)
 				.name(TextInst.translatable("nbteditor.nbt.import.data_version"))
 				.tooltip(new MVTooltip("nbteditor.nbt.import.data_version.desc")));
-		addRenderableWidget(MVMisc.newButton(this.width - 116, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> onClose()));
+		addRenderableWidget(Buttons.of(this.width - 116, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> onClose()));
 	}
 	
 	@Override

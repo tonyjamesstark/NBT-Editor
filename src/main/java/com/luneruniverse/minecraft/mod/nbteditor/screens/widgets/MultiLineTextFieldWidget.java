@@ -16,7 +16,6 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
@@ -25,6 +24,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.CharacterEvent;
@@ -59,19 +60,19 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 					.name(TextInst.translatable("nbteditor.multi_line_text.find")));
 			replace = addWidget(new NamedTextFieldWidget(0, 20, 200, 16)
 					.name(TextInst.translatable("nbteditor.multi_line_text.replace")));
-			regexBtn = addWidget(MVMisc.newButton(180, -2, 20, 20,
+			regexBtn = addWidget(Buttons.of(180, -2, 20, 20,
 					TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")), btn -> {
 				regex = !regex;
 				btn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
 			}, new MVTooltip("nbteditor.multi_line_text.regex")));
-			addWidget(MVMisc.newButton(0, 40, 40, 20, TextInst.translatable("nbteditor.multi_line_text.find"), btn -> {
-				goToNext(MVMisc.hasShiftDown(), true);
+			addWidget(Buttons.of(0, 40, 40, 20, TextInst.translatable("nbteditor.multi_line_text.find"), btn -> {
+				goToNext(Keys.hasShiftDown(), true);
 			}));
-			addWidget(MVMisc.newButton(44, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace"), btn -> {
-				if (goToNext(MVMisc.hasShiftDown(), true))
+			addWidget(Buttons.of(44, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace"), btn -> {
+				if (goToNext(Keys.hasShiftDown(), true))
 					replaceSel();
 			}));
-			addWidget(MVMisc.newButton(112, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace_all"), btn -> {
+			addWidget(Buttons.of(112, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace_all"), btn -> {
 				boolean first = true;
 				int prevCursor = cursor;
 				cursor = 0;
@@ -87,7 +88,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 				if (first)
 					cursor = prevCursor;
 			}));
-			addWidget(MVMisc.newButton(180, 40, 20, 20, TextInst.translatable("nbteditor.multi_line_text.x"), btn -> {
+			addWidget(Buttons.of(180, 40, 20, 20, TextInst.translatable("nbteditor.multi_line_text.x"), btn -> {
 				OverlaySupportingScreen.setOverlayStatic(null);
 			}));
 			
@@ -200,7 +201,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 				return true;
 			}
 			if (keyCode == GLFW.GLFW_KEY_ENTER) {
-				goToNext(MVMisc.hasShiftDown(), true);
+				goToNext(Keys.hasShiftDown(), true);
 				return true;
 			}
 			if (keyCode == GLFW.GLFW_KEY_TAB) {
@@ -210,7 +211,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 					setFocused(find);
 				return true;
 			}
-			if (keyCode == GLFW.GLFW_KEY_R && MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown()) {
+			if (keyCode == GLFW.GLFW_KEY_R && Keys.hasControlDown() && !Keys.hasShiftDown() && !Keys.hasAltDown()) {
 				regex = !regex;
 				regexBtn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
 				return true;
@@ -641,7 +642,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	public void setCursor(int cursor, boolean select) {
 		int selStart = this.selStart;
 		int selEnd = this.selEnd;
-		if (select && MVMisc.hasShiftDown())
+		if (select && Keys.hasShiftDown())
 			selEnd = cursor;
 		else {
 			selStart = cursor;
@@ -698,14 +699,14 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	@Override
 	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
-		if (suggestor != null && (keyCode != GLFW.GLFW_KEY_UP && keyCode != GLFW.GLFW_KEY_DOWN || MVMisc.hasAltDown())) {
+		if (suggestor != null && (keyCode != GLFW.GLFW_KEY_UP && keyCode != GLFW.GLFW_KEY_DOWN || Keys.hasAltDown())) {
 			syncToSuggestor();
 			if (suggestor.keyPressed(input)) {
 				syncFromSuggestor();
 				return true;
 			}
 		}
-		if (MVMisc.isSelectAll(keyCode)) {
+		if (Keys.isSelectAll(keyCode)) {
 			onCursorMove(text.length(), 0, text.length());
 			selStart = 0;
 			selEnd = text.length();
@@ -713,16 +714,16 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			cursorX = -1;
 			return true;
 		}
-		if (MVMisc.isCopy(keyCode)) {
+		if (Keys.isCopy(keyCode)) {
 			MainUtil.client.keyboardHandler.setClipboard(onCopy(getSelectedText(), getSelStart(), getSelEnd() - getSelStart()));
 			return true;
 		}
-		if (MVMisc.isPaste(keyCode)) {
+		if (Keys.isPaste(keyCode)) {
 			this.write(pasteFilter(onPaste(MainUtil.client.keyboardHandler.getClipboard(), getSelStart(), getSelEnd() - getSelStart())));
 			cursorX = -1;
 			return true;
 		}
-		if (MVMisc.isCut(keyCode)) {
+		if (Keys.isCut(keyCode)) {
 			MainUtil.client.keyboardHandler.setClipboard(onCopy(getSelectedText(), getSelStart(), getSelEnd() - getSelStart()));
 			this.write("");
 			cursorX = -1;
@@ -756,7 +757,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		}
 		switch (keyCode) {
 			case GLFW.GLFW_KEY_LEFT: {
-				if (MVMisc.hasControlDown()) {
+				if (Keys.hasControlDown()) {
 					this.setCursor(this.getWordSkipPosition(true, false), true);
 				} else {
 					this.moveCursor(-1);
@@ -765,7 +766,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 				return true;
 			}
 			case GLFW.GLFW_KEY_RIGHT: {
-				if (MVMisc.hasControlDown()) {
+				if (Keys.hasControlDown()) {
 					this.setCursor(this.getWordSkipPosition(false, false), true);
 				} else {
 					this.moveCursor(1);
@@ -774,14 +775,14 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 				return true;
 			}
 			case GLFW.GLFW_KEY_UP: {
-				if (MVMisc.hasControlDown())
+				if (Keys.hasControlDown())
 					setCursor(0, true);
 				else
 					moveCursorUp();
 				return true;
 			}
 			case GLFW.GLFW_KEY_DOWN: {
-				if (MVMisc.hasControlDown())
+				if (Keys.hasControlDown())
 					setCursor(text.length(), true);
 				else
 					moveCursorDown();
@@ -840,13 +841,13 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	}
 	
 	public static boolean isUndo(int code) {
-		return code == GLFW.GLFW_KEY_Z && MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown();
+		return code == GLFW.GLFW_KEY_Z && Keys.hasControlDown() && !Keys.hasShiftDown() && !Keys.hasAltDown();
 	}
 	public static boolean isRedo(int code) {
-		return code == GLFW.GLFW_KEY_Y && MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown();
+		return code == GLFW.GLFW_KEY_Y && Keys.hasControlDown() && !Keys.hasShiftDown() && !Keys.hasAltDown();
 	}
 	public static boolean isFind(int code) {
-		return code == GLFW.GLFW_KEY_F && MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown();
+		return code == GLFW.GLFW_KEY_F && Keys.hasControlDown() && !Keys.hasShiftDown() && !Keys.hasAltDown();
 	}
 	
 	// passOneSpace requires that one section of whitespace is passed, either at the end or beginning of the search
@@ -885,11 +886,11 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	}
 	
 	private int getCursorPosWithOffset(int offset) {
-		return Util.offsetByCodepoints(this.text, MVMisc.hasShiftDown() ? cursor : (offset > 0 ? getSelEnd() : getSelStart()), offset);
+		return Util.offsetByCodepoints(this.text, Keys.hasShiftDown() ? cursor : (offset > 0 ? getSelEnd() : getSelStart()), offset);
 	}
 	
 	private void erase(boolean backwards) {
-		if (MVMisc.hasControlDown()) {
+		if (Keys.hasControlDown()) {
 			this.eraseWords(backwards);
 		} else {
 			this.eraseCharacters(backwards ? -1 : 1);

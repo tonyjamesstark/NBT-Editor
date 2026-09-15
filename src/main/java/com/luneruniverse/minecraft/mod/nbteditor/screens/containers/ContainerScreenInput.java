@@ -6,13 +6,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.mixin.HandledScreenAccessor;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -43,7 +43,7 @@ public class ContainerScreenInput {
 		if (!creativeInv && !NBTEditorClient.SERVER_CONN.isScreenEditable())
 			return;
 
-		if (!MVMisc.hasControlDown())
+		if (!Keys.hasControlDown())
 			return;
 
 		if (slot instanceof CreativeModeInventoryScreen.SlotWrapper creativeSlot)

@@ -27,7 +27,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageTasks.Access;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
@@ -39,6 +38,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.SaveQueue;
 import com.luneruniverse.minecraft.mod.nbteditor.util.lock.PartitionedReadWriteLock;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
+import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.ItemStack;
@@ -427,7 +427,7 @@ public class ClientChest {
 		File file = getFile(page);
 		if (!file.exists())
 			return Optional.of(Version.getDataVersion());
-		return MVMisc.readNbt(file).nbte$getInt("DataVersion");
+		return NbtIO.read(file).nbte$getInt("DataVersion");
 	}
 	private DataVersionStatus readDataVersionStatusSync(int page) throws Exception {
 		return DataVersionStatus.of(readDataVersionSync(page));
@@ -455,7 +455,7 @@ public class ClientChest {
 			return new ClientChestPage();
 		}
 		
-		CompoundTag pageNbt = MVMisc.readNbt(file);
+		CompoundTag pageNbt = NbtIO.read(file);
 		if (!pageNbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE)) {
 			ClientChestPage output = ClientChestPage.unknownDataVersion();
 			cache.cachePage(page, output);
@@ -540,7 +540,7 @@ public class ClientChest {
 			CLIENT_CHEST_FOLDER.mkdir();
 		File file = getFile(page);
 		File tmpFile = new File(CLIENT_CHEST_FOLDER, "saving_page" + page + "_" + System.currentTimeMillis() + ".nbt");
-		MixinLink.throwHiddenException(() -> MVMisc.writeNbt(pageNbt, tmpFile));
+		MixinLink.throwHiddenException(() -> NbtIO.write(pageNbt, tmpFile));
 		Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
@@ -571,7 +571,7 @@ public class ClientChest {
 			throw new IllegalStateException("Cannot import an up to date page!");
 		}
 		
-		CompoundTag pageNbt = MVMisc.readNbt(file);
+		CompoundTag pageNbt = NbtIO.read(file);
 		if (pageNbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE)) {
 			if (ignoreInvalidDataVersion)
 				return;
@@ -583,7 +583,7 @@ public class ClientChest {
 		pageNbt.putInt("DataVersion", Version.getDataVersion());
 		
 		File tmpFile = new File(CLIENT_CHEST_FOLDER, "saving_page" + page + "_" + System.currentTimeMillis() + ".nbt");
-		MixinLink.throwHiddenException(() -> MVMisc.writeNbt(pageNbt, tmpFile));
+		MixinLink.throwHiddenException(() -> NbtIO.write(pageNbt, tmpFile));
 		Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		
 		PageLoadLevel loadLevel = getLoadLevel(page);
@@ -599,7 +599,7 @@ public class ClientChest {
 			throw new IllegalStateException("Cannot update an already up to date page!");
 		}
 		
-		CompoundTag pageNbt = MVMisc.readNbt(file);
+		CompoundTag pageNbt = NbtIO.read(file);
 		int dataVersion;
 		try {
 			dataVersion = pageNbt.nbte$getInt("DataVersion").or(() -> defaultDataVersion)
@@ -659,7 +659,7 @@ public class ClientChest {
 		if (!file.exists())
 			throw new IllegalStateException("Cannot discard an up to date page!");
 		
-		CompoundTag pageNbt = MVMisc.readNbt(file);
+		CompoundTag pageNbt = NbtIO.read(file);
 		if (pageNbt.nbte$getInt("DataVersion").filter(dataVersion -> dataVersion == Version.getDataVersion()).isPresent())
 			throw new IllegalStateException("Cannot discard an up to date page!");
 		

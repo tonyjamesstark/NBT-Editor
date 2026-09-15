@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
@@ -13,6 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.MultiLineTextFi
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtFormatter;
 import com.mojang.brigadier.suggestion.Suggestions;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
@@ -53,13 +53,13 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 		super.init();
 		
 		Button done;
-		this.addRenderableWidget(done = MVMisc.newButton(20, 20, Math.min(200, width / 2 - 25), 20, ScreenTexts.DONE, btn -> {
+		this.addRenderableWidget(done = Buttons.of(20, 20, Math.min(200, width / 2 - 25), 20, ScreenTexts.DONE, btn -> {
 			onDone.accept(text);
 			onClose();
 		}));
 		if (width - (done.getWidth() * 2 + 50) < 100) // When the end of the second button is near the end of the text field, it looks bad
 			done.setWidth(done.getWidth() * 2 / 3);
-		this.addRenderableWidget(MVMisc.newButton(done.x + done.getWidth() + 10, 20, done.getWidth(), 20, ScreenTexts.CANCEL, btn -> onClose()));
+		this.addRenderableWidget(Buttons.of(done.x + done.getWidth() + 10, 20, done.getWidth(), 20, ScreenTexts.CANCEL, btn -> onClose()));
 		
 		textArea = addRenderableWidget(MultiLineTextFieldWidget.create(textArea, 20, 50, width - 40, height - 70, text, formatter == null ? null : str -> {
 			NbtFormatter.FormatterResult formattedText = formatter.formatSafely(str);

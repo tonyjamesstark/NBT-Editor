@@ -13,7 +13,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -29,6 +28,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -104,7 +104,7 @@ public class NBTExportCommand extends ClientCommand {
 				Files.createDirectory(exportDir.toPath());
 			File output = new File(exportDir, FileUtil.findAvailableName(exportDir.toPath(), name, ".nbt"));
 			nbt.putInt("DataVersion", Version.getDataVersion());
-			MVMisc.writeCompressedNbt(nbt, output);
+			NbtIO.writeCompressed(nbt, output);
 			MainUtil.client.player.sendSystemMessage(TextUtil.attachFileTextOptions(TextInst.translatable("nbteditor.nbt.export.file.success",
 					TextInst.literal(output.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(style ->
 					style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output));

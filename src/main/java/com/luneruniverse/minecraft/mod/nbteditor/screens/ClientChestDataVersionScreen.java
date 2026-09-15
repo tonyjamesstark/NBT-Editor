@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChest;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
@@ -19,6 +18,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.components.Button;
@@ -61,22 +61,22 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		
 		int dontUpdatePageX = width / 2 + (dataVersionStatus == DataVersionStatus.TOO_UPDATED ? -50 : 58);
 		
-		addRenderableWidget(MVMisc.newButton(dontUpdatePageX, height / 2 - 34, 52, 20,
+		addRenderableWidget(Buttons.of(dontUpdatePageX, height / 2 - 34, 52, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.dont_update_page"), btn -> onClose()));
-		addRenderableWidget(MVMisc.newButton(dontUpdatePageX + 56, height / 2 - 34, 20, 20, TextInst.of("<"), btn -> prevPage(),
+		addRenderableWidget(Buttons.of(dontUpdatePageX + 56, height / 2 - 34, 20, 20, TextInst.of("<"), btn -> prevPage(),
 				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
 						.append(prevKeybind).append(TextInst.translatable("nbteditor.keybind.page.prev")))))
 				.active = ClientChestScreen.PAGE > 0;
-		addRenderableWidget(MVMisc.newButton(dontUpdatePageX + 80, height / 2 - 34, 20, 20, TextInst.of(">"), btn -> nextPage(),
+		addRenderableWidget(Buttons.of(dontUpdatePageX + 80, height / 2 - 34, 20, 20, TextInst.of(">"), btn -> nextPage(),
 				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
 						.append(nextKeybind).append(TextInst.translatable("nbteditor.keybind.page.next")))))
 				.active = ClientChestScreen.PAGE < NBTEditorClient.CLIENT_CHEST.getPageCount() - 1;
 		
-		addRenderableWidget(MVMisc.newButton(dontUpdatePageX, height / 2 - 10, 100, 20,
+		addRenderableWidget(Buttons.of(dontUpdatePageX, height / 2 - 10, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.reload_page"), btn -> {
 			LoadingScreen.show(ClientChestHelper.reloadPage(ClientChestScreen.PAGE), pageData -> ClientChestScreen.show());
 		}));
-		addRenderableWidget(MVMisc.newButton(dontUpdatePageX, height / 2 + 14, 100, 20,
+		addRenderableWidget(Buttons.of(dontUpdatePageX, height / 2 + 14, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.clear_page"), btn -> {
 			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value) {
@@ -92,14 +92,14 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		if (dataVersionStatus == DataVersionStatus.TOO_UPDATED)
 			return;
 		
-		addRenderableWidget(MVMisc.newButton(width / 2 - 158, height / 2 - 10, 100, 20,
+		addRenderableWidget(Buttons.of(width / 2 - 158, height / 2 - 10, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.import_page"), btn -> {
 					LoadingScreen.show(
 							addSuccessMessage(ClientChestHelper.importPage(ClientChestScreen.PAGE), false),
 							success -> ClientChestScreen.show());
 				}, new MVTooltip("nbteditor.client_chest.data_version.import_page.desc")))
 				.active = (dataVersionStatus == DataVersionStatus.UNKNOWN);
-		addRenderableWidget(MVMisc.newButton(width / 2 - 158, height / 2 + 14, 100, 20,
+		addRenderableWidget(Buttons.of(width / 2 - 158, height / 2 + 14, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.import_all_pages"), btn -> {
 					LoadingScreen.show(
 							addSuccessMessage(ClientChestHelper.importAllPages(), true),
@@ -110,7 +110,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 				new NamedTextFieldWidget(width / 2 - 50, height / 2 - 32, 100, 16, dataVersion)
 				.name(TextInst.translatable("nbteditor.nbt.import.data_version"))
 				.tooltip(new MVTooltip("nbteditor.nbt.import.data_version.desc")));
-		updatePageBtn = addRenderableWidget(MVMisc.newButton(width / 2 - 50, height / 2 - 10, 100, 20,
+		updatePageBtn = addRenderableWidget(Buttons.of(width / 2 - 50, height / 2 - 10, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.update_page"), btn -> {
 					Optional<Integer> dataVersionValue = Version.getDataVersion(dataVersion.getValue())
 							.filter(value -> value < Version.getDataVersion());
@@ -123,7 +123,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 								success -> ClientChestScreen.show());
 					});
 				}, new MVTooltip("nbteditor.client_chest.data_version.update_page.desc." + (dataVersionStatus == DataVersionStatus.UNKNOWN ? "unknown" : "old"))));
-		addRenderableWidget(MVMisc.newButton(width / 2 - 50, height / 2 + 14, 100, 20,
+		addRenderableWidget(Buttons.of(width / 2 - 50, height / 2 + 14, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.update_all_pages"), btn -> {
 					Optional<Integer> dataVersionValue = Version.getDataVersion(dataVersion.getValue())
 							.filter(value -> value < Version.getDataVersion());

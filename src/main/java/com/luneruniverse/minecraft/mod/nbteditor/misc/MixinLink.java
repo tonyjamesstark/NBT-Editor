@@ -13,7 +13,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.luneruniverse.minecraft.mod.nbteditor.mixin.ChatScreenAccessor;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
@@ -21,6 +20,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -110,7 +110,7 @@ public class MixinLink {
 	public static Tag parseSpecialElement(StringReader reader) throws CommandSyntaxException {
 		specialNumbers.add(Thread.currentThread());
 		try {
-			return MVMisc.parseNbt(reader);
+			return NbtIO.parseSnbt(reader);
 		} finally {
 			specialNumbers.remove(Thread.currentThread());
 		}

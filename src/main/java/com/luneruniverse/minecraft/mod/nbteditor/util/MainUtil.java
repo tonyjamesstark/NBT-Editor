@@ -23,7 +23,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ActionResult;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
@@ -33,6 +32,7 @@ import com.mojang.serialization.Dynamic;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
@@ -345,9 +345,9 @@ public class MainUtil {
 	public static CompoundTag readNBT(InputStream in) throws IOException {
 		byte[] data = in.readAllBytes();
 		try {
-			return MVMisc.readCompressedNbt(new ByteArrayInputStream(data));
+			return NbtIO.readCompressed(new ByteArrayInputStream(data));
 		} catch (ZipException e) {
-			return MVMisc.readNbt(new ByteArrayInputStream(data));
+			return NbtIO.read(new ByteArrayInputStream(data));
 		}
 	}
 	

@@ -9,7 +9,6 @@ import org.lwjgl.glfw.GLFW;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -25,6 +24,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldW
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.TranslatedGroupWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.WrittenBookTagReferences;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess;
@@ -196,11 +196,11 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 				ConfigValueDropdown.forEnum(getGeneration(), Generation.ORIGINAL, Generation.class)
 						.addValueListener(value -> setGeneration(value.getValidValue())), 16 + 108 * 2, 64, 0));
 		
-		group.addWidget(MVMisc.newButton(16 + 108 * 3 - 4, 64, 20, 20,
+		group.addWidget(Buttons.of(16 + 108 * 3 - 4, 64, 20, 20,
 				TextInst.translatable("nbteditor.book.add"), btn -> addPage()));
-		group.addWidget(MVMisc.newButton(16 + 108 * 3 + 20, 64, 20, 20,
+		group.addWidget(Buttons.of(16 + 108 * 3 + 20, 64, 20, 20,
 				TextInst.translatable("nbteditor.book.remove"), btn -> removePage()));
-		group.addWidget(MVMisc.newButton(16 + 108 * 3 + 44, 64, 20, 20,
+		group.addWidget(Buttons.of(16 + 108 * 3 + 44, 64, 20, 20,
 				TextInst.translatable("nbteditor.book.preview.icon"),
 				btn -> {
 					net.minecraft.client.gui.screens.inventory.BookViewScreen preview =
@@ -237,12 +237,12 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 			nextKeybind = temp;
 		}
 		
-		group.addWidget(MVMisc.newButton(16, 64 + 24, 20, height - 80 - 24,
+		group.addWidget(Buttons.of(16, 64 + 24, 20, height - 80 - 24,
 				TextInst.translatable("nbteditor.book.back"), btn -> back(),
 				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
 						.append(prevKeybind).append(TextInst.translatable("nbteditor.keybind.page.prev")))))
 				.active = (page > 0);
-		group.addWidget(MVMisc.newButton(width - 16 - 20, 64 + 24, 20, height - 80 - 24,
+		group.addWidget(Buttons.of(width - 16 - 20, 64 + 24, 20, height - 80 - 24,
 				TextInst.translatable("nbteditor.book.forward"), btn -> forward(),
 				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
 						.append(nextKeybind).append(TextInst.translatable("nbteditor.keybind.page.next")))));

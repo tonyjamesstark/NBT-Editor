@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.BookCommand;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
@@ -23,6 +22,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -85,7 +85,7 @@ public class BookScreenMixin extends Screen {
 			return;
 		}
 		
-		openBtn = addRenderableWidget(MVMisc.newButton(16, 64, 100, 20, TextInst.translatable("nbteditor.book.open"), btn -> {
+		openBtn = addRenderableWidget(Buttons.of(16, 64, 100, 20, TextInst.translatable("nbteditor.book.open"), btn -> {
 			getReference(ref -> {
 				if ((Object) this instanceof LecternScreen)
 					MainUtil.client.player.closeContainer();
@@ -93,7 +93,7 @@ public class BookScreenMixin extends Screen {
 						new com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen(ref, Math.max(0, currentPage)));
 			});
 		}));
-		convertBtn = addRenderableWidget(MVMisc.newButton(16, 64 + 24, 100, 20, TextInst.translatable("nbteditor.book.convert"),
+		convertBtn = addRenderableWidget(Buttons.of(16, 64 + 24, 100, 20, TextInst.translatable("nbteditor.book.convert"),
 				btn -> getReference(itemRef -> {
 					if (BookCommand.convertBookToWritable(itemRef)) {
 						openBtn.visible = false;
@@ -116,7 +116,7 @@ public class BookScreenMixin extends Screen {
 		if (MainUtil.client.gui.screen() instanceof
 				com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen) { // Preview mode
 			info.cancel();
-			addRenderableWidget(MVMisc.newButton(width / 2 - 100, 196, 200, 20, ScreenTexts.DONE,
+			addRenderableWidget(Buttons.of(width / 2 - 100, 196, 200, 20, ScreenTexts.DONE,
 					btn -> OverlaySupportingScreen.setOverlayStatic(null)));
 		}
 	}

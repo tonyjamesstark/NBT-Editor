@@ -25,7 +25,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.LargeClientChestPageCache;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.SmallClientChestPageCache;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVEnchantments;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -41,6 +40,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestS
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -599,7 +599,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 			newPanel.setScroll(panel.getScroll());
 		panel = newPanel;
 		
-		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
+		this.addRenderableWidget(Buttons.of(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
 	}
 	
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
