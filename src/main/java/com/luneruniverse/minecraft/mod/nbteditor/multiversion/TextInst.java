@@ -33,10 +33,7 @@ public class TextInst {
 	public static MutableComponent copy(Component text) {
 		return text.copy();
 	}
-	public static MutableComponent copyContentOnly(Component text) {
-		return text.plainCopy();
-	}
-	
+
 	public static MutableComponent bracketed(Component text) {
 		return translatable("chat.square_brackets", text);
 	}
