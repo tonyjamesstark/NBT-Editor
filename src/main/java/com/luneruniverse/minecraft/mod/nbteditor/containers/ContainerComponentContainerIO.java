@@ -44,6 +44,4 @@ public class ContainerComponentContainerIO implements ContainerIO<ItemStack> {
 		return numSlots;
 	}
 	
-	
-	
 }

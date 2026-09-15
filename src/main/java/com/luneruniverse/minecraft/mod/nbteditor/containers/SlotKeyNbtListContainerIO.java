@@ -76,6 +76,4 @@ public class SlotKeyNbtListContainerIO implements ContainerIO<ListTag> {
 		return numSlots;
 	}
 	
-	
-	
 }

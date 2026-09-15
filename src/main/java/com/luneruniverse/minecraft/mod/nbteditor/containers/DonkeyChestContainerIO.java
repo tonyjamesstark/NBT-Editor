@@ -69,6 +69,4 @@ public class DonkeyChestContainerIO implements ContainerIO<CompoundTag> {
 		return SLOTS;
 	}
 	
-	
-	
 }
