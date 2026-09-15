@@ -1,70 +1,51 @@
 package com.luneruniverse.minecraft.mod.nbteditor.misc;
 
-import java.awt.Color;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalLong;
 import java.util.Random;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.async.ItemSize;
-import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
-import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.mixin.ChatScreenAccessor;
-import com.luneruniverse.minecraft.mod.nbteditor.mixin.HandledScreenAccessor;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
-import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
-import com.luneruniverse.minecraft.mod.nbteditor.util.ItemSizeText;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
-import com.luneruniverse.minecraft.mod.nbteditor.util.TooltipPlacement;
-import com.luneruniverse.minecraft.mod.nbteditor.util.TooltipPlacement.Rect;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextColor;
-import net.minecraft.ChatFormatting;
 
-// Non-mixin classes in the mixin package doesn't work well
+/**
+ * The seam between the mixins and the rest of the mod. Non-mixin classes in the mixin package do
+ * not work well, so anything a mixin needs to share lives here.
+ *
+ * <p>What belongs here is state that couples one mixin to another: a flag a mixin sets so a
+ * second mixin further down the call stack behaves differently, keyed by thread because that is
+ * the only handle the two ends share. {@link #specialNumbers}, {@link #hiddenExceptionHandlers}
+ * and {@link #SET_CHANGES} are all that shape, and they have to be reachable from both ends.
+ *
+ * <p>What does not belong here is mod behaviour that merely happens to be invoked from a mixin.
+ * That goes in the package that owns the concept, and the mixin calls it there. Tooltips live in
+ * {@code screens.ItemTooltips}, container screen input in
+ * {@code screens.containers.ContainerScreenInput}.
+ */
 public class MixinLink {
 	
 	public static boolean CLIENT_LOADED = false;
@@ -87,26 +68,6 @@ public class MixinLink {
 	
 	
 	public static File screenshotTarget;
-	
-	
-	public static int[] getTooltipSize(List<ClientTooltipComponent> tooltip) {
-		int width = 0;
-		int height = (tooltip.size() == 1 ? -2 : 0);
-		for (ClientTooltipComponent line : tooltip) {
-			width = Math.max(width, line.getWidth(MainUtil.client.font));
-			height += MVMisc.getTooltipComponentHeight(line);
-		}
-		return new int[] {width, height};
-	}
-	public static void renderTooltipFromComponents(GuiGraphicsExtractor context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
-		int[] mousePos = MainUtil.getMousePos();
-		TooltipPlacement placement = TooltipPlacement.fit(x, y, width, height, screenWidth, screenHeight,
-				mousePos[0], mousePos[1]);
-		Rect source = placement.source();
-		Rect target = placement.target();
-		MainUtil.mapMatrices(context, source.x(), source.y(), source.width(), source.height(),
-				target.x(), target.y(), target.width(), target.height());
-	}
 	
 	
 	public static final Set<Thread> hiddenExceptionHandlers = Collections.synchronizedSet(new HashSet<>());
@@ -156,119 +117,10 @@ public class MixinLink {
 	}
 	
 	
-	public static void onMouseClick(AbstractContainerScreen<?> source, Slot slot, int slotId, int button, ContainerInput actionType, CallbackInfo info) {
-		if (!source.getMenu().getCarried().isEmpty())
-			GetLostItemCommand.addToHistory(source.getMenu().getCarried());
-		
-		boolean creativeInv = (source instanceof CreativeModeInventoryScreen);
-		
-		if (!creativeInv && !NBTEditorClient.SERVER_CONN.isScreenEditable())
-			return;
-		
-		if (!MVMisc.hasControlDown())
-			return;
-		
-		if (slot instanceof CreativeModeInventoryScreen.SlotWrapper creativeSlot)
-			slot = creativeSlot.target;
-		
-		if (actionType == ContainerInput.PICKUP && slot != null &&
-				(slot.container == MainUtil.client.player.getInventory() || !creativeInv) &&
-				(!(source instanceof InventoryScreen) || slot.index > 4)) {
-			ItemStack cursor = source.getMenu().getCarried();
-			ItemStack item = slot.getItem();
-			if (cursor == null || cursor.isEmpty() || item == null || item.isEmpty())
-				return;
-			if (cursor.getItem() == Items.ENCHANTED_BOOK || item.getItem() == Items.ENCHANTED_BOOK) {
-				if (cursor.getItem() != Items.ENCHANTED_BOOK) { // Make sure the cursor is an enchanted book
-					ItemStack temp = cursor;
-					cursor = item;
-					item = temp;
-				}
-				
-				Enchants enchants = ItemTagReferences.ENCHANTMENTS.get(item);
-				enchants.addEnchants(ItemTagReferences.ENCHANTMENTS.get(cursor).getEnchants());
-				ItemTagReferences.ENCHANTMENTS.set(item, enchants);
-				
-				ItemReference.getContainerItem(source, slot).saveItem(item);
-				NBTEditorClient.CURSOR_MANAGER.setCursor(ItemStack.EMPTY);
-				
-				info.cancel();
-			}
-		}
-	}
-	
-	public static void keyPressed(AbstractContainerScreen<?> source, KeyEvent input, CallbackInfoReturnable<Boolean> info) {
-		boolean creativeInv = (source instanceof CreativeModeInventoryScreen);
-		
-		Slot hoveredSlot = ((HandledScreenAccessor) source).getHoveredSlot();
-		
-		if (hoveredSlot instanceof CreativeModeInventoryScreen.SlotWrapper creativeSlot)
-			hoveredSlot = creativeSlot.target;
-		
-		if (hoveredSlot != null &&
-				((creativeInv && hoveredSlot.container == MainUtil.client.player.getInventory()) ||
-						(!creativeInv && NBTEditorClient.SERVER_CONN.isScreenEditable())) &&
-				(!(source instanceof InventoryScreen) || hoveredSlot.index > 4) &&
-				(ConfigScreen.isAirEditable() || hoveredSlot.getItem() != null && !hoveredSlot.getItem().isEmpty())) {
-			if (ClientHandledScreen.handleKeybind(input.key(), hoveredSlot.getItem(),
-					ItemReference.getContainerItem(source, hoveredSlot))) {
-				info.setReturnValue(true);
-			}
-		}
-	}
-	
-	
-	
 	/**
 	 * Only in 1.20.5 or higher
 	 */
 	public static final Cache<BookViewScreen.BookAccess, Boolean> WRITTEN_BOOK_CONTENTS = CacheBuilder.newBuilder().weakKeys().build();
-	
-	
-	public static void modifyTooltip(ItemStack source, List<Component> tooltip) {
-		// Tooltips are requested for all items when GameJoinS2CPacket is received to setup the creative inventory's search
-		// The world doesn't exist yet, so this causes the game to freeze when an exception from this mixin breaks everything
-		if (MainUtil.client.level == null)
-			return;
-		
-		if (HideFlag.TOOLTIP != null && ItemTagReferences.HIDE_FLAGS.get(source).get(HideFlag.TOOLTIP))
-			return;
-		
-		ConfigScreen.ItemSizeFormat sizeConfig = ConfigScreen.getItemSizeFormat();
-		if (sizeConfig != ConfigScreen.ItemSizeFormat.HIDDEN) {
-			OptionalLong loadingSize = ItemSize.getItemSize(source, sizeConfig.isCompressed());
-			String displaySize;
-			Optional<ChatFormatting> sizeFormat;
-			if (loadingSize.isEmpty()) {
-				displaySize = "...";
-				sizeFormat = Optional.of(ChatFormatting.GRAY);
-			} else {
-				ItemSizeText.Rendered rendered = ItemSizeText.render(loadingSize.getAsLong(), sizeConfig.getMagnitude());
-				displaySize = rendered.text();
-				sizeFormat = rendered.color();
-			}
-			TextColor sizeColor = sizeFormat.map(TextColor::fromLegacyFormat).orElseGet(
-					() -> TextColor.fromRgb(Color.HSBtoRGB((System.currentTimeMillis() % 1000) / 1000.0f, 1, 1)));
-			tooltip.add(TextInst.translatable("nbteditor.item_size." + (sizeConfig.isCompressed() ? "compressed" : "uncompressed"),
-					TextInst.literal(displaySize).withStyle(style -> style.withColor(sizeColor))));
-		}
-		
-		if (!ConfigScreen.isKeybindsHidden()) {
-			// Checking slots in your hotbar vs item selection is difficult, so the lore is just disabled in non-inventory tabs
-			boolean creativeInv = MVMisc.isCreativeInventoryTabSelected();
-			
-			if (creativeInv || (!(MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen) &&
-					NBTEditorClient.SERVER_CONN.isScreenEditable())) {
-				tooltip.add(TextInst.translatable("nbteditor.keybind.edit"));
-				tooltip.add(TextInst.translatable("nbteditor.keybind.factory"));
-				if (ContainerIOs.isSupported(source))
-					tooltip.add(TextInst.translatable("nbteditor.keybind.container"));
-				if (source.getItem() == Items.ENCHANTED_BOOK)
-					tooltip.add(TextInst.translatable("nbteditor.keybind.enchant"));
-				tooltip.add(TextInst.translatable("nbteditor.keybind.delete"));
-			}
-		}
-	}
 	
 	
 	public static final WeakHashMap<Runnable, Boolean> CATCH_BYPASSING_TASKS = new WeakHashMap<>();

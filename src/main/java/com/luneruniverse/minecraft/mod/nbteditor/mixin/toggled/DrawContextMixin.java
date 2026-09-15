@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
+import com.luneruniverse.minecraft.mod.nbteditor.screens.ItemTooltips;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -37,12 +37,12 @@ public abstract class DrawContextMixin {
 		if (!ConfigScreen.isTooltipOverflowFix())
 			return;
 		
-		int[] size = MixinLink.getTooltipSize(tooltip);
+		int[] size = ItemTooltips.getTooltipSize(tooltip);
 		Vector2ic pos = MVMisc.getPosition(positioner, MainUtil.client.gui.screen(), x, y, size[0], size[1]);
 		int screenWidth = MainUtil.client.getWindow().getGuiScaledWidth();
 		int screenHeight = MainUtil.client.getWindow().getGuiScaledHeight();
 		
-		MixinLink.renderTooltipFromComponents((GuiGraphicsExtractor) (Object) this,
+		ItemTooltips.renderTooltipFromComponents((GuiGraphicsExtractor) (Object) this,
 				pos.x(), pos.y(), size[0], size[1], screenWidth, screenHeight);
 	}
 	
