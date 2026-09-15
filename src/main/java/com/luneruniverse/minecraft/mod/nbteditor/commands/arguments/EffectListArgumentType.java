@@ -28,12 +28,12 @@ import net.minecraft.resources.Identifier;
 public class EffectListArgumentType implements ArgumentType<Collection<MobEffectInstance>> {
 	
 	public enum Arg {
-		DURATION("-duration", (effect, str) -> MVMisc.newStatusEffectInstance(MVMisc.getEffectType(effect), Integer.parseInt(str) * 20, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()), false),
-		AMPLIFIER("-amplifier", (effect, str) -> MVMisc.newStatusEffectInstance(MVMisc.getEffectType(effect), effect.getDuration(), Integer.parseInt(str), effect.isAmbient(), effect.isVisible(), effect.showIcon()), false),
-		AMBIENT("-ambient", (effect, str) -> MVMisc.newStatusEffectInstance(MVMisc.getEffectType(effect), effect.getDuration(), effect.getAmplifier(), parseBoolean(str), effect.isVisible(), effect.showIcon()), true),
-		PERMANENT("-permanent", (effect, str) -> MVMisc.newStatusEffectInstance(MVMisc.getEffectType(effect), -1, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()), true),
-		SHOW_PARTICLES("-showparticles", (effect, str) -> MVMisc.newStatusEffectInstance(MVMisc.getEffectType(effect), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), parseBoolean(str), effect.showIcon()), true),
-		SHOW_ICON("-showicon", (effect, str) -> MVMisc.newStatusEffectInstance(MVMisc.getEffectType(effect), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), parseBoolean(str)), true);
+		DURATION("-duration", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), Integer.parseInt(str) * 20, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()), false),
+		AMPLIFIER("-amplifier", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), effect.getDuration(), Integer.parseInt(str), effect.isAmbient(), effect.isVisible(), effect.showIcon()), false),
+		AMBIENT("-ambient", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), parseBoolean(str), effect.isVisible(), effect.showIcon()), true),
+		PERMANENT("-permanent", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), -1, effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), effect.showIcon()), true),
+		SHOW_PARTICLES("-showparticles", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), parseBoolean(str), effect.showIcon()), true),
+		SHOW_ICON("-showicon", (effect, str) -> MVMisc.newStatusEffectInstance(effect.getEffect().value(), effect.getDuration(), effect.getAmplifier(), effect.isAmbient(), effect.isVisible(), parseBoolean(str)), true);
 		
 		private static boolean parseBoolean(String str) {
 			if (str.equalsIgnoreCase("true"))

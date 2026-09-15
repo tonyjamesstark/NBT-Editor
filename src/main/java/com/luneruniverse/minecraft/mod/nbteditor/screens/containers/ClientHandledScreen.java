@@ -119,7 +119,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	}
 	
 	public void setInitialFocus(GuiEventListener element) {
-		MVMisc.setInitialFocus(this, element, super::setInitialFocus);
+		super.setInitialFocus(element);
+		setFocused(element);
 	}
 	@Override
 	protected void setInitialFocus() {}

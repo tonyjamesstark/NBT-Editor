@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.TooltipDisplayComponentHideFlag;
@@ -25,7 +24,7 @@ public class HideFlagsTooltipDisplayComponentTagReference implements TagReferenc
 		output.put(TooltipHideFlag.INSTANCE, display.hideTooltip());
 		
 		for (Map.Entry<DataComponentType<?>, HideFlag> component : TooltipDisplayComponentHideFlag.FLAGS.entrySet())
-			output.put(component.getValue(), MVMisc.hiddenComponents(display).contains(component.getKey()));
+			output.put(component.getValue(), display.hiddenComponents().contains(component.getKey()));
 		
 		return output;
 	}
@@ -37,7 +36,7 @@ public class HideFlagsTooltipDisplayComponentTagReference implements TagReferenc
 		
 		TooltipDisplay display = object.get(DataComponents.TOOLTIP_DISPLAY);
 		boolean hideTooltip = display.hideTooltip();
-		LinkedHashSet<DataComponentType<?>> hiddenComponents = new LinkedHashSet<>(MVMisc.hiddenComponents(display));
+		LinkedHashSet<DataComponentType<?>> hiddenComponents = new LinkedHashSet<>(display.hiddenComponents());
 		
 		for (Map.Entry<HideFlag, Boolean> flag : value.entrySet()) {
 			if (flag.getKey() == TooltipHideFlag.INSTANCE) {
@@ -53,7 +52,7 @@ public class HideFlagsTooltipDisplayComponentTagReference implements TagReferenc
 		}
 		
 		object.set(DataComponents.TOOLTIP_DISPLAY,
-				(TooltipDisplay) MVMisc.newTooltipDisplayComponent(hideTooltip, hiddenComponents));
+				new TooltipDisplay(hideTooltip, hiddenComponents));
 	}
 	
 }

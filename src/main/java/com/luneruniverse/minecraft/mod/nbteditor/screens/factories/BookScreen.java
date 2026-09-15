@@ -149,7 +149,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	private BookAccess getPreviewItem() {
 		List<Component> pages = WrittenBookTagReferences.PAGES.get(localNBT.getEditableItem());
 		pages.replaceAll(this::makePreviewText);
-		return MVMisc.getBookContents(pages);
+		return new BookAccess(pages);
 	}
 	private Component makePreviewText(Component text) {
 		MutableComponent output = TextInst.copy(text);

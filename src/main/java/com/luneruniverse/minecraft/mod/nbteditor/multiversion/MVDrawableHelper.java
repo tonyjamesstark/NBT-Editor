@@ -65,7 +65,7 @@ public class MVDrawableHelper {
 	public static void renderBackground(Screen screen, GuiGraphicsExtractor context) {
 		int[] mousePos = MainUtil.getMousePos();
 		if (MainUtil.client.level == null)
-			screen.extractBackground(context, mousePos[0], mousePos[1], MVMisc.getTickDelta());
+			screen.extractBackground(context, mousePos[0], mousePos[1], MainUtil.client.getDeltaTracker().getGameTimeDeltaPartialTick(true));
 		else
 			screen.extractTransparentBackground(context);
 	}

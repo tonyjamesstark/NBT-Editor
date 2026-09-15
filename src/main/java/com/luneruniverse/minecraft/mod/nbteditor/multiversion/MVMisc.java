@@ -10,25 +10,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
-import java.lang.invoke.MethodType;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
-import org.joml.Vector2ic;
 
-import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandRegistrationCallback;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.DataResult;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.lwjgl.glfw.GLFW;
@@ -37,16 +28,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.input.InputQuirks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.NbtViews;
 
@@ -56,48 +40,31 @@ import net.minecraft.commands.arguments.blocks.BlockStateArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.item.component.SuspiciousStewEffects;
-import net.minecraft.world.item.component.SuspiciousStewEffects.Entry;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SignItem;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtAccounter;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.nbt.StringTagVisitor;
 import net.minecraft.world.level.storage.TagValueOutput;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
-import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.Holder;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.util.profiling.Profiler;
 import net.minecraft.core.component.DataComponentPatch;
 import java.util.Map;
 
@@ -162,13 +129,6 @@ public class MVMisc {
 		return newTexturedButton(x, y, width, height, hoveredVOffset, img, onPress, null);
 	}
 	
-	public static boolean isCreativeInventoryTabSelected() {
-		if (MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen screen) {
-			return screen.isInventoryOpen();
-		}
-		return false;
-	}
-	
 	public static boolean isValidChar(char c) {
 		return c != '§' && c >= ' ' && c != 127;
 	}
@@ -191,19 +151,6 @@ public class MVMisc {
 			return Optional.empty();
 		});
 		return output.toString();
-	}
-	
-	public static Vector2ic getPosition(Object positioner, Screen screen, int x, int y, int width, int height) {
-		return ((ClientTooltipPositioner) positioner).positionTooltip(
-						MainUtil.client.getWindow().getGuiScaledWidth(), MainUtil.client.getWindow().getGuiScaledHeight(), x, y, width, height);
-	}
-	
-	public static void addEffectToStew(ItemStack item, MobEffect effect, int duration) {
-		item.apply(MVComponentType.SUSPICIOUS_STEW_EFFECTS, new SuspiciousStewEffects(List.of()), effects -> effects.withEffectAdded(new Entry(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), duration)));
-	}
-	
-	public static void sendC2SPacket(Packet<?> packet) {
-		MainUtil.client.getConnection().send(packet);
 	}
 	
 	public static CompoundTag readNbt(InputStream stream) throws IOException {
@@ -239,16 +186,6 @@ public class MVMisc {
 		}
 	}
 	
-	public static void setCursor(EditBox textField, int cursor) {
-		textField.moveCursorTo(cursor, false);
-	}
-	
-	
-	public static EntityType<?> getEntityType(ItemStack item) {
-		SpawnEggItem spawnEggItem = (SpawnEggItem) item.getItem();
-		return spawnEggItem.getType(item);
-	}
-	
 	public static MobEffectInstance newStatusEffectInstance(MobEffect effect, int duration) {
 		return new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), duration);
 	}
@@ -256,46 +193,8 @@ public class MVMisc {
 		return new MobEffectInstance(BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect), duration, amplifier, ambient, showParticles, showIcon);
 	}
 	
-	public static MobEffect getEffectType(MobEffectInstance effect) {
-		return effect.getEffect().value();
-	}
-	
-	public static BookViewScreen.BookAccess getBookContents(List<Component> pages) {
-		return new BookViewScreen.BookAccess(pages);
-	}
-	
-	public static boolean isWrittenBookContents(BookViewScreen.BookAccess contents) {
-		return (MixinLink.WRITTEN_BOOK_CONTENTS.getIfPresent(contents) != null);
-	}
-	
 	public static void showToast(Component title, Component description) {
 		MainUtil.client.gui.toastManager().addToast(new SystemToast(SystemToast.SystemToastId.PACK_LOAD_FAILURE, title, description));
-	}
-	
-	public static void setInitialFocus(Screen screen, GuiEventListener element, Consumer<GuiEventListener> superCall) {
-		superCall.accept(element);
-		screen.setFocused(element);
-	}
-	
-	
-	public static float getTickDelta() {
-		return MainUtil.client.getDeltaTracker().getGameTimeDeltaPartialTick(true);
-	}
-	
-	public static void onRegistriesLoad(Runnable callback) {
-		DynamicRegistryManagerHolder.onDefaultManagerLoad(callback);
-	}
-	
-	
-	public static <T> T withDefaultRegistryManager(Supplier<T> callback) {
-		return DynamicRegistryManagerHolder.withDefaultManager(callback);
-	}
-	public static void withDefaultRegistryManager(Runnable callback) {
-		DynamicRegistryManagerHolder.withDefaultManager(callback);
-	}
-	
-	public static int getTooltipComponentHeight(ClientTooltipComponent line) {
-		return line.getHeight(MainUtil.client.font);
 	}
 	
 	public static CommandSourceStack getCommandSource(Entity entity) {
@@ -303,15 +202,6 @@ public class MVMisc {
 						CommandSource.NULL, entity.position(), entity.getRotationVector(), null, PermissionSet.NO_PERMISSIONS,
 						entity.getName().getString(), entity.getDisplayName(), null, entity);
 	}
-	
-	public static ProfilerFiller getProfiler() {
-		return Profiler.get();
-	}
-	
-	public static PotionContents newPotionContentsComponent(Optional<Holder<Potion>> potion, Optional<Integer> customColor, List<MobEffectInstance> customEffects) {
-		return new PotionContents(potion, customColor, customEffects, Optional.empty());
-	}
-	
 	
 	// From Minecraft#addBlockEntityNbt (1.21.3)
 	// Edited to remove x, y, & z
@@ -334,11 +224,6 @@ public class MVMisc {
 		return new Color(r, g, b, color.getAlpha()).getRGB();
 	}
 	
-	public static CreativeModeInventoryScreen newCreativeInventoryScreen(LocalPlayer player) {
-		return new CreativeModeInventoryScreen(
-						player, player.connection.enabledFeatures(), MainUtil.client.options.operatorItemsTab().get());
-	}
-	
 	/**
 	 * 26.2 folded a prototype lookup into {@link DataComponentPatch#get}, which
 	 * loses the distinction the mod needs: absent from the patch (null) versus
@@ -351,37 +236,6 @@ public class MVMisc {
 				return (Optional<? extends T>) entry.getValue();
 		}
 		return null;
-	}
-	
-	public static Component getName(ItemStack item) {
-		return item.getItem().getName(item);
-	}
-	
-	public static boolean isSignItem(Item item) {
-		if (item instanceof SignItem)
-			return true;
-		return false;
-	}
-	
-	public static <T> Optional<T> result(DataResult<T> result) {
-		return result.result();
-	}
-	
-	public static String value(StringTag str) {
-		return str.value();
-	}
-	
-	public static Object newTooltipDisplayComponent(boolean hideTooltip, LinkedHashSet<DataComponentType<?>> hiddenComponents) {
-		return new TooltipDisplay(hideTooltip, hiddenComponents);
-	}
-	
-	public static Set<DataComponentType<?>> hiddenComponents(Object tooltipDisplayComponent) {
-		return ((TooltipDisplay) tooltipDisplayComponent).hiddenComponents();
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static void setArmor(EquipmentSlot slot, ItemStack item) {
-		MainUtil.client.player.setItemSlot(slot, item);
 	}
 	
 	public static Tag parseNbt(StringReader snbt) throws CommandSyntaxException {
@@ -400,36 +254,8 @@ public class MVMisc {
 		return new ItemEnchantments(enchantments);
 	}
 	
-	public static Object withAttributes(Object component, List<ItemAttributeModifiers.Entry> list) {
-		return new ItemAttributeModifiers(list);
-	}
-	
-	public static boolean hasCreativeInventory() {
-		return MainUtil.client.player.hasInfiniteMaterials();
-	}
-	
 	public static void setPreviousCursorStack(AbstractContainerMenu handler, ItemStack item) {
 		handler.remoteCarried.force(item);
-	}
-	
-	public static ContainerInput getActionType(ServerboundContainerClickPacket packet) {
-		return packet.containerInput();
-	}
-	
-	public static int getButton(ServerboundContainerClickPacket packet) {
-		return (int) packet.buttonNum();
-	}
-	
-	public static int getSlot(ServerboundContainerClickPacket packet) {
-		return (int) packet.slotNum();
-	}
-	
-	public static List<ItemStack> getContents(ClientboundContainerSetContentPacket packet) {
-		return packet.items();
-	}
-	
-	public static int getSyncId(ClientboundContainerSetContentPacket packet) {
-		return packet.containerId();
 	}
 	
 	public static Item getBoatItem(EntityType<?> entityType, CompoundTag nbt) {

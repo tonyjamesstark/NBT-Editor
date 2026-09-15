@@ -65,11 +65,11 @@ public class MainUtil {
 	 */
 	public static void clickCreativeStack(ItemStack item, int slot) {
 		if (NBTEditorClient.SERVER_CONN.isEditingAllowed())
-			MVMisc.sendC2SPacket(new ServerboundSetCreativeModeSlotPacket(slot, item.copy()));
+			client.getConnection().send(new ServerboundSetCreativeModeSlotPacket(slot, item.copy()));
 	}
 	public static void dropCreativeStack(ItemStack item) {
 		if (NBTEditorClient.SERVER_CONN.isEditingAllowed() && !item.isEmpty())
-			MVMisc.sendC2SPacket(new ServerboundSetCreativeModeSlotPacket(-1, item.copy()));
+			client.getConnection().send(new ServerboundSetCreativeModeSlotPacket(-1, item.copy()));
 	}
 	
 	public static void saveItem(InteractionHand hand, ItemStack item) {
@@ -83,7 +83,7 @@ public class MainUtil {
 		else if (slot == EquipmentSlot.OFFHAND)
 			saveItem(InteractionHand.OFF_HAND, item);
 		else {
-			MVMisc.setArmor(slot, item.copy());
+			client.player.setItemSlot(slot, item.copy());
 			clickCreativeStack(item, SlotUtil.createArmorInContainer(slot));
 		}
 	}
@@ -252,7 +252,7 @@ public class MainUtil {
 		Component name = item.get(MVComponentType.ITEM_NAME);
 		if (name != null)
 			return name;
-		return MVMisc.getName(item);
+		return item.getItem().getName(item);
 	}
 	public static Component getCustomItemNameSafely(ItemStack item) {
 		return item.getHoverName();

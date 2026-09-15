@@ -8,7 +8,6 @@ import java.util.OptionalLong;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.ItemSize;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
@@ -65,7 +64,8 @@ public class ItemTooltips {
 
 		if (!ConfigScreen.isKeybindsHidden()) {
 			// Checking slots in your hotbar vs item selection is difficult, so the lore is just disabled in non-inventory tabs
-			boolean creativeInv = MVMisc.isCreativeInventoryTabSelected();
+			boolean creativeInv = MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen creative
+					&& creative.isInventoryOpen();
 
 			if (creativeInv || (!(MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen) &&
 					NBTEditorClient.SERVER_CONN.isScreenEditable())) {
@@ -86,7 +86,7 @@ public class ItemTooltips {
 		int height = (tooltip.size() == 1 ? -2 : 0);
 		for (ClientTooltipComponent line : tooltip) {
 			width = Math.max(width, line.getWidth(MainUtil.client.font));
-			height += MVMisc.getTooltipComponentHeight(line);
+			height += line.getHeight(MainUtil.client.font);
 		}
 		return new int[] {width, height};
 	}

@@ -151,7 +151,7 @@ public class MVTextEvents {
 			return getter.apply(event);
 		}
 		public String getStringifiedValue(HoverEvent event) {
-			CompoundTag nbt = (CompoundTag) MVMisc.result(HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event)).orElseThrow();
+			CompoundTag nbt = (CompoundTag) HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event).result().orElseThrow();
 			if (this == SHOW_TEXT)
 				return nbt.get("value").toString();
 			nbt.remove("action");
@@ -178,7 +178,7 @@ public class MVTextEvents {
 			else
 				return Optional.empty();
 
-			return MVMisc.result(HoverEvent.CODEC.parse(NbtOps.INSTANCE, nbt));
+			return HoverEvent.CODEC.parse(NbtOps.INSTANCE, nbt).result();
 		}
 	}
 	

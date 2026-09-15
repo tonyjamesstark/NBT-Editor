@@ -22,6 +22,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -70,7 +71,7 @@ public class BookScreenMixin extends Screen {
 	
 	private void updateButtons(BookAccess bookAccess) {
 		boolean editable = (!((Object) this instanceof LecternScreen) || NBTEditorClient.SERVER_CONN.isEditingExpanded()) &&
-				NBTEditorClient.SERVER_CONN.isEditingAllowed() && MVMisc.isWrittenBookContents(bookAccess);
+				NBTEditorClient.SERVER_CONN.isEditingAllowed() && MixinLink.WRITTEN_BOOK_CONTENTS.getIfPresent(bookAccess) != null;
 		renderLogo = editable;
 		openBtn.visible = editable;
 		convertBtn.visible = editable;

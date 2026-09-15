@@ -18,7 +18,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandHandler;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVEnchantments;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.OpenEnderChestC2SPacket;
@@ -30,6 +29,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.item.ItemStack;
@@ -58,7 +58,7 @@ public class NBTEditorClient implements ClientModInitializer {
 		if (!SETTINGS_FOLDER.exists())
 			SETTINGS_FOLDER.mkdir();
 		
-		MVMisc.onRegistriesLoad(this::onRegistriesLoad);
+		DynamicRegistryManagerHolder.onDefaultManagerLoad(this::onRegistriesLoad);
 	}
 	
 	private void onRegistriesLoad() {

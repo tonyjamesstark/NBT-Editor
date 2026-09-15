@@ -38,6 +38,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SaveQueue;
 import com.luneruniverse.minecraft.mod.nbteditor.util.lock.PartitionedReadWriteLock;
 
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.ItemStack;
@@ -481,7 +482,7 @@ public class ClientChest {
 				dynamicItems.add(i, itemNbt, false);
 				empty = false;
 			} else {
-				items[i] = MVMisc.withDefaultRegistryManager(() -> NBTManagers.ITEM.deserialize(itemNbt, true));
+				items[i] = DynamicRegistryManagerHolder.withDefaultManager(() -> NBTManagers.ITEM.deserialize(itemNbt, true));
 				if (empty && items[i] != null && !items[i].isEmpty())
 					empty = false;
 			}
@@ -636,7 +637,7 @@ public class ClientChest {
 				empty = false;
 			} else {
 				final CompoundTag finalItemNbt = itemNbt;
-				items[i] = MVMisc.withDefaultRegistryManager(() -> NBTManagers.ITEM.deserialize(finalItemNbt, true));
+				items[i] = DynamicRegistryManagerHolder.withDefaultManager(() -> NBTManagers.ITEM.deserialize(finalItemNbt, true));
 				if (empty && items[i] != null && !items[i].isEmpty())
 					empty = false;
 			}

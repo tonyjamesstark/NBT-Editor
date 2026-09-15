@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -16,6 +15,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.world.item.SignItem;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.world.item.Item;
 import net.minecraft.resources.Identifier;
@@ -33,7 +33,7 @@ public class SignboardArgumentType implements ArgumentType<Item> {
 	private SignboardArgumentType() {
 		signs = new HashMap<>();
 		for (Map.Entry<Identifier, Item> item : MVRegistry.ITEM.getEntrySet()) {
-			if (MVMisc.isSignItem(item.getValue()))
+			if (item.getValue() instanceof SignItem)
 				signs.put(item.getKey(), item.getValue());
 		}
 	}

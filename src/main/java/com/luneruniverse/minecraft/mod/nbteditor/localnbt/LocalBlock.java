@@ -37,8 +37,8 @@ public class LocalBlock implements LocalNBT {
 	public static LocalBlock deserialize(CompoundTag nbt, int defaultDataVersion) {
 		Tag dataVersion = nbt.get("DataVersion");
 		
-		String id = MVMisc.value(MainUtil.updateDynamic(References.BLOCK_NAME,
-				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion));
+		String id = MainUtil.updateDynamic(References.BLOCK_NAME,
+				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion).value();
 		Block block = MVRegistry.BLOCK.get(IdentifierInst.of(id));
 		
 		BlockStateProperties state = new BlockStateProperties(block.defaultBlockState());

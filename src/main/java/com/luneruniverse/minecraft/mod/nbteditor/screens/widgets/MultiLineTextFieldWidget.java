@@ -380,7 +380,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			suggestor.setValue(text);
 		
 		if (suggestor.getCursorPosition() != cursor)
-			MVMisc.setCursor(suggestor, cursor);
+			suggestor.moveCursorTo(cursor, false);
 		
 		boolean focus = isMultiFocused();
 		if (suggestor.isMultiFocused() != focus)

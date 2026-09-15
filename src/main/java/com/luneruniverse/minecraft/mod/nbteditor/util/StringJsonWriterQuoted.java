@@ -5,7 +5,6 @@ import java.util.Collections;
 
 import com.google.common.collect.Lists;
 import com.luneruniverse.minecraft.mod.nbteditor.mixin.StringNbtWriterAccessor;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
 import net.minecraft.nbt.ByteTag;
@@ -35,7 +34,7 @@ public class StringJsonWriterQuoted extends StringTagVisitor {
 	
 	@Override
 	public void visitString(StringTag element) {
-		((StringNbtWriterAccessor) this).getBuilder().append(escape(MVMisc.value(element)));
+		((StringNbtWriterAccessor) this).getBuilder().append(escape(element.value()));
 	}
 	
     @Override

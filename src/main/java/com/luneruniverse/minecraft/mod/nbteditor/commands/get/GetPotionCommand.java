@@ -11,7 +11,6 @@ import java.util.Optional;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.EffectListArgumentType;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.EnumArgumentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
@@ -61,9 +60,9 @@ public class GetPotionCommand extends ClientCommand {
 				MobEffectInstance effect = effects.get(0);
 				Potion potion = MVRegistry.POTION.getEntrySet().stream().map(Map.Entry::getValue)
 						.filter(testPotion -> !testPotion.getEffects().isEmpty() &&
-								MVMisc.getEffectType(testPotion.getEffects().get(0)) == MVMisc.getEffectType(effect)).findFirst().orElse(null);
+								testPotion.getEffects().get(0).getEffect().value() == effect.getEffect().value()).findFirst().orElse(null);
 				if (potion != null)
-					color = Optional.of(MVMisc.getEffectType(potion.getEffects().get(0)).getColor());
+					color = Optional.of(potion.getEffects().get(0).getEffect().value().getColor());
 			}
 			ItemTagReferences.CUSTOM_POTION_CONTENTS.set(item, new CustomPotionContents(color, effects));
 			MainUtil.getWithMessage(item);

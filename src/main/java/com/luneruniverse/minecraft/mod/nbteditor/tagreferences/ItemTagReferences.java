@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.ComponentTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.EnchantsTagReference;
@@ -19,6 +18,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hid
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.hideflags.HideFlagsTooltipDisplayComponentTagReference;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.ItemLore;
@@ -40,9 +40,9 @@ public class ItemTagReferences {
 	}
 	
 	public static final TagReference<CustomPotionContents, ItemStack> CUSTOM_POTION_CONTENTS = (new ComponentTagReference<>(MVComponentType.POTION_CONTENTS,
-					() -> MVMisc.newPotionContentsComponent(Optional.empty(), Optional.empty(), List.of()),
+					() -> new PotionContents(Optional.empty(), Optional.empty(), List.of(), Optional.empty()),
 					contents -> new CustomPotionContents(contents.customColor(), contents.customEffects()),
-					contents -> MVMisc.newPotionContentsComponent(Optional.empty(), contents.color(), contents.effects())));
+					contents -> new PotionContents(Optional.empty(), contents.color(), contents.effects(), Optional.empty())));
 	
 	public static final TagReference<Optional<String>, ItemStack> PROFILE_NAME = (new ComponentTagReference<>(MVComponentType.PROFILE,
 					null,
@@ -57,7 +57,7 @@ public class ItemTagReferences {
 					null,
 					component -> component == null ? new ArrayList<>() :
 						component.modifiers().stream().map(AttributeData::fromComponentEntry).collect(Collectors.toList()),
-					(component, list) -> (ItemAttributeModifiers) MVMisc.withAttributes(component,
+					(component, list) -> new ItemAttributeModifiers(
 							list.stream().map(AttributeData::toComponentEntry).toList())));
 	
 	public static final TagReference<List<String>, ItemStack> WRITABLE_BOOK_PAGES = (new ComponentTagReference<>(MVComponentType.WRITABLE_BOOK_CONTENT,
