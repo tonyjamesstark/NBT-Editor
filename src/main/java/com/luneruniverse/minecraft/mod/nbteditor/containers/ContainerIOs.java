@@ -92,18 +92,18 @@ public class ContainerIOs {
 			item -> new LocalEntity(((SpawnEggItem) item.getItem()).getType(item), ItemTagReferences.ENTITY_DATA.get(item)),
 			(item, entity) -> ItemTagReferences.ENTITY_DATA.set(item, MainUtil.fillId(entity.getNBT(), entity.getId().toString())));
 	private static final Function<EntityType<?>, ItemEntityContainerIO> EQUIPMENT_IO =
-			entityId -> ItemEntityContainerIO.forEntityTagIO(new EquipmentContainerIO(false).forNbtCompoundEquipment(),
+			entityId -> ItemEntityContainerIO.forEntityTagIO(EquipmentContainerIO.forNbtCompoundEquipment(false),
 					entityId);
 	private static final ContainerIO<LocalEntity> HORSE_IO = ContainerIO.forLocalNBT(
-			new EquipmentContainerIO(false).forNbtCompoundEquipment());
+			EquipmentContainerIO.forNbtCompoundEquipment(false));
 	private static final ContainerIO<LocalEntity> BASIC_HORSE_IO = ContainerIO.forLocalNBT(
-			new EquipmentContainerIO(false).forNbtCompoundEquipment());
+			EquipmentContainerIO.forNbtCompoundEquipment(false));
 	private static final ContainerIO<LocalEntity> DONKEY_IO = ContainerIO.forLocalNBT(
 			new ConcatContainerIO<>(
-							new EquipmentContainerIO(false).forNbtCompoundEquipment(), new DonkeyChestContainerIO(false)));
+							EquipmentContainerIO.forNbtCompoundEquipment(false), new DonkeyChestContainerIO(false)));
 	private static final ContainerIO<LocalEntity> LLAMA_IO = ContainerIO.forLocalNBT(
 			new ConcatContainerIO<>(
-							new EquipmentContainerIO(true).forNbtCompoundEquipment(), new DonkeyChestContainerIO(true)));
+							EquipmentContainerIO.forNbtCompoundEquipment(true), new DonkeyChestContainerIO(true)));
 	private static final ContainerIO<LocalEntity> VILLAGER_IO = new ConcatContainerIO<>(
 			EQUIPMENT_IO.apply(EntityTypes.VILLAGER).entity(),
 			ContainerIO.forLocalNBT(new OrderNbtListContainerIO(8).forNbtCompound("Inventory")));
