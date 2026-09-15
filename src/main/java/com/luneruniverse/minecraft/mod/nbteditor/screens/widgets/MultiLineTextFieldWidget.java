@@ -49,7 +49,6 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		private final NamedTextFieldWidget replace;
 		private final Button regexBtn;
 		private boolean dragging;
-		private TextSearch.Match lastMatch;
 		
 		public FindAndReplaceWidget() {
 			super(MainUtil.client.getWindow().getGuiScaledWidth() / 2 - 100,
@@ -64,33 +63,20 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 				btn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
 			}, new MVTooltip("nbteditor.multi_line_text.regex")));
 			addWidget(Buttons.of(0, 40, 40, 20, TextInst.translatable("nbteditor.multi_line_text.find"), btn -> {
-				goToNext(Keys.hasShiftDown(), true);
+				findNext(findValue, regex, Keys.hasShiftDown(), true);
 			}));
 			addWidget(Buttons.of(44, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace"), btn -> {
-				if (goToNext(Keys.hasShiftDown(), true))
-					replaceSel();
+				if (findNext(findValue, regex, Keys.hasShiftDown(), true))
+					replaceSelection(replaceValue, regex);
 			}));
 			addWidget(Buttons.of(112, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace_all"), btn -> {
-				boolean first = true;
-				int prevCursor = cursor;
-				cursor = 0;
-				while (goToNext(false, false)) {
-					if (first)
-						first = false;
-					else {
-						undo.remove(0);
-						onUndoDiscard();
-					}
-					replaceSel();
-				}
-				if (first)
-					cursor = prevCursor;
+				replaceAll(findValue, replaceValue, regex);
 			}));
 			addWidget(Buttons.of(180, 40, 20, 20, TextInst.translatable("nbteditor.multi_line_text.x"), btn -> {
 				OverlaySupportingScreen.setOverlayStatic(null);
 			}));
 			
-			if (selStart != selEnd)
+			if (getSelStart() != getSelEnd())
 				findValue = getSelectedText();
 			find.setMaxLength(Integer.MAX_VALUE);
 			find.setValue(findValue);
@@ -100,35 +86,6 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			replace.setMaxLength(Integer.MAX_VALUE);
 			replace.setValue(replaceValue);
 			replace.setResponder(str -> replaceValue = str);
-		}
-		
-		private boolean goToNext(boolean backward, boolean wrap) {
-			if (findValue.isEmpty())
-				return false;
-			if (backward) {
-				if (cursor == 0 || !goToRange(text, findValue, cursor - 1, true))
-					return wrap && goToRange(text, findValue, text.length(), true);
-			} else {
-				if (!goToRange(text, findValue, cursor, false))
-					return wrap && goToRange(text, findValue, 0, false);
-			}
-			return true;
-		}
-		private boolean goToRange(String str, String expr, int start, boolean last) {
-			TextSearch.Match match = TextSearch.find(str, expr, start, last, regex);
-			if (match == null)
-				return false;
-			lastMatch = match;
-			selStart = match.start();
-			selEnd = match.end();
-			cursor = selEnd;
-			cursorX = -1;
-			return true;
-		}
-		private void replaceSel() {
-			if (selStart == selEnd)
-				return;
-			write(regex ? TextSearch.expandReplacement(lastMatch, replaceValue) : replaceValue);
 		}
 		
 		@Override
@@ -162,7 +119,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 				return true;
 			}
 			if (keyCode == GLFW.GLFW_KEY_ENTER) {
-				goToNext(Keys.hasShiftDown(), true);
+				findNext(findValue, regex, Keys.hasShiftDown(), true);
 				return true;
 			}
 			if (keyCode == GLFW.GLFW_KEY_TAB) {
@@ -242,6 +199,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	private ScrollBarWidget scrollBar;
 	
 	private SuggestingTextFieldWidget suggestor;
+	private TextSearch.Match lastMatch;
 	
 	protected MultiLineTextFieldWidget(int x, int y, int width, int height, String text,
 			Function<String, Component> formatter, boolean newLines, Consumer<String> onChange) {
@@ -634,6 +592,72 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	
 	public String getSelectedText() {
 		return text.substring(getSelStart(), getSelEnd());
+	}
+	
+	/**
+	 * Moves the selection onto the next occurrence of <code>query</code>, searching from the cursor.
+	 * @param query A literal substring, or a regex when <code>regex</code> is set
+	 * @param regex
+	 * @param backward Whether to search towards the start of the text instead
+	 * @param wrap Whether to continue from the far end when there is no occurrence ahead
+	 * @return Whether one was found, and so whether the selection moved
+	 */
+	public boolean findNext(String query, boolean regex, boolean backward, boolean wrap) {
+		if (query.isEmpty())
+			return false;
+		if (backward) {
+			if (cursor == 0 || !selectMatch(query, regex, cursor - 1, true))
+				return wrap && selectMatch(query, regex, text.length(), true);
+		} else {
+			if (!selectMatch(query, regex, cursor, false))
+				return wrap && selectMatch(query, regex, 0, false);
+		}
+		return true;
+	}
+	private boolean selectMatch(String query, boolean regex, int from, boolean backward) {
+		TextSearch.Match match = TextSearch.find(text, query, from, backward, regex);
+		if (match == null)
+			return false;
+		lastMatch = match;
+		selStart = match.start();
+		selEnd = match.end();
+		cursor = selEnd;
+		cursorX = -1;
+		return true;
+	}
+	/**
+	 * Replaces the selection, which is expected to be an occurrence {@link #findNext} just moved
+	 * onto; a regex replacement resolves its group references against that occurrence.
+	 * @param replacement
+	 * @param regex
+	 */
+	public void replaceSelection(String replacement, boolean regex) {
+		if (selStart == selEnd)
+			return;
+		write(regex ? TextSearch.expandReplacement(lastMatch, replacement) : replacement);
+	}
+	/**
+	 * Replaces every occurrence of <code>query</code>, from the start of the text, as one undo
+	 * step. Leaves the cursor alone if there was nothing to replace.
+	 * @param query
+	 * @param replacement
+	 * @param regex
+	 */
+	public void replaceAll(String query, String replacement, boolean regex) {
+		boolean first = true;
+		int prevCursor = cursor;
+		cursor = 0;
+		while (findNext(query, regex, false, false)) {
+			if (first)
+				first = false;
+			else {
+				undo.remove(0);
+				onUndoDiscard();
+			}
+			replaceSelection(replacement, regex);
+		}
+		if (first)
+			cursor = prevCursor;
 	}
 	
 	private void moveCursorUp() {
