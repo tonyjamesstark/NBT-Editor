@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Random;
 import java.util.Set;
@@ -34,7 +35,10 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandle
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
+import com.luneruniverse.minecraft.mod.nbteditor.util.ItemSizeText;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TooltipPlacement;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TooltipPlacement.Rect;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -95,37 +99,13 @@ public class MixinLink {
 		return new int[] {width, height};
 	}
 	public static void renderTooltipFromComponents(GuiGraphicsExtractor context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
-		x -= 5;
-		y -= 5;
-		width += 10;
-		height += 10;
-		
-		int newX = x;
-		int newY = y;
-		int newWidth = width;
-		int newHeight = height;
-		
-		if (width > screenWidth || height > screenHeight) {
-			double scale = Math.min((double) screenWidth / width, (double) screenHeight / height);
-			newWidth = (int) (width * scale);
-			newHeight = (int) (height * scale);
-			
-			int[] mousePos = MainUtil.getMousePos();
-			newX = mousePos[0] + 12;
-			newY = mousePos[1] - 12;
-		}
-		
-		if (newX < 0)
-			newX = 0;
-		else if (newX + newWidth > screenWidth)
-			newX = screenWidth - newWidth;
-		
-		if (newY < 0)
-			newY = 0;
-		else if (newY + newHeight > screenHeight)
-			newY = screenHeight - newHeight;
-		
-		MainUtil.mapMatrices(context, x, y, width, height, newX, newY, newWidth, newHeight);
+		int[] mousePos = MainUtil.getMousePos();
+		TooltipPlacement placement = TooltipPlacement.fit(x, y, width, height, screenWidth, screenHeight,
+				mousePos[0], mousePos[1]);
+		Rect source = placement.source();
+		Rect target = placement.target();
+		MainUtil.mapMatrices(context, source.x(), source.y(), source.width(), source.height(),
+				target.x(), target.y(), target.width(), target.height());
 	}
 	
 	
@@ -258,49 +238,17 @@ public class MixinLink {
 		if (sizeConfig != ConfigScreen.ItemSizeFormat.HIDDEN) {
 			OptionalLong loadingSize = ItemSize.getItemSize(source, sizeConfig.isCompressed());
 			String displaySize;
-			ChatFormatting sizeFormat;
+			Optional<ChatFormatting> sizeFormat;
 			if (loadingSize.isEmpty()) {
 				displaySize = "...";
-				sizeFormat = ChatFormatting.GRAY;
+				sizeFormat = Optional.of(ChatFormatting.GRAY);
 			} else {
-				long size = loadingSize.getAsLong();
-				int magnitude = sizeConfig.getMagnitude();
-				if (magnitude == 0) {
-					if (size < 1000)
-						magnitude = 1;
-					else if (size < 1000000)
-						magnitude = 1000;
-					else if (size < 1000000000)
-						magnitude = 1000000;
-					else
-						magnitude = 1000000000;
-				}
-				if (magnitude == 1)
-					displaySize = "" + size;
-				else
-					displaySize = String.format("%.1f", (double) size / magnitude);
-				switch (magnitude) {
-					case 1 -> {
-						displaySize += "B";
-						sizeFormat = ChatFormatting.GREEN;
-					}
-					case 1000 -> {
-						displaySize += "KB";
-						sizeFormat = ChatFormatting.YELLOW;
-					}
-					case 1000000 -> {
-						displaySize += "MB";
-						sizeFormat = ChatFormatting.RED;
-					}
-					case 1000000000 -> {
-						displaySize += "GB";
-						sizeFormat = null;
-					}
-					default -> throw new IllegalStateException("Invalid magnitude!");
-				}
+				ItemSizeText.Rendered rendered = ItemSizeText.render(loadingSize.getAsLong(), sizeConfig.getMagnitude());
+				displaySize = rendered.text();
+				sizeFormat = rendered.color();
 			}
-			TextColor sizeColor = (sizeFormat != null ? TextColor.fromLegacyFormat(sizeFormat) :
-				TextColor.fromRgb(Color.HSBtoRGB((System.currentTimeMillis() % 1000) / 1000.0f, 1, 1)));
+			TextColor sizeColor = sizeFormat.map(TextColor::fromLegacyFormat).orElseGet(
+					() -> TextColor.fromRgb(Color.HSBtoRGB((System.currentTimeMillis() % 1000) / 1000.0f, 1, 1)));
 			tooltip.add(TextInst.translatable("nbteditor.item_size." + (sizeConfig.isCompressed() ? "compressed" : "uncompressed"),
 					TextInst.literal(displaySize).withStyle(style -> style.withColor(sizeColor))));
 		}
