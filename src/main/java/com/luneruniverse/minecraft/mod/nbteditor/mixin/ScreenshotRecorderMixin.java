@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
@@ -26,6 +25,6 @@ public class ScreenshotRecorderMixin {
 	private static Consumer<Component> saveScreenshotImpl(Consumer<Component> receiver) {
 		if (!ConfigScreen.isScreenshotOptions())
 			return receiver;
-		return msg -> receiver.accept(TextUtil.attachFileTextOptions(TextInst.copy(msg), MixinLink.screenshotTarget));
+		return msg -> receiver.accept(TextUtil.attachFileTextOptions(msg.copy(), MixinLink.screenshotTarget));
 	}
 }

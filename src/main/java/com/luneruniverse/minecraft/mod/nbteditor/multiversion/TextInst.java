@@ -31,10 +31,6 @@ public class TextInst {
 		return Component.translatableEscape(key, args);
 	}
 	
-	public static MutableComponent copy(Component text) {
-		return text.copy();
-	}
-
 	public static MutableComponent bracketed(Component text) {
 		return translatable("chat.square_brackets", text);
 	}
@@ -103,10 +99,6 @@ public class TextInst {
 	public static @Nullable Component fromJson(String json) throws JsonParseException {
 		return Attempt.ofResult(ComponentSerialization.CODEC.parse(jsonOps(), JsonParser.parseString(json)))
 				.getSuccessOrThrow(JsonParseException::new);
-	}
-	public static String toJson(Component text) throws JsonParseException {
-		return Attempt.ofResult(ComponentSerialization.CODEC.encodeStart(jsonOps(), text))
-				.getSuccessOrThrow(JsonParseException::new).toString();
 	}
 	
 	public static Component fromNbt(Tag nbt) throws NbtFormatException {

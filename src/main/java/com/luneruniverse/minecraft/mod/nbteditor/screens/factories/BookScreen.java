@@ -152,7 +152,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		return new BookAccess(pages);
 	}
 	private Component makePreviewText(Component text) {
-		MutableComponent output = TextInst.copy(text);
+		MutableComponent output = text.copy();
 		output.setStyle(makePreviewStyle(output.getStyle()));
 		output.getSiblings().replaceAll(this::makePreviewText);
 		return output;

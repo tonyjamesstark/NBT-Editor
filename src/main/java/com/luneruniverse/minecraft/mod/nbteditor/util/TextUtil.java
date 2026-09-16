@@ -88,7 +88,7 @@ public class TextUtil {
 		List<Component> lines = getLongTranslatableTextLines(key);
 		if (lines.isEmpty())
 			return TextInst.of(key);
-		MutableComponent output = TextInst.copy(lines.get(0));
+		MutableComponent output = lines.get(0).copy();
 		for (int i = 1; i < lines.size(); i++)
 			output.append("\n").append(lines.get(i));
 		return output;

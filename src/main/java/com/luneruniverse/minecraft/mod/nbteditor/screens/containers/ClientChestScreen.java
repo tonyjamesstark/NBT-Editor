@@ -320,7 +320,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 	
 	@Override
 	protected Component getRenderedTitle() {
-		MutableComponent title = TextInst.copy(this.title).append(" (" + (PAGE + 1) + ")");
+		MutableComponent title = this.title.copy().append(" (" + (PAGE + 1) + ")");
 		return NBTEditorClient.CLIENT_CHEST.isProcessingPage(PAGE) ? title.append("*") : title;
 	}
 	

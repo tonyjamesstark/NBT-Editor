@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 
 import net.minecraft.network.chat.Component;
 
@@ -15,6 +14,6 @@ public interface ConfigPathNamed extends ConfigPath {
 			return prefix == null ? null : prefix.copy();
 		if (prefix == null)
 			return name.copy();
-		return TextInst.copy(prefix).append(TextInst.copy(name));
+		return prefix.copy().append(name.copy());
 	}
 }

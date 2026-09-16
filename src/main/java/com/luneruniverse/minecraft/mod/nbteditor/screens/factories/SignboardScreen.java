@@ -186,7 +186,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		ClickEvent event = getClickEvent(line);
 		if (event == null)
 			return line;
-		return TextInst.copy(line).withStyle(style -> style.withClickEvent(event));
+		return line.copy().withStyle(style -> style.withClickEvent(event));
 	}
 	private ClickEvent getClickEvent(Component text) {
 		ClickEvent event = text.getStyle().getClickEvent();

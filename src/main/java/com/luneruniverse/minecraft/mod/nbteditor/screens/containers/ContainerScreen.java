@@ -45,7 +45,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 	private ContainerScreen(NBTReference<L> ref) {
 		super(3, TextInst.translatable("nbteditor.container.title").append(ref.getLocalNBT().getName()));
 		
-		this.unsavedTitle = TextInst.copy(title).append("*");
+		this.unsavedTitle = title.copy().append("*");
 		
 		this.ref = ref;
 		this.localNBT = LocalNBT.copy(ref.getLocalNBT());

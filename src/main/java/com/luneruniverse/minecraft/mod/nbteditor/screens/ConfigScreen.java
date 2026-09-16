@@ -419,7 +419,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 	}
 	
 	private static MutableComponent getEnchantName(Enchantment enchant, int level) {
-		MutableComponent output = TextInst.copy(MVEnchantments.getEnchantmentName(enchant));
+		MutableComponent output = MVEnchantments.getEnchantmentName(enchant).copy();
         if (level != 1 || enchant.getMaxLevel() != 1 || enchantLevelMax == EnchantLevelMax.ALWAYS) {
             output.append(" ");
             if (isEnchantNumberTypeArabic())
