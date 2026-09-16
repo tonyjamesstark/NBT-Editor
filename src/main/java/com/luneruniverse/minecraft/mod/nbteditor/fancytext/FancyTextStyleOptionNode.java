@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -67,7 +67,7 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 				if (value == null)
 					yield style.withFont(FontDescription.DEFAULT);
 				try {
-					yield style.withFont(new FontDescription.Resource(IdentifierInst.of(value)));
+					yield style.withFont(new FontDescription.Resource(Identifier.parse(value)));
 				} catch (IdentifierException e) {
 					yield style.withFont(FontDescription.DEFAULT);
 				}

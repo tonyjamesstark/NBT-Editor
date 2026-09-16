@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 
@@ -14,7 +13,7 @@ import net.minecraft.world.level.Level;
 
 public class SetBlockC2SPacket implements MVPacket {
 	
-	public static final Identifier ID = IdentifierInst.of("nbteditor", "set_block");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("nbteditor", "set_block");
 	
 	private final ResourceKey<Level> world;
 	private final BlockPos pos;

@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.AttributesCo
 import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.BlockStatesCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.SignboardCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -30,7 +29,7 @@ import net.minecraft.resources.Identifier;
 
 public class LocalFactoryScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
-	public static final Identifier FACTORY_ICON = IdentifierInst.of("nbteditor", "textures/factory.png");
+	public static final Identifier FACTORY_ICON = Identifier.fromNamespaceAndPath("nbteditor", "textures/factory.png");
 	
 	public record LocalFactoryReference(Component buttonText, Predicate<NBTReference<?>> supported, Consumer<NBTReference<?>> factory) {}
 	public static final List<LocalFactoryReference> BASIC_FACTORIES = new ArrayList<>();

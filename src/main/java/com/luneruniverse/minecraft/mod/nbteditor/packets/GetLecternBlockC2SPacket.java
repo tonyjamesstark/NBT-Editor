@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -8,7 +7,7 @@ import net.minecraft.resources.Identifier;
 
 public class GetLecternBlockC2SPacket implements MVPacket {
 	
-	public static final Identifier ID = IdentifierInst.of("nbteditor", "get_lectern_block");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("nbteditor", "get_lectern_block");
 	
 	private final int requestId;
 	

@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -40,7 +39,7 @@ public class LocalBlock implements LocalNBT {
 		
 		String id = MainUtil.updateDynamic(References.BLOCK_NAME,
 				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion).value();
-		Block block = MVRegistry.BLOCK.get(IdentifierInst.of(id));
+		Block block = MVRegistry.BLOCK.get(Identifier.parse(id));
 		
 		BlockStateProperties state = new BlockStateProperties(block.defaultBlockState());
 		state.setValues(MainUtil.updateDynamic(References.BLOCK_STATE,

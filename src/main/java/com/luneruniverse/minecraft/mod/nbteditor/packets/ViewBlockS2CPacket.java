@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 
 import net.minecraft.core.registries.Registries;
@@ -13,7 +12,7 @@ import net.minecraft.world.level.Level;
 
 public class ViewBlockS2CPacket implements ResponsePacket {
 	
-	public static final Identifier ID = IdentifierInst.of("nbteditor", "view_block");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("nbteditor", "view_block");
 	
 	private final int requestId;
 	private final ResourceKey<Level> world;

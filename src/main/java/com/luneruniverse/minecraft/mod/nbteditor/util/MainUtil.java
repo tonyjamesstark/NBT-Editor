@@ -20,7 +20,6 @@ import java.util.zip.ZipException;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ActionResult;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
@@ -132,8 +131,8 @@ public class MainUtil {
 	
 	
 	
-	private static final Identifier LOGO = IdentifierInst.of("nbteditor", "textures/logo.png");
-	private static final Identifier LOGO_UPDATE_AVAILABLE = IdentifierInst.of("nbteditor", "textures/logo_update_available.png");
+	private static final Identifier LOGO = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo.png");
+	private static final Identifier LOGO_UPDATE_AVAILABLE = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo_update_available.png");
 	public static void renderLogo(GuiGraphicsExtractor context) {
 		MVDrawableHelper.drawTexture(context,
 				UpdateCheckerThread.UPDATE_AVAILABLE ? LOGO_UPDATE_AVAILABLE : LOGO, 16, 16, 0, 0, 32, 32, 32, 32);

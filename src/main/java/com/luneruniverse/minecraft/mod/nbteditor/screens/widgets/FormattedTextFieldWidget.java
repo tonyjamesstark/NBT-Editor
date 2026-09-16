@@ -11,7 +11,6 @@ import java.util.function.UnaryOperator;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
@@ -269,7 +268,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 					TextInst.translatable("nbteditor.formatted_text.font"),
 					StringInput.builder()
 							.withDefault(initialStyle.getFont() instanceof FontDescription.Resource f ? f.id().toString() : "")
-							.withValidator(font -> font.isEmpty() || IdentifierInst.isValid(font))
+							.withValidator(font -> font.isEmpty() || Identifier.tryParse(font) != null)
 							.withSuggestions((str, cursor) -> {
 								SuggestionsBuilder builder = new SuggestionsBuilder(str, 0);
 								for (Identifier font : MainUtil.client.fontManager.fontSets.keySet()) {
@@ -280,7 +279,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 								return builder.buildFuture();
 							})
 							.build(),
-					font -> applyStyleChange(style -> style.withFont(font.isEmpty() ? null : new FontDescription.Resource(IdentifierInst.of(font))), true));
+					font -> applyStyleChange(style -> style.withFont(font.isEmpty() ? null : new FontDescription.Resource(Identifier.parse(font))), true));
 		}
 		
 		@Override
@@ -704,7 +703,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				lastFontChange = time;
 				lastFont += Math.floor(Math.random() * 2) + 1;
 				font.setMessage(TextInst.literal(lastFont % 3 + "")
-						.withStyle(style -> style.withFont(new FontDescription.Resource(IdentifierInst.of("nbteditor", "fancy_f")))));
+						.withStyle(style -> style.withFont(new FontDescription.Resource(Identifier.fromNamespaceAndPath("nbteditor", "fancy_f")))));
 			}
 		}
 		

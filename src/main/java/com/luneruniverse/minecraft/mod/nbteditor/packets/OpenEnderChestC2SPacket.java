@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -8,7 +7,7 @@ import net.minecraft.resources.Identifier;
 
 public class OpenEnderChestC2SPacket implements MVPacket {
 	
-	public static final Identifier ID = IdentifierInst.of("nbteditor", "open_ender_chest");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("nbteditor", "open_ender_chest");
 	
 	public OpenEnderChestC2SPacket() {}
 	public OpenEnderChestC2SPacket(FriendlyByteBuf payload) {}

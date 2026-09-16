@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 
 import net.minecraft.core.registries.Registries;
@@ -12,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 public class GetBlockC2SPacket implements MVPacket {
 	
-	public static final Identifier ID = IdentifierInst.of("nbteditor", "get_block");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("nbteditor", "get_block");
 	
 	private final int requestId;
 	private final ResourceKey<Level> world;

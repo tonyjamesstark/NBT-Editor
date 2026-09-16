@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.AttributeModifierId;
@@ -133,7 +132,7 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 			
 			public Identifier getIdentifier() {
 				if (id instanceof UUID uuid)
-					return IdentifierInst.of("minecraft", uuid.toString());
+					return Identifier.fromNamespaceAndPath("minecraft", uuid.toString());
 				return (Identifier) id;
 			}
 			

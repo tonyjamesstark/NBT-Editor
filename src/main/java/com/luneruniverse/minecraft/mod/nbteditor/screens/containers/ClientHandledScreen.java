@@ -7,7 +7,6 @@ import org.lwjgl.glfw.GLFW;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
@@ -32,7 +31,7 @@ import net.minecraft.resources.Identifier;
 
 public class ClientHandledScreen extends net.minecraft.client.gui.screens.inventory.ContainerScreen implements OldEventBehavior, IgnoreCloseScreenPacket {
 	
-	private static final Identifier TEXTURE = IdentifierInst.of("textures/gui/container/generic_54.png");
+	private static final Identifier TEXTURE = Identifier.parse("textures/gui/container/generic_54.png");
 	
 	public static boolean handleKeybind(int keyCode, Slot hoveredSlot, Runnable parent, Function<Slot, ItemReference> containerRef) {
 		if (hoveredSlot != null &&

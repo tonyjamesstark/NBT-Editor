@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
@@ -51,8 +50,8 @@ public class CreativeTabWidget implements Renderable, MVElement {
 	private static final int V_TOP;
 	private static final int V_BOTTOM;
 	static {
-		TEXTURE_TOP = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_top_unselected.png");
-		TEXTURE_BOTTOM = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_bottom_unselected.png");
+		TEXTURE_TOP = Identifier.fromNamespaceAndPath("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_top_unselected.png");
+		TEXTURE_BOTTOM = Identifier.fromNamespaceAndPath("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_bottom_unselected.png");
 		V_TOP = 0;
 		V_BOTTOM = 0;
 	}

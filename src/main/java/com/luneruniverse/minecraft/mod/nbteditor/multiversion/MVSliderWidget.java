@@ -17,8 +17,8 @@ import net.minecraft.util.Mth;
 
 public class MVSliderWidget extends MVButtonWidget {
 	
-	private static final Identifier HANDLE = IdentifierInst.of("nbteditor", "textures/slider_handle.png");
-	private static final Identifier HANDLE_HIGHLIGHTED = IdentifierInst.of("nbteditor", "textures/slider_handle_highlighted.png");
+	private static final Identifier HANDLE = Identifier.fromNamespaceAndPath("nbteditor", "textures/slider_handle.png");
+	private static final Identifier HANDLE_HIGHLIGHTED = Identifier.fromNamespaceAndPath("nbteditor", "textures/slider_handle_highlighted.png");
 	
 	private double value;
 	private final Supplier<Component> msg;

@@ -10,7 +10,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -50,7 +49,7 @@ public class LocalEntity implements LocalNBT {
 		tag = MainUtil.updateDynamic(References.ENTITY, tag, nbt.get("DataVersion"), defaultDataVersion);
 		String id = tag.nbte$getStringOrDefault("id");
 		tag.remove("id");
-		return new LocalEntity(MVRegistry.ENTITY_TYPE.get(IdentifierInst.of(id)), tag);
+		return new LocalEntity(MVRegistry.ENTITY_TYPE.get(Identifier.parse(id)), tag);
 	}
 	
 	private EntityType<?> entityType;

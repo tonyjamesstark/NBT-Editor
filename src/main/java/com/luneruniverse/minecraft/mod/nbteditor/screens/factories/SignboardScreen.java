@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -82,7 +81,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			};
 		} else
 			textureName = woodType + "_planks";
-		texture = IdentifierInst.of("minecraft", "textures/block/" + textureName + ".png");
+		texture = Identifier.fromNamespaceAndPath("minecraft", "textures/block/" + textureName + ".png");
 		
 		if (localNBT instanceof LocalItem localItem) {
 			CompoundTag nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
