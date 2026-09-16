@@ -101,7 +101,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 		Drawing.drawTexture(context, TEXTURE, leftPos, topPos + menu.getRowCount() * 18 + 17, 0, 126, imageWidth, 96);
 		
 		if (showLogo())
-			MainUtil.renderLogo(context);
+			Drawing.renderLogo(context);
 	}
 	protected boolean showLogo() {
 		return true;

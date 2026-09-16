@@ -1,20 +1,16 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -25,7 +21,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.resources.Identifier;
 
 public class MainUtil {
 	
@@ -104,93 +99,6 @@ public class MainUtil {
 	
 	
 	
-	private static final Identifier LOGO = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo.png");
-	private static final Identifier LOGO_UPDATE_AVAILABLE = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo_update_available.png");
-	public static void renderLogo(GuiGraphicsExtractor context) {
-		Drawing.drawTexture(context,
-				UpdateCheckerThread.UPDATE_AVAILABLE ? LOGO_UPDATE_AVAILABLE : LOGO, 16, 16, 0, 0, 32, 32, 32, 32);
-	}
-	
-	
-	
-	public static void drawWrappingString(GuiGraphicsExtractor context, Font renderer, String text, int x, int y, int maxWidth, int color, boolean centerHorizontal, boolean centerVertical) {
-		maxWidth = Math.max(maxWidth, renderer.width("ww"));
-		
-		// Split into breaking spots
-		List<String> parts = new ArrayList<>();
-		List<Integer> spaces = new ArrayList<>();
-		StringBuilder currentPart = new StringBuilder();
-		boolean wasUpperCase = false;
-		for (char c : text.toCharArray()) {
-			if (c == ' ') {
-				wasUpperCase = false;
-				parts.add(currentPart.toString());
-				currentPart.setLength(0);
-				spaces.add(parts.size());
-				continue;
-			}
-			
-			boolean upperCase = Character.isUpperCase(c);
-			if (upperCase != wasUpperCase && !currentPart.isEmpty()) { // Handle NBTEditor; output NBT, Editor; not N, B, T, Editor AND Handle MinionYT; output Minion YT
-				if (wasUpperCase) {
-					parts.add(currentPart.substring(0, currentPart.length() - 1));
-					currentPart.delete(0, currentPart.length() - 1);
-				} else {
-					parts.add(currentPart.toString());
-					currentPart.setLength(0);
-				}
-			}
-			wasUpperCase = upperCase;
-			currentPart.append(c);
-		}
-		if (!currentPart.isEmpty())
-			parts.add(currentPart.toString());
-		
-		// Generate lines, maximizing the number of parts per line
-		List<String> lines = new ArrayList<>();
-		String line = "";
-		int i = 0;
-		for (String part : parts) {
-			String partAddition = (!line.isEmpty() && spaces.contains(i) ? " " : "") + part;
-			if (renderer.width(line + partAddition) > maxWidth) {
-				if (!line.isEmpty()) {
-					lines.add(line);
-					line = "";
-				}
-				
-				if (renderer.width(part) > maxWidth) {
-					while (true) {
-						int numChars = 1;
-						while (renderer.width(part.substring(0, numChars)) < maxWidth)
-							numChars++;
-						numChars--;
-						lines.add(part.substring(0, numChars));
-						part = part.substring(numChars);
-						if (renderer.width(part) < maxWidth) {
-							line = part;
-							break;
-						}
-					}
-				} else
-					line = part;
-			} else
-				line += partAddition;
-			i++;
-		}
-		if (!line.isEmpty())
-			lines.add(line);
-		
-		
-		// Draw the lines
-		for (i = 0; i < lines.size(); i++) {
-			line = lines.get(i);
-			int offsetY = i * renderer.lineHeight + (centerVertical ? -renderer.lineHeight * lines.size() / 2 : 0);
-			if (centerHorizontal)
-				Drawing.drawCenteredTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
-			else
-				Drawing.drawTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
-		}
-	}
 	
 	
 	
@@ -212,12 +120,6 @@ public class MainUtil {
 	
 	
 	
-	public static int[] getMousePos() {
-		double scale = Minecraft.getInstance().getWindow().getGuiScale();
-		int x = (int) (Minecraft.getInstance().mouseHandler.xpos() / scale);
-		int y = (int) (Minecraft.getInstance().mouseHandler.ypos() / scale);
-		return new int[] {x, y};
-	}
 	
 	
 	

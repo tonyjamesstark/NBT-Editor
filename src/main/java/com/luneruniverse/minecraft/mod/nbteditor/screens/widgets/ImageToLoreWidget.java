@@ -153,7 +153,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		super.extractRenderState(context, mouseX, mouseY, delta);
 		Drawing.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 	}
 	
 	@Override

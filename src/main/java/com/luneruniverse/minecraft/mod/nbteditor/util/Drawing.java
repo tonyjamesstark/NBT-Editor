@@ -2,6 +2,8 @@ package com.luneruniverse.minecraft.mod.nbteditor.util;
 
 import java.util.List;
 
+import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
+
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -25,6 +27,36 @@ import net.minecraft.client.Minecraft;
  */
 public class Drawing {
 	
+	
+	private static final Identifier LOGO = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo.png");
+	private static final Identifier LOGO_UPDATE_AVAILABLE = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo_update_available.png");
+	
+	/** The mod's badge, top left of every editor screen. It changes when an update is waiting. */
+	public static void renderLogo(GuiGraphicsExtractor context) {
+		drawTexture(context, UpdateCheckerThread.UPDATE_AVAILABLE ? LOGO_UPDATE_AVAILABLE : LOGO,
+				16, 16, 0, 0, 32, 32, 32, 32);
+	}
+	
+	/** The cursor in gui coordinates, which is what every caller wants and neither axis reports. */
+	public static int[] getMousePos() {
+		double scale = Minecraft.getInstance().getWindow().getGuiScale();
+		int x = (int) (Minecraft.getInstance().mouseHandler.xpos() / scale);
+		int y = (int) (Minecraft.getInstance().mouseHandler.ypos() / scale);
+		return new int[] {x, y};
+	}
+	
+	/** Draws <code>text</code> broken over as many lines as {@link TextWrapping} needs. */
+	public static void drawWrappingString(GuiGraphicsExtractor context, Font renderer, String text, int x, int y, int maxWidth, int color, boolean centerHorizontal, boolean centerVertical) {
+		List<String> lines = TextWrapping.wrap(text, maxWidth, renderer::width);
+		for (int i = 0; i < lines.size(); i++) {
+			String line = lines.get(i);
+			int offsetY = i * renderer.lineHeight + (centerVertical ? -renderer.lineHeight * lines.size() / 2 : 0);
+			if (centerHorizontal)
+				drawCenteredTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
+			else
+				drawTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
+		}
+	}
 	
 	public static void fill(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int color) {
 		context.fill(x1, y1, x2, y2, color);
@@ -67,7 +99,7 @@ public class Drawing {
 	}
 	
 	public static void renderBackground(Screen screen, GuiGraphicsExtractor context) {
-		int[] mousePos = MainUtil.getMousePos();
+		int[] mousePos = Drawing.getMousePos();
 		if (Minecraft.getInstance().level == null)
 			screen.extractBackground(context, mousePos[0], mousePos[1], Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true));
 		else

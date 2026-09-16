@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundP
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.nbtfolder.NBTFolder;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.List2D;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StringJsonWriterQuoted;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -113,7 +112,7 @@ public class NBTValue extends List2D.List2DValue {
 		context.pose().pushMatrix();
 		context.pose().scale((float) ConfigScreen.getKeyTextSize(), (float) ConfigScreen.getKeyTextSize());
 		double scale = 1 / ConfigScreen.getKeyTextSize();
-		MainUtil.drawWrappingString(context, textRenderer, key, (int) (16 * scale), (int) (24 * scale), (int) (32 * scale), -1, true, true);
+		Drawing.drawWrappingString(context, textRenderer, key, (int) (16 * scale), (int) (24 * scale), (int) (32 * scale), -1, true, true);
 		context.pose().popMatrix();
 	}
 	

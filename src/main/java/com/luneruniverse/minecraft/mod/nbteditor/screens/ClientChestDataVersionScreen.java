@@ -15,7 +15,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.MutableComponent;
@@ -159,7 +158,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 					Component.translatableEscape("nbteditor.client_chest.data_version.import", Version.getReleaseTarget()),
 					width / 2 - 108, height / 2 - 24 - font.lineHeight / 2, -1);
 		}
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 		
 		MVTooltip.renderOneTooltip(context, mouseX, mouseY);
 	}

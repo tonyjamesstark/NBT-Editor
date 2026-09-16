@@ -1,7 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.util;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -9,6 +8,7 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScreenPacket {
 	
@@ -42,7 +42,7 @@ public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScre
 		
 		context.nextStratum();
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 	}
 	@Override
 	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {

@@ -17,7 +17,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ContainerItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
@@ -31,6 +30,7 @@ import net.minecraft.client.gui.screens.inventory.LecternScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 @Mixin(BookViewScreen.class)
 public class BookScreenMixin extends Screen {
@@ -125,7 +125,7 @@ public class BookScreenMixin extends Screen {
 	@Inject(method = "render", at = @At("TAIL"))
 	private void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo info) {
 		if (renderLogo)
-			MainUtil.renderLogo(context);
+			Drawing.renderLogo(context);
 	}
 	
 }

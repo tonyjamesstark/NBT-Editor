@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
@@ -47,7 +46,7 @@ public class AlertWidget extends GroupWidget implements InitializableOverlay<Scr
 					x, y + i * Minecraft.getInstance().font.lineHeight, -1);
 		}
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 	}
 	
 	@Override

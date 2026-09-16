@@ -11,7 +11,6 @@ import java.util.function.Consumer;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.Component;
@@ -90,7 +89,7 @@ public class LoadingScreen extends MVScreen {
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		Drawing.renderBackground(this, context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 		
 		Drawing.drawCenteredTextWithShadow(context, font, Component.translatableEscape("nbteditor.loading"),
 				width / 2, height / 2 - font.lineHeight / 2 - 10, -1);

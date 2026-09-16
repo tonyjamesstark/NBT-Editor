@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
 import com.luneruniverse.minecraft.mod.nbteditor.util.ItemSizeText;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TooltipPlacement;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TooltipPlacement.Rect;
 
@@ -24,6 +23,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 /**
  * The lines the mod adds to an item tooltip, and where an oversized tooltip is drawn.
@@ -93,7 +93,7 @@ public class ItemTooltips {
 
 	/** Maps the tooltip onto the screen, scaling and repositioning it if it does not fit. */
 	public static void renderTooltipFromComponents(GuiGraphicsExtractor context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
-		int[] mousePos = MainUtil.getMousePos();
+		int[] mousePos = Drawing.getMousePos();
 		TooltipPlacement placement = TooltipPlacement.fit(x, y, width, height, screenWidth, screenHeight,
 				mousePos[0], mousePos[1]);
 		Rect source = placement.source();

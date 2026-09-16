@@ -116,7 +116,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 		super.renderMain(context, mouseX, mouseY, delta);
 		for (int i = 0; i < msg.size(); i++)
 			Drawing.drawText(context, font, msg.get(i), 16, 64 + font.lineHeight * i, -1, true);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 	}
 	
 	@Override

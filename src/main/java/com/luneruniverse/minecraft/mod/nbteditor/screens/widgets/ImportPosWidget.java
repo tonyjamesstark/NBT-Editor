@@ -82,7 +82,7 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 		super.extractRenderState(context, mouseX, mouseY, delta);
 		Drawing.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.nbt.import.pos"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 	}
 	
 	@Override

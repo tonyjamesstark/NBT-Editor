@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.input.KeyEvent;
@@ -82,7 +81,7 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 					x + input.getWidth() / 2, y - 4 - Minecraft.getInstance().font.lineHeight, -1);
 		}
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 		context.pose().popMatrix();
 	}
 	
