@@ -1,6 +1,9 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
+import java.time.Duration;
 
 import java.util.List;
 import java.util.function.ToIntFunction;
@@ -54,6 +57,15 @@ public class TextWrappingTest {
 	@Test
 	public void aWordWiderThanTheLineIsSplitMidWord() {
 		assertEquals(List.of("NBT", "Edit", "or"), wrap("NBTEditor", 5));
+	}
+	
+	@Test
+	public void aCharacterWiderThanTheLineGetsALineToItself() {
+		// Clamping maxWidth to the width of "ww" does not save this: a glyph can be wider than
+		// two of them. Splitting used to take zero characters off the front here and spin.
+		ToIntFunction<String> wideW = s -> s.chars().map(c -> c == 'W' ? 50 : 1).sum();
+		assertTimeoutPreemptively(Duration.ofSeconds(2),
+				() -> assertEquals(List.of("W", "W"), TextWrapping.wrap("WW", 2, wideW)));
 	}
 	
 	@Test

@@ -70,7 +70,9 @@ public class TextWrapping {
 						int numChars = 1;
 						while (width.applyAsInt(part.substring(0, numChars)) < maxWidth)
 							numChars++;
-						numChars--;
+						// A character wider than the whole line still has to go on one, or the
+						// split takes nothing off the front and never ends.
+						numChars = Math.max(numChars - 1, 1);
 						lines.add(part.substring(0, numChars));
 						part = part.substring(numChars);
 						if (width.applyAsInt(part) < maxWidth) {
