@@ -11,7 +11,6 @@ import java.util.stream.IntStream;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTValue;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.NumericTag;
@@ -28,6 +27,7 @@ import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 public class ListNBTFolder implements NBTFolder<CollectionTag> {
 	
@@ -131,7 +131,7 @@ public class ListNBTFolder implements NBTFolder<CollectionTag> {
 	
 	@Override
 	public Predicate<String> getKeyValidator(boolean renaming) {
-		return MainUtil.intPredicate(() -> 0, () -> getNBT().nbte$size() + (renaming ? -1 : 0), false);
+		return IntFields.intPredicate(() -> 0, () -> getNBT().nbte$size() + (renaming ? -1 : 0), false);
 	}
 	
 	@Override

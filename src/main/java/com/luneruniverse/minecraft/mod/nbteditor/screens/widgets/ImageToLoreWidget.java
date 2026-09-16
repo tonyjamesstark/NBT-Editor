@@ -22,7 +22,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.MutableComponent;
@@ -32,6 +31,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 public class ImageToLoreWidget extends GroupWidget implements InitializableOverlay<Screen> {
 	
@@ -130,8 +130,8 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		imgHeight = addWidget(new NamedTextFieldWidget(width / 2 + 2, height / 2 - 18, 100, 16)
 				.name(Component.translatableEscape("nbteditor.img_to_lore.height")));
 		
-		imgWidth.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
-		imgHeight.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
+		imgWidth.nbte$setFilter(IntFields.intPredicate(1, Integer.MAX_VALUE, true));
+		imgHeight.nbte$setFilter(IntFields.intPredicate(1, Integer.MAX_VALUE, true));
 		
 		if (prevImgWidth != null)
 			imgWidth.setValue(prevImgWidth);
@@ -140,7 +140,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		
 		addWidget(Buttons.of(width / 2 - 102, height / 2 + 2, 100, 20, ScreenTexts.DONE, btn -> {
 			optionsConsumer.accept(Optional.of(new ImageToLoreOptions(
-					MainUtil.parseOptionalInt(imgWidth.getValue()), MainUtil.parseOptionalInt(imgHeight.getValue()))));
+					IntFields.parseOptionalInt(imgWidth.getValue()), IntFields.parseOptionalInt(imgHeight.getValue()))));
 		}));
 		addWidget(Buttons.of(width / 2 + 2, height / 2 + 2, 100, 20, ScreenTexts.CANCEL, btn -> {
 			optionsConsumer.accept(Optional.empty());
@@ -165,7 +165,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		}
 		if (keyCode == GLFW.GLFW_KEY_ENTER) {
 			optionsConsumer.accept(Optional.of(new ImageToLoreOptions(
-					MainUtil.parseOptionalInt(imgWidth.getValue()), MainUtil.parseOptionalInt(imgHeight.getValue()))));
+					IntFields.parseOptionalInt(imgWidth.getValue()), IntFields.parseOptionalInt(imgHeight.getValue()))));
 			return true;
 		}
 		

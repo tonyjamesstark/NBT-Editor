@@ -16,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandle
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
@@ -29,6 +28,7 @@ import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.Utils;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 /**
  * A paged pane. Credits @ I Al Ianstaan
@@ -267,7 +267,7 @@ public class PagedPane extends ClientHandledScreen {
                 			Component.nullToEmpty("Go to a Specific Page"),
                 			StringInput.builder()
                 					.withPlaceholder(Component.nullToEmpty("Page #"))
-                					.withValidator(MainUtil.intPredicate(1, getPageAmount(), false))
+                					.withValidator(IntFields.intPredicate(1, getPageAmount(), false))
                 					.build(),
                 			page -> selectPage(Integer.parseInt(page) - 1));
                 } else {

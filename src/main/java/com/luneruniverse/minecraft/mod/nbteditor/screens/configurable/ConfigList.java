@@ -13,7 +13,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.input.KeyEvent;
@@ -23,6 +22,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 	
@@ -191,7 +191,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 														.withPlaceholder(
 																Component.translatableEscape("nbteditor.configurable.list.move.index"))
 														.withValidator(
-																MainUtil.intPredicate(() -> 1, () -> parent.paths.size() - 1, false))
+																IntFields.intPredicate(() -> 1, () -> parent.paths.size() - 1, false))
 														.build(),
 												str -> {
 													int target = Integer.parseInt(str) - 1;
@@ -216,7 +216,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 															.withPlaceholder(
 																	Component.translatableEscape("nbteditor.configurable.list.duplicate.amount"))
 															.withValidator(
-																	MainUtil.intPredicate(1, Integer.MAX_VALUE, false))
+																	IntFields.intPredicate(1, Integer.MAX_VALUE, false))
 															.build(),
 													numCopies -> duplicate(Integer.parseInt(numCopies)));
 										} else

@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.Component;
@@ -19,6 +18,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 public class ImportPosWidget extends GroupWidget implements InitializableOverlay<Screen> {
 	
@@ -62,9 +62,9 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 		z = addWidget(new NamedTextFieldWidget(width / 2 + 36, height / 2 - 18, 66, 16, z)
 				.name(Component.translatableEscape("nbteditor.nbt.import.pos.z")));
 		
-		x.nbte$setFilter(MainUtil.intPredicate());
-		y.nbte$setFilter(MainUtil.intPredicate());
-		z.nbte$setFilter(MainUtil.intPredicate());
+		x.nbte$setFilter(IntFields.intPredicate());
+		y.nbte$setFilter(IntFields.intPredicate());
+		z.nbte$setFilter(IntFields.intPredicate());
 		
 		if (firstInit) {
 			x.setValue("" + defaultPos.getX());
@@ -101,9 +101,9 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 	}
 	
 	private void done() {
-		int xValue = MainUtil.parseDefaultInt(x.getValue(), defaultPos.getX());
-		int yValue = MainUtil.parseDefaultInt(y.getValue(), defaultPos.getY());
-		int zValue = MainUtil.parseDefaultInt(z.getValue(), defaultPos.getZ());
+		int xValue = IntFields.parseDefaultInt(x.getValue(), defaultPos.getX());
+		int yValue = IntFields.parseDefaultInt(y.getValue(), defaultPos.getY());
+		int zValue = IntFields.parseDefaultInt(z.getValue(), defaultPos.getZ());
 		posConsumer.accept(Optional.of(new BlockPos(xValue, yValue, zValue)));
 	}
 	

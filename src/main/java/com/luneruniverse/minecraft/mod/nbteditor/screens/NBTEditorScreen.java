@@ -33,7 +33,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.List2D;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.SuggestingTextFieldWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtFormatter;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.StringReader;
@@ -52,6 +51,7 @@ import net.minecraft.IdentifierException;
 import net.minecraft.client.Minecraft;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
@@ -176,7 +176,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				item.setCount(Integer.parseInt(str));
 				checkSave();
 			});
-			count.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
+			count.nbte$setFilter(IntFields.intPredicate(1, Integer.MAX_VALUE, true));
 		} else {
 			count.setValue("1");
 			count.setEditable(false);

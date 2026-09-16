@@ -14,7 +14,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LoadingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
@@ -29,6 +28,7 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
 import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 public class ClientChestScreen extends ClientHandledScreen {
 	
@@ -145,7 +145,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 				show();
 			}
 		});
-		pageField.nbte$setFilter(MainUtil.intPredicate(() -> 0, NBTEditorClient.CLIENT_CHEST::getPageCount, true));
+		pageField.nbte$setFilter(IntFields.intPredicate(() -> 0, NBTEditorClient.CLIENT_CHEST::getPageCount, true));
 		this.addRenderableWidget(pageField);
 		
 		MutableComponent prevKeybind = Component.translatableEscape("nbteditor.keybind.page.down");
