@@ -47,7 +47,7 @@ public class PagedPane extends ClientHandledScreen {
      * @param pageSize The page size. inventory rows - 2
      */
     public PagedPane(int pageSize, int rows, String title) {
-    	super(rows, Component.nullToEmpty(MainUtil.colorize(title)));
+    	super(rows, Component.nullToEmpty(Utils.translateColorCodes(title)));
         this.pageSize = pageSize;
         pages.put(0, new Page(pageSize));
     }
@@ -288,7 +288,7 @@ public class PagedPane extends ClientHandledScreen {
 
     protected ItemStack setMeta(ItemStack itemStack, String name, String... lore) {
         itemStack.nbte$setCustomName(Component.nullToEmpty(Utils.colorize(name)));
-        ItemTagReferences.LORE.set(itemStack, Arrays.stream(lore).map(MainUtil::colorize).map(Component::nullToEmpty).collect(Collectors.toList()));
+        ItemTagReferences.LORE.set(itemStack, Arrays.stream(lore).map(Utils::translateColorCodes).map(Component::nullToEmpty).collect(Collectors.toList()));
         return itemStack;
     }
 

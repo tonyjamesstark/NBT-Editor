@@ -20,7 +20,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 /**
  * This is the Database that holds all heads
@@ -97,8 +96,8 @@ public class HeadDatabase {
         List<Head> result = new ArrayList<>();
         List<Head> heads = getHeads(category);
         for (Head head : heads) {
-            String hName = MainUtil.stripColor(head.getName().toLowerCase(Locale.ROOT));
-            if (hName.contains(MainUtil.stripColor(name.toLowerCase(Locale.ROOT)))) {
+            String hName = Utils.stripColor(head.getName().toLowerCase(Locale.ROOT));
+            if (hName.contains(Utils.stripColor(name.toLowerCase(Locale.ROOT)))) {
                 result.add(head);
             }
         }

@@ -10,9 +10,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
 
@@ -30,8 +28,6 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.ChatFormatting;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.Identifier;
 
@@ -201,31 +197,6 @@ public class MainUtil {
 	}
 	
 	
-	public static String colorize(String text) {
-		StringBuilder output = new StringBuilder();
-		boolean colorCode = false;
-		for (char c : text.toCharArray()) {
-			if (c == '&')
-				colorCode = true;
-			else {
-				if (colorCode) {
-					colorCode = false;
-					if ((c + "").replaceAll("[0-9a-fA-Fk-oK-OrR]", "").isEmpty())
-						output.append('§');
-					else
-						output.append('&');
-				}
-				
-				output.append(c);
-			}
-		}
-		if (colorCode)
-			output.append('&');
-		return output.toString();
-	}
-	public static String stripColor(String text) {
-		return text.replaceAll("\\xA7[0-9a-fA-Fk-oK-OrR]", "");
-	}
 	
 	
 	public static Component getBaseItemNameSafely(ItemStack item) {
@@ -234,59 +205,8 @@ public class MainUtil {
 			return name;
 		return item.getItem().getName(item);
 	}
-	public static Component getNbtNameSafely(CompoundTag nbt, String key, Supplier<Component> defaultName) {
-		if (nbt != null) {
-			Tag textNbt = nbt.get(key);
-			if (textNbt != null) {
-				try {
-					Component text = TextUtil.fromMinecraft(textNbt);
-					if (text != null)
-						return text;
-				} catch (IllegalArgumentException e) {}
-			}
-		}
-		return defaultName.get();
-	}
 	
 	
-	public static DyeColor getDyeColor(ChatFormatting color) {
-		switch (color) {
-			case AQUA:
-				return DyeColor.LIGHT_BLUE;
-			case BLACK:
-				return DyeColor.BLACK;
-			case BLUE:
-				return DyeColor.BLUE;
-			case DARK_AQUA:
-				return DyeColor.CYAN;
-			case DARK_BLUE:
-				return DyeColor.BLUE;
-			case DARK_GRAY:
-				return DyeColor.GRAY;
-			case DARK_GREEN:
-				return DyeColor.GREEN;
-			case DARK_PURPLE:
-				return DyeColor.PURPLE;
-			case DARK_RED:
-				return DyeColor.RED;
-			case GOLD:
-				return DyeColor.ORANGE;
-			case GRAY:
-				return DyeColor.LIGHT_GRAY;
-			case GREEN:
-				return DyeColor.LIME;
-			case LIGHT_PURPLE:
-				return DyeColor.PINK;
-			case RED:
-				return DyeColor.RED;
-			case WHITE:
-				return DyeColor.WHITE;
-			case YELLOW:
-				return DyeColor.YELLOW;
-			default:
-				return DyeColor.BROWN;
-		}
-	}
 	
 	
 	public static ItemStack copyAirable(ItemStack item) {
@@ -385,13 +305,6 @@ public class MainUtil {
 	}
 	
 	
-	public static String addNamespace(String component) {
-		if (component.contains(":"))
-			return component;
-		if (component.startsWith("!"))
-			return "!minecraft:" + component.substring(1);
-		return "minecraft:" + component;
-	}
 	
 	public static <T> CompletableFuture<T> mergeFutures(List<CompletableFuture<T>> futures) {
 		CompletableFuture<T> output = new CompletableFuture<>();

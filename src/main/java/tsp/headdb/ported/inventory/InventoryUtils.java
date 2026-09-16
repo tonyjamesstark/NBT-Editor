@@ -156,7 +156,7 @@ public class InventoryUtils {
                     ItemStack item = slot.getItem();
 
                     if (item != null && !item.isEmpty()) {
-                        String name = MainUtil.stripColor(item.getHoverName().getString().toLowerCase());
+                        String name = Utils.stripColor(item.getHoverName().getString().toLowerCase());
                         if (name.equalsIgnoreCase("favorites")) {
                             InventoryUtils.openFavoritesMenu();
                             return;

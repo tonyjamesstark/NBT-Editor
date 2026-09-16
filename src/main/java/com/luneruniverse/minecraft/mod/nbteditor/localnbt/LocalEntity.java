@@ -83,7 +83,7 @@ public class LocalEntity implements LocalNBT {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
+		return TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
 	}
 	@Override
 	public void setName(Component name) {
@@ -216,7 +216,7 @@ public class LocalEntity implements LocalNBT {
 		UUID uuid = nbt.nbte$getUuid("UUID").orElseGet(() -> new UUID(0, 0));
 		return Component.translatableEscape("chat.square_brackets", getName()).withStyle(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ENTITY.newEvent(new HoverEvent.EntityTooltipInfo(
-						entityType, uuid, MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null)))));
+						entityType, uuid, TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> null)))));
 	}
 	
 	public CompletableFuture<Optional<EntityReference>> summon(ResourceKey<Level> world, Vec3 pos) {

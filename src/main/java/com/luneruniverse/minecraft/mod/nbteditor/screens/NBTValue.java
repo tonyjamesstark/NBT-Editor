@@ -22,6 +22,7 @@ import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 public class NBTValue extends List2D.List2DValue {
 	
@@ -171,7 +172,7 @@ public class NBTValue extends List2D.List2DValue {
 			CompoundTag nbtOutput = localItem.getReadableItem().nbte$getNbt();
 			if (component == null)
 				component = this.key;
-			this.invalidComponent = (nbtOutput == null || !nbtOutput.contains(MainUtil.addNamespace(component)));
+			this.invalidComponent = (nbtOutput == null || !nbtOutput.contains(TextUtil.addNamespace(component)));
 		}
 	}
 	public boolean isInvalidComponent() {

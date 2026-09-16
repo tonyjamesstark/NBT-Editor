@@ -12,6 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.DyeColor;
 
 public class StyleUtil {
 	
@@ -124,6 +125,49 @@ public class StyleUtil {
 	
 	// 26.2 stripped ChatFormatting down to a code and a toString. Everything the
 	// mod still asked it for now comes from TextColor or the enum constant itself.
+	
+	/**
+	 * The closest dye to a chat colour. Not a bijection: two formattings map to blue and two to
+	 * red, and the ones with no dye at all land on brown.
+	 */
+	public static DyeColor getDyeColor(ChatFormatting color) {
+		switch (color) {
+			case AQUA:
+				return DyeColor.LIGHT_BLUE;
+			case BLACK:
+				return DyeColor.BLACK;
+			case BLUE:
+				return DyeColor.BLUE;
+			case DARK_AQUA:
+				return DyeColor.CYAN;
+			case DARK_BLUE:
+				return DyeColor.BLUE;
+			case DARK_GRAY:
+				return DyeColor.GRAY;
+			case DARK_GREEN:
+				return DyeColor.GREEN;
+			case DARK_PURPLE:
+				return DyeColor.PURPLE;
+			case DARK_RED:
+				return DyeColor.RED;
+			case GOLD:
+				return DyeColor.ORANGE;
+			case GRAY:
+				return DyeColor.LIGHT_GRAY;
+			case GREEN:
+				return DyeColor.LIME;
+			case LIGHT_PURPLE:
+				return DyeColor.PINK;
+			case RED:
+				return DyeColor.RED;
+			case WHITE:
+				return DyeColor.WHITE;
+			case YELLOW:
+				return DyeColor.YELLOW;
+			default:
+				return DyeColor.BROWN;
+		}
+	}
 	
 	public static boolean isColor(ChatFormatting formatting) {
 		return TextColor.fromLegacyFormat(formatting) != null;

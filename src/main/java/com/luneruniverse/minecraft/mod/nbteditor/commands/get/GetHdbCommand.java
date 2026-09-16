@@ -27,6 +27,7 @@ import tsp.headdb.ported.Head;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.inventory.InventoryUtils;
 import net.minecraft.world.item.DyeColor;
+import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 
 public class GetHdbCommand extends ClientCommand {
 	
@@ -77,7 +78,7 @@ public class GetHdbCommand extends ClientCommand {
 					if (!HeadAPI.checkUpdated())
 						return Command.SINGLE_SUCCESS;
 					Category category = context.getArgument("category", Category.class);
-					ItemStack shulker = new ItemStack(Items.DYED_SHULKER_BOX.pick(MainUtil.getDyeColor(category.getColor())));
+					ItemStack shulker = new ItemStack(Items.DYED_SHULKER_BOX.pick(StyleUtil.getDyeColor(category.getColor())));
 					shulker.nbte$setCustomName(Component.nullToEmpty(ChatFormatting.RESET.toString() + category.getColor() + ChatFormatting.BOLD + category.getTranslatedName().toUpperCase()));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeads(category).stream().map(Head::getItemStack).toList());

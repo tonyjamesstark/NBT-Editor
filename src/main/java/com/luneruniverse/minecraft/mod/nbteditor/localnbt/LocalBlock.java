@@ -102,7 +102,7 @@ public class LocalBlock implements LocalNBT {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
+		return TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
 	}
 	@Override
 	public void setName(Component name) {
@@ -203,7 +203,7 @@ public class LocalBlock implements LocalNBT {
 		MutableComponent tooltip = Component.translatableEscape("gui.entity_tooltip.type", block.getName());
 		if (!state.getProperties().isEmpty())
 			tooltip.append("\n" + state);
-		Component customName = MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null);
+		Component customName = TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> null);
 		if (customName != null)
 			tooltip = Component.literal("").append(customName).append("\n").append(tooltip);
 		final Component finalTooltip = tooltip;
