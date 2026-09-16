@@ -1,14 +1,10 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.zip.ZipException;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
@@ -20,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTMan
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.EditBox;
@@ -304,14 +299,6 @@ public class MainUtil {
 	
 	
 	
-	public static CompoundTag readNBT(InputStream in) throws IOException {
-		byte[] data = in.readAllBytes();
-		try {
-			return NbtIO.readCompressed(new ByteArrayInputStream(data));
-		} catch (ZipException e) {
-			return NbtIO.read(new ByteArrayInputStream(data));
-		}
-	}
 	
 	
 	
@@ -397,11 +384,6 @@ public class MainUtil {
 		return updateDynamic(typeRef, nbt, -1);
 	}
 	
-	public static CompoundTag fillId(CompoundTag nbt, String id) {
-		if (!nbt.nbte$contains("id", Tag.TAG_STRING))
-			nbt.putString("id", id);
-		return nbt;
-	}
 	
 	public static String addNamespace(String component) {
 		if (component.contains(":"))

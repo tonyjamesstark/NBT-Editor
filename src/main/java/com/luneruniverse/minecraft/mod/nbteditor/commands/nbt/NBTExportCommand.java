@@ -39,6 +39,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.ChatFormatting;
 import net.minecraft.util.FileUtil;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIO;
 
 public class NBTExportCommand extends ClientCommand {
 	
@@ -141,7 +142,7 @@ public class NBTExportCommand extends ClientCommand {
 				NBTReference.getReference(EXPORT_FILTER, false, ref -> {
 					ItemStack cmdBlock = new ItemStack(Items.COMMAND_BLOCK);
 					CompoundTag blockEntityTag = new CompoundTag();
-					MainUtil.fillId(blockEntityTag, "minecraft:command_block");
+					ContainerIO.fillId(blockEntityTag, "minecraft:command_block");
 					blockEntityTag.putString("Command", getVanillaCommand(ref));
 					ItemTagReferences.BLOCK_ENTITY_DATA.set(cmdBlock, blockEntityTag);
 					MainUtil.getWithMessage(cmdBlock);

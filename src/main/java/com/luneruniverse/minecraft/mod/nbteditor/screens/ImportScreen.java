@@ -35,6 +35,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 
 public class ImportScreen extends OverlaySupportingScreen {
 	
@@ -48,7 +49,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 			
 			if (file.getName().endsWith(".nbt")) {
 				try (FileInputStream in = new FileInputStream(file)) {
-					CompoundTag nbt = MainUtil.readNBT(in);
+					CompoundTag nbt = NbtIO.readCompressedOrPlain(in);
 					if (defaultDataVersion.isEmpty() && !nbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE))
 						Minecraft.getInstance().player.sendSystemMessage(TextUtil.parseTranslatableFormatted("nbteditor.nbt.import.data_version.unknown", file.getName()));
 					if (nbt.nbte$getIntOrDefault("DataVersion") > Version.getDataVersion())

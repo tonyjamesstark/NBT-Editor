@@ -50,6 +50,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.IdentifierException;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 
 public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
@@ -463,7 +464,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			File file = path.toFile();
 			if (file.isFile() && file.getName().endsWith(".nbt")) {
 				try (FileInputStream in = new FileInputStream(file)) {
-					CompoundTag nbt = MainUtil.readNBT(in);
+					CompoundTag nbt = NbtIO.readCompressedOrPlain(in);
 					for (String key : nbt.keySet())
 						currentFolder.setValue(key, nbt.get(key));
 					genEditor();
