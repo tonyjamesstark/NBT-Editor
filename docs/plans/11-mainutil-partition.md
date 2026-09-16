@@ -60,15 +60,36 @@ becomes wrap-then-draw. `IntFields` is pure and gets tests too.
 
 ## Checklist
 
-- [ ] 11a. Inline the pass-throughs: `client`, `getCustomItemNameSafely`, `setType`
-- [ ] 11b. Fold the five single-caller helpers into their callers
-- [ ] 11c. Rehome to existing modules: `NbtIO`, `StyleUtil`, headdb `Utils`,
+- [x] 11a. Inline the pass-throughs: `client`, `getCustomItemNameSafely`, `setType`
+- [x] 11b. Fold the five single-caller helpers into their callers
+- [x] 11c. Rehome to existing modules: `NbtIO`, `StyleUtil`, headdb `Utils`,
       `AccessWidenedApi`, `TextUtil`, `ContainerIO`, `LocalItemStack`
-- [ ] 11d. Move `multiversion/MVDrawableHelper` to `util/Drawing`
-- [ ] 11e. Extract `util/TextWrapping` + tests; move the three drawing helpers into `Drawing`
-- [ ] 11f. Extract `util/PlayerItems`
-- [ ] 11g. Extract `util/IntFields` + tests
-- [ ] 11h. Extract `util/DataFixes` and `util/Futures`
-- [ ] 11i. Delete `MainUtil`; build and full test suite green
+- [x] 11d. Move `multiversion/MVDrawableHelper` to `util/Drawing`
+- [x] 11e. Extract `util/TextWrapping` + tests; move the three drawing helpers into `Drawing`
+- [x] 11f. Extract `util/PlayerItems`
+- [x] 11g. Extract `util/IntFields` + tests
+- [x] 11h. Extract `util/DataFixes` and `util/Futures`
+- [x] 11i. Delete `MainUtil`; build and full test suite green
 
 Each step is its own commit and each commit builds on its own.
+
+## Outcome
+
+Done across 13 commits, each verified to build on its own (13/13). 143 files,
++1392/-1093. `MainUtil` is deleted; `util/` gained `PlayerItems`, `IntFields`,
+`DataFixes`, `Futures`, `TextWrapping` and `Drawing` (the last moved, not new).
+Tests 60 -> 80.
+
+Two things came out of the extraction that were not in the plan:
+
+- `TextWrapping`'s mid-word split stepped back one character from the first that
+  did not fit, which lands on zero when the first character is already wider than
+  the line -- an infinite loop inside a render call. Fixed on its own commit, with
+  a timeout-guarded test, after the extraction had landed unchanged.
+- `IntFields.intPredicate`'s fixed-bound overload took `Integer` and forwarded it
+  into a supplier, so a null bound passed the "no bound" check and then
+  dereferenced. The parameters are `int` now. No caller was passing null.
+
+Not done: `Drawing`'s twelve one-line forwards to `GuiGraphicsExtractor`. They are
+A1's inlining pass, which is not on this checklist; the move only changed where
+they live.
