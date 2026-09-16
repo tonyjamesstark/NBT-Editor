@@ -9,9 +9,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTEditorScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.client.Minecraft;
 
 public class NBTCommand extends ClientCommandGroup {
 	
@@ -40,7 +40,7 @@ public class NBTCommand extends ClientCommandGroup {
 		super.register(builder, path);
 		builder.executes(context -> {
 			NBTReference.getReference(NBTReferenceFilter.ANY, ConfigScreen.isAirEditable(),
-					ref -> MainUtil.client.setScreenAndShow(new NBTEditorScreen<>(ref)));
+					ref -> Minecraft.getInstance().setScreenAndShow(new NBTEditorScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

@@ -42,6 +42,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 /**
  * The main API<br>
@@ -69,7 +70,7 @@ public class NBTEditorAPI {
 	 * 		ItemReference ref = MainUtil.getHeldItem();
 	 * 		ItemStack item = ref.getItem();
 	 * 		// Manipulate item
-	 * 		ref.saveItem(item, () -> MainUtil.client.player.sendMessage(Component.literal("Myfactory complete!")));
+	 * 		ref.saveItem(item, () -> Minecraft.getInstance().player.sendMessage(Component.literal("Myfactory complete!")));
 	 * 		return Command.SINGLE_SUCCESS;
 	 * 	});
 	 * });
@@ -132,8 +133,8 @@ public class NBTEditorAPI {
 		registerFactory(name, extremeAlias, ref -> {
 			if (supported.test(ref))
 				factory.accept(ref);
-			else if (MainUtil.client.player != null)
-				MainUtil.client.player.sendSystemMessage(unsupportedMsg);
+			else if (Minecraft.getInstance().player != null)
+				Minecraft.getInstance().player.sendSystemMessage(unsupportedMsg);
 		});
 		LocalFactoryScreen.BASIC_FACTORIES.add(new LocalFactoryScreen.LocalFactoryReference(buttonMsg, supported, factory));
 	}

@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 /**
  * Thin cover over {@link GuiGraphicsExtractor} for the calls the mod makes in more than one place.
@@ -50,22 +51,22 @@ public class MVDrawableHelper {
 	}
 	
 	public static void renderTooltip(GuiGraphicsExtractor context, Component text, int x, int y) {
-		context.setTooltipForNextFrame(MainUtil.client.font, text, x, y);
+		context.setTooltipForNextFrame(Minecraft.getInstance().font, text, x, y);
 	}
 	
 	public static void renderTooltip(GuiGraphicsExtractor context, List<FormattedCharSequence> lines, int x, int y) {
-		context.setTooltipForNextFrame(MainUtil.client.font, lines, x, y);
+		context.setTooltipForNextFrame(Minecraft.getInstance().font, lines, x, y);
 	}
 	
 	public static void renderItem(GuiGraphicsExtractor context, float zOffset, boolean setScreenZOffset, ItemStack item, int x, int y) {
 		context.item(item, x, y);
-		context.itemDecorations(MainUtil.client.font, item, x, y);
+		context.itemDecorations(Minecraft.getInstance().font, item, x, y);
 	}
 	
 	public static void renderBackground(Screen screen, GuiGraphicsExtractor context) {
 		int[] mousePos = MainUtil.getMousePos();
-		if (MainUtil.client.level == null)
-			screen.extractBackground(context, mousePos[0], mousePos[1], MainUtil.client.getDeltaTracker().getGameTimeDeltaPartialTick(true));
+		if (Minecraft.getInstance().level == null)
+			screen.extractBackground(context, mousePos[0], mousePos[1], Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true));
 		else
 			screen.extractTransparentBackground(context);
 	}

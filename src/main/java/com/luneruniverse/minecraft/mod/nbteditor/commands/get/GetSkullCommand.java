@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.util.StringUtil;
+import net.minecraft.client.Minecraft;
 
 public class GetSkullCommand extends ClientCommand {
 	
@@ -35,7 +36,7 @@ public class GetSkullCommand extends ClientCommand {
 		builder.then(argument("player", StringArgumentType.word()).executes(context -> {
 			String player = context.getArgument("player", String.class);
 			if (!StringUtil.isValidPlayerName(player)) {
-				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.skull.invalid_player_name"));
+				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.skull.invalid_player_name"));
 				return Command.SINGLE_SUCCESS;
 			}
 			ItemStack item = new ItemStack(Items.PLAYER_HEAD, 1);

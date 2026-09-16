@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.HandItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.nbt.CompoundTag;
@@ -19,17 +18,18 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.client.Minecraft;
 
 public interface NBTReference<T extends LocalNBT> {
 	public static CompletableFuture<? extends Optional<? extends NBTReference<?>>> getReference(NBTReferenceFilter filter, boolean airable) {
-		HitResult target = MainUtil.client.hitResult;
+		HitResult target = Minecraft.getInstance().hitResult;
 		if (target instanceof EntityHitResult entity && filter.isEntityAllowed()) {
 			return EntityReference.getEntity(entity.getEntity().level().dimension(), entity.getEntity().getUUID())
 					.thenApply(ref -> ref.<NBTReference<?>>map(UnaryOperator.identity())
 							.filter(filter).or(() -> getClientReference(target, filter, airable)));
 		}
 		if (target instanceof BlockHitResult block && filter.isBlockAllowed()) {
-			return BlockReference.getBlock(MainUtil.client.level.dimension(), block.getBlockPos())
+			return BlockReference.getBlock(Minecraft.getInstance().level.dimension(), block.getBlockPos())
 					.thenApply(ref -> ref.<NBTReference<?>>map(UnaryOperator.identity())
 							.filter(filter).or(() -> getClientReference(target, filter, airable)));
 		}
@@ -61,10 +61,10 @@ public interface NBTReference<T extends LocalNBT> {
 	}
 	
 	public static void getReference(NBTReferenceFilter filter, boolean airable, Consumer<NBTReference<?>> consumer) {
-		NBTReference.getReference(filter, airable).thenAccept(ref -> MainUtil.client.execute(() -> {
+		NBTReference.getReference(filter, airable).thenAccept(ref -> Minecraft.getInstance().execute(() -> {
 			ref.ifPresentOrElse(consumer, () -> {
-				if (MainUtil.client.player != null)
-					MainUtil.client.player.sendSystemMessage(filter.getFailMessage());
+				if (Minecraft.getInstance().player != null)
+					Minecraft.getInstance().player.sendSystemMessage(filter.getFailMessage());
 			});
 		}));
 	}
@@ -76,7 +76,7 @@ public interface NBTReference<T extends LocalNBT> {
 		saveNBT(nbt.getId(), nbt.getNBT(), onFinished);
 	}
 	public default void saveLocalNBT(T nbt, Component msg) {
-		saveLocalNBT(nbt, () -> MainUtil.client.player.sendSystemMessage(msg));
+		saveLocalNBT(nbt, () -> Minecraft.getInstance().player.sendSystemMessage(msg));
 	}
 	public default void saveLocalNBT(T nbt) {
 		saveLocalNBT(nbt, () -> {});
@@ -87,7 +87,7 @@ public interface NBTReference<T extends LocalNBT> {
 		saveLocalNBT(nbt, onFinished);
 	}
 	public default void modifyLocalNBT(Consumer<T> nbtConsumer, Component msg) {
-		modifyLocalNBT(nbtConsumer, () -> MainUtil.client.player.sendSystemMessage(msg));
+		modifyLocalNBT(nbtConsumer, () -> Minecraft.getInstance().player.sendSystemMessage(msg));
 	}
 	public default void modifyLocalNBT(Consumer<T> nbtConsumer) {
 		modifyLocalNBT(nbtConsumer, () -> {});
@@ -97,7 +97,7 @@ public interface NBTReference<T extends LocalNBT> {
 	public CompoundTag getNBT();
 	public void saveNBT(Identifier id, CompoundTag toSave, Runnable onFinished);
 	public default void saveNBT(Identifier id, CompoundTag toSave, Component msg) {
-		saveNBT(id, toSave, () -> MainUtil.client.player.sendSystemMessage(msg));
+		saveNBT(id, toSave, () -> Minecraft.getInstance().player.sendSystemMessage(msg));
 	}
 	public default void saveNBT(Identifier id, CompoundTag toSave) {
 		saveNBT(id, toSave, () -> {});

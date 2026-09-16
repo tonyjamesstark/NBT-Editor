@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScreenPacket {
 	
@@ -15,11 +16,11 @@ public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScre
 	
 	public FancyConfirmScreen(BooleanConsumer callback, Component title, Component message, Component yesTranslated, Component noTranslated) {
 		super(callback, title, message, yesTranslated, noTranslated);
-		parent = MainUtil.client.gui.screen();
+		parent = Minecraft.getInstance().gui.screen();
 	}
 	public FancyConfirmScreen(BooleanConsumer callback, Component title, Component message) {
 		super(callback, title, message);
-		parent = MainUtil.client.gui.screen();
+		parent = Minecraft.getInstance().gui.screen();
 	}
 	
 	public FancyConfirmScreen setParent(Screen parent) {
@@ -45,7 +46,7 @@ public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScre
 	}
 	@Override
 	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		if (MainUtil.client.level == null)
+		if (Minecraft.getInstance().level == null)
 			super.extractBackground(context, mouseX, mouseY, delta);
 		else
 			extractTransparentBackground(context);

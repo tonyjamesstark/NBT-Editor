@@ -15,7 +15,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextSearch;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -33,10 +32,11 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import net.minecraft.client.gui.narration.NarratableEntry.NarrationPriority;
+import net.minecraft.client.Minecraft;
 
 public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable, NarratableEntry {
 	
-	private static final Font textRenderer = MainUtil.client.font;
+	private static final Font textRenderer = Minecraft.getInstance().font;
 	
 	public static MultiLineTextFieldWidget create(MultiLineTextFieldWidget prev, int x, int y, int width, int height,
 			String text, Function<String, Component> formatter, boolean newLines, Consumer<String> onChange) {
@@ -592,16 +592,16 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			return true;
 		}
 		if (Keys.isCopy(keyCode)) {
-			MainUtil.client.keyboardHandler.setClipboard(onCopy(getSelectedText(), getSelStart(), getSelEnd() - getSelStart()));
+			Minecraft.getInstance().keyboardHandler.setClipboard(onCopy(getSelectedText(), getSelStart(), getSelEnd() - getSelStart()));
 			return true;
 		}
 		if (Keys.isPaste(keyCode)) {
-			this.write(pasteFilter(onPaste(MainUtil.client.keyboardHandler.getClipboard(), getSelStart(), getSelEnd() - getSelStart())));
+			this.write(pasteFilter(onPaste(Minecraft.getInstance().keyboardHandler.getClipboard(), getSelStart(), getSelEnd() - getSelStart())));
 			cursorX = -1;
 			return true;
 		}
 		if (Keys.isCut(keyCode)) {
-			MainUtil.client.keyboardHandler.setClipboard(onCopy(getSelectedText(), getSelStart(), getSelEnd() - getSelStart()));
+			Minecraft.getInstance().keyboardHandler.setClipboard(onCopy(getSelectedText(), getSelStart(), getSelEnd() - getSelStart()));
 			this.write("");
 			cursorX = -1;
 			return true;

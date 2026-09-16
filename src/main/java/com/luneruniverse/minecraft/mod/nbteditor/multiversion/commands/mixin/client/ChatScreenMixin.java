@@ -8,11 +8,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandInternals;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.Minecraft;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin {
@@ -28,9 +28,9 @@ public class ChatScreenMixin {
 		if (text.isEmpty() || text.length() <= 256)
 			return;
 		if (text.charAt(0) == '/' && ClientCommandInternals.executeCommand(text.substring(1))) {
-			MainUtil.client.gui.hud.getChat().addRecentChat(text);
-			if (MainUtil.client.gui.screen() instanceof ChatScreen)
-				MainUtil.client.setScreenAndShow(null);
+			Minecraft.getInstance().gui.hud.getChat().addRecentChat(text);
+			if (Minecraft.getInstance().gui.screen() instanceof ChatScreen)
+				Minecraft.getInstance().setScreenAndShow(null);
 			info.setReturnValue(true);
 		} else
 			input.value = (text.length() <= 256 ? text : text.substring(0, 256));

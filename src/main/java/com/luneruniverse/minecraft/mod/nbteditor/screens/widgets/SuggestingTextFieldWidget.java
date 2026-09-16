@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -19,6 +18,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	
@@ -27,7 +27,7 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	
 	public SuggestingTextFieldWidget(Screen screen, int x, int y, int width, int height, EditBox copyFrom) {
 		super(x, y, width, height, copyFrom);
-		suggestor = new CommandSuggestions(MainUtil.client, screen, this, MainUtil.client.font, false, true, 0, 7, false, 0x80000000) {
+		suggestor = new CommandSuggestions(Minecraft.getInstance(), screen, this, Minecraft.getInstance().font, false, true, 0, 7, false, 0x80000000) {
 			@Override
 			public void updateCommandInfo() {
 				if (!this.keepSuggestions) {

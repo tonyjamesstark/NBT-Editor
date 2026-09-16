@@ -3,11 +3,11 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 import java.util.ArrayList;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizontal<K, T>> extends ConfigGrouping<K, T> {
 	
@@ -16,7 +16,7 @@ public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizo
 	}
 	
 	protected int getNameWidth() {
-		return name == null ? 0 : MainUtil.client.font.width(name) + PADDING;
+		return name == null ? 0 : Minecraft.getInstance().font.width(name) + PADDING;
 	}
 	
 	@Override
@@ -24,7 +24,7 @@ public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizo
 		int xOffset = 0;
 		Component fullName = getFullName();
 		if (fullName != null) {
-			MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, fullName, PADDING * 2, 0, 0xFFFFFFFF);
+			MVDrawableHelper.drawTextWithShadow(context, Minecraft.getInstance().font, fullName, PADDING * 2, 0, 0xFFFFFFFF);
 			xOffset += getNameWidth();
 		}
 		

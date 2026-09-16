@@ -4,9 +4,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.EnchantmentsScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.client.Minecraft;
 
 public class EnchantmentsCommand extends ClientCommand {
 	
@@ -23,7 +23,7 @@ public class EnchantmentsCommand extends ClientCommand {
 	@Override
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		builder.executes(context -> {
-			MainUtil.client.setScreenAndShow(new EnchantmentsScreen(ItemReference.getHeldItem()));
+			Minecraft.getInstance().setScreenAndShow(new EnchantmentsScreen(ItemReference.getHeldItem()));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

@@ -53,8 +53,6 @@ import net.minecraft.resources.Identifier;
 
 public class MainUtil {
 	
-	public static final Minecraft client = Minecraft.getInstance();
-	
 	// Same as ClientPlayerInteractionManager#clickCreativeSlot, but without a feature flag check
 	// Also includes survival bypass
 	/**
@@ -63,17 +61,17 @@ public class MainUtil {
 	 */
 	public static void clickCreativeStack(ItemStack item, int slot) {
 		if (NBTEditorClient.SERVER_CONN.isEditingAllowed())
-			client.getConnection().send(new ServerboundSetCreativeModeSlotPacket(slot, item.copy()));
+			Minecraft.getInstance().getConnection().send(new ServerboundSetCreativeModeSlotPacket(slot, item.copy()));
 	}
 	public static void dropCreativeStack(ItemStack item) {
 		if (NBTEditorClient.SERVER_CONN.isEditingAllowed() && !item.isEmpty())
-			client.getConnection().send(new ServerboundSetCreativeModeSlotPacket(-1, item.copy()));
+			Minecraft.getInstance().getConnection().send(new ServerboundSetCreativeModeSlotPacket(-1, item.copy()));
 	}
 	
 	public static void saveItem(InteractionHand hand, ItemStack item) {
-		client.player.setItemInHand(hand, item.copy());
+		Minecraft.getInstance().player.setItemInHand(hand, item.copy());
 		clickCreativeStack(item, hand == InteractionHand.OFF_HAND ? SlotUtil.createOffHandInContainer() :
-			SlotUtil.createHotbarInContainer(client.player.getInventory().selected));
+			SlotUtil.createHotbarInContainer(Minecraft.getInstance().player.getInventory().selected));
 	}
 	public static void saveItem(EquipmentSlot slot, ItemStack item) {
 		if (slot == EquipmentSlot.MAINHAND)
@@ -81,7 +79,7 @@ public class MainUtil {
 		else if (slot == EquipmentSlot.OFFHAND)
 			saveItem(InteractionHand.OFF_HAND, item);
 		else {
-			client.player.setItemSlot(slot, item.copy());
+			Minecraft.getInstance().player.setItemSlot(slot, item.copy());
 			clickCreativeStack(item, SlotUtil.createArmorInContainer(slot));
 		}
 	}
@@ -91,12 +89,12 @@ public class MainUtil {
 	 * @param item
 	 */
 	public static void saveItem(int slot, ItemStack item) {
-		client.player.getInventory().setItem(slot, item.copy());
+		Minecraft.getInstance().player.getInventory().setItem(slot, item.copy());
 		clickCreativeStack(item, SlotUtil.invToContainer(slot));
 	}
 	
 	public static void get(ItemStack item, boolean dropIfNoSpace) {
-		Inventory inv = client.player.getInventory();
+		Inventory inv = Minecraft.getInstance().player.getInventory();
 		item = item.copy();
 		
 		int slot = inv.getSlotWithRemainingSpace(item);
@@ -125,7 +123,7 @@ public class MainUtil {
 	}
 	public static void getWithMessage(ItemStack item) {
 		get(item, true);
-		client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.item").append(item.getDisplayName()));
+		Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.get.item").append(item.getDisplayName()));
 	}
 	
 	
@@ -375,9 +373,9 @@ public class MainUtil {
 	
 	
 	public static int[] getMousePos() {
-		double scale = client.getWindow().getGuiScale();
-		int x = (int) (client.mouseHandler.xpos() / scale);
-		int y = (int) (client.mouseHandler.ypos() / scale);
+		double scale = Minecraft.getInstance().getWindow().getGuiScale();
+		int x = (int) (Minecraft.getInstance().mouseHandler.xpos() / scale);
+		int y = (int) (Minecraft.getInstance().mouseHandler.ypos() / scale);
 		return new int[] {x, y};
 	}
 	
@@ -432,7 +430,7 @@ public class MainUtil {
 	// Based on DataFixTypes
 	@SuppressWarnings("unchecked")
 	public static <T extends Tag> T update(TypeReference typeRef, T nbt, int oldVersion) {
-		return (T) client.getFixerUpper().update(typeRef, new Dynamic<>(NbtOps.INSTANCE, nbt), oldVersion, Version.getDataVersion()).getValue();
+		return (T) Minecraft.getInstance().getFixerUpper().update(typeRef, new Dynamic<>(NbtOps.INSTANCE, nbt), oldVersion, Version.getDataVersion()).getValue();
 	}
 	/**
 	 * If dataVersionTag is not null and a number, this updates from that - otherwise, this updates from defaultOldVersion

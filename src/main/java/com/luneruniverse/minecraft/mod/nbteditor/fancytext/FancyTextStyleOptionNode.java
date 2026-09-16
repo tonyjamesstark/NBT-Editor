@@ -6,7 +6,6 @@ import java.util.stream.StreamSupport;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.network.chat.Component;
@@ -18,6 +17,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.IdentifierException;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.client.Minecraft;
 
 public record FancyTextStyleOptionNode(StyleOption option, String value, List<FancyTextNode> contents) implements FancyTextNode {
 	
@@ -31,7 +31,7 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 			case SHOW_ITEM -> {
 				ItemStack item;
 				try {
-					item = MainUtil.client.player.getInventory().getItem(Integer.parseInt(value));
+					item = Minecraft.getInstance().player.getInventory().getItem(Integer.parseInt(value));
 				} catch (NumberFormatException | IndexOutOfBoundsException e) {
 					try {
 						item = ItemReference.getHeldItem().getItem();
@@ -50,14 +50,14 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 					if (!uuid.contains("-"))
 						uuid = uuid.replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5");
 					UUID uuidObj = UUID.fromString(uuid);
-					entity = StreamSupport.stream(MainUtil.client.level.entitiesForRendering().spliterator(), false)
+					entity = StreamSupport.stream(Minecraft.getInstance().level.entitiesForRendering().spliterator(), false)
 							.filter(testEntity -> testEntity.getUUID().equals(uuidObj)).findFirst()
 							.orElseThrow(IllegalArgumentException::new);
 				} catch (IllegalArgumentException e) {
-					if (MainUtil.client.crosshairPickEntity != null)
-						entity = MainUtil.client.crosshairPickEntity;
+					if (Minecraft.getInstance().crosshairPickEntity != null)
+						entity = Minecraft.getInstance().crosshairPickEntity;
 					else
-						entity = MainUtil.client.player;
+						entity = Minecraft.getInstance().player;
 				}
 				yield style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ENTITY.newEvent(
 						new HoverEvent.EntityTooltipInfo(entity.getType(), entity.getUUID(), entity.getName())));

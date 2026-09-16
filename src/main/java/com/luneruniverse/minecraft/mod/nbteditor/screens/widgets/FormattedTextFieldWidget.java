@@ -14,7 +14,6 @@ import org.lwjgl.glfw.GLFW;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -32,6 +31,7 @@ import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 public class FormattedTextFieldWidget extends GroupWidget {
 	
@@ -270,7 +270,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 							.withValidator(font -> font.isEmpty() || Identifier.tryParse(font) != null)
 							.withSuggestions((str, cursor) -> {
 								SuggestionsBuilder builder = new SuggestionsBuilder(str, 0);
-								for (Identifier font : MainUtil.client.fontManager.fontSets.keySet()) {
+								for (Identifier font : Minecraft.getInstance().fontManager.fontSets.keySet()) {
 									String fontStr = font.toString();
 									if (fontStr.startsWith(str))
 										builder.suggest(fontStr);

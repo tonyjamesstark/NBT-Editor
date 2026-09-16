@@ -35,6 +35,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.ChatFormatting;
 import net.minecraft.util.FileUtil;
+import net.minecraft.client.Minecraft;
 
 public class NBTExportCommand extends ClientCommand {
 	
@@ -94,8 +95,8 @@ public class NBTExportCommand extends ClientCommand {
 	}
 	
 	private static void exportToClipboard(String str) {
-		MainUtil.client.keyboardHandler.setClipboard(str);
-		MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.copied"));
+		Minecraft.getInstance().keyboardHandler.setClipboard(str);
+		Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.copied"));
 	}
 	
 	private static void exportToFile(CompoundTag nbt, String name) {
@@ -105,12 +106,12 @@ public class NBTExportCommand extends ClientCommand {
 			File output = new File(exportDir, FileUtil.findAvailableName(exportDir.toPath(), name, ".nbt"));
 			nbt.putInt("DataVersion", Version.getDataVersion());
 			NbtIO.writeCompressed(nbt, output);
-			MainUtil.client.player.sendSystemMessage(TextUtil.attachFileTextOptions(Component.translatableEscape("nbteditor.nbt.export.file.success",
+			Minecraft.getInstance().player.sendSystemMessage(TextUtil.attachFileTextOptions(Component.translatableEscape("nbteditor.nbt.export.file.success",
 					Component.literal(output.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(style ->
 					style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output));
 		} catch (Exception e) {
 			NBTEditor.LOGGER.error("Error while exporting item", e);
-			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.file.error", e.getMessage()));
+			Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.file.error", e.getMessage()));
 		}
 	}
 	
@@ -146,7 +147,7 @@ public class NBTExportCommand extends ClientCommand {
 			})).then(literal("item").executes(context -> {
 				NBTReference.getReference(EXPORT_ITEM_FILTER, false, ref -> {
 					ref.getLocalNBT().toItem(true).ifPresentOrElse(MainUtil::getWithMessage,
-							() -> MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
+							() -> Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
 				});
 				return Command.SINGLE_SUCCESS;
 			})).then(literal("file").then(argument("name", StringArgumentType.greedyString()).executes(context -> {

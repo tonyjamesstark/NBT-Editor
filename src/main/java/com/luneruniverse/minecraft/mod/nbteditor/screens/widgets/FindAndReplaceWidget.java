@@ -6,12 +6,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.Minecraft;
 
 /**
  * The find-and-replace overlay of a {@link MultiLineTextFieldWidget}, opened with ctrl+F.
@@ -32,8 +32,8 @@ class FindAndReplaceWidget extends TranslatedGroupWidget {
 	private boolean dragging;
 	
 	public FindAndReplaceWidget(MultiLineTextFieldWidget field) {
-		super(MainUtil.client.getWindow().getGuiScaledWidth() / 2 - 100,
-				MainUtil.client.getWindow().getGuiScaledHeight() / 2 - 30, 200);
+		super(Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 - 100,
+				Minecraft.getInstance().getWindow().getGuiScaledHeight() / 2 - 30, 200);
 		this.field = field;
 		find = addWidget(new NamedTextFieldWidget(0, 0, 176, 16)
 				.name(Component.translatableEscape("nbteditor.multi_line_text.find")));

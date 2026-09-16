@@ -28,6 +28,7 @@ import net.minecraft.world.inventory.ContainerInput;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.Utils;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.client.Minecraft;
 
 /**
  * A paged pane. Credits @ I Al Ianstaan
@@ -193,7 +194,7 @@ public class PagedPane extends ClientHandledScreen {
     
     @Override
     public void close() {
-    	MainUtil.client.player.closeContainer();
+    	Minecraft.getInstance().player.closeContainer();
     }
 
     /**
@@ -296,7 +297,7 @@ public class PagedPane extends ClientHandledScreen {
      */
     public void open() {
         reRender();
-        MainUtil.client.setScreenAndShow(this);
+        Minecraft.getInstance().setScreenAndShow(this);
     }
 
     private static class Page {

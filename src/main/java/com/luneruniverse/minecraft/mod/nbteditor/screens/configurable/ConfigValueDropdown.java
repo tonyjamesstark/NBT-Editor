@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVButtonWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
@@ -57,7 +56,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	
 	@SuppressWarnings("unchecked")
 	private ConfigValueDropdown(T value, T defaultValue, List<T> allValues, List<T> importantValues) {
-		super(0, 0, getMaxWidth(allValues) + MainUtil.client.font.lineHeight * 2, 20, Component.nullToEmpty(value.toString()),
+		super(0, 0, getMaxWidth(allValues) + Minecraft.getInstance().font.lineHeight * 2, 20, Component.nullToEmpty(value.toString()),
 				btn -> ((ConfigValueDropdown<T>) btn).open = !((ConfigValueDropdown<T>) btn).open);
 		
 		this.value = value;
@@ -68,7 +67,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 		this.onChanged = new ArrayList<>();
 	}
 	private static int getMaxWidth(List<?> allValues) {
-		return allValues.stream().map(Object::toString).mapToInt(MainUtil.client.font::width).max().orElse(0);
+		return allValues.stream().map(Object::toString).mapToInt(Minecraft.getInstance().font::width).max().orElse(0);
 	}
 	private ConfigValueDropdown(T value, T defaultValue, List<T> allValues, List<T> importantValues, boolean open, List<ConfigValueListener<ConfigValueDropdown<T>>> onChanged) {
 		this(value, defaultValue, allValues, importantValues);
@@ -98,8 +97,8 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 					color = 0xFF257789;
 				else if (importantValues.contains(option))
 					color = 0xFFFFAA00;
-				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, Component.nullToEmpty(option.toString()),
-						this.x + this.width / 2, y + (this.height - MainUtil.client.font.lineHeight) / 2, color);
+				MVDrawableHelper.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, Component.nullToEmpty(option.toString()),
+						this.x + this.width / 2, y + (this.height - Minecraft.getInstance().font.lineHeight) / 2, color);
 				if (color != -1 && option instanceof ConfigTooltipSupplier) // Hovering
 					((ConfigTooltipSupplier) option).getTooltip().render(context, mouseX, mouseY);
 			}

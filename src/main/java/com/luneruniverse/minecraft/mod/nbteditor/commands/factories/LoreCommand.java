@@ -14,7 +14,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricCli
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.DisplayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -26,6 +25,7 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class LoreCommand extends ClientCommand {
 	
@@ -127,7 +127,7 @@ public class LoreCommand extends ClientCommand {
 						.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
 								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore remove " + finalI))))
 						.append(Component.literal(" ").withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.ITALIC).append(line)
-						.withStyle(style -> MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreenAndShow(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
+						.withStyle(style -> MixinLink.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
 								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore set " + finalI))))));
 				i++;
 			}
@@ -149,7 +149,7 @@ public class LoreCommand extends ClientCommand {
 				.then(literal("clear").executes(clear))
 				.then(literal("list").executes(list))
 			.executes(context -> {
-				MainUtil.client.setScreenAndShow(new DisplayScreen<>(ItemReference.getHeldItem()));
+				Minecraft.getInstance().setScreenAndShow(new DisplayScreen<>(ItemReference.getHeldItem()));
 				return Command.SINGLE_SUCCESS;
 			});
 	}

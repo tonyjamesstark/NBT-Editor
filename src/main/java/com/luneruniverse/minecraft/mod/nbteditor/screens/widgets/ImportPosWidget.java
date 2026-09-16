@@ -18,6 +18,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
+import net.minecraft.client.Minecraft;
 
 public class ImportPosWidget extends GroupWidget implements InitializableOverlay<Screen> {
 	
@@ -42,7 +43,7 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 	public ImportPosWidget(BlockPos defaultPos, Consumer<Optional<BlockPos>> posConsumer) {
 		this.defaultPos = defaultPos;
 		this.posConsumer = posConsumer;
-		this.textRenderer = MainUtil.client.font;
+		this.textRenderer = Minecraft.getInstance().font;
 	}
 	
 	@Override
@@ -77,7 +78,7 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
+		MVDrawableHelper.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.nbt.import.pos"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);

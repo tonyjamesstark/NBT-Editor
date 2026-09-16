@@ -6,7 +6,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -16,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class MaxStackSizeCommand extends ClientCommand {
 	
@@ -35,10 +35,10 @@ public class MaxStackSizeCommand extends ClientCommand {
 			ItemReference ref = ItemReference.getHeldItem();
 			ItemStack item = ref.getItem();
 			if (ComponentPatches.get(item.getComponentsPatch(), DataComponents.MAX_STACK_SIZE) == null) {
-				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.max_stack_size.already_removed"));
+				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.max_stack_size.already_removed"));
 			} else if (item.has(DataComponents.MAX_DAMAGE) &&
 					item.getPrototype().getOrDefault(DataComponents.MAX_STACK_SIZE, 1) > 1) {
-				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.max_stack_size.invalid_state"));
+				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.max_stack_size.invalid_state"));
 			} else {
 				int size = item.getPrototype().get(DataComponents.MAX_STACK_SIZE);
 				if (item.getCount() > size)
@@ -52,7 +52,7 @@ public class MaxStackSizeCommand extends ClientCommand {
 			ItemReference ref = ItemReference.getHeldItem();
 			ItemStack item = ref.getItem();
 			if (item.has(DataComponents.MAX_DAMAGE) && size > 1)
-				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.max_stack_size.invalid_state"));
+				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.max_stack_size.invalid_state"));
 			else {
 				if (item.getCount() > size)
 					item.setCount(size);

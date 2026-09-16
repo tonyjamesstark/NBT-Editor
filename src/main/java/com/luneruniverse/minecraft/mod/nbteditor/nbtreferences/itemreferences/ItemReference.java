@@ -20,13 +20,14 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 public interface ItemReference extends NBTReference<LocalItem> {
 	public static ItemReference getHeldItem(Predicate<ItemStack> isAllowed, Component failText) throws CommandSyntaxException {
-		ItemStack item = MainUtil.client.player.getMainHandItem();
+		ItemStack item = Minecraft.getInstance().player.getMainHandItem();
 		InteractionHand hand = InteractionHand.MAIN_HAND;
 		if (item == null || item.isEmpty() || !isAllowed.test(item)) {
-			item = MainUtil.client.player.getOffhandItem();
+			item = Minecraft.getInstance().player.getOffhandItem();
 			hand = InteractionHand.OFF_HAND;
 		}
 		if (item == null || item.isEmpty() || !isAllowed.test(item))
@@ -45,15 +46,15 @@ public interface ItemReference extends NBTReference<LocalItem> {
 		}
 	}
 	public static ItemReference getHeldAir() throws CommandSyntaxException {
-		if (MainUtil.client.player.getMainHandItem().isEmpty())
+		if (Minecraft.getInstance().player.getMainHandItem().isEmpty())
 			return new HandItemReference(InteractionHand.MAIN_HAND);
-		if (MainUtil.client.player.getOffhandItem().isEmpty())
+		if (Minecraft.getInstance().player.getOffhandItem().isEmpty())
 			return new HandItemReference(InteractionHand.OFF_HAND);
 		throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.no_hand.all_item")).create();
 	}
 	
 	public static ItemReference getContainerItem(AbstractContainerScreen<?> screen, Slot slot) {
-		if (slot.container == MainUtil.client.player.getInventory()) {
+		if (slot.container == Minecraft.getInstance().player.getInventory()) {
 			return new InventoryItemReference(slot.getContainerSlot()).setParent(
 					() -> NBTEditorClient.CURSOR_MANAGER.showBranch(screen));
 		}
@@ -115,7 +116,7 @@ public interface ItemReference extends NBTReference<LocalItem> {
 	public ItemStack getItem();
 	public void saveItem(ItemStack toSave, Runnable onFinished);
 	public default void saveItem(ItemStack toSave, Component msg) {
-		saveItem(toSave, () -> MainUtil.client.player.sendSystemMessage(msg));
+		saveItem(toSave, () -> Minecraft.getInstance().player.sendSystemMessage(msg));
 	}
 	public default void saveItem(ItemStack toSave) {
 		saveItem(toSave, () -> {});

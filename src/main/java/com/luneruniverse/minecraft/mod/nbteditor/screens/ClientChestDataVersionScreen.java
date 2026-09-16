@@ -24,6 +24,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	
@@ -202,7 +203,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 					msg = Component.translatableEscape("nbteditor.client_chest.data_version.update_page_success",
 							Component.literal(ClientChestScreen.PAGE + 1 + "").withStyle(ChatFormatting.GREEN));
 				}
-				MainUtil.client.player.sendSystemMessage(ClientChest.attachShowFolder(msg));
+				Minecraft.getInstance().player.sendSystemMessage(ClientChest.attachShowFolder(msg));
 			}
 		});
 		return future;

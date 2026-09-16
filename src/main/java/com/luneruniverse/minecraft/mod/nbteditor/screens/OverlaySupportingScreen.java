@@ -1,7 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InitializableOverlay;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -11,17 +10,18 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	public static <T extends Renderable & GuiEventListener> T setOverlayStatic(T overlay, double z) {
-		return ((OverlaySupportingScreen) MainUtil.client.gui.screen()).setOverlay(overlay, z);
+		return ((OverlaySupportingScreen) Minecraft.getInstance().gui.screen()).setOverlay(overlay, z);
 	}
 	public static <T extends Renderable & GuiEventListener> T setOverlayStatic(T overlay) {
 		return setOverlayStatic(overlay, 0);
 	}
 	public static <T extends Screen> T setOverlayScreenStatic(T overlay, double z) {
-		return ((OverlaySupportingScreen) MainUtil.client.gui.screen()).setOverlayScreen(overlay, z);
+		return ((OverlaySupportingScreen) Minecraft.getInstance().gui.screen()).setOverlayScreen(overlay, z);
 	}
 	public static <T extends Screen> T setOverlayScreenStatic(T overlay) {
 		return setOverlayScreenStatic(overlay, 0);

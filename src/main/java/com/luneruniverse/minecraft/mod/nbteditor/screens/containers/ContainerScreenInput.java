@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.It
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -21,6 +20,7 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.client.Minecraft;
 
 /**
  * What the mod does with clicks and keypresses inside a container screen.
@@ -50,7 +50,7 @@ public class ContainerScreenInput {
 			slot = creativeSlot.target;
 
 		if (actionType == ContainerInput.PICKUP && slot != null &&
-				(slot.container == MainUtil.client.player.getInventory() || !creativeInv) &&
+				(slot.container == Minecraft.getInstance().player.getInventory() || !creativeInv) &&
 				(!(source instanceof InventoryScreen) || slot.index > LAST_NON_STORAGE_INVENTORY_SLOT)) {
 			ItemStack cursor = source.getMenu().getCarried();
 			ItemStack item = slot.getItem();
@@ -85,7 +85,7 @@ public class ContainerScreenInput {
 			hoveredSlot = creativeSlot.target;
 
 		if (hoveredSlot != null &&
-				((creativeInv && hoveredSlot.container == MainUtil.client.player.getInventory()) ||
+				((creativeInv && hoveredSlot.container == Minecraft.getInstance().player.getInventory()) ||
 						(!creativeInv && NBTEditorClient.SERVER_CONN.isScreenEditable())) &&
 				(!(source instanceof InventoryScreen) || hoveredSlot.index > LAST_NON_STORAGE_INVENTORY_SLOT) &&
 				(ConfigScreen.isAirEditable() || hoveredSlot.getItem() != null && !hoveredSlot.getItem().isEmpty())) {

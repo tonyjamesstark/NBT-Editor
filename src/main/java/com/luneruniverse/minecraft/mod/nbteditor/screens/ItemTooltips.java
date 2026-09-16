@@ -23,6 +23,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.client.Minecraft;
 
 /**
  * The lines the mod adds to an item tooltip, and where an oversized tooltip is drawn.
@@ -36,7 +37,7 @@ public class ItemTooltips {
 	public static void modifyTooltip(ItemStack source, List<Component> tooltip) {
 		// Tooltips are requested for all items when GameJoinS2CPacket is received to setup the creative inventory's search
 		// The world doesn't exist yet, so this causes the game to freeze when an exception from this mixin breaks everything
-		if (MainUtil.client.level == null)
+		if (Minecraft.getInstance().level == null)
 			return;
 
 		if (HideFlag.TOOLTIP != null && ItemTagReferences.HIDE_FLAGS.get(source).get(HideFlag.TOOLTIP))
@@ -63,10 +64,10 @@ public class ItemTooltips {
 
 		if (!ConfigScreen.isKeybindsHidden()) {
 			// Checking slots in your hotbar vs item selection is difficult, so the lore is just disabled in non-inventory tabs
-			boolean creativeInv = MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen creative
+			boolean creativeInv = Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen creative
 					&& creative.isInventoryOpen();
 
-			if (creativeInv || (!(MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen) &&
+			if (creativeInv || (!(Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen) &&
 					NBTEditorClient.SERVER_CONN.isScreenEditable())) {
 				tooltip.add(Component.translatableEscape("nbteditor.keybind.edit"));
 				tooltip.add(Component.translatableEscape("nbteditor.keybind.factory"));
@@ -84,8 +85,8 @@ public class ItemTooltips {
 		int width = 0;
 		int height = (tooltip.size() == 1 ? -2 : 0);
 		for (ClientTooltipComponent line : tooltip) {
-			width = Math.max(width, line.getWidth(MainUtil.client.font));
-			height += line.getHeight(MainUtil.client.font);
+			width = Math.max(width, line.getWidth(Minecraft.getInstance().font));
+			height += line.getHeight(Minecraft.getInstance().font);
 		}
 		return new int[] {width, height};
 	}

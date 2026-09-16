@@ -30,6 +30,7 @@ import net.minecraft.client.gui.screens.inventory.BookViewScreen.BookAccess;
 import net.minecraft.client.gui.screens.inventory.LecternScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 @Mixin(BookViewScreen.class)
 public class BookScreenMixin extends Screen {
@@ -51,7 +52,7 @@ public class BookScreenMixin extends Screen {
 		if ((Object) this instanceof LecternScreen) {
 			return BlockReference.getLecternBlock().thenApply(optionalRef -> {
 				if (optionalRef.isEmpty()) {
-					MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.no_ref.unknown"));
+					Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.no_ref.unknown"));
 					return Optional.empty();
 				}
 				return optionalRef.map(ref -> new ContainerItemReference<>(ref, 0));
@@ -61,12 +62,12 @@ public class BookScreenMixin extends Screen {
 		try {
 			return CompletableFuture.completedFuture(Optional.of(ItemReference.getHeldItem()));
 		} catch (CommandSyntaxException e) {
-			MainUtil.client.player.sendSystemMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED));
+			Minecraft.getInstance().player.sendSystemMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED));
 			return CompletableFuture.completedFuture(Optional.empty());
 		}
 	}
 	private void getReference(Consumer<ItemReference> consumer) {
-		getReference().thenAccept(ref -> MainUtil.client.execute(() -> ref.ifPresent(consumer)));
+		getReference().thenAccept(ref -> Minecraft.getInstance().execute(() -> ref.ifPresent(consumer)));
 	}
 	
 	private void updateButtons(BookAccess bookAccess) {
@@ -79,7 +80,7 @@ public class BookScreenMixin extends Screen {
 	
 	@Inject(method = "init", at = @At("TAIL"))
 	private void init(CallbackInfo info) {
-		if (MainUtil.client.gui.screen() instanceof
+		if (Minecraft.getInstance().gui.screen() instanceof
 				com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen) { // Preview mode
 			renderLogo = true;
 			return;
@@ -88,8 +89,8 @@ public class BookScreenMixin extends Screen {
 		openBtn = addRenderableWidget(Buttons.of(16, 64, 100, 20, Component.translatableEscape("nbteditor.book.open"), btn -> {
 			getReference(ref -> {
 				if ((Object) this instanceof LecternScreen)
-					MainUtil.client.player.closeContainer();
-				MainUtil.client.setScreenAndShow(
+					Minecraft.getInstance().player.closeContainer();
+				Minecraft.getInstance().setScreenAndShow(
 						new com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen(ref, Math.max(0, currentPage)));
 			});
 		}));
@@ -113,7 +114,7 @@ public class BookScreenMixin extends Screen {
 	
 	@Inject(method = "createMenuControls", at = @At("HEAD"), cancellable = true)
 	private void createMenuControls(CallbackInfo info) {
-		if (MainUtil.client.gui.screen() instanceof
+		if (Minecraft.getInstance().gui.screen() instanceof
 				com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen) { // Preview mode
 			info.cancel();
 			addRenderableWidget(Buttons.of(width / 2 - 100, 196, 200, 20, ScreenTexts.DONE,

@@ -34,6 +34,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.Minecraft;
 
 public class ImportScreen extends OverlaySupportingScreen {
 	
@@ -49,27 +50,27 @@ public class ImportScreen extends OverlaySupportingScreen {
 				try (FileInputStream in = new FileInputStream(file)) {
 					CompoundTag nbt = MainUtil.readNBT(in);
 					if (defaultDataVersion.isEmpty() && !nbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE))
-						MainUtil.client.player.sendSystemMessage(TextUtil.parseTranslatableFormatted("nbteditor.nbt.import.data_version.unknown", file.getName()));
+						Minecraft.getInstance().player.sendSystemMessage(TextUtil.parseTranslatableFormatted("nbteditor.nbt.import.data_version.unknown", file.getName()));
 					if (nbt.nbte$getIntOrDefault("DataVersion") > Version.getDataVersion())
-						MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.import.data_version.new", file.getName()));
+						Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.import.data_version.new", file.getName()));
 					LocalNBT.deserialize(nbt, defaultDataVersion.orElse(Version.getDataVersion())).ifPresent(localNBT -> {
 						if (localNBT instanceof LocalItem item)
 							item.receive();
 						else if (localNBT instanceof LocalBlock block)
 							posConsumers.add(pos -> block.place(pos));
 						else if (localNBT instanceof LocalEntity entity)
-							posConsumers.add(pos -> entity.summon(MainUtil.client.level.dimension(), Vec3.atCenterOf(pos)));
+							posConsumers.add(pos -> entity.summon(Minecraft.getInstance().level.dimension(), Vec3.atCenterOf(pos)));
 					});
 				} catch (Exception e) {
 					NBTEditor.LOGGER.error("Error while importing a .nbt file", e);
-					MainUtil.client.player.sendSystemMessage(Component.literal(e.getClass().getName() + ": " + e.getMessage()).withStyle(ChatFormatting.RED));
+					Minecraft.getInstance().player.sendSystemMessage(Component.literal(e.getClass().getName() + ": " + e.getMessage()).withStyle(ChatFormatting.RED));
 				}
 				continue;
 			}
 		}
 		
 		if (!posConsumers.isEmpty()) {
-			ImportPosWidget.openImportPos(MainUtil.client.player.blockPosition(),
+			ImportPosWidget.openImportPos(Minecraft.getInstance().player.blockPosition(),
 					pos -> posConsumers.forEach(consumer -> consumer.accept(pos)));
 			return;
 		}

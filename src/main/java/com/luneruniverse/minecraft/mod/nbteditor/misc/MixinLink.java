@@ -15,7 +15,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.mixin.ChatScreenAccessor;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -31,6 +30,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Style;
+import net.minecraft.client.Minecraft;
 
 /**
  * The seam between the mixins and the rest of the mod. Non-mixin classes in the mixin package do
@@ -99,7 +99,7 @@ public class MixinLink {
 		EditBox chatField = ((ChatScreenAccessor) source).getInput();
 		if (chatField.getValue().length() > 256) {
 			MVDrawableHelper.fill(context, source.width - 202, source.height - 40, source.width - 2, source.height - 14, 0xAAFFAA00);
-			Font textRenderer = MainUtil.client.font;
+			Font textRenderer = Minecraft.getInstance().font;
 			MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.chat_length_warning_1"), source.width - 102, source.height - 40 + textRenderer.lineHeight / 2, 0xFFAA5500);
 			MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.chat_length_warning_2"), source.width - 102, source.height - 28 + textRenderer.lineHeight / 2, 0xFFAA5500);
 		}
@@ -126,7 +126,7 @@ public class MixinLink {
 	public static final WeakHashMap<Runnable, Boolean> CATCH_BYPASSING_TASKS = new WeakHashMap<>();
 	public static void executeCrashableTask(Runnable task) {
 		CATCH_BYPASSING_TASKS.put(task, true);
-		MainUtil.client.execute(task);
+		Minecraft.getInstance().execute(task);
 	}
 	
 	

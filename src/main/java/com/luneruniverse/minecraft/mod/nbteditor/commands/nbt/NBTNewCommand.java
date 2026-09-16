@@ -6,12 +6,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTEditorScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandRegistration;
 import net.minecraft.commands.arguments.item.ItemInput;
+import net.minecraft.client.Minecraft;
 
 public class NBTNewCommand extends ClientCommand {
 	
@@ -30,7 +30,7 @@ public class NBTNewCommand extends ClientCommand {
 		builder.then(argument("item", CommandRegistration.itemArg()).executes(context -> {
 			ItemReference ref = ItemReference.getHeldAir();
 			ref.saveItem(context.getArgument("item", ItemInput.class).createItemStack(1));
-			MainUtil.client.setScreenAndShow(new NBTEditorScreen<>(ref));
+			Minecraft.getInstance().setScreenAndShow(new NBTEditorScreen<>(ref));
 			return Command.SINGLE_SUCCESS;
 		}));
 	}

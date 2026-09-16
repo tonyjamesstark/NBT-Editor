@@ -34,6 +34,7 @@ import net.minecraft.network.chat.FormattedText.StyledContentConsumer;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class TextUtil {
 	
@@ -188,21 +189,21 @@ public class TextUtil {
 				style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(
 						file.getAbsoluteFile().getParentFile().getAbsolutePath()))))
 				.append(" ").append(Component.translatableEscape("nbteditor.file_options.delete").withStyle(style ->
-				MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreenAndShow(
+				MixinLink.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(
 						new FancyConfirmScreen(confirmed -> {
 							if (confirmed) {
 								if (file.exists()) {
 									try {
 										Files.deleteIfExists(file.toPath());
-										MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.success", "§6" + file.getName()));
+										Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.success", "§6" + file.getName()));
 									} catch (IOException e) {
 										NBTEditor.LOGGER.error("Error deleting file", e);
-										MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.error", "§6" + file.getName()));
+										Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.error", "§6" + file.getName()));
 									}
 								} else
-									MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.missing", "§6" + file.getName()));
+									Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.missing", "§6" + file.getName()));
 							}
-							MainUtil.client.setScreenAndShow(null);
+							Minecraft.getInstance().setScreenAndShow(null);
 						}, Component.translatableEscape("nbteditor.file_options.delete.title", file.getName()),
 								Component.translatableEscape("nbteditor.file_options.delete.desc", file.getName()))))));
 	}

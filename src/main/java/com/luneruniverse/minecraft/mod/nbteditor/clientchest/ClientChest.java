@@ -45,6 +45,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class ClientChest {
 	
@@ -684,9 +685,9 @@ public class ClientChest {
 		}
 	}
 	private void warnCorrupt() {
-		if (MainUtil.client.player == null)
+		if (Minecraft.getInstance().player == null)
 			return;
-		MainUtil.client.player.sendSystemMessage(attachShowFolder(Component.translatableEscape("nbteditor.client_chest.corrupt_warning")));
+		Minecraft.getInstance().player.sendSystemMessage(attachShowFolder(Component.translatableEscape("nbteditor.client_chest.corrupt_warning")));
 	}
 	public static Component attachShowFolder(MutableComponent text) {
 		return text.append(" ").append(Component.translatableEscape("nbteditor.file_options.show").withStyle(

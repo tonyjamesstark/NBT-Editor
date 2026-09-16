@@ -52,6 +52,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.resources.Identifier;
 import net.minecraft.IdentifierException;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.Minecraft;
 
 public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvents.Start {
 	
@@ -68,9 +69,9 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 	public static boolean isOnServerThread() {
 		if (IS_DEDICATED)
 			return true;
-		if (MainUtil.client.getSingleplayerServer() == null)
+		if (Minecraft.getInstance().getSingleplayerServer() == null)
 			return false;
-		if (MainUtil.client.getSingleplayerServer().isSameThread())
+		if (Minecraft.getInstance().getSingleplayerServer().isSameThread())
 			return true;
 		return serverThreads.containsKey(Thread.currentThread());
 	}

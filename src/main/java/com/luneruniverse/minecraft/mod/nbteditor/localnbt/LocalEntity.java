@@ -40,6 +40,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.Minecraft;
 
 public class LocalEntity implements LocalNBT {
 	
@@ -67,7 +68,7 @@ public class LocalEntity implements LocalNBT {
 		if (cachedEntity != null && cachedEntity.getType() == entityType && Objects.equals(cachedNbt, nbt))
 			return cachedEntity;
 		
-		cachedEntity = ServerMVMisc.createEntity(entityType, MainUtil.client.level);
+		cachedEntity = ServerMVMisc.createEntity(entityType, Minecraft.getInstance().level);
 		NBTManagers.ENTITY.setNbt(cachedEntity, nbt);
 		
 		cachedNbt = nbt.copy();
@@ -134,7 +135,7 @@ public class LocalEntity implements LocalNBT {
 		// 1.21.9 turned GUI entity rendering into a queued render state; there is no
 		// longer a matrix stack to push the entity onto.
 		Entity entity = getCachedEntity();
-		EntityRenderState state = MainUtil.client.getEntityRenderDispatcher()
+		EntityRenderState state = Minecraft.getInstance().getEntityRenderDispatcher()
 				.getRenderer(entity).createRenderState(entity, tickDelta);
 		state.lightCoords = 0xF000F0;
 		state.shadowPieces.clear();
@@ -225,7 +226,7 @@ public class LocalEntity implements LocalNBT {
 						.map(packet -> {
 							EntityReference ref = new EntityReference(packet.getWorld(), packet.getUUID(),
 									MVRegistry.ENTITY_TYPE.get(packet.getId()), packet.getNbt());
-							MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.entity")
+							Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.get.entity")
 									.append(ref.getLocalNBT().toHoverableText()));
 							return ref;
 						}));

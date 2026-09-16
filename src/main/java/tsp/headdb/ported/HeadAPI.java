@@ -12,11 +12,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import tsp.headdb.ported.inventory.InventoryUtils;
+import net.minecraft.client.Minecraft;
 
 /**
  * This class provides simple methods
@@ -71,7 +71,7 @@ public final class HeadAPI {
     
     public static boolean checkUpdated() {
     	if (HeadAPI.getDatabase().isLastUpdateOld()) {
-			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.hdb.unloaded_database"));
+			Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.hdb.unloaded_database"));
 			return false;
     	}
     	
@@ -267,7 +267,7 @@ public final class HeadAPI {
      */
     public static List<LocalHead> getLocalHeads() {
         List<LocalHead> heads = new ArrayList<>();
-        for (PlayerInfo player : MainUtil.client.getConnection().getOnlinePlayers()) {
+        for (PlayerInfo player : Minecraft.getInstance().getConnection().getOnlinePlayers()) {
             heads.add(new LocalHead(player.getProfile().id())
                     .withName(player.getProfile().name()));
         }

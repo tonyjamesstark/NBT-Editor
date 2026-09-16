@@ -8,7 +8,6 @@ import org.lwjgl.glfw.GLFW;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVSliderWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
@@ -18,6 +17,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.client.Minecraft;
 
 public class ColorSelectorWidget extends GroupWidget {
 	
@@ -135,7 +135,7 @@ public class ColorSelectorWidget extends GroupWidget {
 			}
 		});
 		
-		field = new EditBox(MainUtil.client.font, x + areaSize + 4, y + areaSize + 4, areaSize / 2, 20, Component.nullToEmpty(""));
+		field = new EditBox(Minecraft.getInstance().font, x + areaSize + 4, y + areaSize + 4, areaSize / 2, 20, Component.nullToEmpty(""));
 		field.setMaxLength(7);
 		field.setValue("#" + String.format("%08X", color).substring(2, 8));
 		field.setResponder(str -> {

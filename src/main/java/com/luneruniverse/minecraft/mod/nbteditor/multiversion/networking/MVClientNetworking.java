@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 public class MVClientNetworking {
 	
@@ -58,7 +58,7 @@ public class MVClientNetworking {
 	
 	@SuppressWarnings("deprecation")
 	public static void send(MVPacket packet) {
-		MainUtil.client.getConnection().send(MVPacketCustomPayload.wrapC2S(packet));
+		Minecraft.getInstance().getConnection().send(MVPacketCustomPayload.wrapC2S(packet));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -67,8 +67,8 @@ public class MVClientNetworking {
 	}
 	
 	public static void callListeners(MVPacket packet) {
-		if (!MainUtil.client.isSameThread()) {
-			MainUtil.client.execute(() -> callListeners(packet));
+		if (!Minecraft.getInstance().isSameThread()) {
+			Minecraft.getInstance().execute(() -> callListeners(packet));
 			return;
 		}
 		List<Consumer<MVPacket>> specificListeners = listeners.get(packet.getPacketId());

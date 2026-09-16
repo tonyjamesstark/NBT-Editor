@@ -22,6 +22,7 @@ import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.Minecraft;
 
 public class GetEntityCommand extends ClientCommand {
 	
@@ -49,11 +50,11 @@ public class GetEntityCommand extends ClientCommand {
 			
 			if (pos == null) {
 				entity.toItem(false).ifPresentOrElse(MainUtil::getWithMessage,
-						() -> MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
+						() -> Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
 			} else if (NBTEditorClient.SERVER_CONN.isEditingExpanded())
-				entity.summon(MainUtil.client.level.dimension(), pos);
+				entity.summon(Minecraft.getInstance().level.dimension(), pos);
 			else
-				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.requires_server"));
+				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.requires_server"));
 			
 			return Command.SINGLE_SUCCESS;
 		};

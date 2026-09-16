@@ -14,20 +14,20 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.AttributeModifierId;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.Minecraft;
 
 public class AttributesCommand extends ClientCommand {
 	
 	public static final NBTReferenceFilter ATTRIBUTES_FILTER = NBTReferenceFilter.create(
 			ref -> true,
 			null,
-			ref -> ServerMVMisc.createEntity(ref.getEntityType(), MainUtil.client.level) instanceof Mob,
+			ref -> ServerMVMisc.createEntity(ref.getEntityType(), Minecraft.getInstance().level) instanceof Mob,
 			Component.translatableEscape("nbteditor.no_ref.attributes"),
 			Component.translatableEscape("nbteditor.no_hand.no_item.to_edit"));
 	
@@ -48,16 +48,16 @@ public class AttributesCommand extends ClientCommand {
 			ItemStack item = ref.getItem();
 			List<AttributeData> attributes = ItemTagReferences.ATTRIBUTES.get(item);
 			if (attributes.isEmpty())
-				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.attributes.new_uuids.no_attributes"));
+				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.attributes.new_uuids.no_attributes"));
 			else {
 				attributes.replaceAll(attribute -> new AttributeData(attribute.attribute(), attribute.value(),
 						attribute.modifierData().get().operation(), attribute.modifierData().get().slot(), AttributeModifierId.randomUUID()));
 				ItemTagReferences.ATTRIBUTES.set(item, attributes);
-				ref.saveItem(item, () -> MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.attributes.new_uuids.success")));
+				ref.saveItem(item, () -> Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.attributes.new_uuids.success")));
 			}
 			return Command.SINGLE_SUCCESS;
 		})).executes(context -> {
-			NBTReference.getReference(ATTRIBUTES_FILTER, false, ref -> MainUtil.client.setScreenAndShow(new AttributesScreen<>(ref)));
+			NBTReference.getReference(ATTRIBUTES_FILTER, false, ref -> Minecraft.getInstance().setScreenAndShow(new AttributesScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

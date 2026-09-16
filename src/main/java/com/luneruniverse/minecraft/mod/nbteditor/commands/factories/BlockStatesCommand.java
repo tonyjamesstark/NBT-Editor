@@ -5,12 +5,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricCli
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BlockStatesScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.client.Minecraft;
 
 public class BlockStatesCommand extends ClientCommand {
 	
@@ -34,7 +34,7 @@ public class BlockStatesCommand extends ClientCommand {
 	@Override
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		builder.executes(context -> {
-			NBTReference.getReference(BLOCK_FILTER, false, ref -> MainUtil.client.setScreenAndShow(new BlockStatesScreen<>(ref)));
+			NBTReference.getReference(BLOCK_FILTER, false, ref -> Minecraft.getInstance().setScreenAndShow(new BlockStatesScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

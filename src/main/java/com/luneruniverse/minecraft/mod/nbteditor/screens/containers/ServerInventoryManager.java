@@ -13,13 +13,14 @@ import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.client.Minecraft;
 
 public class ServerInventoryManager {
 	
 	private final Container serverInv;
 	
 	public ServerInventoryManager() {
-		Container playerInv = MainUtil.client.player.getInventory();
+		Container playerInv = Minecraft.getInstance().player.getInventory();
 		serverInv = new SimpleContainer(playerInv.getContainerSize());
 		for (int i = 0; i < serverInv.getContainerSize(); i++)
 			serverInv.setItem(i, playerInv.getItem(i).copy());
@@ -27,9 +28,9 @@ public class ServerInventoryManager {
 	
 	private AbstractContainerMenu getScreenHandler(int syncId) {
 		if (syncId == 0)
-			return MainUtil.client.player.inventoryMenu;
-		if (syncId == MainUtil.client.player.containerMenu.containerId)
-			return MainUtil.client.player.containerMenu;
+			return Minecraft.getInstance().player.inventoryMenu;
+		if (syncId == Minecraft.getInstance().player.containerMenu.containerId)
+			return Minecraft.getInstance().player.containerMenu;
 		return null;
 	}
 	
@@ -45,7 +46,7 @@ public class ServerInventoryManager {
 		List<ItemStack> contents = packet.items();
 		for (int i = 0; i < contents.size(); i++) {
 			Slot slot = handler.getSlot(i);
-			if (slot.container == MainUtil.client.player.getInventory())
+			if (slot.container == Minecraft.getInstance().player.getInventory())
 				serverInv.setItem(slot.getContainerSlot(), contents.get(i).copy());
 		}
 	}
@@ -63,12 +64,12 @@ public class ServerInventoryManager {
 		if (handler == null)
 			return;
 		Slot slot = handler.getSlot(packet.getSlot());
-		if (slot.container == MainUtil.client.player.getInventory())
+		if (slot.container == Minecraft.getInstance().player.getInventory())
 			serverInv.setItem(slot.getContainerSlot(), packet.getItem().copy());
 	}
 	
 	public void updateServer() {
-		Container playerInv = MainUtil.client.player.getInventory();
+		Container playerInv = Minecraft.getInstance().player.getInventory();
 		for (int i = 0; i < serverInv.getContainerSize(); i++) {
 			ItemStack item = playerInv.getItem(i);
 			if (!ItemStack.matches(item, serverInv.getItem(i))) {

@@ -12,7 +12,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilte
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.BlockTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -22,6 +21,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class UnbindSkullCommand extends ClientCommand {
 	
@@ -50,7 +50,7 @@ public class UnbindSkullCommand extends ClientCommand {
 						ItemTagReferences.PROFILE.get(itemRef.getItem()) :
 						BlockTagReferences.PROFILE.get((LocalBlock) ref.getLocalNBT()));
 				if (profile.isEmpty() || profile.get().properties().isEmpty()) {
-					MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.unbind_skull.no_textures"));
+					Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.unbind_skull.no_textures"));
 					return;
 				}
 				GameProfile newProfile = new GameProfile(new UUID(0L, 0L), "Unbound_Player", profile.get().properties());

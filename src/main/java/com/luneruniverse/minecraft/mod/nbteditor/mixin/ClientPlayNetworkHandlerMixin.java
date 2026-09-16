@@ -10,13 +10,13 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientScreenHandler;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.client.Minecraft;
 
 @Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
@@ -25,7 +25,7 @@ public class ClientPlayNetworkHandlerMixin {
 	
 	@Inject(method = "handleContainerContent", at = @At("HEAD"), cancellable = true)
 	private void handleContainerContent(ClientboundContainerSetContentPacket packet, CallbackInfo info) {
-		if (!MainUtil.client.isSameThread() || updatingClientInventory)
+		if (!Minecraft.getInstance().isSameThread() || updatingClientInventory)
 			return;
 		
 		if (packet.containerId() == ClientScreenHandler.SYNC_ID) {
@@ -39,18 +39,18 @@ public class ClientPlayNetworkHandlerMixin {
 			
 			try {
 				updatingClientInventory = true;
-				MainUtil.client.player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentRoot().getMenu();
+				Minecraft.getInstance().player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentRoot().getMenu();
 				((ClientPacketListener) (Object) this).handleContainerContent(packet);
 			} finally {
 				updatingClientInventory = false;
-				MainUtil.client.player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentBranch().getMenu();
+				Minecraft.getInstance().player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentBranch().getMenu();
 			}
 		}
 	}
 	
 	@Inject(method = "handleContainerSetSlot", at = @At("HEAD"), cancellable = true)
 	private void handleContainerSetSlot(ClientboundContainerSetSlotPacket packet, CallbackInfo info) {
-		if (!MainUtil.client.isSameThread() || updatingClientInventory)
+		if (!Minecraft.getInstance().isSameThread() || updatingClientInventory)
 			return;
 		
 		if (packet.getContainerId() == ClientScreenHandler.SYNC_ID) {
@@ -64,36 +64,36 @@ public class ClientPlayNetworkHandlerMixin {
 			
 			if (packet.getContainerId() == -1) {
 				if (!(NBTEditorClient.CURSOR_MANAGER.getCurrentRoot() instanceof CreativeModeInventoryScreen))
-					MainUtil.client.player.containerMenu.setCarried(packet.getItem());
+					Minecraft.getInstance().player.containerMenu.setCarried(packet.getItem());
 				return;
 			}
 			
 			try {
 				updatingClientInventory = true;
-				MainUtil.client.player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentRoot().getMenu();
+				Minecraft.getInstance().player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentRoot().getMenu();
 				((ClientPacketListener) (Object) this).handleContainerSetSlot(packet);
 			} finally {
 				updatingClientInventory = false;
-				MainUtil.client.player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentBranch().getMenu();
+				Minecraft.getInstance().player.containerMenu = NBTEditorClient.CURSOR_MANAGER.getCurrentBranch().getMenu();
 			}
 		}
 	}
 	
 	@Inject(method = "handleContainerContent", at = @At("RETURN"), cancellable = true)
 	private void onInventory_return(ClientboundContainerSetContentPacket packet, CallbackInfo info) {
-		if (MainUtil.client.gui.screen() instanceof ClientHandledScreen clientHandledScreen)
+		if (Minecraft.getInstance().gui.screen() instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onInventoryPacket(packet);
 	}
 	
 	@Inject(method = "handleContainerSetSlot", at = @At("RETURN"), cancellable = true)
 	private void onScreenHandlerSlotUpdate_return(ClientboundContainerSetSlotPacket packet, CallbackInfo info) {
-		if (MainUtil.client.gui.screen() instanceof ClientHandledScreen clientHandledScreen)
+		if (Minecraft.getInstance().gui.screen() instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onScreenHandlerSlotUpdatePacket(packet);
 	}
 	
 	@Inject(method = "handleContainerClose", at = @At("HEAD"), cancellable = true)
 	private void handleContainerClose(ClientboundContainerClosePacket packet, CallbackInfo info) {
-		if (!MainUtil.client.isSameThread())
+		if (!Minecraft.getInstance().isSameThread())
 			return;
 		
 		if (packet.getContainerId() == ClientScreenHandler.SYNC_ID) {
@@ -104,7 +104,7 @@ public class ClientPlayNetworkHandlerMixin {
 		
 		NBTEditorClient.CURSOR_MANAGER.onCloseScreenPacket();
 		
-		if (MainUtil.client.gui.screen() instanceof IgnoreCloseScreenPacket)
+		if (Minecraft.getInstance().gui.screen() instanceof IgnoreCloseScreenPacket)
 			info.cancel();
 	}
 	

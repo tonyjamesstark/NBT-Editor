@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
 import com.luneruniverse.minecraft.mod.nbteditor.util.CompletableFutureCache;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.PacketListener;
@@ -28,6 +27,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.client.Minecraft;
 
 public class DynamicRegistryManagerHolder {
 	
@@ -42,8 +42,8 @@ public class DynamicRegistryManagerHolder {
 	private static CompletableFuture<RegistryAccess> loadDefaultManagerImpl() {
 		CompletableFuture<RegistryAccess> future = new CompletableFuture<>();
 		MixinLink.executeCrashableTask(() -> {
-			if (MainUtil.client.getResourcePackRepository().getSelectedPacks().isEmpty())
-				MainUtil.client.getResourcePackRepository().reload();
+			if (Minecraft.getInstance().getResourcePackRepository().getSelectedPacks().isEmpty())
+				Minecraft.getInstance().getResourcePackRepository().reload();
 			
 			// Based on https://github.com/MineLittlePony/HDSkins/blob/f9c6b8e570cae03908598eb629bf92e2f4faf5b3/src/main/java/com/minelittlepony/hdskins/client/gui/player/DummyNetworkHandler.java#L49
 			// and https://github.com/MineLittlePony/HDSkins/blob/a19fe3b0d7d98019bafc814a8782b7a263d090b9/src/main/java/com/minelittlepony/hdskins/client/gui/player/DummyNetworkHandler.java#L41
@@ -51,7 +51,7 @@ public class DynamicRegistryManagerHolder {
 			LayeredRegistryAccess<RegistryLayer> combinedRegistries =
 					RegistryLayer.createRegistryAccess();
 			ResourceManager resourceManager = new MultiPackResourceManager(
-					PackType.SERVER_DATA, MainUtil.client.getResourcePackRepository().openAllSelected());
+					PackType.SERVER_DATA, Minecraft.getInstance().getResourcePackRepository().openAllSelected());
 			
 			List<RegistryDataLoader.RegistryData<?>> entries = new ArrayList<>();
 			entries.addAll(RegistryDataLoader.WORLDGEN_REGISTRIES);

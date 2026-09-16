@@ -31,6 +31,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.client.Minecraft;
 
 public class LocalBlock implements LocalNBT {
 	
@@ -80,7 +81,7 @@ public class LocalBlock implements LocalNBT {
 		}
 		
 		cachedBlockEntity = entityProvider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
-		cachedBlockEntity.setLevel(MainUtil.client.level);
+		cachedBlockEntity.setLevel(Minecraft.getInstance().level);
 		if (nbt != null)
 			NBTManagers.BLOCK_ENTITY.setNbt(cachedBlockEntity, nbt);
 		
@@ -177,7 +178,7 @@ public class LocalBlock implements LocalNBT {
 				ItemStack output = new ItemStack(blockItem);
 				if (nbt != null && block instanceof EntityBlock provider) {
 					BlockEntity entity = provider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
-					entity.setLevel(MainUtil.client.level);
+					entity.setLevel(Minecraft.getInstance().level);
 					NBTManagers.BLOCK_ENTITY.setNbt(entity, nbt);
 					addBlockEntityNbtWithoutXYZ(output, entity);
 				}

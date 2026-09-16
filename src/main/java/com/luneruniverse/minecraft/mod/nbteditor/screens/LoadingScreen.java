@@ -16,6 +16,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.Minecraft;
 
 public class LoadingScreen extends MVScreen {
 	
@@ -39,7 +40,7 @@ public class LoadingScreen extends MVScreen {
 		}
 		
 		onLoading.run();
-		MainUtil.client.setScreenAndShow(new LoadingScreen(future, value -> onFinish.accept(true, value), e -> onException.accept(true, e)));
+		Minecraft.getInstance().setScreenAndShow(new LoadingScreen(future, value -> onFinish.accept(true, value), e -> onException.accept(true, e)));
 	}
 	public static <T> void show(CompletableFuture<T> future, Runnable onLoading, BiConsumer<Boolean, T> onFinish) {
 		show(future, onLoading, onFinish, (loaded, e) -> NBTEditor.LOGGER.error("Error processing something", e));

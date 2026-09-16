@@ -6,6 +6,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class Utils {
 
@@ -23,7 +24,7 @@ public class Utils {
     }
 
     public static void sendMessage(String message) {
-        MainUtil.client.player.sendSystemMessage(Component.nullToEmpty(colorize(message)));
+        Minecraft.getInstance().player.sendSystemMessage(Component.nullToEmpty(colorize(message)));
     }
 
     public static String colorize(String string) {

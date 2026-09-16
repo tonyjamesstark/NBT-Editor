@@ -36,6 +36,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 public class ContainerIOs {
 	
@@ -180,7 +181,7 @@ public class ContainerIOs {
 			for (EntityType<?> entityType : MVRegistry.ENTITY_TYPE) {
 				if (ENTITY_IO.containsKey(entityType))
 					continue;
-				Entity entity = ServerMVMisc.createEntity(entityType, MainUtil.client.level);
+				Entity entity = ServerMVMisc.createEntity(entityType, Minecraft.getInstance().level);
 				if (entity instanceof Mob)
 					registerEntityIO(entityType, EQUIPMENT_IO.apply(entityType).entity());
 				if (entity instanceof ChestBoat) {

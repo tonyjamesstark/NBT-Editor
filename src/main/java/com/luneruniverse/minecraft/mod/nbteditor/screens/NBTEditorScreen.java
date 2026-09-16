@@ -49,6 +49,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.IdentifierException;
+import net.minecraft.client.Minecraft;
 
 public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
@@ -376,11 +377,11 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	@Override
 	protected boolean save() {
 		if (localNBT.isEmpty() && localNBT.getNBT() != null && !localNBT.getNBT().isEmpty()) {
-			MainUtil.client.setScreenAndShow(new FancyConfirmScreen(value -> {
+			Minecraft.getInstance().setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value)
 					super.save();
 				
-				MainUtil.client.setScreenAndShow(this);
+				Minecraft.getInstance().setScreenAndShow(this);
 			}, Component.translatableEscape("nbteditor.nbt.saving_air.title"), Component.translatableEscape("nbteditor.nbt.saving_air.desc"),
 					Component.translatableEscape("nbteditor.nbt.saving_air.yes"), Component.translatableEscape("nbteditor.nbt.saving_air.no"))
 					.setParent(this));
@@ -391,11 +392,11 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			List<NBTValue> elements = baseFolder.getEntries(this);
 			elements.forEach(element -> element.updateInvalidComponent(localNBT, null));
 			if (elements.stream().anyMatch(NBTValue::isInvalidComponent)) {
-				MainUtil.client.setScreenAndShow(new FancyConfirmScreen(value -> {
+				Minecraft.getInstance().setScreenAndShow(new FancyConfirmScreen(value -> {
 					if (value)
 						super.save();
 					
-					MainUtil.client.setScreenAndShow(this);
+					Minecraft.getInstance().setScreenAndShow(this);
 				}, Component.translatableEscape("nbteditor.nbt.saving_invalid_components.title"), Component.translatableEscape("nbteditor.nbt.saving_invalid_components.desc"),
 						Component.translatableEscape("nbteditor.nbt.saving_invalid_components.yes"), Component.translatableEscape("nbteditor.nbt.saving_invalid_components.no"))
 						.setParent(this));

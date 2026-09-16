@@ -6,6 +6,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.SlotUtil;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.client.Minecraft;
 
 public class HandItemReference implements ItemReference {
 	
@@ -26,7 +27,7 @@ public class HandItemReference implements ItemReference {
 	
 	@Override
 	public ItemStack getItem() {
-		return MainUtil.client.player.getItemInHand(hand);
+		return Minecraft.getInstance().player.getItemInHand(hand);
 	}
 	
 	@Override
@@ -48,7 +49,7 @@ public class HandItemReference implements ItemReference {
 	@Override
 	public int getBlockedSlot() {
 		if (hand == InteractionHand.MAIN_HAND)
-			return SlotUtil.createHotbarInInv(MainUtil.client.player.getInventory().selected);
+			return SlotUtil.createHotbarInInv(Minecraft.getInstance().player.getInventory().selected);
 		return SlotUtil.createOffHandInInv();
 	}
 	

@@ -28,6 +28,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 public class ClientHandledScreen extends net.minecraft.client.gui.screens.inventory.ContainerScreen implements OldEventBehavior, IgnoreCloseScreenPacket {
 	
@@ -37,7 +38,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 		if (hoveredSlot != null &&
 				(ConfigScreen.isAirEditable() || hoveredSlot.getItem() != null && !hoveredSlot.getItem().isEmpty())) {
 			ItemReference ref;
-			if (hoveredSlot.container == MainUtil.client.player.getInventory()) {
+			if (hoveredSlot.container == Minecraft.getInstance().player.getInventory()) {
 				ref = new InventoryItemReference(hoveredSlot.getContainerSlot());
 				if (parent != null)
 					((InventoryItemReference) ref).setParent(parent);
@@ -64,9 +65,9 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 				ContainerScreen.show(ref);
 		} else if (Keys.hasShiftDown()) {
 			if (notAir)
-				MainUtil.client.setScreenAndShow(new LocalFactoryScreen<>(ref));
+				Minecraft.getInstance().setScreenAndShow(new LocalFactoryScreen<>(ref));
 		} else
-			MainUtil.client.setScreenAndShow(new NBTEditorScreen<>(ref));
+			Minecraft.getInstance().setScreenAndShow(new NBTEditorScreen<>(ref));
 		
 		return true;
 	}
@@ -74,7 +75,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	private ServerInventoryManager serverInv;
 	
 	protected ClientHandledScreen(int rows, Component title) {
-		super(new ClientScreenHandler(rows), MainUtil.client.player.getInventory(), title);
+		super(new ClientScreenHandler(rows), Minecraft.getInstance().player.getInventory(), title);
 		((ClientScreenHandler) menu).setScreen(this);
 		menu.suppressRemoteUpdates();
 	}
@@ -182,7 +183,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 						}
 						case QUICK_MOVE -> {
 							ItemStack prevItem = slot.getItem().copy();
-							ClientScreenHandlerSlot.unlockDuring(() -> menu.clicked(slot.index, button, actionType, MainUtil.client.player));
+							ClientScreenHandlerSlot.unlockDuring(() -> menu.clicked(slot.index, button, actionType, Minecraft.getInstance().player));
 							slot.set(prevItem);
 							serverInv.updateServer();
 						}
@@ -206,7 +207,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 			GetLostItemCommand.addToHistory(menu.getCarried());
 		
 		if (!(slot != null && allowEnchantmentCombine() && Keys.hasControlDown() && tryCombineEnchantments(slot, actionType)))
-			menu.clicked(slot == null ? slotId : slot.index, button, actionType, MainUtil.client.player);
+			menu.clicked(slot == null ? slotId : slot.index, button, actionType, Minecraft.getInstance().player);
 		
 		if (!(this instanceof CursorHistoryScreen))
 			GetLostItemCommand.addToHistory(menu.getCarried());

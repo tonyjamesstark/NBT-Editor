@@ -4,6 +4,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.Minecraft;
 
 public class InventoryItemReference implements ItemReference {
 	
@@ -33,7 +34,7 @@ public class InventoryItemReference implements ItemReference {
 	
 	@Override
 	public ItemStack getItem() {
-		return MainUtil.client.player.getInventory().getItem(slot);
+		return Minecraft.getInstance().player.getInventory().getItem(slot);
 	}
 	
 	@Override

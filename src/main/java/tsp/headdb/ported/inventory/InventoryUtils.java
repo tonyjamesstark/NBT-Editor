@@ -24,6 +24,7 @@ import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.LocalHead;
 import tsp.headdb.ported.Utils;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.client.Minecraft;
 
 public class InventoryUtils {
 
@@ -182,7 +183,7 @@ public class InventoryUtils {
     		}
     		@Override
     		public void close() {
-    			MainUtil.client.player.closeContainer();
+    			Minecraft.getInstance().player.closeContainer();
     		}
     	};
         Container inventory = screen.getMenu().getContainer();
@@ -223,7 +224,7 @@ public class InventoryUtils {
         }
 
         fill(inventory);
-        MainUtil.client.setScreenAndShow(screen);
+        Minecraft.getInstance().setScreenAndShow(screen);
     }
 
     public static void fill(Container inv) {

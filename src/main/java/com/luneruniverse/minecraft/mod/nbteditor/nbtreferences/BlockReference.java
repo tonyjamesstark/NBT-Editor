@@ -15,7 +15,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.packets.SetBlockC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.ViewBlockS2CPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -25,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.Minecraft;
 
 public class BlockReference implements NBTReference<LocalBlock> {
 	
@@ -42,8 +42,8 @@ public class BlockReference implements NBTReference<LocalBlock> {
 		return getBlock(GetLecternBlockC2SPacket::new);
 	}
 	public static BlockReference getBlockWithoutNBT(BlockPos pos) {
-		BlockState state = MainUtil.client.level.getBlockState(pos);
-		return new BlockReference(MainUtil.client.level.dimension(), pos,
+		BlockState state = Minecraft.getInstance().level.getBlockState(pos);
+		return new BlockReference(Minecraft.getInstance().level.dimension(), pos,
 				state.getBlock(), new BlockStateProperties(state), new CompoundTag());
 	}
 	
@@ -118,7 +118,7 @@ public class BlockReference implements NBTReference<LocalBlock> {
 		onFinished.run();
 	}
 	public void saveState(BlockStateProperties state, Component msg) {
-		saveState(state, () -> MainUtil.client.player.sendSystemMessage(msg));
+		saveState(state, () -> Minecraft.getInstance().player.sendSystemMessage(msg));
 	}
 	public void saveState(BlockStateProperties state) {
 		saveState(state, () -> {});

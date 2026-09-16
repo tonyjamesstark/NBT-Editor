@@ -22,6 +22,7 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 	
@@ -43,7 +44,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			}
 		}
 		
-		private static final int LIST_CONTEXT_MENU_HEIGHT = (MainUtil.client.font.lineHeight + 2) * 3 + 2;
+		private static final int LIST_CONTEXT_MENU_HEIGHT = (Minecraft.getInstance().font.lineHeight + 2) * 3 + 2;
 		
 		private final ConfigList parent;
 		private final ConfigPath value;
@@ -72,7 +73,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			this.index = index;
 			if (indexed) {
 				this.indexText = Component.literal("(#" + (index + 1) + ") ");
-				this.indexTextOffset = named ? 0 : MainUtil.client.font.width(this.indexText);
+				this.indexTextOffset = named ? 0 : Minecraft.getInstance().font.width(this.indexText);
 				if (named)
 					((ConfigPathNamed) value).setNamePrefix(this.indexText);
 			} else {
@@ -100,7 +101,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			if (named)
 				value.extractRenderState(context, mouseX, mouseY, delta);
 			else {
-				MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, indexText, 0, (getSpacingHeight() - MainUtil.client.font.lineHeight) / 2, -1);
+				MVDrawableHelper.drawTextWithShadow(context, Minecraft.getInstance().font, indexText, 0, (getSpacingHeight() - Minecraft.getInstance().font.lineHeight) / 2, -1);
 				context.pose().pushMatrix();
 				context.pose().translate((float) (indexTextOffset), (float) (0.0));
 				value.extractRenderState(context, mouseX - indexTextOffset, mouseY, delta);
@@ -121,7 +122,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			int y = contextMenuY;
 			for (ListContextMenuAction action : ListContextMenuAction.values()) {
 				int color = -1;
-				if (xHover && mouseY >= y && mouseY <= y + MainUtil.client.font.lineHeight) {
+				if (xHover && mouseY >= y && mouseY <= y + Minecraft.getInstance().font.lineHeight) {
 					color = 0xFF257789;
 					if (action.tooltip != null && !ConfigScreen.isKeybindsHidden())
 						new MVTooltip(action.tooltip).render(context, mouseX, mouseY);
@@ -129,8 +130,8 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 				Component msg = action.msg;
 				if (action == ListContextMenuAction.REMOVE)
 					msg = msg.copy().withStyle(color == -1 ? ChatFormatting.RED : ChatFormatting.GOLD);
-				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, msg, contextMenuX + 25, y + 2, color);
-				y += MainUtil.client.font.lineHeight + 2;
+				MVDrawableHelper.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, msg, contextMenuX + 25, y + 2, color);
+				y += Minecraft.getInstance().font.lineHeight + 2;
 			}
 			
 			context.pose().popMatrix();
@@ -180,7 +181,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 					if (mouseX > contextMenuX && mouseX < contextMenuX + 50) {
 						int y = contextMenuY;
 						for (ListContextMenuAction action : ListContextMenuAction.values()) {
-							if (mouseY >= y && mouseY <= y + MainUtil.client.font.lineHeight) {
+							if (mouseY >= y && mouseY <= y + Minecraft.getInstance().font.lineHeight) {
 								switch (action) {
 									case MOVE -> {
 										InputOverlay.show(
@@ -234,7 +235,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 								contextMenuOpen = false;
 								break;
 							}
-							y += MainUtil.client.font.lineHeight + 2;
+							y += Minecraft.getInstance().font.lineHeight + 2;
 						}
 					}
 					return true;
@@ -409,8 +410,8 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 					context.pose().translate((float) (-PADDING / 2), (float) (-(yOffset + height / 2)));
 					context.pose().scale((float) (2), (float) (2));
 					context.pose().translate((float) (PADDING / 2 - 0.5), (float) (yOffset + height / 2));
-					MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, Component.nullToEmpty("⋮"), 0,
-							-MainUtil.client.font.lineHeight / 2, -1);
+					MVDrawableHelper.drawTextWithShadow(context, Minecraft.getInstance().font, Component.nullToEmpty("⋮"), 0,
+							-Minecraft.getInstance().font.lineHeight / 2, -1);
 					context.pose().popMatrix();
 				}
 				yOffset += height + PADDING;

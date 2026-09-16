@@ -8,9 +8,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricCli
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.client.Minecraft;
 
 public class FactoryCommand extends ClientCommandGroup {
 	
@@ -53,7 +53,7 @@ public class FactoryCommand extends ClientCommandGroup {
 		super.register(builder, path);
 		builder.executes(context -> {
 			NBTReference.getReference(NBTReferenceFilter.ANY, false,
-					ref -> MainUtil.client.setScreenAndShow(new LocalFactoryScreen<>(ref)));
+					ref -> Minecraft.getInstance().setScreenAndShow(new LocalFactoryScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

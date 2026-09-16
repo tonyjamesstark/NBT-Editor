@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -16,6 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class RandomUUIDCommand extends ClientCommand {
 	
@@ -47,7 +47,7 @@ public class RandomUUIDCommand extends ClientCommand {
 			ItemStack item = ref.getItem();
 			CompoundTag nbt = ItemTagReferences.CUSTOM_DATA.get(item);
 			if (!nbt.nbte$containsUuid("UUID")) {
-				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.random_uuid.already_removed"));
+				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.random_uuid.already_removed"));
 				return Command.SINGLE_SUCCESS;
 			}
 			nbt.remove("UUID");
