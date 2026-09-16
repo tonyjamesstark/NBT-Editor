@@ -32,7 +32,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.LoadQueue;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SaveQueue;
 import com.luneruniverse.minecraft.mod.nbteditor.util.lock.PartitionedReadWriteLock;
 
@@ -46,6 +45,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.DataFixes;
 
 public class ClientChest {
 	
@@ -630,7 +630,7 @@ public class ClientChest {
 			if (dynamic)
 				itemNbt.remove("dynamic");
 			
-			itemNbt = MainUtil.updateDynamic(References.ITEM_STACK, itemNbt, dataVersion);
+			itemNbt = DataFixes.updateDynamic(References.ITEM_STACK, itemNbt, dataVersion);
 			
 			if (dynamic) {
 				dynamicItems.add(i, itemNbt, false);

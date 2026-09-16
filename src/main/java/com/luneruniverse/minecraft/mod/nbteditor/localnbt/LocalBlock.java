@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTMan
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.NbtViews;
 import net.minecraft.world.level.storage.TagValueOutput;
@@ -32,25 +31,26 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.DataFixes;
 
 public class LocalBlock implements LocalNBT {
 	
 	public static LocalBlock deserialize(CompoundTag nbt, int defaultDataVersion) {
 		Tag dataVersion = nbt.get("DataVersion");
 		
-		String id = MainUtil.updateDynamic(References.BLOCK_NAME,
+		String id = DataFixes.updateDynamic(References.BLOCK_NAME,
 				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion).value();
 		Block block = MVRegistry.BLOCK.get(Identifier.parse(id));
 		
 		BlockStateProperties state = new BlockStateProperties(block.defaultBlockState());
-		state.setValues(MainUtil.updateDynamic(References.BLOCK_STATE,
+		state.setValues(DataFixes.updateDynamic(References.BLOCK_STATE,
 				nbt.nbte$getCompoundOrDefault("state"), dataVersion, defaultDataVersion));
 		
 		CompoundTag tag = null;
 		if (nbt.nbte$contains("tag", Tag.TAG_COMPOUND)) {
 			tag = nbt.nbte$getCompoundOrDefault("tag");
 			tag.putString("id", nbt.nbte$getStringOrDefault("id"));
-			tag = MainUtil.updateDynamic(References.BLOCK_ENTITY, tag, dataVersion, defaultDataVersion);
+			tag = DataFixes.updateDynamic(References.BLOCK_ENTITY, tag, dataVersion, defaultDataVersion);
 			tag.remove("id");
 		}
 		

@@ -88,7 +88,7 @@ public class SaveQueue<T> {
 							List<CompletableFuture<Void>> currentOnFinished = new ArrayList<>();
 							while (!onFinished.isEmpty())
 								currentOnFinished.add(onFinished.remove());
-							onFinished.add(MainUtil.mergeFutures(currentOnFinished));
+							onFinished.add(Futures.mergeFutures(currentOnFinished));
 						}
 						
 						int maxSize = queuedSave ? 1 : 0;

@@ -1,49 +1,24 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.Tag;
 
-public class MainUtil {
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+/**
+ * Running NBT through Minecraft's data fixers, up to the version the game is currently on.
+ *
+ * <p>The editor reads nbt the player saved under an older game version -- a client chest page, a
+ * preset file, a pasted snippet -- and has to hand the game something it still understands.
+ * Vanilla does this behind {@code DataFixTypes}, which will not take a version that is not one of
+ * its own constants; these do the same thing for a version read out of the data itself.
+ */
+public class DataFixes {
 	
 	// Based on DataFixTypes
 	@SuppressWarnings("unchecked")
@@ -74,18 +49,6 @@ public class MainUtil {
 		return updateDynamic(typeRef, nbt, -1);
 	}
 	
-	
-	
-	public static <T> CompletableFuture<T> mergeFutures(List<CompletableFuture<T>> futures) {
-		CompletableFuture<T> output = new CompletableFuture<>();
-		output.thenAccept(value -> futures.forEach(future -> future.complete(value)));
-		output.exceptionally(e -> {
-			futures.forEach(future -> future.completeExceptionally(e));
-			return null;
-		});
-		return output;
-	}
-	
-	
+	private DataFixes() {}
 	
 }

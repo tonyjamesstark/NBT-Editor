@@ -19,7 +19,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.packets.SummonEntityC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.ViewEntityS2CPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -41,13 +40,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.DataFixes;
 
 public class LocalEntity implements LocalNBT {
 	
 	public static LocalEntity deserialize(CompoundTag nbt, int defaultDataVersion) {
 		CompoundTag tag = nbt.nbte$getCompoundOrDefault("tag");
 		tag.putString("id", nbt.nbte$getStringOrDefault("id"));
-		tag = MainUtil.updateDynamic(References.ENTITY, tag, nbt.get("DataVersion"), defaultDataVersion);
+		tag = DataFixes.updateDynamic(References.ENTITY, tag, nbt.get("DataVersion"), defaultDataVersion);
 		String id = tag.nbte$getStringOrDefault("id");
 		tag.remove("id");
 		return new LocalEntity(MVRegistry.ENTITY_TYPE.get(Identifier.parse(id)), tag);

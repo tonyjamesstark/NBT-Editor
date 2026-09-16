@@ -6,7 +6,6 @@ import java.util.Set;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.datafix.fixes.References;
@@ -16,12 +15,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import com.luneruniverse.minecraft.mod.nbteditor.util.DataFixes;
 
 public class LocalItemStack extends LocalItem {
 	
 	public static LocalItemStack deserialize(CompoundTag nbt, int defaultDataVersion) {
 		return new LocalItemStack(NBTManagers.ITEM.deserialize(
-				MainUtil.updateDynamic(References.ITEM_STACK, nbt, defaultDataVersion), true));
+				DataFixes.updateDynamic(References.ITEM_STACK, nbt, defaultDataVersion), true));
 	}
 	
 	private ItemStack item;
