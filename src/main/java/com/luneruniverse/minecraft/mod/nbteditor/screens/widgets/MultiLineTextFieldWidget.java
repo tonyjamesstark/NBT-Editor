@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
@@ -236,9 +236,9 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.fill(context, x, y, x + width, y + height, bgColor);
+		Drawing.fill(context, x, y, x + width, y + height, bgColor);
 		
-		MVDrawableHelper.enableScissor(context, x, y, width, height);
+		Drawing.enableScissor(context, x, y, width, height);
 		
 		context.pose().pushMatrix();
 		context.pose().translate((float) (0.0), (float) (scroll));
@@ -247,7 +247,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		
 		int yOffset = y;
 		for (Component line : renderedLines) {
-			MVDrawableHelper.drawText(context, textRenderer, line, x + textRenderer.lineHeight, yOffset + textRenderer.lineHeight, -1, shadow);
+			Drawing.drawText(context, textRenderer, line, x + textRenderer.lineHeight, yOffset + textRenderer.lineHeight, -1, shadow);
 			yOffset += textRenderer.lineHeight * 1.5;
 		}
 		
@@ -256,7 +256,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		
 		if (isMultiFocused() && cursorBlinkTracker / 6 % 2 == 0) {
 			Point cursor = getXYPos(this.cursor);
-			MVDrawableHelper.fill(context, cursor.x, cursor.y, cursor.x + 1, cursor.y + textRenderer.lineHeight, cursorColor);
+			Drawing.fill(context, cursor.x, cursor.y, cursor.x + 1, cursor.y + textRenderer.lineHeight, cursorColor);
 		}
 		
 		context.pose().popMatrix();
@@ -268,7 +268,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			suggestor.extractRenderState(context, mouseX, mouseY, delta);
 		}
 		
-		MVDrawableHelper.disableScissor(context);
+		Drawing.disableScissor(context);
 	}
 	protected void renderHighlightsBelow(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
 	protected void renderHighlightsAbove(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
@@ -276,16 +276,16 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		Point startPos = getXYPos(start);
 		Point endPos = getXYPos(end);
 		if (startPos.y == endPos.y)
-			MVDrawableHelper.fill(context, startPos.x, startPos.y, endPos.x, endPos.y + textRenderer.lineHeight, color);
+			Drawing.fill(context, startPos.x, startPos.y, endPos.x, endPos.y + textRenderer.lineHeight, color);
 		else {
 			int line = 0;
 			int lineY;
 			while ((lineY = startPos.y + line * (int) (textRenderer.lineHeight * 1.5)) < endPos.y) {
 				Point lineStart = line == 0 ? startPos : new Point(x + textRenderer.lineHeight, lineY);
-				MVDrawableHelper.fill(context, lineStart.x, lineStart.y, x + width - textRenderer.lineHeight, lineStart.y + textRenderer.lineHeight, color);
+				Drawing.fill(context, lineStart.x, lineStart.y, x + width - textRenderer.lineHeight, lineStart.y + textRenderer.lineHeight, color);
 				line++;
 			}
-			MVDrawableHelper.fill(context, x + textRenderer.lineHeight, lineY, endPos.x, endPos.y + textRenderer.lineHeight, color);
+			Drawing.fill(context, x + textRenderer.lineHeight, lineY, endPos.x, endPos.y + textRenderer.lineHeight, color);
 		}
 	}
 	

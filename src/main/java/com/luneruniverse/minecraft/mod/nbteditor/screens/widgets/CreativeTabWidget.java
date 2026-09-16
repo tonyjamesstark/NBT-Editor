@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
@@ -74,10 +74,10 @@ public class CreativeTabWidget implements Renderable, MVElement {
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTexture(context, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
+		Drawing.drawTexture(context, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
 		
 		int xOffset = 5;
-		MVDrawableHelper.renderItem(context, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
+		Drawing.renderItem(context, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
 		
 		if (isMouseOver(mouseX, mouseY))
 			tooltip.render(context, mouseX, mouseY);

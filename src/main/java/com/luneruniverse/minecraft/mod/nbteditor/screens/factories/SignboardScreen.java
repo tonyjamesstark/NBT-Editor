@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
@@ -273,7 +273,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
 	@Override
 	protected void preRenderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTexture(context, texture, 16, 64 + 24 * 2, 0, 0, width - 32, height - 80 - 24 * 2);
+		Drawing.drawTexture(context, texture, 16, 64 + 24 * 2, 0, 0, width - 32, height - 80 - 24 * 2);
 	}
 	
 }

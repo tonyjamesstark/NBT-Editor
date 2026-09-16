@@ -3,7 +3,7 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.containers;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SlotUtil;
 
@@ -101,7 +101,7 @@ public class LockedSlotsInfo {
 	public void renderLockedHighlights(GuiGraphicsExtractor context, AbstractContainerMenu handler, boolean explicitly, boolean player, boolean container) {
 		for (Slot slot : handler.slots) {
 			if ((slot.container == Minecraft.getInstance().player.getInventory() ? player : container) && isBlocked(slot, explicitly))
-				MVDrawableHelper.drawSlotHighlight(context, slot.x, slot.y, 0x60FF0000);
+				Drawing.drawSlotHighlight(context, slot.x, slot.y, 0x60FF0000);
 		}
 	}
 	

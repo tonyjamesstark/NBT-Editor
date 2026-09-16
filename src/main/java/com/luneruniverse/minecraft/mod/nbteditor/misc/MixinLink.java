@@ -12,7 +12,7 @@ import java.util.WeakHashMap;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.luneruniverse.minecraft.mod.nbteditor.mixin.ChatScreenAccessor;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.mojang.brigadier.StringReader;
@@ -98,10 +98,10 @@ public class MixinLink {
 		
 		EditBox chatField = ((ChatScreenAccessor) source).getInput();
 		if (chatField.getValue().length() > 256) {
-			MVDrawableHelper.fill(context, source.width - 202, source.height - 40, source.width - 2, source.height - 14, 0xAAFFAA00);
+			Drawing.fill(context, source.width - 202, source.height - 40, source.width - 2, source.height - 14, 0xAAFFAA00);
 			Font textRenderer = Minecraft.getInstance().font;
-			MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.chat_length_warning_1"), source.width - 102, source.height - 40 + textRenderer.lineHeight / 2, 0xFFAA5500);
-			MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.chat_length_warning_2"), source.width - 102, source.height - 28 + textRenderer.lineHeight / 2, 0xFFAA5500);
+			Drawing.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.chat_length_warning_1"), source.width - 102, source.height - 40 + textRenderer.lineHeight / 2, 0xFFAA5500);
+			Drawing.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.chat_length_warning_2"), source.width - 102, source.height - 28 + textRenderer.lineHeight / 2, 0xFFAA5500);
 		}
 	}
 	

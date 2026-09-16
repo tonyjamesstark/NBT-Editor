@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -103,7 +103,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 	
 	@Override
 	public final void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(this, context);
+		Drawing.renderBackground(this, context);
 		preRenderEditor(context, mouseX, mouseY, delta);
 		super.renderMain(context, mouseX, mouseY, delta);
 		renderEditor(context, mouseX, mouseY, delta);

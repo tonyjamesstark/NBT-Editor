@@ -1,8 +1,7 @@
-package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
+package com.luneruniverse.minecraft.mod.nbteditor.util;
 
 import java.util.List;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -19,8 +18,12 @@ import net.minecraft.client.Minecraft;
  * The MatrixStack half of this class died with the 1.21.9 GUI rewrite, and 26.2 turned the
  * remaining immediate-mode draws into render-state extraction; the method names here are the
  * mod's, so callers did not have to move with them.
+ *
+ * <p>This was <code>multiversion/MVDrawableHelper</code>. Nothing about it spans game versions --
+ * the package was the only version-flavoured thing left -- and most of what remains is a
+ * one-line forward that A1 of the audit wants inlined.
  */
-public class MVDrawableHelper {
+public class Drawing {
 	
 	
 	public static void fill(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int color) {

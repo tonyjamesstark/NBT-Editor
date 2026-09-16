@@ -9,7 +9,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChest;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestScreen;
@@ -148,14 +148,14 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		
 		MVTooltip.setOneTooltip(true, false);
 		
-		MVDrawableHelper.renderBackground(this, context);
+		Drawing.renderBackground(this, context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(context, font,
+		Drawing.drawCenteredTextWithShadow(context, font,
 				msg, width / 2, height / 2 - 44 - font.lineHeight / 2, -1);
 		if (fullButtons) {
-			MVDrawableHelper.fill(context, width / 2 - 55, height / 2 - 34, width / 2 - 53, height / 2 + 34, 0xFFAAAAAA);
-			MVDrawableHelper.fill(context, width / 2 + 53, height / 2 - 34, width / 2 + 55, height / 2 + 34, 0xFFAAAAAA);
-			MVDrawableHelper.drawCenteredTextWithShadow(context, font,
+			Drawing.fill(context, width / 2 - 55, height / 2 - 34, width / 2 - 53, height / 2 + 34, 0xFFAAAAAA);
+			Drawing.fill(context, width / 2 + 53, height / 2 - 34, width / 2 + 55, height / 2 + 34, 0xFFAAAAAA);
+			Drawing.drawCenteredTextWithShadow(context, font,
 					Component.translatableEscape("nbteditor.client_chest.data_version.import", Version.getReleaseTarget()),
 					width / 2 - 108, height / 2 - 24 - font.lineHeight / 2, -1);
 		}

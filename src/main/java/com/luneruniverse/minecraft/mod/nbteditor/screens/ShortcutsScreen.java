@@ -1,6 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -54,7 +54,7 @@ public class ShortcutsScreen extends TickableSupportingScreen {
 	}
 	
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(this, context);
+		Drawing.renderBackground(this, context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	

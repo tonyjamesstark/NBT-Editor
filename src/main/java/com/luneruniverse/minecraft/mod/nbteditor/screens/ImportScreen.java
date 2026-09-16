@@ -13,7 +13,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
@@ -112,10 +112,10 @@ public class ImportScreen extends OverlaySupportingScreen {
 		dataVersion.setValid(dataVersion.getValue().isEmpty() ||
 				Version.getDataVersion(dataVersion.getValue()).filter(value -> value <= Version.getDataVersion()).isPresent());
 		
-		MVDrawableHelper.renderBackground(this, context);
+		Drawing.renderBackground(this, context);
 		super.renderMain(context, mouseX, mouseY, delta);
 		for (int i = 0; i < msg.size(); i++)
-			MVDrawableHelper.drawText(context, font, msg.get(i), 16, 64 + font.lineHeight * i, -1, true);
+			Drawing.drawText(context, font, msg.get(i), 16, 64 + font.lineHeight * i, -1, true);
 		MainUtil.renderLogo(context);
 	}
 	

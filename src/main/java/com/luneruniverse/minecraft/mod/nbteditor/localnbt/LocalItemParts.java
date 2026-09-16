@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
@@ -159,7 +159,7 @@ public class LocalItemParts extends LocalItem {
 	
 	@Override
 	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta) {
-		MVDrawableHelper.renderItem(context, 200.0F, true, getCachedItem(), x, y);
+		Drawing.renderItem(context, 200.0F, true, getCachedItem(), x, y);
 	}
 	
 	@Override

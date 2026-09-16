@@ -8,7 +8,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -249,7 +249,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	
 	@Override
 	protected void renderEditor(GuiGraphicsExtractor context, int fdf8eb, int mouseY, float delta) {
-		MVDrawableHelper.drawTextWithShadow(context, font, Component.translatableEscape("nbteditor.book.page", page + 1, getPageCount()),
+		Drawing.drawTextWithShadow(context, font, Component.translatableEscape("nbteditor.book.page", page + 1, getPageCount()),
 				16 + 108 * 3 - 4 + 24 * 3, 64 + 10 - font.lineHeight / 2, -1);
 	}
 	

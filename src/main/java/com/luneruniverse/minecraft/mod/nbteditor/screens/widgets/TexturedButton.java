@@ -1,6 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -33,7 +33,7 @@ public class TexturedButton extends Button {
 			v += hoveredVOffset * 2;
 		else if (isHoveredOrFocused())
 			v += hoveredVOffset;
-		MVDrawableHelper.drawTexture(context, texture, getX(), getY(), 0, v, width, height,
+		Drawing.drawTexture(context, texture, getX(), getY(), 0, v, width, height,
 				width, height + hoveredVOffset);
 	}
 	

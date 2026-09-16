@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
@@ -108,7 +107,7 @@ public class MainUtil {
 	private static final Identifier LOGO = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo.png");
 	private static final Identifier LOGO_UPDATE_AVAILABLE = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo_update_available.png");
 	public static void renderLogo(GuiGraphicsExtractor context) {
-		MVDrawableHelper.drawTexture(context,
+		Drawing.drawTexture(context,
 				UpdateCheckerThread.UPDATE_AVAILABLE ? LOGO_UPDATE_AVAILABLE : LOGO, 16, 16, 0, 0, 32, 32, 32, 32);
 	}
 	
@@ -187,9 +186,9 @@ public class MainUtil {
 			line = lines.get(i);
 			int offsetY = i * renderer.lineHeight + (centerVertical ? -renderer.lineHeight * lines.size() / 2 : 0);
 			if (centerHorizontal)
-				MVDrawableHelper.drawCenteredTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
+				Drawing.drawCenteredTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
 			else
-				MVDrawableHelper.drawTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
+				Drawing.drawTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
 		}
 	}
 	

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
@@ -41,9 +41,9 @@ public class AlertWidget extends GroupWidget implements InitializableOverlay<Scr
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(Minecraft.getInstance().gui.screen(), context);
+		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		for (int i = 0; i < lines.length; i++) {
-			MVDrawableHelper.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, lines[i],
+			Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, lines[i],
 					x, y + i * Minecraft.getInstance().font.lineHeight, -1);
 		}
 		super.extractRenderState(context, mouseX, mouseY, delta);

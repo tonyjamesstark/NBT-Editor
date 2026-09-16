@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
@@ -101,7 +101,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			if (named)
 				value.extractRenderState(context, mouseX, mouseY, delta);
 			else {
-				MVDrawableHelper.drawTextWithShadow(context, Minecraft.getInstance().font, indexText, 0, (getSpacingHeight() - Minecraft.getInstance().font.lineHeight) / 2, -1);
+				Drawing.drawTextWithShadow(context, Minecraft.getInstance().font, indexText, 0, (getSpacingHeight() - Minecraft.getInstance().font.lineHeight) / 2, -1);
 				context.pose().pushMatrix();
 				context.pose().translate((float) (indexTextOffset), (float) (0.0));
 				value.extractRenderState(context, mouseX - indexTextOffset, mouseY, delta);
@@ -116,8 +116,8 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			context.pose().pushMatrix();
 			context.pose().translate((float) (0.0), (float) (0.0));
 			
-			MVDrawableHelper.fill(context, contextMenuX - 1, contextMenuY - 1, contextMenuX + 51, contextMenuY + LIST_CONTEXT_MENU_HEIGHT + 1, -1);
-			MVDrawableHelper.fill(context, contextMenuX, contextMenuY, contextMenuX + 50, contextMenuY + LIST_CONTEXT_MENU_HEIGHT, 0xFF000000);
+			Drawing.fill(context, contextMenuX - 1, contextMenuY - 1, contextMenuX + 51, contextMenuY + LIST_CONTEXT_MENU_HEIGHT + 1, -1);
+			Drawing.fill(context, contextMenuX, contextMenuY, contextMenuX + 50, contextMenuY + LIST_CONTEXT_MENU_HEIGHT, 0xFF000000);
 			boolean xHover = mouseX > contextMenuX && mouseX < contextMenuX + 50; // Prevent the first option from being hovered before moving the mouse
 			int y = contextMenuY;
 			for (ListContextMenuAction action : ListContextMenuAction.values()) {
@@ -130,7 +130,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 				Component msg = action.msg;
 				if (action == ListContextMenuAction.REMOVE)
 					msg = msg.copy().withStyle(color == -1 ? ChatFormatting.RED : ChatFormatting.GOLD);
-				MVDrawableHelper.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, msg, contextMenuX + 25, y + 2, color);
+				Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, msg, contextMenuX + 25, y + 2, color);
 				y += Minecraft.getInstance().font.lineHeight + 2;
 			}
 			
@@ -403,14 +403,14 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			for (ConfigPath path : paths.values()) {
 				int height = path.getSpacingHeight();
 				if (path instanceof ConfigListEntry) {
-					MVDrawableHelper.fill(context, 0, yOffset, PADDING, yOffset + height, 0xFF000000);
-					MVDrawableHelper.fill(context, 0, yOffset + PADDING, PADDING, yOffset + height - PADDING, 0xFF257789);
+					Drawing.fill(context, 0, yOffset, PADDING, yOffset + height, 0xFF000000);
+					Drawing.fill(context, 0, yOffset + PADDING, PADDING, yOffset + height - PADDING, 0xFF257789);
 					
 					context.pose().pushMatrix();
 					context.pose().translate((float) (-PADDING / 2), (float) (-(yOffset + height / 2)));
 					context.pose().scale((float) (2), (float) (2));
 					context.pose().translate((float) (PADDING / 2 - 0.5), (float) (yOffset + height / 2));
-					MVDrawableHelper.drawTextWithShadow(context, Minecraft.getInstance().font, Component.nullToEmpty("⋮"), 0,
+					Drawing.drawTextWithShadow(context, Minecraft.getInstance().font, Component.nullToEmpty("⋮"), 0,
 							-Minecraft.getInstance().font.lineHeight / 2, -1);
 					context.pose().popMatrix();
 				}

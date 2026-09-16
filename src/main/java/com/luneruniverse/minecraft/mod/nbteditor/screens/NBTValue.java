@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
@@ -84,7 +84,7 @@ public class NBTValue extends List2D.List2DValue {
 			};
 		}
 		if (icon != null)
-			MVDrawableHelper.drawTexture(context, icon, 0, 0, 0, 0, 32, 32, 32, 32);
+			Drawing.drawTexture(context, icon, 0, 0, 0, 0, 32, 32, 32, 32);
 		
 		int color = -1;
 		String tooltip = null;
@@ -99,10 +99,10 @@ public class NBTValue extends List2D.List2DValue {
 		else if (isHovering(mouseX, mouseY))
 			color = 0xFF257789;
 		if (color != -1) {
-			MVDrawableHelper.fill(context, -4, -4, 36, 0, color);
-			MVDrawableHelper.fill(context, -4, -4, 0, 36, color);
-			MVDrawableHelper.fill(context, -4, 32, 36, 36, color);
-			MVDrawableHelper.fill(context, 32, -4, 36, 36, color);
+			Drawing.fill(context, -4, -4, 36, 0, color);
+			Drawing.fill(context, -4, -4, 0, 36, color);
+			Drawing.fill(context, -4, 32, 36, 36, color);
+			Drawing.fill(context, 32, -4, 36, 36, color);
 		}
 		if (tooltip != null && isHovering(mouseX, mouseY))
 			new MVTooltip(tooltip).render(context, mouseX, mouseY);

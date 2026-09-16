@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
@@ -149,9 +149,9 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(Minecraft.getInstance().gui.screen(), context);
+		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.img_to_lore"),
+		Drawing.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
 		MainUtil.renderLogo(context);
 	}

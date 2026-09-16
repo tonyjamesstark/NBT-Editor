@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.InventoryItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -97,8 +97,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	@Override
 	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		super.extractBackground(context, mouseX, mouseY, delta);
-		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos, 0, 0, imageWidth, menu.getRowCount() * 18 + 17);
-		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos + menu.getRowCount() * 18 + 17, 0, 126, imageWidth, 96);
+		Drawing.drawTexture(context, TEXTURE, leftPos, topPos, 0, 0, imageWidth, menu.getRowCount() * 18 + 17);
+		Drawing.drawTexture(context, TEXTURE, leftPos, topPos + menu.getRowCount() * 18 + 17, 0, 126, imageWidth, 96);
 		
 		if (showLogo())
 			MainUtil.renderLogo(context);
@@ -111,8 +111,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	protected void extractLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
 		getLockedSlotsInfo().renderLockedHighlights(context, menu, true, false, true);
 		
-		MVDrawableHelper.drawTextWithoutShadow(context, font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752);
-		MVDrawableHelper.drawTextWithoutShadow(context, font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752);
+		Drawing.drawTextWithoutShadow(context, font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752);
+		Drawing.drawTextWithoutShadow(context, font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752);
 	}
 	protected Component getRenderedTitle() {
 		return title;
