@@ -7,9 +7,9 @@ import java.util.function.Predicate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVButtonWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.Minecraft;
@@ -57,7 +57,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	
 	@SuppressWarnings("unchecked")
 	private ConfigValueDropdown(T value, T defaultValue, List<T> allValues, List<T> importantValues) {
-		super(0, 0, getMaxWidth(allValues) + MainUtil.client.font.lineHeight * 2, 20, TextInst.of(value.toString()),
+		super(0, 0, getMaxWidth(allValues) + MainUtil.client.font.lineHeight * 2, 20, Component.nullToEmpty(value.toString()),
 				btn -> ((ConfigValueDropdown<T>) btn).open = !((ConfigValueDropdown<T>) btn).open);
 		
 		this.value = value;
@@ -98,7 +98,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 					color = 0xFF257789;
 				else if (importantValues.contains(option))
 					color = 0xFFFFAA00;
-				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, TextInst.of(option.toString()),
+				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, Component.nullToEmpty(option.toString()),
 						this.x + this.width / 2, y + (this.height - MainUtil.client.font.lineHeight) / 2, color);
 				if (color != -1 && option instanceof ConfigTooltipSupplier) // Hovering
 					((ConfigTooltipSupplier) option).getTooltip().render(context, mouseX, mouseY);
@@ -147,7 +147,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	@Override
 	public void setConfigValue(T value) {
 		this.value = value;
-		setMessage(TextInst.of(value.toString()));
+		setMessage(Component.nullToEmpty(value.toString()));
 		onChanged.forEach(listener -> listener.onValueChanged(this));
 	}
 	@Override

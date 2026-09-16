@@ -5,7 +5,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.FancyTextArgumentType;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandInternals;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
@@ -50,7 +49,7 @@ public class NameCommand extends ClientCommand {
 			T localNBT = ref.getLocalNBT();
 			Component name = unparsedName.parse(StyleUtil.getBaseNameStyle(localNBT, false));
 			localNBT.setName(name);
-			ref.saveLocalNBT(localNBT, TextInst.translatable("nbteditor.named").append(name));
+			ref.saveLocalNBT(localNBT, Component.translatableEscape("nbteditor.named").append(name));
 		} catch (CommandSyntaxException e) {
 			source.sendError(ClientCommandInternals.getErrorMessage(e));
 		}

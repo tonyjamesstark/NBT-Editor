@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
@@ -43,7 +42,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		
 		@Override
 		public String toString() {
-			return TextInst.translatable("book.generation." + ordinal()).getString();
+			return Component.translatableEscape("book.generation." + ordinal()).getString();
 		}
 	}
 	
@@ -55,7 +54,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	private FormattedTextFieldWidget contents;
 	
 	public BookScreen(ItemReference ref, int page) {
-		super(TextInst.of("Book"), ref);
+		super(Component.nullToEmpty("Book"), ref);
 		this.page = page;
 	}
 	public BookScreen(ItemReference ref) {
@@ -94,7 +93,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	}
 	private Component getPage() {
 		List<Component> pages = WrittenBookTagReferences.PAGES.get(localNBT.getEditableItem());
-		return page < pages.size() ? pages.get(page) : TextInst.of("");
+		return page < pages.size() ? pages.get(page) : Component.nullToEmpty("");
 	}
 	private void setPage(Component contents) {
 		List<Component> pages = WrittenBookTagReferences.PAGES.get(localNBT.getEditableItem());
@@ -102,7 +101,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 			pages.set(page, contents);
 		else {
 			while (page > pages.size())
-				pages.add(TextInst.of(""));
+				pages.add(Component.nullToEmpty(""));
 			pages.add(contents);
 		}
 		WrittenBookTagReferences.PAGES.set(localNBT.getEditableItem(), pages);
@@ -113,7 +112,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	private void addPage() {
 		List<Component> pages = WrittenBookTagReferences.PAGES.get(localNBT.getEditableItem());
 		if (page < pages.size()) {
-			pages.add(page, TextInst.of(""));
+			pages.add(page, Component.nullToEmpty(""));
 			WrittenBookTagReferences.PAGES.set(localNBT.getEditableItem(), pages);
 			checkSave();
 			refresh();
@@ -165,11 +164,11 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 			net.minecraft.client.gui.screens.inventory.BookViewScreen preview = getOverlay();
 			setOverlay(new AlertWidget(
 					() -> setOverlayScreen(preview, 500),
-					TextInst.translatable("nbteditor.book.preview.click.title"),
-					TextInst.of(""),
-					TextInst.translatable("nbteditor.book.preview.click.action", clickAction.getName()),
-					TextInst.of(""),
-					TextInst.translatable("nbteditor.book.preview.click.value", clickAction.getStringifiedValue(style.getClickEvent()))),
+					Component.translatableEscape("nbteditor.book.preview.click.title"),
+					Component.nullToEmpty(""),
+					Component.translatableEscape("nbteditor.book.preview.click.action", clickAction.getName()),
+					Component.nullToEmpty(""),
+					Component.translatableEscape("nbteditor.book.preview.click.value", clickAction.getStringifiedValue(style.getClickEvent()))),
 					500);
 		});
 	}
@@ -181,13 +180,13 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		addRenderableWidget(group);
 		
 		title = group.addWidget(new NamedTextFieldWidget(16, 64 + 2, 100, 16)
-				.name(TextInst.translatable("nbteditor.book.title")));
+				.name(Component.translatableEscape("nbteditor.book.title")));
 		title.setMaxLength(32);
 		title.setValue(getBookTitle());
 		title.setResponder(this::setBookTitle);
 		
 		author = group.addWidget(new NamedTextFieldWidget(16 + 108, 64 + 2, 100, 16)
-				.name(TextInst.translatable("nbteditor.book.author")));
+				.name(Component.translatableEscape("nbteditor.book.author")));
 		author.setMaxLength(Integer.MAX_VALUE);
 		author.setValue(getAuthor());
 		author.setResponder(this::setAuthor);
@@ -197,11 +196,11 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 						.addValueListener(value -> setGeneration(value.getValidValue())), 16 + 108 * 2, 64, 0));
 		
 		group.addWidget(Buttons.of(16 + 108 * 3 - 4, 64, 20, 20,
-				TextInst.translatable("nbteditor.book.add"), btn -> addPage()));
+				Component.translatableEscape("nbteditor.book.add"), btn -> addPage()));
 		group.addWidget(Buttons.of(16 + 108 * 3 + 20, 64, 20, 20,
-				TextInst.translatable("nbteditor.book.remove"), btn -> removePage()));
+				Component.translatableEscape("nbteditor.book.remove"), btn -> removePage()));
 		group.addWidget(Buttons.of(16 + 108 * 3 + 44, 64, 20, 20,
-				TextInst.translatable("nbteditor.book.preview.icon"),
+				Component.translatableEscape("nbteditor.book.preview.icon"),
 				btn -> {
 					net.minecraft.client.gui.screens.inventory.BookViewScreen preview =
 							new net.minecraft.client.gui.screens.inventory.BookViewScreen(getPreviewItem()) {
@@ -229,8 +228,8 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		
 		group.addDrawable(gen);
 		
-		MutableComponent prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
-		MutableComponent nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
+		MutableComponent prevKeybind = Component.translatableEscape("nbteditor.keybind.page.down");
+		MutableComponent nextKeybind = Component.translatableEscape("nbteditor.keybind.page.up");
 		if (ConfigScreen.isInvertedPageKeybinds()) {
 			MutableComponent temp = prevKeybind;
 			prevKeybind = nextKeybind;
@@ -238,19 +237,19 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		}
 		
 		group.addWidget(Buttons.of(16, 64 + 24, 20, height - 80 - 24,
-				TextInst.translatable("nbteditor.book.back"), btn -> back(),
-				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
-						.append(prevKeybind).append(TextInst.translatable("nbteditor.keybind.page.prev")))))
+				Component.translatableEscape("nbteditor.book.back"), btn -> back(),
+				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(Component.literal("")
+						.append(prevKeybind).append(Component.translatableEscape("nbteditor.keybind.page.prev")))))
 				.active = (page > 0);
 		group.addWidget(Buttons.of(width - 16 - 20, 64 + 24, 20, height - 80 - 24,
-				TextInst.translatable("nbteditor.book.forward"), btn -> forward(),
-				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
-						.append(nextKeybind).append(TextInst.translatable("nbteditor.keybind.page.next")))));
+				Component.translatableEscape("nbteditor.book.forward"), btn -> forward(),
+				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(Component.literal("")
+						.append(nextKeybind).append(Component.translatableEscape("nbteditor.keybind.page.next")))));
 	}
 	
 	@Override
 	protected void renderEditor(GuiGraphicsExtractor context, int fdf8eb, int mouseY, float delta) {
-		MVDrawableHelper.drawTextWithShadow(context, font, TextInst.translatable("nbteditor.book.page", page + 1, getPageCount()),
+		MVDrawableHelper.drawTextWithShadow(context, font, Component.translatableEscape("nbteditor.book.page", page + 1, getPageCount()),
 				16 + 108 * 3 - 4 + 24 * 3, 64 + 10 - font.lineHeight / 2, -1);
 	}
 	

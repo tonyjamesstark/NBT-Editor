@@ -3,11 +3,11 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 import org.lwjgl.glfw.GLFW;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueDropdown;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
@@ -106,7 +106,7 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 		clickActionDropdown.addValueListener(value -> updateOk());
 		clickActionField = addElement(TranslatedGroupWidget.forWidget(clickActionDropdown, 0, 0, 0));
 		clickValueField = addWidget(new NamedTextFieldWidget(0, 0, 150, 16))
-				.name(TextInst.translatable("nbteditor.formatted_text.click_event_value"));
+				.name(Component.translatableEscape("nbteditor.formatted_text.click_event_value"));
 		clickValueField.setMaxLength(Integer.MAX_VALUE);
 		clickValueField.setValue(clickValue);
 		clickValueField.setResponder(str -> updateOk());
@@ -116,12 +116,12 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 		hoverActionDropdown.addValueListener(value -> updateOk());
 		hoverActionField = addElement(TranslatedGroupWidget.forWidget(hoverActionDropdown, 0, 0, 0));
 		hoverValueField = addWidget(new NamedTextFieldWidget(0, 0, 150, 16))
-				.name(TextInst.translatable("nbteditor.formatted_text.hover_event_value"));
+				.name(Component.translatableEscape("nbteditor.formatted_text.hover_event_value"));
 		hoverValueField.setMaxLength(Integer.MAX_VALUE);
 		hoverValueField.setValue(hoverValue);
 		hoverValueField.setResponder(str -> updateOk());
 		
-		ok = addWidget(Buttons.of(0, 0, 150, 20, TextInst.translatable("nbteditor.ok"), btn -> {
+		ok = addWidget(Buttons.of(0, 0, 150, 20, Component.translatableEscape("nbteditor.ok"), btn -> {
 			onDone.onEventChange(
 					clickActionDropdown.getValidValue() == ClickAction.NONE ? null :
 						clickActionDropdown.getValidValue().value.newEventParse(clickValueField.getValue()).get(),
@@ -129,7 +129,7 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 						hoverActionDropdown.getValidValue().value.newEventParse(hoverValueField.getValue()).get());
 			OverlaySupportingScreen.setOverlayStatic(null);
 		}));
-		cancel = addWidget(Buttons.of(0, 0, 150, 20, TextInst.translatable("nbteditor.cancel"), btn -> {
+		cancel = addWidget(Buttons.of(0, 0, 150, 20, Component.translatableEscape("nbteditor.cancel"), btn -> {
 			OverlaySupportingScreen.setOverlayStatic(null);
 		}));
 		
@@ -170,7 +170,7 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font,
-				TextInst.translatable("nbteditor.formatted_text.events"),
+				Component.translatableEscape("nbteditor.formatted_text.events"),
 				x, y - 38 - MainUtil.client.font.lineHeight, -1);
 		super.extractRenderState(context, mouseX, mouseY, delta);
 	}

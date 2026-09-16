@@ -6,13 +6,13 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.MultiLineTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtFormatter;
 import com.mojang.brigadier.suggestion.Suggestions;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
@@ -30,7 +30,7 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	private BiFunction<String, Integer, CompletableFuture<Suggestions>> suggestions;
 	
 	public TextAreaScreen(Screen parent, String text, NbtFormatter.Impl formatter, boolean newLines, Consumer<String> onDone) {
-		super(TextInst.of("Text Area"));
+		super(Component.nullToEmpty("Text Area"));
 		this.parent = parent;
 		this.text = text;
 		this.formatter = formatter;

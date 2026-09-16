@@ -58,7 +58,7 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 		
 		Map.Entry<String, Boolean> output = FancyText.stringify(text, base);
 		if (output.getValue() && printErrors)
-			MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.fancy_text_arg_type.stringify_unsupported"));
+			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.fancy_text_arg_type.stringify_unsupported"));
 		return output.getKey();
 	}
 	
@@ -98,9 +98,9 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 			builder = builder.createOffset(builder.getStart() + lastIndex + 1);
 			for (ChatFormatting format : ChatFormatting.values())
 				builder.suggest(format.code + "", () -> StyleUtil.getName(format));
-			builder.suggest("#", TextInst.translatable("nbteditor.fancy_text_arg_type.custom_color"));
+			builder.suggest("#", Component.translatableEscape("nbteditor.fancy_text_arg_type.custom_color"));
 			if (StyleUtil.SHADOW_COLOR_EXISTS && lastColor == lastIndex)
-				builder.suggest("_", TextInst.translatable("nbteditor.fancy_text_arg_type.shadow_color"));
+				builder.suggest("_", Component.translatableEscape("nbteditor.fancy_text_arg_type.shadow_color"));
 		} else if (lastCloseValue == lastIndex) {
 			if (lastValue != -1) {
 				builder = builder.createOffset(builder.getStart() + lastCloseValue + 1);

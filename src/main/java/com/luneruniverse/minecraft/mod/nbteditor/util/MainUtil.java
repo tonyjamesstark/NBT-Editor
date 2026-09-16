@@ -126,7 +126,7 @@ public class MainUtil {
 	}
 	public static void getWithMessage(ItemStack item) {
 		get(item, true);
-		client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.item").append(item.getDisplayName()));
+		client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.item").append(item.getDisplayName()));
 	}
 	
 	
@@ -213,9 +213,9 @@ public class MainUtil {
 			line = lines.get(i);
 			int offsetY = i * renderer.lineHeight + (centerVertical ? -renderer.lineHeight * lines.size() / 2 : 0);
 			if (centerHorizontal)
-				MVDrawableHelper.drawCenteredTextWithShadow(context, renderer, TextInst.of(line), x, y + offsetY, color);
+				MVDrawableHelper.drawCenteredTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
 			else
-				MVDrawableHelper.drawTextWithShadow(context, renderer, TextInst.of(line), x, y + offsetY, color);
+				MVDrawableHelper.drawTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
 		}
 	}
 	

@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -31,7 +30,7 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	private boolean itemNameType;
 	
 	public DisplayScreen(NBTReference<L> ref) {
-		super(TextInst.of("Display"), ref);
+		super(Component.nullToEmpty("Display"), ref);
 	}
 	
 	@Override
@@ -61,12 +60,12 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			});
 			addWidget(nameFormatted);
 			addWidget(lore);
-			addRenderableWidget(Buttons.of(16, height - 16 - 20, 100, 20, TextInst.translatable("nbteditor.hide_flags"),
+			addRenderableWidget(Buttons.of(16, height - 16 - 20, 100, 20, Component.translatableEscape("nbteditor.hide_flags"),
 					btn -> closeSafely(() -> minecraft.setScreenAndShow(new HideFlagsScreen((ItemReference) ref)))));
 			addRenderableWidget(Buttons.of(124, height - 16 - 20, 150, 20,
-					TextInst.translatable("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")), btn -> {
+					Component.translatableEscape("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")), btn -> {
 						itemNameType = !itemNameType;
-						btn.setMessage(TextInst.translatable("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")));
+						btn.setMessage(Component.translatableEscape("nbteditor.display.name_type." + (itemNameType ? "item" : "custom")));
 						nameFormatted = null;
 						clearWidgets();
 						init();
@@ -77,11 +76,11 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		
 		if (localNBT instanceof LocalEntity entity) {
 			addRenderableWidget(Buttons.of(16, nextY, 150, 20,
-					TextInst.translatable("nbteditor.display.custom_name_visible." +
+					Component.translatableEscape("nbteditor.display.custom_name_visible." +
 							(EntityTagReferences.CUSTOM_NAME_VISIBLE.get(entity) ? "enabled" : "disabled")), btn -> {
 				boolean customNameVisible = !EntityTagReferences.CUSTOM_NAME_VISIBLE.get(entity);
 				EntityTagReferences.CUSTOM_NAME_VISIBLE.set(entity, customNameVisible);
-				btn.setMessage(TextInst.translatable("nbteditor.display.custom_name_visible." + (customNameVisible ? "enabled" : "disabled")));
+				btn.setMessage(Component.translatableEscape("nbteditor.display.custom_name_visible." + (customNameVisible ? "enabled" : "disabled")));
 				checkSave();
 			}));
 		}

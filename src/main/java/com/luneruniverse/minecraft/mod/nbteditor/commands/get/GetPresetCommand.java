@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -17,6 +16,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.ModResources;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.ItemStack;
@@ -30,7 +30,7 @@ public class GetPresetCommand extends ClientCommand {
 	}
 	public static Supplier<ItemStack> registerPresetItem(String name) {
 		Supplier<ItemStack> output = () -> Optional.ofNullable(getItem(name)).orElseGet(() -> new ItemStack(Items.BARRIER)
-				.nbte$setCustomName(TextInst.translatable("nbteditor.get.preset_item.missing")));
+				.nbte$setCustomName(Component.translatableEscape("nbteditor.get.preset_item.missing")));
 		presetItems.put(name, output);
 		return output;
 	}

@@ -15,7 +15,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
@@ -29,6 +28,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -42,15 +42,15 @@ public class NBTExportCommand extends ClientCommand {
 			ref -> true,
 			ref -> true,
 			ref -> true,
-			TextInst.translatable("nbteditor.no_ref.to_export"),
-			TextInst.translatable("nbteditor.no_hand.no_item.to_export"));
+			Component.translatableEscape("nbteditor.no_ref.to_export"),
+			Component.translatableEscape("nbteditor.no_hand.no_item.to_export"));
 	
 	public static final NBTReferenceFilter EXPORT_ITEM_FILTER = NBTReferenceFilter.create(
 			null,
 			ref -> true,
 			ref -> true,
-			TextInst.translatable("nbteditor.no_ref.to_export_item"),
-			TextInst.translatable("nbteditor.requires_server"));
+			Component.translatableEscape("nbteditor.no_ref.to_export_item"),
+			Component.translatableEscape("nbteditor.requires_server"));
 	
 	private static final File exportDir = new File(NBTEditorClient.SETTINGS_FOLDER, "exported");
 	
@@ -95,7 +95,7 @@ public class NBTExportCommand extends ClientCommand {
 	
 	private static void exportToClipboard(String str) {
 		MainUtil.client.keyboardHandler.setClipboard(str);
-		MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.copied"));
+		MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.copied"));
 	}
 	
 	private static void exportToFile(CompoundTag nbt, String name) {
@@ -105,12 +105,12 @@ public class NBTExportCommand extends ClientCommand {
 			File output = new File(exportDir, FileUtil.findAvailableName(exportDir.toPath(), name, ".nbt"));
 			nbt.putInt("DataVersion", Version.getDataVersion());
 			NbtIO.writeCompressed(nbt, output);
-			MainUtil.client.player.sendSystemMessage(TextUtil.attachFileTextOptions(TextInst.translatable("nbteditor.nbt.export.file.success",
-					TextInst.literal(output.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(style ->
+			MainUtil.client.player.sendSystemMessage(TextUtil.attachFileTextOptions(Component.translatableEscape("nbteditor.nbt.export.file.success",
+					Component.literal(output.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(style ->
 					style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output));
 		} catch (Exception e) {
 			NBTEditor.LOGGER.error("Error while exporting item", e);
-			MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.file.error", e.getMessage()));
+			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.file.error", e.getMessage()));
 		}
 	}
 	
@@ -146,7 +146,7 @@ public class NBTExportCommand extends ClientCommand {
 			})).then(literal("item").executes(context -> {
 				NBTReference.getReference(EXPORT_ITEM_FILTER, false, ref -> {
 					ref.getLocalNBT().toItem(true).ifPresentOrElse(MainUtil::getWithMessage,
-							() -> MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.item.error")));
+							() -> MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
 				});
 				return Command.SINGLE_SUCCESS;
 			})).then(literal("file").then(argument("name", StringArgumentType.greedyString()).executes(context -> {

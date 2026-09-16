@@ -70,10 +70,10 @@ public class NBTTagReference<T> implements TagReference<T, CompoundTag> {
 			try {
 				Component output = TextInst.fromMinecraft(element);
 				if (output == null)
-					return TextInst.of("");
+					return Component.nullToEmpty("");
 				return output;
 			} catch (IllegalArgumentException e) {
-				return TextInst.of("");
+				return Component.nullToEmpty("");
 			}
 		}
 		

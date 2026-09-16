@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.mixin.HelpCommandAccessor;
 import com.mojang.brigadier.AmbiguityConsumer;
@@ -109,7 +108,7 @@ public final class ClientCommandInternals {
 			return true;
 		} catch (RuntimeException e) {
 			LOGGER.warn("Error while executing client-sided command '{}'", command, e);
-			commandSource.sendError(TextInst.of(e.getMessage()));
+			commandSource.sendError(Component.nullToEmpty(e.getMessage()));
 			return true;
 		} finally {
 			Profiler.get().pop();
@@ -138,7 +137,7 @@ public final class ClientCommandInternals {
 		String context = e.getContext();
 		if (context == null)
 			return msg;
-		return TextInst.translatable("command.context.parse_error", msg, e.getCursor(), context);
+		return Component.translatableEscape("command.context.parse_error", msg, e.getCursor(), context);
 	}
 
 	/**
@@ -182,7 +181,7 @@ public final class ClientCommandInternals {
 		Map<CommandNode<FabricClientCommandSource>, String> commands = activeDispatcher.getSmartUsage(startNode, context.getSource());
 
 		for (String command : commands.values()) {
-			context.getSource().sendFeedback(TextInst.literal("/" + command));
+			context.getSource().sendFeedback(Component.literal("/" + command));
 		}
 
 		return commands.size();

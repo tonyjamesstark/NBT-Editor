@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigCategory;
@@ -20,6 +19,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValu
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.BlockItem;
 
@@ -30,7 +30,7 @@ public class BlockStatesScreen<L extends LocalNBT> extends LocalEditorScreen<L> 
 	private ConfigPanel panel;
 	
 	public BlockStatesScreen(NBTReference<L> ref) {
-		super(TextInst.of("Block States"), ref);
+		super(Component.nullToEmpty("Block States"), ref);
 		
 		BlockStateProperties defaultState;
 		BlockStateProperties state;
@@ -46,7 +46,7 @@ public class BlockStatesScreen<L extends LocalNBT> extends LocalEditorScreen<L> 
 		} else
 			throw new IllegalStateException("BlockStatesScreen doesn't support " + localNBT.getClass().getName());
 		this.hasBlockStates = !defaultState.getProperties().isEmpty();
-		this.blockStates = new ConfigCategory(this.hasBlockStates ? TextInst.translatable("nbteditor.block_states") : null);
+		this.blockStates = new ConfigCategory(this.hasBlockStates ? Component.translatableEscape("nbteditor.block_states") : null);
 		
 		for (String property : defaultState.getProperties()) {
 			String value = (unset.contains(property) ? "unset" : state.getValue(property));
@@ -55,7 +55,7 @@ public class BlockStatesScreen<L extends LocalNBT> extends LocalEditorScreen<L> 
 			if (localNBT instanceof LocalItem)
 				options.add(0, "unset");
 			
-			blockStates.setConfigurable(property, new ConfigItem<>(TextInst.literal(property),
+			blockStates.setConfigurable(property, new ConfigItem<>(Component.literal(property),
 				ConfigValueDropdown.forList(value, defaultState.getValue(property), options)
 				.addValueListener(dropdown -> {
 					String newValue = dropdown.getValidValue();
@@ -89,7 +89,7 @@ public class BlockStatesScreen<L extends LocalNBT> extends LocalEditorScreen<L> 
 	@Override
 	public void renderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (!hasBlockStates)
-			MVDrawableHelper.drawTextWithShadow(context, font, TextInst.translatable("nbteditor.block_states.none"), 16, 64, -1);
+			MVDrawableHelper.drawTextWithShadow(context, font, Component.translatableEscape("nbteditor.block_states.none"), 16, 64, -1);
 	}
 	
 }

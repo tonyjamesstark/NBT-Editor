@@ -18,7 +18,6 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -37,10 +36,10 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		img = MainUtil.scaleImage(img, width, height);
 		List<Component> output = new ArrayList<>();
 		for (int line = 0; line < height; line++) {
-			MutableComponent lineText = TextInst.literal("").withStyle(style -> style.withItalic(false));
+			MutableComponent lineText = Component.literal("").withStyle(style -> style.withItalic(false));
 			for (int i = 0; i < width; i++) {
 				final int color = img.getRGB(i, line) & 0xFFFFFF;
-				lineText.append(TextInst.literal("█").withStyle(style -> style.withColor(color)));
+				lineText.append(Component.literal("█").withStyle(style -> style.withColor(color)));
 			}
 			output.add(lineText);
 		}
@@ -115,9 +114,9 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		String prevImgHeight = (imgHeight == null ? null : imgHeight.getValue());
 		
 		imgWidth = addWidget(new NamedTextFieldWidget(width / 2 - 102, height / 2 - 18, 100, 16)
-				.name(TextInst.translatable("nbteditor.img_to_lore.width")));
+				.name(Component.translatableEscape("nbteditor.img_to_lore.width")));
 		imgHeight = addWidget(new NamedTextFieldWidget(width / 2 + 2, height / 2 - 18, 100, 16)
-				.name(TextInst.translatable("nbteditor.img_to_lore.height")));
+				.name(Component.translatableEscape("nbteditor.img_to_lore.height")));
 		
 		imgWidth.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
 		imgHeight.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
@@ -140,7 +139,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.img_to_lore"),
+		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
 		MainUtil.renderLogo(context);
 	}

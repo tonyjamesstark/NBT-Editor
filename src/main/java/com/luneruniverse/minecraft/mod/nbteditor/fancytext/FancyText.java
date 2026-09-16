@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.StringReader;
 
@@ -35,13 +34,13 @@ public class FancyText {
 	private static MutableComponent gen(List<FancyTextNode> nodes, Style base) {
 		int numberOfTextNodes = nodes.stream().mapToInt(FancyTextNode::getNumberOfTextNodes).sum();
 		if (numberOfTextNodes == 0)
-			return TextInst.literal("");
+			return Component.literal("");
 		
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		Style style = base;
 		for (FancyTextNode node : nodes) {
 			if (node instanceof FancyTextTextNode text)
-				output.append(TextInst.literal(text.text()).setStyle(StyleUtil.minus(style, base)));
+				output.append(Component.literal(text.text()).setStyle(StyleUtil.minus(style, base)));
 			else if (node instanceof FancyTextStyleOptionNode event) {
 				if (numberOfTextNodes != 1 || event.getNumberOfTextNodes() == 1) {
 					Style eventStyle = event.modifyStyle(style);

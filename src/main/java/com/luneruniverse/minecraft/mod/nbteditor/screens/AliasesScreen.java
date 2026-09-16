@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommandGroup;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandHandler;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandManager;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen.Alias;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigBar;
@@ -22,6 +21,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPath
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueText;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -30,8 +30,8 @@ public class AliasesScreen extends TickableSupportingScreen {
 	private static final ConfigBar ALIAS_ENTRY;
 	static {
 		ALIAS_ENTRY = new ConfigBar();
-		ALIAS_ENTRY.setConfigurable("original", new ConfigItem<>(TextInst.of(""), new ConfigValueText(200, "", "")));
-		ALIAS_ENTRY.setConfigurable("alias", new ConfigItem<>(TextInst.of(""), new ConfigValueText(100, "", "")));
+		ALIAS_ENTRY.setConfigurable("original", new ConfigItem<>(Component.nullToEmpty(""), new ConfigValueText(200, "", "")));
+		ALIAS_ENTRY.setConfigurable("alias", new ConfigItem<>(Component.nullToEmpty(""), new ConfigValueText(100, "", "")));
 	}
 	@SuppressWarnings("unchecked")
 	private static ConfigValueText getConfigOriginal(ConfigBar enchant) {
@@ -48,10 +48,10 @@ public class AliasesScreen extends TickableSupportingScreen {
 	private boolean cancel;
 	
 	public AliasesScreen(Screen parent) {
-		super(TextInst.translatable("nbteditor.config.aliases"));
+		super(Component.translatableEscape("nbteditor.config.aliases"));
 		this.parent = parent;
-		this.config = new ConfigList(TextInst.translatable("nbteditor.config.aliases").append(" - ")
-				.append(TextInst.translatable("nbteditor.config.aliases.example")), false, ALIAS_ENTRY);
+		this.config = new ConfigList(Component.translatableEscape("nbteditor.config.aliases").append(" - ")
+				.append(Component.translatableEscape("nbteditor.config.aliases.example")), false, ALIAS_ENTRY);
 		for (ConfigScreen.Alias alias : ConfigScreen.getAliases()) {
 			ConfigBar entry = ALIAS_ENTRY.clone(true);
 			getConfigOriginal(entry).setValue(alias.original());
@@ -87,7 +87,7 @@ public class AliasesScreen extends TickableSupportingScreen {
 			close();
 		}));
 		this.addRenderableWidget(Buttons.of(this.width - 134, this.height - 36 - 24 * 2, 100, 20,
-				TextInst.translatable("nbteditor.config.aliases.extreme"), btn -> addExtremeAliases(CommandHandler.COMMANDS.values(), ""),
+				Component.translatableEscape("nbteditor.config.aliases.extreme"), btn -> addExtremeAliases(CommandHandler.COMMANDS.values(), ""),
 				new MVTooltip("nbteditor.config.aliases.extreme.desc")));
 	}
 	

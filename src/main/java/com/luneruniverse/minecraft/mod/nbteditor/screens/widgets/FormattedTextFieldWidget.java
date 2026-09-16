@@ -235,12 +235,12 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				int initialShadow = (initialStyle.getShadowColor() == null ?
 						(base.getShadowColor() == null ? StyleUtil.scaleRgb(initialColor, 0.25) : base.getShadowColor()) : initialStyle.getShadowColor());
 				InputOverlay.show(
-						TextInst.translatable("nbteditor.formatted_text.custom_color.shadow"),
+						Component.translatableEscape("nbteditor.formatted_text.custom_color.shadow"),
 						new ColorSelectorWidget.ColorSelectorInput(initialShadow),
 						rgb -> applyStyleChange(style -> style.withShadowColor(rgb | 0xFF000000), true));
 			} else {
 				InputOverlay.show(
-						TextInst.translatable("nbteditor.formatted_text.custom_color"),
+						Component.translatableEscape("nbteditor.formatted_text.custom_color"),
 						new ColorSelectorWidget.ColorSelectorInput(initialColor),
 						rgb -> applyStyleChange(style -> style.withColor(rgb), true));
 			}
@@ -256,7 +256,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		private void showInsertion() {
 			Style initialStyle = getInitialCustomStyle();
 			InputOverlay.show(
-					TextInst.translatable("nbteditor.formatted_text.insertion"),
+					Component.translatableEscape("nbteditor.formatted_text.insertion"),
 					StringInput.builder()
 							.withDefault(initialStyle.getInsertion() == null ? "" : initialStyle.getInsertion())
 							.build(),
@@ -265,7 +265,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		private void showFont() {
 			Style initialStyle = getInitialCustomStyle();
 			InputOverlay.show(
-					TextInst.translatable("nbteditor.formatted_text.font"),
+					Component.translatableEscape("nbteditor.formatted_text.font"),
 					StringInput.builder()
 							.withDefault(initialStyle.getFont() instanceof FontDescription.Resource f ? f.id().toString() : "")
 							.withValidator(font -> font.isEmpty() || Identifier.tryParse(font) != null)
@@ -380,7 +380,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			
 			String afterEdit = new StringBuilder(getText()).replace(pos, pos + overwrittenLen, insertedText).toString();
-			MutableComponent text = TextInst.literal("");
+			MutableComponent text = Component.literal("");
 			String part = "";
 			Style style = !styles.isEmpty() && styles.get(0) != null ? styles.get(0) : base;
 			for (int i = 0; i < afterEdit.length(); i++) {
@@ -389,7 +389,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 					if (newStyle.equals(style))
 						styles.set(i, null);
 					else {
-						text.append(TextInst.literal(part).setStyle(style));
+						text.append(Component.literal(part).setStyle(style));
 						part = "";
 						style = newStyle;
 					}
@@ -397,7 +397,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				part += afterEdit.charAt(i);
 			}
 			if (!part.isEmpty())
-				text.append(TextInst.literal(part).setStyle(style));
+				text.append(Component.literal(part).setStyle(style));
 			undo.add(0, text);
 			this.text = text;
 			
@@ -540,11 +540,11 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	private void init() {
 		if (width < 16 * 20 + (ConfigScreen.isHideFormatButtons() ? 0 : 20 + 4 + 5 * 20 + (4 + 20) * 2)) {
-			colors = addElement(new ButtonDropdownWidget(x, y, 20, 20, TextInst.literal("⬛").withStyle(ChatFormatting.AQUA), 20, 20));
+			colors = addElement(new ButtonDropdownWidget(x, y, 20, 20, Component.literal("⬛").withStyle(ChatFormatting.AQUA), 20, 20));
 			for (ChatFormatting formatting : ChatFormatting.values()) {
 				if (!StyleUtil.isColor(formatting))
 					break;
-				colors.addButton(TextInst.literal("⬛").withStyle(formatting), btn -> {
+				colors.addButton(Component.literal("⬛").withStyle(formatting), btn -> {
 					field.applyColor(formatting, hasShadowKeyDown());
 					colors.setOpen(false);
 				}, createColorButtonTooltip(formatting));
@@ -556,7 +556,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			for (ChatFormatting formatting : ChatFormatting.values()) {
 				if (!StyleUtil.isColor(formatting))
 					break;
-				addWidget(Buttons.of(x + i * 20, y, 20, 20, TextInst.literal("⬛").withStyle(formatting),
+				addWidget(Buttons.of(x + i * 20, y, 20, 20, Component.literal("⬛").withStyle(formatting),
 						btn -> field.applyColor(formatting, hasShadowKeyDown()), createColorButtonTooltip(formatting)));
 				i++;
 			}
@@ -571,17 +571,17 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				Component btnText;
 				MVTooltip btnTooltip;
 				if (formatting == ChatFormatting.RESET) {
-					btnText = TextInst.of("");
+					btnText = Component.nullToEmpty("");
 					if (ConfigScreen.isKeybindsHidden())
-						btnTooltip = new MVTooltip(TextInst.of(StyleUtil.getName(formatting)));
+						btnTooltip = new MVTooltip(Component.nullToEmpty(StyleUtil.getName(formatting)));
 					else {
 						btnTooltip = new MVTooltip(
-								TextInst.of(StyleUtil.getName(formatting)),
-								TextInst.translatable("nbteditor.keybind.formatted_text.reset"));
+								Component.nullToEmpty(StyleUtil.getName(formatting)),
+								Component.translatableEscape("nbteditor.keybind.formatted_text.reset"));
 					}
 				} else {
-					btnText = TextInst.literal(formatting.name().substring(0, 1)).withStyle(formatting);
-					btnTooltip = new MVTooltip(TextInst.of(StyleUtil.getName(formatting)));
+					btnText = Component.literal(formatting.name().substring(0, 1)).withStyle(formatting);
+					btnTooltip = new MVTooltip(Component.nullToEmpty(StyleUtil.getName(formatting)));
 				}
 				addWidget(Buttons.of(
 						afterColorsX + 24 + i * 20 + (formatting == ChatFormatting.RESET ? 4 + 20 * 3 + 4 : 0), y, 20, 20,
@@ -590,29 +590,29 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			
 			addWidget(Buttons.of(afterColorsX, y, 20, 20,
-					TextInst.literal("⬛").setStyle(Style.EMPTY.withColor(0x9999C0).applyFormat(ChatFormatting.ITALIC)),
+					Component.literal("⬛").setStyle(Style.EMPTY.withColor(0x9999C0).applyFormat(ChatFormatting.ITALIC)),
 					btn -> field.showCustomColor(hasShadowKeyDown()),
 					createFormatButtonTooltip("custom_color", true)));
 			
 			addWidget(Buttons.of(afterColorsX + 24 + 5 * 20 + 4, y, 20, 20,
-					TextInst.literal("E"),
+					Component.literal("E"),
 					btn -> field.showEvents(),
 					createFormatButtonTooltip("events", false)));
 			addWidget(Buttons.of(afterColorsX + 24 + 5 * 20 + 4 + 20, y, 20, 20,
-					TextInst.literal("I"),
+					Component.literal("I"),
 					btn -> field.showInsertion(),
 					createFormatButtonTooltip("insertion", false)));
 			font = addWidget(Buttons.of(afterColorsX + 24 + 5 * 20 + 4 + 20 * 2, y, 20, 20,
-					TextInst.literal("F"), // Gets replaced before rendering
+					Component.literal("F"), // Gets replaced before rendering
 					btn -> field.showFont(),
 					createFormatButtonTooltip("font", false)));
 		}
 	}
 	private MVTooltip createColorButtonTooltip(ChatFormatting color) {
-		Component name = TextInst.of(StyleUtil.getName(color));
+		Component name = Component.nullToEmpty(StyleUtil.getName(color));
 		if (ConfigScreen.isKeybindsHidden() || !StyleUtil.SHADOW_COLOR_EXISTS)
 			return new MVTooltip(name);
-		return new MVTooltip(name, TextInst.translatable("nbteditor.keybind.formatted_text.shadow"));
+		return new MVTooltip(name, Component.translatableEscape("nbteditor.keybind.formatted_text.shadow"));
 	}
 	private MVTooltip createFormatButtonTooltip(String name, boolean color) {
 		String nameKey = "nbteditor.formatted_text." + name;
@@ -702,7 +702,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			if (lastFontChange < time - 200) {
 				lastFontChange = time;
 				lastFont += Math.floor(Math.random() * 2) + 1;
-				font.setMessage(TextInst.literal(lastFont % 3 + "")
+				font.setMessage(Component.literal(lastFont % 3 + "")
 						.withStyle(style -> style.withFont(new FontDescription.Resource(Identifier.fromNamespaceAndPath("nbteditor", "fancy_f")))));
 			}
 		}

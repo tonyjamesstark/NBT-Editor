@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
@@ -46,8 +45,8 @@ public class BookCommand extends ClientCommand {
 				return contents.length == 1 && contents[0].getItem() == Items.WRITTEN_BOOK;
 			},
 			null,
-			TextInst.translatable("nbteditor.no_ref.book"),
-			TextInst.translatable("nbteditor.no_hand.no_item.book"));
+			Component.translatableEscape("nbteditor.no_ref.book"),
+			Component.translatableEscape("nbteditor.no_hand.no_item.book"));
 	
 	public static boolean convertBookToWritable(ItemReference ref) {
 		ItemStack item = MainUtil.setType(Items.WRITABLE_BOOK, ref.getItem(), 1);
@@ -62,10 +61,10 @@ public class BookCommand extends ClientCommand {
 		ItemTagReferences.WRITABLE_BOOK_PAGES.set(item, convertedPages);
 		item.remove(MVComponentType.WRITTEN_BOOK_CONTENT);
 		if (formatted) {
-			MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.book.convert.formatting_saved"));
+			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.book.convert.formatting_saved"));
 			MainUtil.get(item, true);
 		} else
-			ref.saveItem(item, TextInst.translatable("nbteditor.book.convert.success"));
+			ref.saveItem(item, Component.translatableEscape("nbteditor.book.convert.success"));
 		return !formatted;
 	}
 	

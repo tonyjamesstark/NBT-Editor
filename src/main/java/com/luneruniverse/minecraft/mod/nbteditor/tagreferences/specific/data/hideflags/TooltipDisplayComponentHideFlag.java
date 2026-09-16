@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
@@ -18,7 +17,7 @@ public class TooltipDisplayComponentHideFlag extends HideFlag {
 				.sorted((a, b) -> a.getKey().compareToIgnoreCase(b.getKey()))
 				.forEachOrdered(component -> {
 					FLAGS.put(component.getValue(), new TooltipDisplayComponentHideFlag(
-							TextInst.of(component.getKey()), component.getValue()));
+							Component.nullToEmpty(component.getKey()), component.getValue()));
 				});
 	}
 	

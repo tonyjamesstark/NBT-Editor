@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.MouseButtonEvent;
 
 public class ConfigValueNumber<T extends Number> extends NamedTextFieldWidget implements ConfigValue<T, ConfigValueNumber<T>> {
@@ -32,7 +32,7 @@ public class ConfigValueNumber<T extends Number> extends NamedTextFieldWidget im
 	private ConfigValueNumber(T value, T defaultValue, T min, T max, Parser<T> parser, List<ConfigValueListener<ConfigValueNumber<T>>> onChanged) {
 		super(0, 0, 200, 20);
 		setMaxLength(Integer.MAX_VALUE);
-		name(TextInst.of(defaultValue + ""));
+		name(Component.nullToEmpty(defaultValue + ""));
 		super.setValue(value + "");
 		nbte$setFilter(str -> {
 			if (str.isEmpty() || str.equals("-") || str.equals("+"))

@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
@@ -77,14 +76,14 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 				else
 					return false;
 			}
-		}.name(TextInst.translatable("nbteditor.editor.name"));
+		}.name(Component.translatableEscape("nbteditor.editor.name"));
 		name.setMaxLength(Integer.MAX_VALUE);
 		name.setValue(localNBT.getName().getString());
 		name.setEditable(isNameEditable());
 		addRenderableWidget(name);
 		
 		if (isSaveRequried()) {
-			saveBtn = addRenderableWidget(Buttons.of(16 + (32 + 8) * 2 + 100 + 8, 16 + 6, 100, 20, TextInst.translatable("nbteditor.editor.save"), btn -> {
+			saveBtn = addRenderableWidget(Buttons.of(16 + (32 + 8) * 2 + 100 + 8, 16 + 6, 100, 20, Component.translatableEscape("nbteditor.editor.save"), btn -> {
 				save();
 			}));
 			saveBtn.active = !saved;
@@ -128,7 +127,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 	protected void renderTip(GuiGraphicsExtractor context, String langHint) {
 		if (!ConfigScreen.isKeybindsHidden()) {
 			int x = 16 + (32 + 8) * 2 + (100 + 8) * 2;
-			MainUtil.drawWrappingString(context, font, TextInst.translatable(langHint).getString(),
+			MainUtil.drawWrappingString(context, font, Component.translatableEscape(langHint).getString(),
 					16 + (32 + 8) * 2 + (100 + 8) * 2, 16 + 6 + 10, width - x - 8 - 20 - 8, -1, false, true);
 		}
 	}
@@ -160,18 +159,18 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 	protected boolean save() {
 		if (ref.exists()) {
 			savedLocalNBT = LocalNBT.copy(localNBT);
-			saveBtn.setMessage(TextInst.translatable("nbteditor.editor.saving"));
+			saveBtn.setMessage(Component.translatableEscape("nbteditor.editor.saving"));
 			setSaved(true);
 			ref.saveLocalNBT(savedLocalNBT, () -> {
-				saveBtn.setMessage(TextInst.translatable("nbteditor.editor.save"));
+				saveBtn.setMessage(Component.translatableEscape("nbteditor.editor.save"));
 			});
 		} else {
 			localNBT.toItem(false).ifPresentOrElse(item -> {
 				savedLocalNBT = LocalNBT.copy(localNBT);
 				GetLostItemCommand.loseItem(item);
 				setSaved(true);
-				saveBtn.setMessage(TextInst.translatable("nbteditor.editor.save"));
-			}, () -> setOverlay(new AlertWidget(() -> setOverlay(null), TextInst.translatable("nbteditor.editor.ref_broken")), 500));
+				saveBtn.setMessage(Component.translatableEscape("nbteditor.editor.save"));
+			}, () -> setOverlay(new AlertWidget(() -> setOverlay(null), Component.translatableEscape("nbteditor.editor.ref_broken")), 500));
 		}
 		return true;
 	}
@@ -193,8 +192,8 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (!value || save())
 					onClose.run();
-			}, TextInst.translatable("nbteditor.editor.unsaved.title"), TextInst.translatable("nbteditor.editor.unsaved.desc"),
-					TextInst.translatable("nbteditor.editor.unsaved.yes"), TextInst.translatable("nbteditor.editor.unsaved.no")));
+			}, Component.translatableEscape("nbteditor.editor.unsaved.title"), Component.translatableEscape("nbteditor.editor.unsaved.desc"),
+					Component.translatableEscape("nbteditor.editor.unsaved.yes"), Component.translatableEscape("nbteditor.editor.unsaved.no")));
 		}
 	}
 	

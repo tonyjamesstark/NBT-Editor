@@ -59,7 +59,7 @@ public class TextUtil {
 	public static List<Component> getLongTranslatableTextLines(String key) {
 		List<Component> lines = new ArrayList<>();
 		for (int i = 1; i <= 50; i++) {
-			Component line = TextInst.translatable(key + "_" + i);
+			Component line = Component.translatableEscape(key + "_" + i);
 			String str = line.getString();
 			if (str.equals(key + "_" + i))
 				break;
@@ -72,7 +72,7 @@ public class TextUtil {
 				} catch (URISyntaxException e) {
 					throw new IllegalArgumentException("Invalid link: " + url, e);
 				}
-				line = TextInst.literal(url)
+				line = Component.literal(url)
 						.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.OPEN_URL.newEvent(uri))
 						.withUnderlined(true).withItalic(true).withColor(ChatFormatting.GOLD));
 			}
@@ -87,7 +87,7 @@ public class TextUtil {
 	public static Component getLongTranslatableText(String key) {
 		List<Component> lines = getLongTranslatableTextLines(key);
 		if (lines.isEmpty())
-			return TextInst.of(key);
+			return Component.nullToEmpty(key);
 		MutableComponent output = lines.get(0).copy();
 		for (int i = 1; i < lines.size(); i++)
 			output.append("\n").append(lines.get(i));
@@ -95,11 +95,11 @@ public class TextUtil {
 	}
 	
 	public static Component parseTranslatableFormatted(String key, Object... args) {
-		return FancyText.parse(TextInst.translatable(key, args).getString());
+		return FancyText.parse(Component.translatableEscape(key, args).getString());
 	}
 	
 	public static Component substring(Component text, int start, int end) {
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		text.visit(new StyledContentConsumer<Boolean>() {
 			private int i;
 			@Override
@@ -111,7 +111,7 @@ public class TextUtil {
 				if (i >= start) {
 					if (end >= 0 && i + str.length() > end)
 						return accept(style, str.substring(0, end - i));
-					output.append(TextInst.literal(str).withStyle(style));
+					output.append(Component.literal(str).withStyle(style));
 					i += str.length();
 					if (end >= 0 && i == end)
 						return Optional.of(true);
@@ -131,14 +131,14 @@ public class TextUtil {
 	}
 	
 	public static Component deleteCharAt(Component text, int index) {
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		AtomicInteger pos = new AtomicInteger(0);
 		text.visit((style, str) -> {
 			int strLen = str.length();
 			if (pos.getPlain() <= index && index < pos.getPlain() + strLen)
 				str = new StringBuilder(str).deleteCharAt(index - pos.getPlain()).toString();
 			if (!str.isEmpty())
-				output.append(TextInst.literal(str).setStyle(style));
+				output.append(Component.literal(str).setStyle(style));
 			pos.setPlain(pos.getPlain() + strLen);
 			return Optional.empty();
 		}, Style.EMPTY);
@@ -146,7 +146,7 @@ public class TextUtil {
 	}
 	
 	public static Component joinLines(List<Component> lines) {
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		for (int i = 0; i < lines.size(); i++) {
 			if (i > 0)
 				output.append("\n");
@@ -166,36 +166,36 @@ public class TextUtil {
 	}
 	
 	public static Component stripInvalidChars(Component text, boolean allowLineBreaks) {
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		text.visit((style, str) -> {
-			output.append(TextInst.literal(stripInvalidChars(str, allowLineBreaks)).setStyle(style));
+			output.append(Component.literal(stripInvalidChars(str, allowLineBreaks)).setStyle(style));
 			return Optional.empty();
 		}, Style.EMPTY);
 		return output;
 	}
 	
 	public static Component attachFileTextOptions(MutableComponent link, File file) {
-		return link.append(" ").append(TextInst.translatable("nbteditor.file_options.show").withStyle(style ->
+		return link.append(" ").append(Component.translatableEscape("nbteditor.file_options.show").withStyle(style ->
 				style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(
 						file.getAbsoluteFile().getParentFile().getAbsolutePath()))))
-				.append(" ").append(TextInst.translatable("nbteditor.file_options.delete").withStyle(style ->
+				.append(" ").append(Component.translatableEscape("nbteditor.file_options.delete").withStyle(style ->
 				MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreenAndShow(
 						new FancyConfirmScreen(confirmed -> {
 							if (confirmed) {
 								if (file.exists()) {
 									try {
 										Files.deleteIfExists(file.toPath());
-										MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.success", "§6" + file.getName()));
+										MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.success", "§6" + file.getName()));
 									} catch (IOException e) {
 										NBTEditor.LOGGER.error("Error deleting file", e);
-										MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.error", "§6" + file.getName()));
+										MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.error", "§6" + file.getName()));
 									}
 								} else
-									MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.missing", "§6" + file.getName()));
+									MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.missing", "§6" + file.getName()));
 							}
 							MainUtil.client.setScreenAndShow(null);
-						}, TextInst.translatable("nbteditor.file_options.delete.title", file.getName()),
-								TextInst.translatable("nbteditor.file_options.delete.desc", file.getName()))))));
+						}, Component.translatableEscape("nbteditor.file_options.delete.title", file.getName()),
+								Component.translatableEscape("nbteditor.file_options.delete.desc", file.getName()))))));
 	}
 	
 	public static boolean isTextFormatted(Component text, Style base) {
@@ -229,13 +229,13 @@ public class TextUtil {
 			if (output != null)
 				return output;
 		} catch (IllegalArgumentException e) {}
-		return TextInst.of(str);
+		return Component.nullToEmpty(str);
 	}
 	public static Component fromSNbtSafely(String snbt) {
 		try {
 			return TextInst.fromSNbt(snbt);
 		} catch (CommandSyntaxException | NbtFormatException e) {}
-		return TextInst.of(snbt);
+		return Component.nullToEmpty(snbt);
 	}
 	public static Component fromJsonSafely(String json) {
 		try {
@@ -243,7 +243,7 @@ public class TextUtil {
 			if (output != null)
 				return output;
 		} catch (JsonParseException e) {}
-		return TextInst.of(json);
+		return Component.nullToEmpty(json);
 	}
 	
 }

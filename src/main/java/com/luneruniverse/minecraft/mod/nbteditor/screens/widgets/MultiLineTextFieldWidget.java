@@ -13,7 +13,6 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -300,13 +299,13 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		renderedLines.clear();
 		
 		String text = this.text;
-		Component formattedText = (formatter == null ? TextInst.of(text) : formatter.apply(text));
+		Component formattedText = (formatter == null ? Component.nullToEmpty(text) : formatter.apply(text));
 		boolean endsWithNewLine = false;
 		while (!text.isEmpty()) {
 			if (text.charAt(0) == '\n') {
 				endsWithNewLine = true;
-				lines.add(TextInst.of("\n"));
-				renderedLines.add(TextInst.of(""));
+				lines.add(Component.nullToEmpty("\n"));
+				renderedLines.add(Component.nullToEmpty(""));
 				text = text.substring(1);
 				formattedText = TextUtil.substring(formattedText, 1);
 				continue;
@@ -325,7 +324,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			formattedText = TextUtil.substring(formattedText, extraPos);
 		}
 		if (endsWithNewLine) {
-			Component emptyLine = TextInst.of("");
+			Component emptyLine = Component.nullToEmpty("");
 			lines.add(emptyLine);
 			renderedLines.add(emptyLine);
 		}

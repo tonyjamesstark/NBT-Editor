@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.components.Renderable;
@@ -16,7 +15,7 @@ public class OverlayScreen extends OverlaySupportingScreen {
 		if (MainUtil.client.gui.screen() instanceof OverlaySupportingScreen screen)
 			screen.setOverlay(overlay, z);
 		else
-			MainUtil.client.setScreenAndShow(new OverlayScreen(TextInst.of(overlay.getClass().getName()), overlay, z, restoreParent));
+			MainUtil.client.setScreenAndShow(new OverlayScreen(Component.nullToEmpty(overlay.getClass().getName()), overlay, z, restoreParent));
 		return overlay;
 	}
 	public static <T extends Renderable & GuiEventListener & NarratableEntry> T setOverlayOrScreen(T overlay, boolean restoreParent) {

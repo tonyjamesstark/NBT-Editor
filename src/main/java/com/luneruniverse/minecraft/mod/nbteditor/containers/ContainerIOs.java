@@ -13,12 +13,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItemStack;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -295,7 +295,7 @@ public class ContainerIOs {
 			ItemStack section = subContainers.get();
 			String subPath = (path == null ? i + "" : path + "." + i);
 			section.nbte$setCustomName(
-					TextInst.of(TextInst.translatable("nbteditor.hdb.section").getString() + ": " + subPath));
+					Component.nullToEmpty(Component.translatableEscape("nbteditor.hdb.section").getString() + ": " + subPath));
 			writeRecursively(new LocalItemStack(section), subContainers,
 					contents.subList(i * sectionSize, Math.min(contents.size(), (i + 1) * sectionSize)), subPath);
 			sections[i] = section;

@@ -11,10 +11,10 @@ import java.util.function.Consumer;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class LoadingScreen extends MVScreen {
@@ -55,7 +55,7 @@ public class LoadingScreen extends MVScreen {
 	
 	@SuppressWarnings("unchecked")
 	private <T> LoadingScreen(CompletableFuture<T> future, Consumer<T> onFinish, Consumer<Throwable> onException) {
-		super(TextInst.of("Loading"));
+		super(Component.nullToEmpty("Loading"));
 		
 		this.future = future;
 		this.onFinish = result -> onFinish.accept((T) result);
@@ -65,7 +65,7 @@ public class LoadingScreen extends MVScreen {
 	
 	@Override
 	protected void init() {
-		addRenderableWidget(Buttons.of(width / 2 - 75, height / 2, 150, 20, TextInst.translatable("nbteditor.hide"), btn -> onClose()));
+		addRenderableWidget(Buttons.of(width / 2 - 75, height / 2, 150, 20, Component.translatableEscape("nbteditor.hide"), btn -> onClose()));
 	}
 	
 	@Override
@@ -91,7 +91,7 @@ public class LoadingScreen extends MVScreen {
 		super.extractRenderState(context, mouseX, mouseY, delta);
 		MainUtil.renderLogo(context);
 		
-		MVDrawableHelper.drawCenteredTextWithShadow(context, font, TextInst.translatable("nbteditor.loading"),
+		MVDrawableHelper.drawCenteredTextWithShadow(context, font, Component.translatableEscape("nbteditor.loading"),
 				width / 2, height / 2 - font.lineHeight / 2 - 10, -1);
 	}
 	

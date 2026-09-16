@@ -30,7 +30,7 @@ public class SignatureCommand extends ClientCommand {
 	private static Component signature;
 	static {
 		if (!SIGNATURE_FILE.exists())
-			signature = TextInst.translatable("nbteditor.sign.default");
+			signature = Component.translatableEscape("nbteditor.sign.default");
 		else {
 			try {
 				signature = TextInst.fromString(new String(Files.readAllBytes(SIGNATURE_FILE.toPath())), true);
@@ -38,7 +38,7 @@ public class SignatureCommand extends ClientCommand {
 					throw new NullPointerException("Signature is null");
 			} catch (IOException | IllegalArgumentException | NullPointerException e) {
 				NBTEditor.LOGGER.error("Error while loading signature", e);
-				signature = TextInst.translatable("nbteditor.sign.load_error");
+				signature = Component.translatableEscape("nbteditor.sign.load_error");
 			}
 		}
 	}
@@ -63,12 +63,12 @@ public class SignatureCommand extends ClientCommand {
 			if (!hasSignature(lore))
 				lore.add(signature);
 			else {
-				context.getSource().sendFeedback(TextInst.translatable("nbteditor.sign.already_added"));
+				context.getSource().sendFeedback(Component.translatableEscape("nbteditor.sign.already_added"));
 				return Command.SINGLE_SUCCESS;
 			}
 			
 			ItemTagReferences.LORE.set(item, lore);
-			ref.saveItem(item, TextInst.translatable("nbteditor.sign.added"));
+			ref.saveItem(item, Component.translatableEscape("nbteditor.sign.added"));
 			
 			return Command.SINGLE_SUCCESS;
 		};
@@ -81,13 +81,13 @@ public class SignatureCommand extends ClientCommand {
 					
 					List<Component> lore = ItemTagReferences.LORE.get(item);
 					if (!hasSignature(lore)) {
-						context.getSource().sendFeedback(TextInst.translatable("nbteditor.sign.not_added"));
+						context.getSource().sendFeedback(Component.translatableEscape("nbteditor.sign.not_added"));
 						return Command.SINGLE_SUCCESS;
 					}
 					
 					lore.remove(lore.size() - 1);
 					ItemTagReferences.LORE.set(item, lore);
-					ref.saveItem(item, TextInst.translatable("nbteditor.sign.removed"));
+					ref.saveItem(item, Component.translatableEscape("nbteditor.sign.removed"));
 					
 					return Command.SINGLE_SUCCESS;
 				}))
@@ -97,13 +97,13 @@ public class SignatureCommand extends ClientCommand {
 					try {
 						signature = context.getArgument("signature", Component.class);
 					} catch (IllegalArgumentException e) {
-						throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.sign.new.missing_arg")).create();
+						throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.sign.new.missing_arg")).create();
 					}
 					try {
 						Files.write(SIGNATURE_FILE.toPath(), TextInst.toString(signature).getBytes());
 					} catch (IOException e) {
 						NBTEditor.LOGGER.error("Error while saving signature", e);
-						throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.sign.save_error")).create();
+						throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.sign.save_error")).create();
 					}
 					
 					ItemReference ref = ItemReference.getHeldItem();
@@ -113,7 +113,7 @@ public class SignatureCommand extends ClientCommand {
 					if (hasSignature(lore, oldSignature)) {
 						lore.set(lore.size() - 1, signature);
 						ItemTagReferences.LORE.set(item, lore);
-						ref.saveItem(item, TextInst.translatable("nbteditor.sign.edited"));
+						ref.saveItem(item, Component.translatableEscape("nbteditor.sign.edited"));
 					}
 					
 					return Command.SINGLE_SUCCESS;

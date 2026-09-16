@@ -7,12 +7,12 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
@@ -55,11 +55,11 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 		boolean firstInit = (x == null);
 		
 		x = addWidget(new NamedTextFieldWidget(width / 2 - 102, height / 2 - 18, 65, 16, x)
-				.name(TextInst.translatable("nbteditor.nbt.import.pos.x")));
+				.name(Component.translatableEscape("nbteditor.nbt.import.pos.x")));
 		y = addWidget(new NamedTextFieldWidget(width / 2 - 33, height / 2 - 18, 65, 16, y)
-				.name(TextInst.translatable("nbteditor.nbt.import.pos.y")));
+				.name(Component.translatableEscape("nbteditor.nbt.import.pos.y")));
 		z = addWidget(new NamedTextFieldWidget(width / 2 + 36, height / 2 - 18, 66, 16, z)
-				.name(TextInst.translatable("nbteditor.nbt.import.pos.z")));
+				.name(Component.translatableEscape("nbteditor.nbt.import.pos.z")));
 		
 		x.nbte$setFilter(MainUtil.intPredicate());
 		y.nbte$setFilter(MainUtil.intPredicate());
@@ -79,7 +79,7 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.nbt.import.pos"),
+		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.nbt.import.pos"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
 		MainUtil.renderLogo(context);
 	}

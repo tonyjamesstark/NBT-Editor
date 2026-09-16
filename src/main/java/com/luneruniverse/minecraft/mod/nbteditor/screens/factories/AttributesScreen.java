@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
@@ -31,13 +30,14 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Att
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.AttributeModifierId;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 
 public class AttributesScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
 	private static ConfigButton createExtremeAmountBtn(String key, boolean mostPositive, boolean infinity) {
-		return new ConfigButton(30, TextInst.translatable(key), btn -> {
+		return new ConfigButton(30, Component.translatableEscape(key), btn -> {
 			ConfigCategory attribute = (ConfigCategory) btn.getParent().getParent();
 			Attribute type = ATTRIBUTES.get(getConfigAttribute(attribute).getValidValue());
 			
@@ -73,10 +73,10 @@ public class AttributesScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		String firstAttribute = ATTRIBUTES.keySet().stream().findFirst().get();
 		
 		ConfigCategory visibleBase = new ConfigCategory();
-		visibleBase.setConfigurable("attribute", new ConfigItem<>(TextInst.translatable("nbteditor.attributes.attribute"), ConfigValueDropdown.forList(
+		visibleBase.setConfigurable("attribute", new ConfigItem<>(Component.translatableEscape("nbteditor.attributes.attribute"), ConfigValueDropdown.forList(
 				firstAttribute, firstAttribute, new ArrayList<>(ATTRIBUTES.keySet()))));
 		visibleBase.setConfigurable("amount", new ConfigBar()
-				.setConfigurable("number", new ConfigItem<>(TextInst.translatable("nbteditor.attributes.base"),
+				.setConfigurable("number", new ConfigItem<>(Component.translatableEscape("nbteditor.attributes.base"),
 						ConfigValueNumber.forDouble(0, 0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)))
 				.setConfigurable("max", createExtremeAmountBtn("nbteditor.attributes.amount.max", true, false))
 				.setConfigurable("min", createExtremeAmountBtn("nbteditor.attributes.amount.min", false, false))
@@ -85,18 +85,18 @@ public class AttributesScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		BASE_ATTRIBUTE_ENTRY = new ConfigHiddenDataNamed<>(visibleBase, AttributeModifierId.randomUUID(), (id, defaults) -> AttributeModifierId.randomUUID());
 		
 		ConfigCategory visible = new ConfigCategory();
-		visible.setConfigurable("attribute", new ConfigItem<>(TextInst.translatable("nbteditor.attributes.attribute"), ConfigValueDropdown.forList(
+		visible.setConfigurable("attribute", new ConfigItem<>(Component.translatableEscape("nbteditor.attributes.attribute"), ConfigValueDropdown.forList(
 				firstAttribute, firstAttribute, new ArrayList<>(ATTRIBUTES.keySet()))));
-		visible.setConfigurable("operation", new ConfigItem<>(TextInst.translatable("nbteditor.attributes.operation"), ConfigValueDropdown.forEnum(
+		visible.setConfigurable("operation", new ConfigItem<>(Component.translatableEscape("nbteditor.attributes.operation"), ConfigValueDropdown.forEnum(
 				AttributeModifierData.Operation.ADD, AttributeModifierData.Operation.ADD, AttributeModifierData.Operation.class)));
 		visible.setConfigurable("amount", new ConfigBar()
-				.setConfigurable("number", new ConfigItem<>(TextInst.translatable("nbteditor.attributes.amount"),
+				.setConfigurable("number", new ConfigItem<>(Component.translatableEscape("nbteditor.attributes.amount"),
 						ConfigValueNumber.forDouble(0, 0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY)))
 				.setConfigurable("max", createExtremeAmountBtn("nbteditor.attributes.amount.max", true, false))
 				.setConfigurable("min", createExtremeAmountBtn("nbteditor.attributes.amount.min", false, false))
 				.setConfigurable("infinity", createExtremeAmountBtn("nbteditor.attributes.amount.infinity", true, true))
 				.setConfigurable("negative_infinity", createExtremeAmountBtn("nbteditor.attributes.amount.negative_infinity", false, true)));
-		visible.setConfigurable("slot", new ConfigItem<>(TextInst.translatable("nbteditor.attributes.slot"), ConfigValueDropdown.forEnum(
+		visible.setConfigurable("slot", new ConfigItem<>(Component.translatableEscape("nbteditor.attributes.slot"), ConfigValueDropdown.forEnum(
 				AttributeModifierData.Slot.ANY, AttributeModifierData.Slot.ANY, AttributeModifierData.Slot.class)));
 		ATTRIBUTE_ENTRY = new ConfigHiddenDataNamed<>(visible, AttributeModifierId.randomUUID(), (id, defaults) -> AttributeModifierId.randomUUID());
 	}
@@ -122,7 +122,7 @@ public class AttributesScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
 	@SuppressWarnings("unchecked")
 	public AttributesScreen(NBTReference<L> ref) {
-		super(TextInst.of("Attributes"), ref);
+		super(Component.nullToEmpty("Attributes"), ref);
 		
 		boolean modifiers = (ref instanceof ItemReference);
 		ConfigHiddenDataNamed<ConfigCategory, AttributeModifierId> entry =
@@ -131,7 +131,7 @@ public class AttributesScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				ItemTagReferences.ATTRIBUTES.get(localItem.getEditableItem()) :
 				EntityTagReferences.ATTRIBUTES.get((LocalEntity) localNBT));
 		
-		this.attributes = new ConfigList(TextInst.translatable("nbteditor.attributes"), false, entry);
+		this.attributes = new ConfigList(Component.translatableEscape("nbteditor.attributes"), false, entry);
 		for (AttributeData attribute : attributes) {
 			ConfigHiddenDataNamed<ConfigCategory, AttributeModifierId> hiddenAttributeConfig = entry.clone(true);
 			ConfigCategory attributeConfig = hiddenAttributeConfig.getVisible();

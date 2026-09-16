@@ -5,7 +5,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -13,6 +12,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandRegistration;
+import net.minecraft.network.chat.Component;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.arguments.blocks.BlockInput;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
@@ -46,11 +46,11 @@ public class GetBlockCommand extends ClientCommand {
 			
 			if (pos == null) {
 				block.toItem(false).ifPresentOrElse(MainUtil::getWithMessage,
-						() -> MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.item.error")));
+						() -> MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
 			} else if (NBTEditorClient.SERVER_CONN.isEditingExpanded())
 				block.place(pos);
 			else
-				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.requires_server"));
+				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.requires_server"));
 			
 			return Command.SINGLE_SUCCESS;
 		};

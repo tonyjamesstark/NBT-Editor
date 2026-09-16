@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.addons.events.ItemLostCallback;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ActionResult;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.CursorHistoryScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -18,6 +17,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 public class GetLostItemCommand extends ClientCommand {
@@ -28,9 +28,9 @@ public class GetLostItemCommand extends ClientCommand {
 			return;
 		LOST_ITEM = new SingleDynamicItem(item);
 		addToHistory(item);
-		MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.lost_item").append(TextInst.literal("§6/get lostitem")
+		MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.lost_item").append(Component.literal("§6/get lostitem")
 				.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.RUN_COMMAND.newEvent("/get lostitem"))
-						.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.translatable("nbteditor.get.lost_item.hover"))))));
+						.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.translatableEscape("nbteditor.get.lost_item.hover"))))));
 	}
 	
 	private static final LinkedList<SingleDynamicItem> history = new LinkedList<>();
@@ -65,7 +65,7 @@ public class GetLostItemCommand extends ClientCommand {
 		})).executes(context -> {
 			MainUtil.client.player.sendSystemMessage(TextUtil.parseTranslatableFormatted("nbteditor.get.lost_item.history_hint"));
 			if (LOST_ITEM == null)
-				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.lost_item.none"));
+				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.lost_item.none"));
 			else
 				MainUtil.getWithMessage(LOST_ITEM.getItem());
 			return Command.SINGLE_SUCCESS;

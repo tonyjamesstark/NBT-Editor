@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.factories;
 
+import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +8,6 @@ import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigBar;
@@ -26,11 +26,11 @@ public class HideFlagsScreen extends LocalEditorScreen<LocalItem> {
 	private ConfigPanel panel;
 	
 	public HideFlagsScreen(ItemReference ref) {
-		super(TextInst.of("Hide Flags"), ref);
+		super(Component.nullToEmpty("Hide Flags"), ref);
 		
 		Map<HideFlag, Boolean> flags = ItemTagReferences.HIDE_FLAGS.get(localNBT.getEditableItem());
 		
-		config = new ConfigCategory(TextInst.translatable("nbteditor.hide_flags"));
+		config = new ConfigCategory(Component.translatableEscape("nbteditor.hide_flags"));
 		
 		if (HideFlag.TOOLTIP != null) {
 			config.setConfigurable("" + Math.random(), new ConfigHiddenData<>(
@@ -43,8 +43,8 @@ public class HideFlagsScreen extends LocalEditorScreen<LocalItem> {
 		Consumer<Boolean> setAll = hidden -> mainFlagConfigs.forEach(flagConfig -> flagConfig.setConfigValue(hidden));
 		
 		ConfigBar globalConfig = new ConfigBar();
-		globalConfig.setConfigurable("show_all", new ConfigButton(100, TextInst.translatable("nbteditor.hide_flags.show_all"), btn -> setAll.accept(false)));
-		globalConfig.setConfigurable("hide_all", new ConfigButton(100, TextInst.translatable("nbteditor.hide_flags.hide_all"), btn -> setAll.accept(true)));
+		globalConfig.setConfigurable("show_all", new ConfigButton(100, Component.translatableEscape("nbteditor.hide_flags.show_all"), btn -> setAll.accept(false)));
+		globalConfig.setConfigurable("hide_all", new ConfigButton(100, Component.translatableEscape("nbteditor.hide_flags.hide_all"), btn -> setAll.accept(true)));
 		config.setConfigurable("global", globalConfig);
 		
 		for (Map.Entry<HideFlag, Boolean> flag : flags.entrySet()) {

@@ -4,16 +4,15 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 
 import net.minecraft.network.chat.Component;
 
 public interface NBTReferenceFilter extends Predicate<NBTReference<?>> {
 	public static final NBTReferenceFilter ANY = create(ref -> true, ref -> true, ref -> true,
-			TextInst.translatable("nbteditor.no_ref.to_edit"), TextInst.translatable("nbteditor.no_hand.no_item.to_edit"));
+			Component.translatableEscape("nbteditor.no_ref.to_edit"), Component.translatableEscape("nbteditor.no_hand.no_item.to_edit"));
 	public static final NBTReferenceFilter ANY_NBT = create(ref -> true, ref -> ref.getLocalNBT().isBlockEntity(), ref -> true,
-			TextInst.translatable("nbteditor.no_ref.to_edit_nbt"), TextInst.translatable("nbteditor.no_hand.no_item.to_edit"));
+			Component.translatableEscape("nbteditor.no_ref.to_edit_nbt"), Component.translatableEscape("nbteditor.no_hand.no_item.to_edit"));
 	
 	/**
 	 * Pass in <code>null</code> to the filters to always reject that type<br>

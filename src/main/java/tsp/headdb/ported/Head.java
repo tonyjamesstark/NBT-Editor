@@ -7,12 +7,12 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.Validate;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -37,7 +37,7 @@ public class Head {
         Validate.notNull(value, "value must not be null!");
 
         ItemStack item = new ItemStack(Items.PLAYER_HEAD);
-        item.nbte$setCustomName(TextInst.of(Utils.colorize(category != null ? category.getColor() + name : "&8" + name)));
+        item.nbte$setCustomName(Component.nullToEmpty(Utils.colorize(category != null ? category.getColor() + name : "&8" + name)));
         // set skull owner
         GameProfile profile = new GameProfile(uuid, "HDB_Head");
         profile.properties().put("textures", new Property("textures", value));
@@ -48,7 +48,7 @@ public class Head {
                 Utils.colorize("&e" + buildTagLore(tags)),
                 "",
                 Utils.colorize("&8Right-Click to add/remove from favorites.")
-        ).stream().map(TextInst::of).toList());
+        ).stream().map(Component::nullToEmpty).toList());
         
         return item;
     }

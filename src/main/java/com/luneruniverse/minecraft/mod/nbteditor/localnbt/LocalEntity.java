@@ -82,7 +82,7 @@ public class LocalEntity implements LocalNBT {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> TextInst.of(getDefaultName()));
+		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
 	}
 	@Override
 	public void setName(Component name) {
@@ -213,7 +213,7 @@ public class LocalEntity implements LocalNBT {
 	@Override
 	public Component toHoverableText() {
 		UUID uuid = nbt.nbte$getUuid("UUID").orElseGet(() -> new UUID(0, 0));
-		return TextInst.bracketed(getName()).withStyle(
+		return Component.translatableEscape("chat.square_brackets", getName()).withStyle(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ENTITY.newEvent(new HoverEvent.EntityTooltipInfo(
 						entityType, uuid, MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null)))));
 	}
@@ -225,7 +225,7 @@ public class LocalEntity implements LocalNBT {
 						.map(packet -> {
 							EntityReference ref = new EntityReference(packet.getWorld(), packet.getUUID(),
 									MVRegistry.ENTITY_TYPE.get(packet.getId()), packet.getNbt());
-							MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.entity")
+							MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.entity")
 									.append(ref.getLocalNBT().toHoverableText()));
 							return ref;
 						}));

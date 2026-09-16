@@ -6,7 +6,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVEnchantments;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
@@ -17,6 +16,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 public class MaxCommand extends ClientCommand {
@@ -59,7 +59,7 @@ public class MaxCommand extends ClientCommand {
 		});
 		
 		ItemTagReferences.ENCHANTMENTS.set(item, enchants);
-		ref.saveItem(item, TextInst.translatable("nbteditor.maxed"));
+		ref.saveItem(item, Component.translatableEscape("nbteditor.maxed"));
 		
 		return Command.SINGLE_SUCCESS;
 	}

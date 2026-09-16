@@ -101,7 +101,7 @@ public class LocalBlock implements LocalNBT {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> TextInst.of(getDefaultName()));
+		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
 	}
 	@Override
 	public void setName(Component name) {
@@ -199,20 +199,20 @@ public class LocalBlock implements LocalNBT {
 	}
 	@Override
 	public Component toHoverableText() {
-		MutableComponent tooltip = TextInst.translatable("gui.entity_tooltip.type", block.getName());
+		MutableComponent tooltip = Component.translatableEscape("gui.entity_tooltip.type", block.getName());
 		if (!state.getProperties().isEmpty())
 			tooltip.append("\n" + state);
 		Component customName = MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null);
 		if (customName != null)
-			tooltip = TextInst.literal("").append(customName).append("\n").append(tooltip);
+			tooltip = Component.literal("").append(customName).append("\n").append(tooltip);
 		final Component finalTooltip = tooltip;
-		return TextInst.bracketed(getName()).withStyle(
+		return Component.translatableEscape("chat.square_brackets", getName()).withStyle(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(finalTooltip)));
 	}
 	
 	public BlockReference place(BlockPos pos) {
 		BlockReference ref = BlockReference.getBlockWithoutNBT(pos);
-		ref.saveLocalNBT(this, TextInst.translatable("nbteditor.get.block").append(toHoverableText()));
+		ref.saveLocalNBT(this, Component.translatableEscape("nbteditor.get.block").append(toHoverableText()));
 		return ref;
 	}
 	

@@ -12,7 +12,6 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.nbt.NbtFormatException;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
@@ -20,21 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 
 public class TextInst {
-	
-	public static Component of(String msg) {
-		return Component.nullToEmpty(msg);
-	}
-	public static MutableComponent literal(String msg) {
-		return Component.literal(msg);
-	}
-	public static MutableComponent translatable(String key, Object... args) {
-		return Component.translatableEscape(key, args);
-	}
-	
-	public static MutableComponent bracketed(Component text) {
-		return translatable("chat.square_brackets", text);
-	}
-	
 	
 	/**
 	 * <strong>CONSIDER USING {@link TextUtil#fromStringSafely(String, boolean)}</strong>

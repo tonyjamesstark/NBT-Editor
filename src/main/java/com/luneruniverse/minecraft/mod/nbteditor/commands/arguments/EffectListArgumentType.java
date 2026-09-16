@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -18,6 +17,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.world.effect.MobEffect;
@@ -68,7 +68,7 @@ public class EffectListArgumentType implements ArgumentType<Collection<MobEffect
 	
 	private static final Collection<String> EXAMPLES = Arrays.asList("minecraft:blindness -duration:1 -showparticles:false", "minecraft:jump_boost");
 	public static final DynamicCommandExceptionType INVALID_EFFECT_EXCEPTION = new DynamicCommandExceptionType((id) -> {
-		return TextInst.translatable("effect.effectNotFound", new Object[]{id});
+		return Component.translatableEscape("effect.effectNotFound", new Object[]{id});
 	});
 
 	public static EffectListArgumentType effectList() {
@@ -94,7 +94,7 @@ public class EffectListArgumentType implements ArgumentType<Collection<MobEffect
 				break;
 			}
 			if (stringReader.read() != ' ')
-				throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.effect_list_arg_type.expected.space")).createWithContext(stringReader);
+				throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.effect_list_arg_type.expected.space")).createWithContext(stringReader);
 			
 			MobEffectInstance effect = newEffectInstance(type, 5 * 20);
 			
@@ -104,9 +104,9 @@ public class EffectListArgumentType implements ArgumentType<Collection<MobEffect
 					arg.append(stringReader.read());
 				Arg key = Arrays.stream(Arg.values()).filter(test -> test.name.equalsIgnoreCase(arg.toString())).findFirst().orElse(null);
 				if (key == null)
-					throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.effect_list_arg_type.invalid.arg")).createWithContext(stringReader);
+					throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.effect_list_arg_type.invalid.arg")).createWithContext(stringReader);
 				if (!stringReader.canRead())
-					throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.effect_list_arg_type.expected.colon")).createWithContext(stringReader);
+					throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.effect_list_arg_type.expected.colon")).createWithContext(stringReader);
 				
 				stringReader.read(); // Colon
 				
@@ -117,7 +117,7 @@ public class EffectListArgumentType implements ArgumentType<Collection<MobEffect
 				try {
 					effect = key.apply.apply(effect, value.toString());
 				} catch (Exception e) {
-					throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.effect_list_arg_type.invalid.value")).createWithContext(stringReader);
+					throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.effect_list_arg_type.invalid.value")).createWithContext(stringReader);
 				}
 				
 				if (stringReader.canRead())

@@ -8,7 +8,6 @@ import java.util.Map;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.EnumArgumentType;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
@@ -18,6 +17,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -58,7 +58,7 @@ public class GetHdbCommand extends ClientCommand {
 								return Command.SINGLE_SUCCESS;
 							Head head = HeadAPI.getHeadByID(context.getArgument("id", Integer.class));
 							if (head == null)
-								context.getSource().sendFeedback(TextInst.translatable("nbteditor.hdb.head_not_found"));
+								context.getSource().sendFeedback(Component.translatableEscape("nbteditor.hdb.head_not_found"));
 							else
 								InventoryUtils.purchaseHead(head, context.getArgument("amount", Integer.class), "", "");
 							return Command.SINGLE_SUCCESS;
@@ -68,7 +68,7 @@ public class GetHdbCommand extends ClientCommand {
 							return Command.SINGLE_SUCCESS;
 						Head head = HeadAPI.getHeadByID(context.getArgument("id", Integer.class));
 						if (head == null)
-							context.getSource().sendFeedback(TextInst.translatable("nbteditor.hdb.head_not_found"));
+							context.getSource().sendFeedback(Component.translatableEscape("nbteditor.hdb.head_not_found"));
 						else
 							InventoryUtils.purchaseHead(head, 1, "", "");
 						return Command.SINGLE_SUCCESS;
@@ -78,7 +78,7 @@ public class GetHdbCommand extends ClientCommand {
 						return Command.SINGLE_SUCCESS;
 					Category category = context.getArgument("category", Category.class);
 					ItemStack shulker = new ItemStack(Items.DYED_SHULKER_BOX.pick(MainUtil.getDyeColor(category.getColor())));
-					shulker.nbte$setCustomName(TextInst.of(ChatFormatting.RESET.toString() + category.getColor() + ChatFormatting.BOLD + category.getTranslatedName().toUpperCase()));
+					shulker.nbte$setCustomName(Component.nullToEmpty(ChatFormatting.RESET.toString() + category.getColor() + ChatFormatting.BOLD + category.getTranslatedName().toUpperCase()));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeads(category).stream().map(Head::getItemStack).toList());
 					MainUtil.getWithMessage(shulker);
@@ -88,17 +88,17 @@ public class GetHdbCommand extends ClientCommand {
 						return Command.SINGLE_SUCCESS;
 					String query = context.getArgument("query", String.class);
 					ItemStack shulker = new ItemStack(Items.DYED_SHULKER_BOX.pick(DyeColor.BROWN));
-					shulker.nbte$setCustomName(TextInst.of(ChatFormatting.RESET.toString() + ChatFormatting.GOLD + ChatFormatting.BOLD + TextInst.translatable("nbteditor.hdb.search").getString() + ": " + query));
+					shulker.nbte$setCustomName(Component.nullToEmpty(ChatFormatting.RESET.toString() + ChatFormatting.GOLD + ChatFormatting.BOLD + Component.translatableEscape("nbteditor.hdb.search").getString() + ": " + query));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeadsByName(query).stream().map(Head::getItemStack).toList());
 					MainUtil.getWithMessage(shulker);
 					return Command.SINGLE_SUCCESS;
 				}))))
 				.then(literal("update").executes(context -> {
-					context.getSource().sendFeedback(TextInst.translatable("nbteditor.hdb.updating_database"));
+					context.getSource().sendFeedback(Component.translatableEscape("nbteditor.hdb.updating_database"));
 					Thread thread = new Thread(() -> {
 						HeadAPI.updateDatabase();
-						context.getSource().sendFeedback(TextInst.translatable("nbteditor.hdb.updated_database"));
+						context.getSource().sendFeedback(Component.translatableEscape("nbteditor.hdb.updated_database"));
 					}, "NBTEditor/Async/HeadRefresh/Manual");
 					thread.setDaemon(true);
 					thread.start();

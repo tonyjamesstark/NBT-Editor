@@ -8,7 +8,6 @@ import java.util.OptionalLong;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.ItemSize;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
 import com.luneruniverse.minecraft.mod.nbteditor.util.ItemSizeText;
@@ -58,8 +57,8 @@ public class ItemTooltips {
 			}
 			TextColor sizeColor = sizeFormat.map(TextColor::fromLegacyFormat).orElseGet(
 					() -> TextColor.fromRgb(Color.HSBtoRGB((System.currentTimeMillis() % 1000) / 1000.0f, 1, 1)));
-			tooltip.add(TextInst.translatable("nbteditor.item_size." + (sizeConfig.isCompressed() ? "compressed" : "uncompressed"),
-					TextInst.literal(displaySize).withStyle(style -> style.withColor(sizeColor))));
+			tooltip.add(Component.translatableEscape("nbteditor.item_size." + (sizeConfig.isCompressed() ? "compressed" : "uncompressed"),
+					Component.literal(displaySize).withStyle(style -> style.withColor(sizeColor))));
 		}
 
 		if (!ConfigScreen.isKeybindsHidden()) {
@@ -69,13 +68,13 @@ public class ItemTooltips {
 
 			if (creativeInv || (!(MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen) &&
 					NBTEditorClient.SERVER_CONN.isScreenEditable())) {
-				tooltip.add(TextInst.translatable("nbteditor.keybind.edit"));
-				tooltip.add(TextInst.translatable("nbteditor.keybind.factory"));
+				tooltip.add(Component.translatableEscape("nbteditor.keybind.edit"));
+				tooltip.add(Component.translatableEscape("nbteditor.keybind.factory"));
 				if (ContainerIOs.isSupported(source))
-					tooltip.add(TextInst.translatable("nbteditor.keybind.container"));
+					tooltip.add(Component.translatableEscape("nbteditor.keybind.container"));
 				if (source.getItem() == Items.ENCHANTED_BOOK)
-					tooltip.add(TextInst.translatable("nbteditor.keybind.enchant"));
-				tooltip.add(TextInst.translatable("nbteditor.keybind.delete"));
+					tooltip.add(Component.translatableEscape("nbteditor.keybind.enchant"));
+				tooltip.add(Component.translatableEscape("nbteditor.keybind.delete"));
 			}
 		}
 	}

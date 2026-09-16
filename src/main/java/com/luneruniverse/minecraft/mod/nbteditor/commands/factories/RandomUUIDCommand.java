@@ -5,7 +5,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import java.util.UUID;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
@@ -13,6 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.ChatFormatting;
@@ -38,8 +38,8 @@ public class RandomUUIDCommand extends ClientCommand {
 			UUID uuid = UUID.randomUUID();
 			nbt.nbte$putUuid("UUID", uuid);
 			ItemTagReferences.CUSTOM_DATA.set(item, nbt);
-			ref.saveItem(item, TextInst.translatable("nbteditor.random_uuid.added",
-					TextInst.literal(uuid.toString()).withStyle(ChatFormatting.GOLD)));
+			ref.saveItem(item, Component.translatableEscape("nbteditor.random_uuid.added",
+					Component.literal(uuid.toString()).withStyle(ChatFormatting.GOLD)));
 			return Command.SINGLE_SUCCESS;
 		};
 		Command<FabricClientCommandSource> remove = context -> {
@@ -47,12 +47,12 @@ public class RandomUUIDCommand extends ClientCommand {
 			ItemStack item = ref.getItem();
 			CompoundTag nbt = ItemTagReferences.CUSTOM_DATA.get(item);
 			if (!nbt.nbte$containsUuid("UUID")) {
-				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.random_uuid.already_removed"));
+				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.random_uuid.already_removed"));
 				return Command.SINGLE_SUCCESS;
 			}
 			nbt.remove("UUID");
 			ItemTagReferences.CUSTOM_DATA.set(item, nbt);
-			ref.saveItem(item, TextInst.translatable("nbteditor.random_uuid.removed"));
+			ref.saveItem(item, Component.translatableEscape("nbteditor.random_uuid.removed"));
 			return Command.SINGLE_SUCCESS;
 		};
 		

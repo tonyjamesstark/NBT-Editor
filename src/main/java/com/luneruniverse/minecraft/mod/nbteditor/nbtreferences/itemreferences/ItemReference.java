@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItemStack;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -36,7 +35,7 @@ public interface ItemReference extends NBTReference<LocalItem> {
 		return new HandItemReference(hand);
 	}
 	public static ItemReference getHeldItem() throws CommandSyntaxException {
-		return getHeldItem(item -> true, TextInst.translatable("nbteditor.no_hand.no_item.to_edit"));
+		return getHeldItem(item -> true, Component.translatableEscape("nbteditor.no_hand.no_item.to_edit"));
 	}
 	public static ItemReference getHeldItemAirable() {
 		try {
@@ -50,7 +49,7 @@ public interface ItemReference extends NBTReference<LocalItem> {
 			return new HandItemReference(InteractionHand.MAIN_HAND);
 		if (MainUtil.client.player.getOffhandItem().isEmpty())
 			return new HandItemReference(InteractionHand.OFF_HAND);
-		throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.no_hand.all_item")).create();
+		throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.no_hand.all_item")).create();
 	}
 	
 	public static ItemReference getContainerItem(AbstractContainerScreen<?> screen, Slot slot) {
