@@ -16,7 +16,6 @@ import com.mojang.serialization.Dynamic;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -26,7 +25,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.Identifier;
@@ -316,16 +314,6 @@ public class MainUtil {
 		return output;
 	}
 	
-	public static void setTextFieldValueSilently(EditBox widget, String text, boolean scrollToEnd) {
-		widget.value = text;
-		int cursor = (scrollToEnd ? text.length() : 0);
-		widget.setCursorPosition(cursor);
-		widget.setHighlightPos(cursor);
-	}
 	
-	public static void setCursorStackSilently(AbstractContainerMenu handler, ItemStack item) {
-		handler.setCarried(item);
-		AccessWidenedApi.setPreviousCursorStack(handler, item);
-	}
 	
 }

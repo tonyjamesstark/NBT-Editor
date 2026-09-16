@@ -26,7 +26,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.packets.SummonEntityC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.ViewBlockS2CPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.ViewEntityS2CPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
@@ -53,6 +52,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.IdentifierException;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 
 public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvents.Start {
 	
@@ -99,7 +99,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		if (!ServerMVMisc.hasPermissionLevel(player, 2))
 			return;
 		
-		MainUtil.setCursorStackSilently(player.containerMenu, packet.getItem());
+		AccessWidenedApi.setCursorStackSilently(player.containerMenu, packet.getItem());
 	}
 	
 	private void onSetSlotPacket(SetSlotC2SPacket packet, ServerPlayer player) {

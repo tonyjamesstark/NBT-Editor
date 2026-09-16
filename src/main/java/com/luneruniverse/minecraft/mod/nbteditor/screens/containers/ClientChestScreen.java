@@ -28,6 +28,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 
 public class ClientChestScreen extends ClientHandledScreen {
 	
@@ -55,7 +56,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 					
 					if (Minecraft.getInstance().gui.screen() instanceof ClientChestScreen screen) {
 						screen.setPageData(pageData);
-						MainUtil.setTextFieldValueSilently(screen.pageField, (PAGE + 1) + "", true);
+						AccessWidenedApi.setTextFieldValueSilently(screen.pageField, (PAGE + 1) + "", true);
 						screen.updatePageNavigation();
 					} else {
 						ClientChestScreen screen = new ClientChestScreen();

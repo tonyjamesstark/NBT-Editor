@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 
 public class CursorManager {
 	
@@ -66,8 +67,8 @@ public class CursorManager {
 		AbstractContainerMenu handler = branch.getMenu();
 		AbstractContainerMenu currentHandler = currentBranch.getMenu();
 		
-		MainUtil.setCursorStackSilently(handler, currentHandler.getCarried());
-		MainUtil.setCursorStackSilently(currentHandler, ItemStack.EMPTY);
+		AccessWidenedApi.setCursorStackSilently(handler, currentHandler.getCarried());
+		AccessWidenedApi.setCursorStackSilently(currentHandler, ItemStack.EMPTY);
 		
 		if (currentRootHasServerCursor) {
 			if (branch == currentRoot)
@@ -123,7 +124,7 @@ public class CursorManager {
 					MainUtil.get(cursor, true);
 					cursor = ItemStack.EMPTY;
 				}
-				MainUtil.setCursorStackSilently(currentRoot.getMenu(), cursor);
+				AccessWidenedApi.setCursorStackSilently(currentRoot.getMenu(), cursor);
 			}
 			Minecraft.getInstance().player.clientSideCloseContainer(); // will trigger #onNoScreenSet()
 			return;
@@ -137,7 +138,7 @@ public class CursorManager {
 		if (currentRoot == null)
 			throw new IllegalStateException("There is no root to set the cursor of");
 		
-		MainUtil.setCursorStackSilently(currentBranch.getMenu(), item);
+		AccessWidenedApi.setCursorStackSilently(currentBranch.getMenu(), item);
 		
 		if (currentRootHasServerCursor && currentBranch == currentRoot)
 			MVClientNetworking.send(new SetCursorC2SPacket(item.copy()));

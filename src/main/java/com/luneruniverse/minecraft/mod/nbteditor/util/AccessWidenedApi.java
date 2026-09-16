@@ -4,6 +4,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.StringTagVisitor;
 import net.minecraft.world.entity.EntityType;
@@ -39,13 +40,28 @@ public class AccessWidenedApi {
 	}
 	
 	/**
-	 * Overwrites the server's idea of what is on the cursor, so the client's next click is not
-	 * rejected as desynced.
+	 * Puts an item on the cursor without the server noticing a change, by overwriting its idea of
+	 * what was already there. A plain {@code setCarried} desyncs, and the next click is rejected.
 	 *
 	 * <p>Widens {@code AbstractContainerMenu.remoteCarried}.
 	 */
-	public static void setPreviousCursorStack(AbstractContainerMenu handler, ItemStack item) {
+	public static void setCursorStackSilently(AbstractContainerMenu handler, ItemStack item) {
+		handler.setCarried(item);
 		handler.remoteCarried.force(item);
+	}
+	
+	/**
+	 * Replaces a text field's contents without running its change listener, and parks the cursor
+	 * at one end. Used where the editor is echoing a value back into a field the player is
+	 * typing in, and re-entering its own listener would fight them.
+	 *
+	 * <p>Widens {@code EditBox.value}.
+	 */
+	public static void setTextFieldValueSilently(EditBox widget, String text, boolean scrollToEnd) {
+		widget.value = text;
+		int cursor = (scrollToEnd ? text.length() : 0);
+		widget.setCursorPosition(cursor);
+		widget.setHighlightPos(cursor);
 	}
 	
 	/**

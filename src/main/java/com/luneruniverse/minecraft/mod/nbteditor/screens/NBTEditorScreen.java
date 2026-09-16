@@ -51,6 +51,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.IdentifierException;
 import net.minecraft.client.Minecraft;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 
 public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
@@ -308,7 +309,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			}
 		}
 		if (removing)
-			MainUtil.setTextFieldValueSilently(path, realPath.toString(), true);
+			AccessWidenedApi.setTextFieldValueSilently(path, realPath.toString(), true);
 		
 		if (realPath.isEmpty())
 			upValue = null;
@@ -334,7 +335,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	private void updateName() {
 		String newName = localNBT.getName().getString();
 		if (!name.value.equals(newName))
-			MainUtil.setTextFieldValueSilently(name, newName, false);
+			AccessWidenedApi.setTextFieldValueSilently(name, newName, false);
 	}
 	@Override
 	protected boolean isNameEditable() {
@@ -350,7 +351,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			selectedValue = null;
 			value.setValue("");
 			value.setEditable(false);
-			MainUtil.setTextFieldValueSilently(path, realPath.toString(), true);
+			AccessWidenedApi.setTextFieldValueSilently(path, realPath.toString(), true);
 			genEditor();
 		} else {
 			selectedValue = key;
