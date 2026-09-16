@@ -59,7 +59,7 @@ public class LocalItemStack extends LocalItem {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getCustomItemNameSafely(item);
+		return item.getHoverName();
 	}
 	@Override
 	public void setName(Component name) {
@@ -80,7 +80,7 @@ public class LocalItemStack extends LocalItem {
 	}
 	@Override
 	public void setId(Identifier id) {
-		item = MainUtil.setType(MVRegistry.ITEM.get(id), item);
+		item = item.transmuteCopy(MVRegistry.ITEM.get(id), item.getCount());
 	}
 	@Override
 	public Set<Identifier> getIdOptions() {
@@ -93,7 +93,7 @@ public class LocalItemStack extends LocalItem {
 	}
 	@Override
 	public void setCount(int count) {
-		item = MainUtil.setType(item.getItem(), item, count);
+		item = item.transmuteCopy(item.getItem(), count);
 	}
 	
 	@Override

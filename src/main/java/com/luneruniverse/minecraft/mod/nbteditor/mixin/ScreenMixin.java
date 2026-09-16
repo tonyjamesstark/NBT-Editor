@@ -14,7 +14,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ImportScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.Minecraft;

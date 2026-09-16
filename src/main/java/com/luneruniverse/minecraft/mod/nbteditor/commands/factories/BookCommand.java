@@ -50,7 +50,7 @@ public class BookCommand extends ClientCommand {
 			Component.translatableEscape("nbteditor.no_hand.no_item.book"));
 	
 	public static boolean convertBookToWritable(ItemReference ref) {
-		ItemStack item = MainUtil.setType(Items.WRITABLE_BOOK, ref.getItem(), 1);
+		ItemStack item = ref.getItem().transmuteCopy(Items.WRITABLE_BOOK, 1);
 		boolean formatted = false;
 		List<Component> pages = WrittenBookTagReferences.PAGES.get(item);
 		List<String> convertedPages = new ArrayList<>();

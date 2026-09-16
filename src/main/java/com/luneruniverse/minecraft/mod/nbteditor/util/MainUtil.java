@@ -37,7 +37,6 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.NumericTag;
 import net.minecraft.nbt.CompoundTag;
@@ -250,9 +249,6 @@ public class MainUtil {
 			return name;
 		return item.getItem().getName(item);
 	}
-	public static Component getCustomItemNameSafely(ItemStack item) {
-		return item.getHoverName();
-	}
 	public static Component getNbtNameSafely(CompoundTag nbt, String key, Supplier<Component> defaultName) {
 		if (nbt != null) {
 			Tag textNbt = nbt.get(key);
@@ -314,13 +310,6 @@ public class MainUtil {
 		return output;
 	}
 	
-	
-	public static ItemStack setType(Item type, ItemStack item, int count) {
-		return item.transmuteCopy(type, count);
-	}
-	public static ItemStack setType(Item type, ItemStack item) {
-		return setType(type, item, item.getCount());
-	}
 	
 	
 	@SuppressWarnings("unchecked")

@@ -97,7 +97,7 @@ public class LocalItemParts extends LocalItem {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getCustomItemNameSafely(getCachedItem());
+		return getCachedItem().getHoverName();
 	}
 	@Override
 	public void setName(Component name) {

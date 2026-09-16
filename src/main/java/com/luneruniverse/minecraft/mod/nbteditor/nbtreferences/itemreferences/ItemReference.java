@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItemStack;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
@@ -146,7 +145,7 @@ public interface ItemReference extends NBTReference<LocalItem> {
 	public default void saveNBT(Identifier id, CompoundTag toSave, Runnable onFinished) {
 		ItemStack item = getItem();
 		if (!MVRegistry.ITEM.getId(item.getItem()).equals(id))
-			item = MainUtil.setType(MVRegistry.ITEM.get(id), item);
+			item = item.transmuteCopy(MVRegistry.ITEM.get(id), item.getCount());
 		item.nbte$setNbt(toSave);
 		saveItem(item, onFinished);
 	}
