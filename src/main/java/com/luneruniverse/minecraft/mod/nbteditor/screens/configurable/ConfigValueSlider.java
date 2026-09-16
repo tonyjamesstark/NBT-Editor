@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.AbstractSliderButton;
@@ -64,7 +63,7 @@ public class ConfigValueSlider<T extends Number> extends AbstractSliderButton im
 	@Override
 	protected void onDrag(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseX = click.x(); double mouseY = click.y();
-		if (clicked && MainUtil.equals(mouseX, mouseClickX + deltaX) && MainUtil.equals(mouseY, mouseClickY + deltaY)) {
+		if (clicked && nearlyEquals(mouseX, mouseClickX + deltaX) && nearlyEquals(mouseY, mouseClickY + deltaY)) {
 			mouseClickX += deltaX;
 			mouseClickY += deltaY;
 			super.onDrag(click, deltaX, deltaY);
@@ -108,6 +107,11 @@ public class ConfigValueSlider<T extends Number> extends AbstractSliderButton im
 	public ConfigValueSlider<T> addValueListener(ConfigValueListener<ConfigValueSlider<T>> listener) {
 		onChanged.add(listener);
 		return this;
+	}
+	
+	/** Drag deltas arrive as doubles, so the running total only ever lands near the cursor. */
+	private static boolean nearlyEquals(double a, double b) {
+		return Math.abs(a - b) <= 1E-5;
 	}
 	
 	@Override

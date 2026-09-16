@@ -98,8 +98,17 @@ public class ItemTooltips {
 				mousePos[0], mousePos[1]);
 		Rect source = placement.source();
 		Rect target = placement.target();
-		MainUtil.mapMatrices(context, source.x(), source.y(), source.width(), source.height(),
+		mapMatrices(context, source.x(), source.y(), source.width(), source.height(),
 				target.x(), target.y(), target.width(), target.height());
+	}
+	
+	/** Remaps the <code>from</code> rect onto the <code>to</code> rect for everything drawn next. */
+	private static void mapMatrices(GuiGraphicsExtractor context,
+			int fromX, int fromY, int fromWidth, int fromHeight,
+			int toX, int toY, int toWidth, int toHeight) {
+		context.pose().translate((float) (toX), (float) (toY));
+		context.pose().scale((float) toWidth / fromWidth, (float) toHeight / fromHeight);
+		context.pose().translate((float) (-fromX), (float) (-fromY));
 	}
 
 }

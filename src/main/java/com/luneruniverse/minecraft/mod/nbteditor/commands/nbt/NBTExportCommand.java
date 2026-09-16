@@ -4,7 +4,10 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandManager.literal;
 
 import java.io.File;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.nio.file.Files;
+import java.util.Locale;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
@@ -38,6 +41,9 @@ import net.minecraft.util.FileUtil;
 import net.minecraft.client.Minecraft;
 
 public class NBTExportCommand extends ClientCommand {
+	
+	private static final DateTimeFormatter FILE_NAME_TIME =
+			DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
 	
 	public static final NBTReferenceFilter EXPORT_FILTER = NBTReferenceFilter.create(
 			ref -> true,
@@ -156,7 +162,7 @@ public class NBTExportCommand extends ClientCommand {
 				return Command.SINGLE_SUCCESS;
 			})).executes(context -> {
 				NBTReference.getReference(EXPORT_FILTER, false, ref -> exportToFile(ref.getLocalNBT().serialize(),
-						ref.getLocalNBT().getName().getString() + "_" + MainUtil.getFormattedCurrentTime()));
+						ref.getLocalNBT().getName().getString() + "_" + FILE_NAME_TIME.format(ZonedDateTime.now())));
 				return Command.SINGLE_SUCCESS;
 			}));
 	}

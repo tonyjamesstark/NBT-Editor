@@ -1,5 +1,7 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +35,17 @@ import net.minecraft.client.Minecraft;
 
 public class ImageToLoreWidget extends GroupWidget implements InitializableOverlay<Screen> {
 	
+	private static BufferedImage scaleImage(BufferedImage img, int width, int height) {
+		Image temp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = output.createGraphics();
+		g.drawImage(temp, 0, 0, null);
+		g.dispose();
+		return output;
+	}
+	
 	public static List<Component> imageToLore(BufferedImage img, int width, int height) {
-		img = MainUtil.scaleImage(img, width, height);
+		img = scaleImage(img, width, height);
 		List<Component> output = new ArrayList<>();
 		for (int line = 0; line < height; line++) {
 			MutableComponent lineText = Component.literal("").withStyle(style -> style.withItalic(false));

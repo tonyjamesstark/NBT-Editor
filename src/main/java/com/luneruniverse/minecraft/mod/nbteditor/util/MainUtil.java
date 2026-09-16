@@ -1,17 +1,10 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Proxy;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -19,7 +12,6 @@ import java.util.zip.ZipException;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ActionResult;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
@@ -28,8 +20,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTMan
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -312,19 +302,6 @@ public class MainUtil {
 	
 	
 	
-	@SuppressWarnings("unchecked")
-	public static <T> Event<T> newEvent(Class<T> clazz) {
-		return EventFactory.createArrayBacked(clazz, listeners -> {
-			return (T) Proxy.newProxyInstance(MainUtil.class.getClassLoader(), new Class<?>[] {clazz}, (obj, method, args) -> {
-				for (T listener : listeners) {
-					ActionResult result = (ActionResult) method.invoke(listener, args);
-					if (result != ActionResult.PASS)
-						return result;
-				}
-				return ActionResult.PASS;
-			});
-		});
-	}
 	
 	
 	public static CompoundTag readNBT(InputStream in) throws IOException {
@@ -337,28 +314,10 @@ public class MainUtil {
 	}
 	
 	
-	private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
-	public static String getFormattedCurrentTime() {
-		return DATE_TIME_FORMATTER.format(ZonedDateTime.now());
-	}
 	
 	
-	public static boolean equals(double a, double b, double epsilon) {
-		return Math.abs(a - b) <= epsilon;
-	}
-	public static boolean equals(double a, double b) {
-		return equals(a, b, 1E-5);
-	}
 	
 	
-	public static BufferedImage scaleImage(BufferedImage img, int width, int height) {
-		Image temp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-		BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = output.createGraphics();
-		g.drawImage(temp, 0, 0, null);
-		g.dispose();
-		return output;
-	}
 	
 	
 	public static int[] getMousePos() {
@@ -369,13 +328,6 @@ public class MainUtil {
 	}
 	
 	
-	public static void mapMatrices(GuiGraphicsExtractor context,
-			int fromX, int fromY, int fromWidth, int fromHeight,
-			int toX, int toY, int toWidth, int toHeight) {
-		context.pose().translate((float) (toX), (float) (toY));
-		context.pose().scale((float) toWidth / fromWidth, (float) toHeight / fromHeight);
-		context.pose().translate((float) (-fromX), (float) (-fromY));
-	}
 	
 	
 	public static Predicate<String> intPredicate(Supplier<Integer> min, Supplier<Integer> max, boolean allowEmpty) {
