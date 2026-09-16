@@ -15,10 +15,19 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Attempt;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import org.jetbrains.annotations.Nullable;
+import com.mojang.serialization.DynamicOps;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.nbt.NbtFormatException;
 import net.minecraft.network.chat.FormattedText.StyledContentConsumer;
@@ -225,7 +234,7 @@ public class TextUtil {
 	
 	public static Component fromStringSafely(String str, boolean eitherFormat) {
 		try {
-			Component output = TextInst.fromString(str, eitherFormat);
+			Component output = fromString(str, eitherFormat);
 			if (output != null)
 				return output;
 		} catch (IllegalArgumentException e) {}
@@ -233,17 +242,87 @@ public class TextUtil {
 	}
 	public static Component fromSNbtSafely(String snbt) {
 		try {
-			return TextInst.fromSNbt(snbt);
+			return fromSNbt(snbt);
 		} catch (CommandSyntaxException | NbtFormatException e) {}
 		return Component.nullToEmpty(snbt);
 	}
 	public static Component fromJsonSafely(String json) {
 		try {
-			Component output = TextInst.fromJson(json);
+			Component output = fromJson(json);
 			if (output != null)
 				return output;
 		} catch (JsonParseException e) {}
 		return Component.nullToEmpty(json);
+	}
+	
+	
+	/**
+	 * Throws when <code>str</code> is neither valid SNBT nor valid JSON; the suppressed causes say
+	 * which parse failed and why. {@link #fromStringSafely} yields the raw string instead.
+	 */
+	public static @Nullable Component fromString(String str, boolean eitherFormat) throws IllegalArgumentException {
+		IllegalArgumentException wrapper;
+		try {
+			return fromSNbt(str);
+		} catch (CommandSyntaxException | NbtFormatException e) {
+			wrapper = new IllegalArgumentException("Failed to parse text");
+			wrapper.addSuppressed(e);
+			if (!eitherFormat)
+				throw wrapper;
+		}
+
+		try {
+			return fromJson(str);
+		} catch (JsonParseException e) {
+			wrapper.addSuppressed(e);
+			throw wrapper;
+		}
+	}
+	public static String toString(Component text) throws IllegalArgumentException {
+		try {
+			return toSNbt(text);
+		} catch (NbtFormatException | JsonParseException e) {
+			throw new IllegalArgumentException("Failed to stringify text", e);
+		}
+	}
+	
+	public static @Nullable Component fromMinecraft(Tag mc) throws IllegalArgumentException {
+		try {
+			return fromNbt(mc);
+		} catch (NbtFormatException | JsonParseException e) {
+			throw new IllegalArgumentException("Failed to parse text", e);
+		}
+	}
+	public static Tag toMinecraft(Component text) throws IllegalArgumentException {
+		try {
+			return toNbt(text);
+		} catch (NbtFormatException | JsonParseException e) {
+			throw new IllegalArgumentException("Failed to stringify text", e);
+		}
+	}
+	
+	/** Throws when <code>snbt</code> is not valid SNBT; {@link #fromSNbtSafely} yields the raw string instead. */
+	public static Component fromSNbt(String snbt) throws CommandSyntaxException, NbtFormatException {
+		return fromNbt(NbtIO.parseSnbt(snbt));
+	}
+	public static String toSNbt(Component text) throws NbtFormatException {
+		return toNbt(text).toString();
+	}
+	
+	private static DynamicOps<JsonElement> jsonOps() {
+		return DynamicRegistryManagerHolder.get().createSerializationContext(JsonOps.INSTANCE);
+	}
+	/** Throws when <code>json</code> is not valid text JSON; {@link #fromJsonSafely} yields the raw string instead. */
+	public static @Nullable Component fromJson(String json) throws JsonParseException {
+		return Attempt.ofResult(ComponentSerialization.CODEC.parse(jsonOps(), JsonParser.parseString(json)))
+				.getSuccessOrThrow(JsonParseException::new);
+	}
+	
+	public static Component fromNbt(Tag nbt) throws NbtFormatException {
+		return Attempt.ofResult(ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, nbt)).getSuccessOrThrow(NbtFormatException::new);
+	}
+	public static Tag toNbt(Component text) throws NbtFormatException {
+		return Attempt.ofResult(ComponentSerialization.CODEC.encodeStart(NbtOps.INSTANCE, text)).getSuccessOrThrow(NbtFormatException::new);
 	}
 	
 }

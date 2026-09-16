@@ -12,7 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.FancyTextArgumentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
@@ -33,7 +33,7 @@ public class SignatureCommand extends ClientCommand {
 			signature = Component.translatableEscape("nbteditor.sign.default");
 		else {
 			try {
-				signature = TextInst.fromString(new String(Files.readAllBytes(SIGNATURE_FILE.toPath())), true);
+				signature = TextUtil.fromString(new String(Files.readAllBytes(SIGNATURE_FILE.toPath())), true);
 				if (signature == null)
 					throw new NullPointerException("Signature is null");
 			} catch (IOException | IllegalArgumentException | NullPointerException e) {
@@ -100,7 +100,7 @@ public class SignatureCommand extends ClientCommand {
 						throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.sign.new.missing_arg")).create();
 					}
 					try {
-						Files.write(SIGNATURE_FILE.toPath(), TextInst.toString(signature).getBytes());
+						Files.write(SIGNATURE_FILE.toPath(), TextUtil.toString(signature).getBytes());
 					} catch (IOException e) {
 						NBTEditor.LOGGER.error("Error while saving signature", e);
 						throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.sign.save_error")).create();

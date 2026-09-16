@@ -23,7 +23,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ActionResult;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.mojang.datafixers.DSL.TypeReference;
@@ -261,7 +260,7 @@ public class MainUtil {
 			Tag textNbt = nbt.get(key);
 			if (textNbt != null) {
 				try {
-					Component text = TextInst.fromMinecraft(textNbt);
+					Component text = TextUtil.fromMinecraft(textNbt);
 					if (text != null)
 						return text;
 				} catch (IllegalArgumentException e) {}

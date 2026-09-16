@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.StyleOption;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
@@ -54,7 +54,7 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 	
 	public static String stringifyFancyText(Component text, Style base, boolean printErrors) {
 		if (ConfigScreen.isNormalText())
-			return TextInst.toString(text);
+			return TextUtil.toString(text);
 		
 		Map.Entry<String, Boolean> output = FancyText.stringify(text, base);
 		if (output.getValue() && printErrors)

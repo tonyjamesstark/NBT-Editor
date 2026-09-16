@@ -3,7 +3,7 @@ package com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Array;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import net.minecraft.nbt.CollectionTag;
 import net.minecraft.nbt.NumericTag;
@@ -68,7 +68,7 @@ public class NBTTagReference<T> implements TagReference<T, CompoundTag> {
 		
 		if (target.isAssignableFrom(Component.class)) {
 			try {
-				Component output = TextInst.fromMinecraft(element);
+				Component output = TextUtil.fromMinecraft(element);
 				if (output == null)
 					return Component.nullToEmpty("");
 				return output;
@@ -132,7 +132,7 @@ public class NBTTagReference<T> implements TagReference<T, CompoundTag> {
 			return StringTag.valueOf(((CharSequence) value).toString());
 		
 		if (Component.class.isAssignableFrom(valueType))
-			return TextInst.toMinecraft((Component) value);
+			return TextUtil.toMinecraft((Component) value);
 		
 		throw new IllegalArgumentException("Cannot convert " + valueType.getName() + " to nbt!");
 	}

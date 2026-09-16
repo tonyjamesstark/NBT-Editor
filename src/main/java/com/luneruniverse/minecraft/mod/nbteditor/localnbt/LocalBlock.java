@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
@@ -108,7 +108,7 @@ public class LocalBlock implements LocalNBT {
 		if (name == null)
 			getOrCreateNBT().remove("CustomName");
 		else
-			getOrCreateNBT().put("CustomName", TextInst.toMinecraft(name));
+			getOrCreateNBT().put("CustomName", TextUtil.toMinecraft(name));
 	}
 	@Override
 	public String getDefaultName() {

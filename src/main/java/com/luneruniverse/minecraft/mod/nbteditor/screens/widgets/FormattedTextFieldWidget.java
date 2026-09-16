@@ -12,7 +12,6 @@ import java.util.function.UnaryOperator;
 import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -434,7 +433,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		
 		@Override
 		protected String onCopy(String text, int pos, int len) {
-			return TextInst.toString(TextUtil.substring(this.text, pos, pos + len));
+			return TextUtil.toString(TextUtil.substring(this.text, pos, pos + len));
 		}
 		
 		@Override
