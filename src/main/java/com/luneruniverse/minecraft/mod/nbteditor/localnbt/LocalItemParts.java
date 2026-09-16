@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.Item;
@@ -36,14 +35,14 @@ public class LocalItemParts extends LocalItem {
 		if (this.item == null)
 			this.item = Items.AIR;
 		
-		this.cachedItem = MainUtil.copyAirable(item);
+		this.cachedItem = LocalItem.copyAirable(item);
 		this.cachedNbt = (this.nbt == null ? null : this.nbt.copy());
 	}
 	private LocalItemParts(LocalItemParts toCopy) {
 		this.item = toCopy.item;
 		this.nbt = (toCopy.nbt == null ? null : toCopy.nbt.copy());
 		this.count = toCopy.count;
-		this.cachedItem = MainUtil.copyAirable(toCopy.cachedItem);
+		this.cachedItem = LocalItem.copyAirable(toCopy.cachedItem);
 		this.cachedNbt = (toCopy.cachedNbt == null ? null : toCopy.cachedNbt.copy());
 	}
 	
@@ -114,7 +113,7 @@ public class LocalItemParts extends LocalItem {
 	}
 	@Override
 	public String getDefaultName() {
-		return MainUtil.getBaseItemNameSafely(getCachedItem()).getString();
+		return LocalItem.defaultNameOf(getCachedItem()).getString();
 	}
 	
 	@Override

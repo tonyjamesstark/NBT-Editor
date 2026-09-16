@@ -16,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.FormattedTextFi
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.ImageToLoreWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.EntityTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
@@ -37,7 +36,7 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	protected void initEditor() {
 		
 		nameFormatted = FormattedTextFieldWidget.create(nameFormatted, 16, 64, width - 32, 24 + font.lineHeight * 3,
-				itemNameType ? MainUtil.getBaseItemNameSafely(((LocalItem) localNBT).getEditableItem()) : localNBT.getName(),
+				itemNameType ? LocalItem.defaultNameOf(((LocalItem) localNBT).getEditableItem()) : localNBT.getName(),
 						false, StyleUtil.getBaseNameStyle(localNBT, itemNameType), text -> {
 			if (itemNameType)
 				((LocalItem) localNBT).getEditableItem().set(MVComponentType.ITEM_NAME, text);

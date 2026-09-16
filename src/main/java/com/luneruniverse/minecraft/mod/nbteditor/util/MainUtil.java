@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.mojang.datafixers.DSL.TypeReference;
@@ -197,21 +196,10 @@ public class MainUtil {
 	
 	
 	
-	public static Component getBaseItemNameSafely(ItemStack item) {
-		Component name = item.get(MVComponentType.ITEM_NAME);
-		if (name != null)
-			return name;
-		return item.getItem().getName(item);
-	}
 	
 	
 	
 	
-	public static ItemStack copyAirable(ItemStack item) {
-		ItemStack output = item.transmuteCopy(item.getItem(), item.getCount());
-		output.setPopTime(item.getPopTime());
-		return output;
-	}
 	
 	
 	

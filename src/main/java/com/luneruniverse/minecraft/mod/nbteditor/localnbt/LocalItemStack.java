@@ -67,7 +67,7 @@ public class LocalItemStack extends LocalItem {
 	}
 	@Override
 	public String getDefaultName() {
-		return MainUtil.getBaseItemNameSafely(item).getString();
+		return LocalItem.defaultNameOf(item).getString();
 	}
 	
 	@Override
@@ -131,7 +131,7 @@ public class LocalItemStack extends LocalItem {
 	
 	@Override
 	public LocalItemStack copy() {
-		return new LocalItemStack(MainUtil.copyAirable(item));
+		return new LocalItemStack(LocalItem.copyAirable(item));
 	}
 	
 }
