@@ -1,12 +1,12 @@
 package com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SlotUtil;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class HandItemReference implements ItemReference {
 	
@@ -32,7 +32,7 @@ public class HandItemReference implements ItemReference {
 	
 	@Override
 	public void saveItem(ItemStack toSave, Runnable onFinished) {
-		MainUtil.saveItem(hand, toSave);
+		PlayerItems.saveItem(hand, toSave);
 		onFinished.run();
 	}
 	

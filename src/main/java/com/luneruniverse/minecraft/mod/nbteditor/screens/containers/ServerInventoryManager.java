@@ -2,7 +2,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.containers;
 
 import java.util.List;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SlotUtil;
 
 import net.minecraft.world.Container;
@@ -14,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class ServerInventoryManager {
 	
@@ -73,7 +73,7 @@ public class ServerInventoryManager {
 		for (int i = 0; i < serverInv.getContainerSize(); i++) {
 			ItemStack item = playerInv.getItem(i);
 			if (!ItemStack.matches(item, serverInv.getItem(i))) {
-				MainUtil.clickCreativeStack(item, SlotUtil.invToContainer(i));
+				PlayerItems.clickCreativeStack(item, SlotUtil.invToContainer(i));
 				serverInv.setItem(i, item.copy());
 			}
 		}

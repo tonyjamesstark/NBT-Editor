@@ -20,7 +20,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.It
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.WrittenBookTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.Command;
@@ -31,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class BookCommand extends ClientCommand {
 	
@@ -63,7 +63,7 @@ public class BookCommand extends ClientCommand {
 		item.remove(MVComponentType.WRITTEN_BOOK_CONTENT);
 		if (formatted) {
 			Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.book.convert.formatting_saved"));
-			MainUtil.get(item, true);
+			PlayerItems.get(item, true);
 		} else
 			ref.saveItem(item, Component.translatableEscape("nbteditor.book.convert.success"));
 		return !formatted;

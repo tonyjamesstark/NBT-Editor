@@ -4,7 +4,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -12,6 +11,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandRegistration;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.world.item.ItemStack;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class GetItemCommand extends ClientCommand {
 	
@@ -30,7 +30,7 @@ public class GetItemCommand extends ClientCommand {
 		Command<FabricClientCommandSource> getItem = context -> {
 			int count = getDefaultArg(context, "count", 1, Integer.class);
 			ItemStack item = context.getArgument("item", ItemInput.class).createItemStack(count);
-			MainUtil.getWithMessage(item);
+			PlayerItems.getWithMessage(item);
 			return Command.SINGLE_SUCCESS;
 		};
 		

@@ -1,11 +1,11 @@
 package com.luneruniverse.minecraft.mod.nbteditor.localnbt;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public abstract class LocalItem implements LocalNBT {
 	
@@ -57,7 +57,7 @@ public abstract class LocalItem implements LocalNBT {
 		ItemStack item = getReadableItem();
 		if (item.isEmpty())
 			return false;
-		MainUtil.getWithMessage(item);
+		PlayerItems.getWithMessage(item);
 		return true;
 	}
 	

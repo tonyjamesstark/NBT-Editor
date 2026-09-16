@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ActionResult;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.CursorHistoryScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SingleDynamicItem;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.Command;
@@ -20,6 +19,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class GetLostItemCommand extends ClientCommand {
 	
@@ -68,7 +68,7 @@ public class GetLostItemCommand extends ClientCommand {
 			if (LOST_ITEM == null)
 				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.get.lost_item.none"));
 			else
-				MainUtil.getWithMessage(LOST_ITEM.getItem());
+				PlayerItems.getWithMessage(LOST_ITEM.getItem());
 			return Command.SINGLE_SUCCESS;
 		});
 	}

@@ -22,7 +22,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.ImageToLoreWidg
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.ImportPosWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
@@ -36,6 +35,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.client.Minecraft;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class ImportScreen extends OverlaySupportingScreen {
 	
@@ -85,7 +85,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 			ItemStack painting = new ItemStack(Items.PAINTING);
 			painting.nbte$setCustomName(Component.literal(name).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GOLD)));
 			ItemTagReferences.LORE.set(painting, imgLore);
-			MainUtil.getWithMessage(painting);
+			PlayerItems.getWithMessage(painting);
 		}, () -> {});
 	}
 	

@@ -24,7 +24,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTMan
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -40,6 +39,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.util.FileUtil;
 import net.minecraft.client.Minecraft;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIO;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class NBTExportCommand extends ClientCommand {
 	
@@ -145,7 +145,7 @@ public class NBTExportCommand extends ClientCommand {
 					ContainerIO.fillId(blockEntityTag, "minecraft:command_block");
 					blockEntityTag.putString("Command", getVanillaCommand(ref));
 					ItemTagReferences.BLOCK_ENTITY_DATA.set(cmdBlock, blockEntityTag);
-					MainUtil.getWithMessage(cmdBlock);
+					PlayerItems.getWithMessage(cmdBlock);
 				});
 				return Command.SINGLE_SUCCESS;
 			})).then(literal("get").executes(context -> {
@@ -153,7 +153,7 @@ public class NBTExportCommand extends ClientCommand {
 				return Command.SINGLE_SUCCESS;
 			})).then(literal("item").executes(context -> {
 				NBTReference.getReference(EXPORT_ITEM_FILTER, false, ref -> {
-					ref.getLocalNBT().toItem(true).ifPresentOrElse(MainUtil::getWithMessage,
+					ref.getLocalNBT().toItem(true).ifPresentOrElse(PlayerItems::getWithMessage,
 							() -> Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
 				});
 				return Command.SINGLE_SUCCESS;

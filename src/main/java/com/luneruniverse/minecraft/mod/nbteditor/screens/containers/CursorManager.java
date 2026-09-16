@@ -2,7 +2,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.containers;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SetCursorC2SPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -11,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.client.Minecraft;
 import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class CursorManager {
 	
@@ -121,7 +121,7 @@ public class CursorManager {
 			if (currentBranch != currentRoot) {
 				ItemStack cursor = currentBranch.getMenu().getCarried();
 				if (currentRootHasServerCursor) {
-					MainUtil.get(cursor, true);
+					PlayerItems.get(cursor, true);
 					cursor = ItemStack.EMPTY;
 				}
 				AccessWidenedApi.setCursorStackSilently(currentRoot.getMenu(), cursor);

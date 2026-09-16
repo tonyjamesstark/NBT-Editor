@@ -17,7 +17,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -29,6 +28,7 @@ import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class ClientHandledScreen extends net.minecraft.client.gui.screens.inventory.ContainerScreen implements OldEventBehavior, IgnoreCloseScreenPacket {
 	
@@ -193,7 +193,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 								item = item.copy();
 								item.setCount(1);
 							}
-							MainUtil.dropCreativeStack(item);
+							PlayerItems.dropCreativeStack(item);
 						}
 						case SWAP -> {}
 						case QUICK_CRAFT -> throw new IllegalArgumentException("Invalid ContainerInput: " + actionType);

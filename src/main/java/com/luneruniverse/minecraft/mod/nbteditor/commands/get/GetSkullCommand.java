@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -18,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.util.StringUtil;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class GetSkullCommand extends ClientCommand {
 	
@@ -41,7 +41,7 @@ public class GetSkullCommand extends ClientCommand {
 			}
 			ItemStack item = new ItemStack(Items.PLAYER_HEAD, 1);
 			ItemTagReferences.PROFILE_NAME.set(item, Optional.of(player));
-			MainUtil.getWithMessage(item);
+			PlayerItems.getWithMessage(item);
 			return Command.SINGLE_SUCCESS;
 		}));
 	}

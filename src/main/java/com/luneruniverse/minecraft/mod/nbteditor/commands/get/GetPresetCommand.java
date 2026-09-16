@@ -22,6 +22,7 @@ import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class GetPresetCommand extends ClientCommand {
 	
@@ -61,7 +62,7 @@ public class GetPresetCommand extends ClientCommand {
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		presetItems.forEach((name, item) -> {
 			builder.then(literal(name).executes(context -> {
-				MainUtil.getWithMessage(item.get().copy());
+				PlayerItems.getWithMessage(item.get().copy());
 				return Command.SINGLE_SUCCESS;
 			}));
 		});

@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
@@ -25,6 +24,7 @@ import tsp.headdb.ported.LocalHead;
 import tsp.headdb.ported.Utils;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class InventoryUtils {
 
@@ -255,7 +255,7 @@ public class InventoryUtils {
     public static void purchaseHead(Head head, int amount, String category, String description) {
         ItemStack item = head.getItemStack();
         item.setCount(amount);
-        MainUtil.getWithMessage(item);
+        PlayerItems.getWithMessage(item);
     }
 
 }

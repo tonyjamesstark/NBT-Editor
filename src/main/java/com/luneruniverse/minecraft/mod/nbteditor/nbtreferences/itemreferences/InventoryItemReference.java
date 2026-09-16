@@ -1,10 +1,10 @@
 package com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class InventoryItemReference implements ItemReference {
 	
@@ -39,7 +39,7 @@ public class InventoryItemReference implements ItemReference {
 	
 	@Override
 	public void saveItem(ItemStack toSave, Runnable onFinished) {
-		MainUtil.saveItem(slot, toSave);
+		PlayerItems.saveItem(slot, toSave);
 		onFinished.run();
 	}
 	
