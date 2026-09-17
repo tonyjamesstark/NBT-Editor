@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestPage;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.DynamicItems;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageLoadLevel;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ClientChestItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ClientChestDataVersionScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
@@ -76,7 +75,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 	private Button nextPageJump;
 	
 	private ClientChestScreen() {
-		super(6, TextInst.translatable("nbteditor.client_chest"));
+		super(6, Component.translatableEscape("nbteditor.client_chest"));
 	}
 	private void setPageData(ClientChestPage pageData) {
 		ItemStack[] items = pageData.getItemsOrThrow();
@@ -110,7 +109,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 				}
 				return super.keyPressed(input);
 			}
-		}.name(TextInst.translatable("nbteditor.client_chest.page_name"));
+		}.name(Component.translatableEscape("nbteditor.client_chest.page_name"));
 		nameField.setMaxLength(Integer.MAX_VALUE);
 		nameField.setResponder(name -> {
 			if (NBTEditorClient.CLIENT_CHEST.isNameUsedByOther(name, PAGE)) {
@@ -122,7 +121,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 		});
 		this.addRenderableWidget(nameField);
 		
-		pageField = new EditBox(font, this.leftPos - 63, this.topPos + 22, 35, 16, TextInst.of("")) {
+		pageField = new EditBox(font, this.leftPos - 63, this.topPos + 22, 35, 16, Component.nullToEmpty("")) {
 			@Override
 			public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 				double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
@@ -147,54 +146,54 @@ public class ClientChestScreen extends ClientHandledScreen {
 		pageField.nbte$setFilter(MainUtil.intPredicate(() -> 0, NBTEditorClient.CLIENT_CHEST::getPageCount, true));
 		this.addRenderableWidget(pageField);
 		
-		MutableComponent prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
-		MutableComponent nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
+		MutableComponent prevKeybind = Component.translatableEscape("nbteditor.keybind.page.down");
+		MutableComponent nextKeybind = Component.translatableEscape("nbteditor.keybind.page.up");
 		if (ConfigScreen.isInvertedPageKeybinds()) {
 			MutableComponent temp = prevKeybind;
 			prevKeybind = nextKeybind;
 			nextKeybind = temp;
 		}
 		
-		this.addRenderableWidget(prevPage = Buttons.of(this.leftPos - 87, this.topPos + 20, 20, 20, TextInst.of("<"), btn -> {
+		this.addRenderableWidget(prevPage = Buttons.of(this.leftPos - 87, this.topPos + 20, 20, 20, Component.nullToEmpty("<"), btn -> {
 			navigationClicked = true;
 			prevPage();
-		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
-				.append(prevKeybind).append(TextInst.translatable("nbteditor.keybind.page.prev")))));
+		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(Component.literal("")
+				.append(prevKeybind).append(Component.translatableEscape("nbteditor.keybind.page.prev")))));
 		
-		this.addRenderableWidget(nextPage = Buttons.of(this.leftPos - 24, this.topPos + 20, 20, 20, TextInst.of(">"), btn -> {
+		this.addRenderableWidget(nextPage = Buttons.of(this.leftPos - 24, this.topPos + 20, 20, 20, Component.nullToEmpty(">"), btn -> {
 			navigationClicked = true;
 			nextPage();
-		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
-				.append(nextKeybind).append(TextInst.translatable("nbteditor.keybind.page.next")))));
+		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(Component.literal("")
+				.append(nextKeybind).append(Component.translatableEscape("nbteditor.keybind.page.next")))));
 		
-		this.addRenderableWidget(prevPageJump = Buttons.of(this.leftPos - 87, this.topPos + 44, 39, 20, TextInst.of("<<"), btn -> {
+		this.addRenderableWidget(prevPageJump = Buttons.of(this.leftPos - 87, this.topPos + 44, 39, 20, Component.nullToEmpty("<<"), btn -> {
 			navigationClicked = true;
 			prevPageJump();
-		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.translatable("nbteditor.keybind.page.shift")
-				.append(prevKeybind).append(TextInst.translatable("nbteditor.keybind.page.prev_jump")))));
+		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(Component.translatableEscape("nbteditor.keybind.page.shift")
+				.append(prevKeybind).append(Component.translatableEscape("nbteditor.keybind.page.prev_jump")))));
 		
-		this.addRenderableWidget(nextPageJump = Buttons.of(this.leftPos - 43, this.topPos + 44, 39, 20, TextInst.of(">>"), btn -> {
+		this.addRenderableWidget(nextPageJump = Buttons.of(this.leftPos - 43, this.topPos + 44, 39, 20, Component.nullToEmpty(">>"), btn -> {
 			navigationClicked = true;
 			nextPageJump();
-		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.translatable("nbteditor.keybind.page.shift")
-				.append(nextKeybind).append(TextInst.translatable("nbteditor.keybind.page.next_jump")))));
+		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(Component.translatableEscape("nbteditor.keybind.page.shift")
+				.append(nextKeybind).append(Component.translatableEscape("nbteditor.keybind.page.next_jump")))));
 		
-		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 68, 83, 20, ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"), btn -> {
+		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 68, 83, 20, ConfigScreen.isLockSlots() ? Component.translatableEscape("nbteditor.client_chest.slots.unlock") : Component.translatableEscape("nbteditor.client_chest.slots.lock"), btn -> {
 			navigationClicked = true;
 			if (ConfigScreen.isLockSlotsRequired()) {
 				btn.active = false;
 				ConfigScreen.setLockSlots(true);
 			} else
 				ConfigScreen.setLockSlots(!ConfigScreen.isLockSlots());
-			btn.setMessage(ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"));
+			btn.setMessage(ConfigScreen.isLockSlots() ? Component.translatableEscape("nbteditor.client_chest.slots.unlock") : Component.translatableEscape("nbteditor.client_chest.slots.lock"));
 		})).active = !ConfigScreen.isLockSlotsRequired();
 		
-		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 92, 83, 20, TextInst.translatable("nbteditor.client_chest.reload_page"), btn -> {
+		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 92, 83, 20, Component.translatableEscape("nbteditor.client_chest.reload_page"), btn -> {
 			navigationClicked = true;
 			LoadingScreen.show(ClientChestHelper.reloadPage(PAGE), this::close, (loaded, pageData) -> show());
 		}));
 		
-		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 116, 83, 20, TextInst.translatable("nbteditor.client_chest.clear_page"), btn -> {
+		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 116, 83, 20, Component.translatableEscape("nbteditor.client_chest.clear_page"), btn -> {
 			navigationClicked = true;
 			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value) {
@@ -204,8 +203,8 @@ public class ClientChestScreen extends ClientHandledScreen {
 				}
 				
 				minecraft.setScreenAndShow(ClientChestScreen.this);
-			}, TextInst.translatable("nbteditor.client_chest.clear_page.title"), TextInst.translatable("nbteditor.client_chest.clear_page.desc"),
-					TextInst.translatable("nbteditor.client_chest.clear_page.yes"), TextInst.translatable("nbteditor.client_chest.clear_page.no")));
+			}, Component.translatableEscape("nbteditor.client_chest.clear_page.title"), Component.translatableEscape("nbteditor.client_chest.clear_page.desc"),
+					Component.translatableEscape("nbteditor.client_chest.clear_page.yes"), Component.translatableEscape("nbteditor.client_chest.clear_page.no")));
 		}));
 		
 		
@@ -320,7 +319,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 	
 	@Override
 	protected Component getRenderedTitle() {
-		MutableComponent title = TextInst.copy(this.title).append(" (" + (PAGE + 1) + ")");
+		MutableComponent title = this.title.copy().append(" (" + (PAGE + 1) + ")");
 		return NBTEditorClient.CLIENT_CHEST.isProcessingPage(PAGE) ? title.append("*") : title;
 	}
 	

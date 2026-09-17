@@ -16,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.ImageToLoreWidget;
@@ -52,7 +51,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 					if (defaultDataVersion.isEmpty() && !nbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE))
 						MainUtil.client.player.sendSystemMessage(TextUtil.parseTranslatableFormatted("nbteditor.nbt.import.data_version.unknown", file.getName()));
 					if (nbt.nbte$getIntOrDefault("DataVersion") > Version.getDataVersion())
-						MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.import.data_version.new", file.getName()));
+						MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.import.data_version.new", file.getName()));
 					LocalNBT.deserialize(nbt, defaultDataVersion.orElse(Version.getDataVersion())).ifPresent(localNBT -> {
 						if (localNBT instanceof LocalItem item)
 							item.receive();
@@ -63,7 +62,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 					});
 				} catch (Exception e) {
 					NBTEditor.LOGGER.error("Error while importing a .nbt file", e);
-					MainUtil.client.player.sendSystemMessage(TextInst.literal(e.getClass().getName() + ": " + e.getMessage()).withStyle(ChatFormatting.RED));
+					MainUtil.client.player.sendSystemMessage(Component.literal(e.getClass().getName() + ": " + e.getMessage()).withStyle(ChatFormatting.RED));
 				}
 				continue;
 			}
@@ -82,7 +81,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 				name = name.substring(0, nameDot);
 			
 			ItemStack painting = new ItemStack(Items.PAINTING);
-			painting.nbte$setCustomName(TextInst.literal(name).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GOLD)));
+			painting.nbte$setCustomName(Component.literal(name).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GOLD)));
 			ItemTagReferences.LORE.set(painting, imgLore);
 			MainUtil.getWithMessage(painting);
 		}, () -> {});
@@ -92,7 +91,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 	private NamedTextFieldWidget dataVersion;
 	
 	public ImportScreen() {
-		super(TextInst.of("Import"));
+		super(Component.nullToEmpty("Import"));
 		msg = TextUtil.getLongTranslatableTextLines("nbteditor.nbt.import.desc");
 	}
 	
@@ -101,7 +100,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 		super.init();
 		dataVersion = addRenderableWidget(
 				new NamedTextFieldWidget(16, 64 + font.lineHeight * msg.size() + 16, 100, 16, dataVersion)
-				.name(TextInst.translatable("nbteditor.nbt.import.data_version"))
+				.name(Component.translatableEscape("nbteditor.nbt.import.data_version"))
 				.tooltip(new MVTooltip("nbteditor.nbt.import.data_version.desc")));
 		addRenderableWidget(Buttons.of(this.width - 116, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> onClose()));
 	}

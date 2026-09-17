@@ -10,7 +10,6 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
@@ -36,8 +35,8 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 			private final Component msg;
 			private final Component tooltip;
 			private ListContextMenuAction(String msg, String tooltip) {
-				this.msg = TextInst.translatable(msg);
-				this.tooltip = tooltip == null ? null : TextInst.translatable(tooltip);
+				this.msg = Component.translatableEscape(msg);
+				this.tooltip = tooltip == null ? null : Component.translatableEscape(tooltip);
 			}
 			private ListContextMenuAction(String msg) {
 				this(msg, null);
@@ -72,12 +71,12 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		public void setIndex(int index) {
 			this.index = index;
 			if (indexed) {
-				this.indexText = TextInst.literal("(#" + (index + 1) + ") ");
+				this.indexText = Component.literal("(#" + (index + 1) + ") ");
 				this.indexTextOffset = named ? 0 : MainUtil.client.font.width(this.indexText);
 				if (named)
 					((ConfigPathNamed) value).setNamePrefix(this.indexText);
 			} else {
-				this.indexText = TextInst.of("");
+				this.indexText = Component.nullToEmpty("");
 				this.indexTextOffset = 0;
 			}
 		}
@@ -129,7 +128,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 				}
 				Component msg = action.msg;
 				if (action == ListContextMenuAction.REMOVE)
-					msg = TextInst.copy(msg).withStyle(color == -1 ? ChatFormatting.RED : ChatFormatting.GOLD);
+					msg = msg.copy().withStyle(color == -1 ? ChatFormatting.RED : ChatFormatting.GOLD);
 				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, msg, contextMenuX + 25, y + 2, color);
 				y += MainUtil.client.font.lineHeight + 2;
 			}
@@ -185,11 +184,11 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 								switch (action) {
 									case MOVE -> {
 										InputOverlay.show(
-												TextInst.translatable("nbteditor.configurable.list.move"),
+												Component.translatableEscape("nbteditor.configurable.list.move"),
 												StringInput.builder()
 														.withDefault(index + 1 + "")
 														.withPlaceholder(
-																TextInst.translatable("nbteditor.configurable.list.move.index"))
+																Component.translatableEscape("nbteditor.configurable.list.move.index"))
 														.withValidator(
 																MainUtil.intPredicate(() -> 1, () -> parent.paths.size() - 1, false))
 														.build(),
@@ -211,10 +210,10 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 									case DUPLICATE -> {
 										if (Keys.hasShiftDown()) {
 											InputOverlay.show(
-													TextInst.translatable("nbteditor.configurable.list.duplicate"),
+													Component.translatableEscape("nbteditor.configurable.list.duplicate"),
 													StringInput.builder()
 															.withPlaceholder(
-																	TextInst.translatable("nbteditor.configurable.list.duplicate.amount"))
+																	Component.translatableEscape("nbteditor.configurable.list.duplicate.amount"))
 															.withValidator(
 																	MainUtil.intPredicate(1, Integer.MAX_VALUE, false))
 															.build(),
@@ -330,7 +329,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		this.indexed = indexed;
 		
 		super.setSorter((a, b) -> a - b);
-		super.setConfigurable(-1, new ConfigButton(20, TextInst.of("+"), btn -> {
+		super.setConfigurable(-1, new ConfigButton(20, Component.nullToEmpty("+"), btn -> {
 			addConfigurable(defaultEntry.clone(true));
 			onChanged.forEach(listener -> listener.onValueChanged(null));
 		}));
@@ -410,7 +409,7 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 					context.pose().translate((float) (-PADDING / 2), (float) (-(yOffset + height / 2)));
 					context.pose().scale((float) (2), (float) (2));
 					context.pose().translate((float) (PADDING / 2 - 0.5), (float) (yOffset + height / 2));
-					MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, TextInst.of("⋮"), 0,
+					MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, Component.nullToEmpty("⋮"), 0,
 							-MainUtil.client.font.lineHeight / 2, -1);
 					context.pose().popMatrix();
 				}

@@ -58,7 +58,7 @@ public class MVTooltip {
 	}
 	
 	private static Component combine(List<Component> lines) {
-		MutableComponent combined = TextInst.literal("");
+		MutableComponent combined = Component.literal("");
 		for (int i = 0; i < lines.size(); i++) {
 			if (i > 0)
 				combined = combined.append(" ");
@@ -81,7 +81,7 @@ public class MVTooltip {
 		this(Arrays.stream(lines).flatMap(line -> TextUtil.splitText(line).stream()).toList());
 	}
 	public MVTooltip(String... keys) {
-		this(Arrays.asList(keys).stream().map(TextInst::translatable).toList().toArray(new MutableComponent[0]));
+		this(Arrays.asList(keys).stream().map(Component::translatableEscape).toList().toArray(new MutableComponent[0]));
 	}
 	
 	public List<FormattedCharSequence> getLines() {

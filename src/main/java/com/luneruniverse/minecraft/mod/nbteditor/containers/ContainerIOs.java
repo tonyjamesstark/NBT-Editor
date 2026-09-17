@@ -13,12 +13,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItemStack;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -92,18 +92,18 @@ public class ContainerIOs {
 			item -> new LocalEntity(((SpawnEggItem) item.getItem()).getType(item), ItemTagReferences.ENTITY_DATA.get(item)),
 			(item, entity) -> ItemTagReferences.ENTITY_DATA.set(item, MainUtil.fillId(entity.getNBT(), entity.getId().toString())));
 	private static final Function<EntityType<?>, ItemEntityContainerIO> EQUIPMENT_IO =
-			entityId -> ItemEntityContainerIO.forEntityTagIO(new EquipmentContainerIO(false).forNbtCompoundEquipment(),
+			entityId -> ItemEntityContainerIO.forEntityTagIO(EquipmentContainerIO.forNbtCompoundEquipment(false),
 					entityId);
 	private static final ContainerIO<LocalEntity> HORSE_IO = ContainerIO.forLocalNBT(
-			new EquipmentContainerIO(false).forNbtCompoundEquipment());
+			EquipmentContainerIO.forNbtCompoundEquipment(false));
 	private static final ContainerIO<LocalEntity> BASIC_HORSE_IO = ContainerIO.forLocalNBT(
-			new EquipmentContainerIO(false).forNbtCompoundEquipment());
+			EquipmentContainerIO.forNbtCompoundEquipment(false));
 	private static final ContainerIO<LocalEntity> DONKEY_IO = ContainerIO.forLocalNBT(
 			new ConcatContainerIO<>(
-							new EquipmentContainerIO(false).forNbtCompoundEquipment(), new DonkeyChestContainerIO(false)));
+							EquipmentContainerIO.forNbtCompoundEquipment(false), new DonkeyChestContainerIO(false)));
 	private static final ContainerIO<LocalEntity> LLAMA_IO = ContainerIO.forLocalNBT(
 			new ConcatContainerIO<>(
-							new EquipmentContainerIO(true).forNbtCompoundEquipment(), new DonkeyChestContainerIO(true)));
+							EquipmentContainerIO.forNbtCompoundEquipment(true), new DonkeyChestContainerIO(true)));
 	private static final ContainerIO<LocalEntity> VILLAGER_IO = new ConcatContainerIO<>(
 			EQUIPMENT_IO.apply(EntityTypes.VILLAGER).entity(),
 			ContainerIO.forLocalNBT(new OrderNbtListContainerIO(8).forNbtCompound("Inventory")));
@@ -295,7 +295,7 @@ public class ContainerIOs {
 			ItemStack section = subContainers.get();
 			String subPath = (path == null ? i + "" : path + "." + i);
 			section.nbte$setCustomName(
-					TextInst.of(TextInst.translatable("nbteditor.hdb.section").getString() + ": " + subPath));
+					Component.nullToEmpty(Component.translatableEscape("nbteditor.hdb.section").getString() + ": " + subPath));
 			writeRecursively(new LocalItemStack(section), subContainers,
 					contents.subList(i * sectionSize, Math.min(contents.size(), (i + 1) * sectionSize)), subPath);
 			sections[i] = section;

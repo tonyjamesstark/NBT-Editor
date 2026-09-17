@@ -1,10 +1,10 @@
 package com.luneruniverse.minecraft.mod.nbteditor.commands;
 
+import net.minecraft.network.chat.Component;
 import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandManager.argument;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.ClientChestPageNameArgumentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestScreen;
 import com.mojang.brigadier.Command;
@@ -39,7 +39,7 @@ public class ClientChestCommand extends ClientCommand {
 		})).then(argument("name", ClientChestPageNameArgumentType.pageName()).executes(context -> {
 			Integer page = NBTEditorClient.CLIENT_CHEST.getPageFromName(context.getArgument("name", String.class));
 			if (page == null || page >= NBTEditorClient.CLIENT_CHEST.getPageCount())
-				throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.client_chest.name_not_found")).create();
+				throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.client_chest.name_not_found")).create();
 			ClientChestScreen.PAGE = page;
 			ClientChestScreen.show();
 			return Command.SINGLE_SUCCESS;

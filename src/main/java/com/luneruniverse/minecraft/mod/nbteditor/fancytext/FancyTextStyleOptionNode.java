@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -27,7 +27,7 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 			case OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND, CHANGE_PAGE, COPY_TO_CLIPBOARD -> MVTextEvents.ClickAction.fromName(
 					option.name().toLowerCase()).newEventParse(value == null ? "" : value).map(style::withClickEvent).orElse(style);
 			case SHOW_TEXT -> style.withHoverEvent(
-					MVTextEvents.HoverAction.SHOW_TEXT.newEvent(value == null ? TextInst.of("") : FancyText.parse(value)));
+					MVTextEvents.HoverAction.SHOW_TEXT.newEvent(value == null ? Component.nullToEmpty("") : FancyText.parse(value)));
 			case SHOW_ITEM -> {
 				ItemStack item;
 				try {
@@ -67,7 +67,7 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 				if (value == null)
 					yield style.withFont(FontDescription.DEFAULT);
 				try {
-					yield style.withFont(new FontDescription.Resource(IdentifierInst.of(value)));
+					yield style.withFont(new FontDescription.Resource(Identifier.parse(value)));
 				} catch (IdentifierException e) {
 					yield style.withFont(FontDescription.DEFAULT);
 				}

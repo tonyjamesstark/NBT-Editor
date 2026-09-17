@@ -5,7 +5,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import java.util.Optional;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
@@ -14,6 +13,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.util.StringUtil;
@@ -35,7 +35,7 @@ public class GetSkullCommand extends ClientCommand {
 		builder.then(argument("player", StringArgumentType.word()).executes(context -> {
 			String player = context.getArgument("player", String.class);
 			if (!StringUtil.isValidPlayerName(player)) {
-				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.skull.invalid_player_name"));
+				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.skull.invalid_player_name"));
 				return Command.SINGLE_SUCCESS;
 			}
 			ItemStack item = new ItemStack(Items.PLAYER_HEAD, 1);

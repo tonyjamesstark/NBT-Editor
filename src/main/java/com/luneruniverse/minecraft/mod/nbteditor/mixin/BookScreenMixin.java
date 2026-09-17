@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.BookCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ContainerItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -23,6 +22,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -51,7 +51,7 @@ public class BookScreenMixin extends Screen {
 		if ((Object) this instanceof LecternScreen) {
 			return BlockReference.getLecternBlock().thenApply(optionalRef -> {
 				if (optionalRef.isEmpty()) {
-					MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.no_ref.unknown"));
+					MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.no_ref.unknown"));
 					return Optional.empty();
 				}
 				return optionalRef.map(ref -> new ContainerItemReference<>(ref, 0));
@@ -61,7 +61,7 @@ public class BookScreenMixin extends Screen {
 		try {
 			return CompletableFuture.completedFuture(Optional.of(ItemReference.getHeldItem()));
 		} catch (CommandSyntaxException e) {
-			MainUtil.client.player.sendSystemMessage(TextInst.literal(e.getMessage()).withStyle(ChatFormatting.RED));
+			MainUtil.client.player.sendSystemMessage(Component.literal(e.getMessage()).withStyle(ChatFormatting.RED));
 			return CompletableFuture.completedFuture(Optional.empty());
 		}
 	}
@@ -85,7 +85,7 @@ public class BookScreenMixin extends Screen {
 			return;
 		}
 		
-		openBtn = addRenderableWidget(Buttons.of(16, 64, 100, 20, TextInst.translatable("nbteditor.book.open"), btn -> {
+		openBtn = addRenderableWidget(Buttons.of(16, 64, 100, 20, Component.translatableEscape("nbteditor.book.open"), btn -> {
 			getReference(ref -> {
 				if ((Object) this instanceof LecternScreen)
 					MainUtil.client.player.closeContainer();
@@ -93,7 +93,7 @@ public class BookScreenMixin extends Screen {
 						new com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen(ref, Math.max(0, currentPage)));
 			});
 		}));
-		convertBtn = addRenderableWidget(Buttons.of(16, 64 + 24, 100, 20, TextInst.translatable("nbteditor.book.convert"),
+		convertBtn = addRenderableWidget(Buttons.of(16, 64 + 24, 100, 20, Component.translatableEscape("nbteditor.book.convert"),
 				btn -> getReference(itemRef -> {
 					if (BookCommand.convertBookToWritable(itemRef)) {
 						openBtn.visible = false;

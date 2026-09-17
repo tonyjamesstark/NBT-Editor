@@ -12,6 +12,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.resources.Identifier;
@@ -20,7 +21,7 @@ public class StatusEffectArgumentType implements ArgumentType<MobEffect> {
 	
 	private static final Collection<String> EXAMPLES = Arrays.asList("spooky", "effect");
 	private static final DynamicCommandExceptionType INVALID_EFFECT_EXCEPTION = new DynamicCommandExceptionType(
-				id -> TextInst.translatable("effect.effectNotFound", id));
+				id -> Component.translatableEscape("effect.effectNotFound", id));
 	
 	public static StatusEffectArgumentType statusEffect() {
 		return new StatusEffectArgumentType();

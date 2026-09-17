@@ -1,7 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.commands.factories;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
@@ -10,6 +9,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 
 public class BlockStatesCommand extends ClientCommand {
@@ -18,8 +18,8 @@ public class BlockStatesCommand extends ClientCommand {
 			ref -> ref.getItem().getItem() instanceof BlockItem,
 			ref -> true,
 			null,
-			TextInst.translatable("nbteditor.no_ref.block"),
-			TextInst.translatable("nbteditor.no_hand.no_item.block"));
+			Component.translatableEscape("nbteditor.no_ref.block"),
+			Component.translatableEscape("nbteditor.no_hand.no_item.block"));
 	
 	@Override
 	public String getName() {

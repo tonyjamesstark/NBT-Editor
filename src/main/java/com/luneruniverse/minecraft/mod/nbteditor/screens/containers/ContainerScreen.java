@@ -6,7 +6,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ContainerItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -43,9 +42,9 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 	private boolean navigationClicked;
 	
 	private ContainerScreen(NBTReference<L> ref) {
-		super(3, TextInst.translatable("nbteditor.container.title").append(ref.getLocalNBT().getName()));
+		super(3, Component.translatableEscape("nbteditor.container.title").append(ref.getLocalNBT().getName()));
 		
-		this.unsavedTitle = TextInst.copy(title).append("*");
+		this.unsavedTitle = title.copy().append("*");
 		
 		this.ref = ref;
 		this.localNBT = LocalNBT.copy(ref.getLocalNBT());
@@ -64,14 +63,14 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 		super.init();
 		
 		if (ref instanceof ItemReference item && item.isLockable()) {
-			this.addRenderableWidget(Buttons.of(16, 64, 83, 20, ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"), btn -> {
+			this.addRenderableWidget(Buttons.of(16, 64, 83, 20, ConfigScreen.isLockSlots() ? Component.translatableEscape("nbteditor.client_chest.slots.unlock") : Component.translatableEscape("nbteditor.client_chest.slots.lock"), btn -> {
 				navigationClicked = true;
 				if (ConfigScreen.isLockSlotsRequired()) {
 					btn.active = false;
 					ConfigScreen.setLockSlots(true);
 				} else
 					ConfigScreen.setLockSlots(!ConfigScreen.isLockSlots());
-				btn.setMessage(ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"));
+				btn.setMessage(ConfigScreen.isLockSlots() ? Component.translatableEscape("nbteditor.client_chest.slots.unlock") : Component.translatableEscape("nbteditor.client_chest.slots.lock"));
 			})).active = !ConfigScreen.isLockSlotsRequired();
 		}
 		

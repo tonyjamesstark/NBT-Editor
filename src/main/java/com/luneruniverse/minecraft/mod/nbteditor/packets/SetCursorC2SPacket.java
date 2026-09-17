@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 
 import net.minecraft.world.item.ItemStack;
@@ -9,7 +8,7 @@ import net.minecraft.resources.Identifier;
 
 public class SetCursorC2SPacket implements MVPacket {
 	
-	public static final Identifier ID = IdentifierInst.of("nbteditor", "set_cursor");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("nbteditor", "set_cursor");
 	
 	private final ItemStack item;
 	

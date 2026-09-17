@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.FancyTextArgumentType;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.DisplayScreen;
@@ -34,7 +33,7 @@ public class LoreCommand extends ClientCommand {
 		if (pos < 0)
 			pos = pos + lore.size() + (afterLast ? 1 : 0);
 		if (pos < 0 || pos > lore.size() || (!afterLast && pos == lore.size()))
-			throw new SimpleCommandExceptionType(TextInst.translatable("nbteditor.lore.invalid_line")).create();
+			throw new SimpleCommandExceptionType(Component.translatableEscape("nbteditor.lore.invalid_line")).create();
 		return pos;
 	}
 	
@@ -63,7 +62,7 @@ public class LoreCommand extends ClientCommand {
 			List<Component> lore = ItemTagReferences.LORE.get(item);
 			lore.add(getPos(pos, lore, true), line);
 			ItemTagReferences.LORE.set(item, lore);
-			ref.saveItem(item, TextInst.translatable("nbteditor.lore.edited"));
+			ref.saveItem(item, Component.translatableEscape("nbteditor.lore.edited"));
 			
 			return Command.SINGLE_SUCCESS;
 		};
@@ -79,7 +78,7 @@ public class LoreCommand extends ClientCommand {
 			List<Component> lore = ItemTagReferences.LORE.get(item);
 			lore.remove(getPos(pos, lore, false));
 			ItemTagReferences.LORE.set(item, lore);
-			ref.saveItem(item, TextInst.translatable("nbteditor.lore.edited"));
+			ref.saveItem(item, Component.translatableEscape("nbteditor.lore.edited"));
 			
 			return Command.SINGLE_SUCCESS;
 		};
@@ -96,7 +95,7 @@ public class LoreCommand extends ClientCommand {
 			List<Component> lore = ItemTagReferences.LORE.get(item);
 			lore.set(getPos(pos, lore, false), line);
 			ItemTagReferences.LORE.set(item, lore);
-			ref.saveItem(item, TextInst.translatable("nbteditor.lore.edited"));
+			ref.saveItem(item, Component.translatableEscape("nbteditor.lore.edited"));
 			
 			return Command.SINGLE_SUCCESS;
 		};
@@ -105,35 +104,35 @@ public class LoreCommand extends ClientCommand {
 			ItemStack item = ref.getItem();
 			
 			ItemTagReferences.LORE.set(item, new ArrayList<>());
-			ref.saveItem(item, TextInst.translatable("nbteditor.lore.edited"));
+			ref.saveItem(item, Component.translatableEscape("nbteditor.lore.edited"));
 			
 			return Command.SINGLE_SUCCESS;
 		};
 		Command<FabricClientCommandSource> list = context -> {
-			ItemReference heldItem = ItemReference.getHeldItem(item -> true, TextInst.translatable("nbteditor.no_hand.no_item.to_view"));
+			ItemReference heldItem = ItemReference.getHeldItem(item -> true, Component.translatableEscape("nbteditor.no_hand.no_item.to_view"));
 			ItemStack item = heldItem.getItem();
 			
-			context.getSource().sendFeedback(TextInst.literal("[").withStyle(ChatFormatting.GRAY).append(TextInst.literal("+").withStyle(ChatFormatting.GREEN)).append(TextInst.literal("] ").withStyle(ChatFormatting.GRAY))
+			context.getSource().sendFeedback(Component.literal("[").withStyle(ChatFormatting.GRAY).append(Component.literal("+").withStyle(ChatFormatting.GREEN)).append(Component.literal("] ").withStyle(ChatFormatting.GRAY))
 					.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore add "))
-							.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore add"))))
-					.append(TextInst.literal("[").withStyle(ChatFormatting.GRAY).append(TextInst.literal("Clear").withStyle(ChatFormatting.RED)).append(TextInst.literal("] ").withStyle(ChatFormatting.GRAY))
+							.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore add"))))
+					.append(Component.literal("[").withStyle(ChatFormatting.GRAY).append(Component.literal("Clear").withStyle(ChatFormatting.RED)).append(Component.literal("] ").withStyle(ChatFormatting.GRAY))
 					.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore clear"))
-							.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore clear"))))));
+							.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore clear"))))));
 			
 			List<Component> lore = ItemTagReferences.LORE.get(item);
 			int i = 0;
 			for (Component line : lore) {
 				final int finalI = i;
-				context.getSource().sendFeedback(TextInst.literal("[").withStyle(ChatFormatting.GRAY).append(TextInst.literal("-").withStyle(ChatFormatting.RED)).append(TextInst.literal("]").withStyle(ChatFormatting.GRAY))
+				context.getSource().sendFeedback(Component.literal("[").withStyle(ChatFormatting.GRAY).append(Component.literal("-").withStyle(ChatFormatting.RED)).append(Component.literal("]").withStyle(ChatFormatting.GRAY))
 						.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
-								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore remove " + finalI))))
-						.append(TextInst.literal(" ").withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.ITALIC).append(line)
+								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore remove " + finalI))))
+						.append(Component.literal(" ").withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.ITALIC).append(line)
 						.withStyle(style -> MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreenAndShow(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
-								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore set " + finalI))))));
+								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore set " + finalI))))));
 				i++;
 			}
 			if (lore.isEmpty())
-				context.getSource().sendFeedback(TextInst.translatable("nbteditor.lore.none"));
+				context.getSource().sendFeedback(Component.translatableEscape("nbteditor.lore.none"));
 			
 			return Command.SINGLE_SUCCESS;
 		};

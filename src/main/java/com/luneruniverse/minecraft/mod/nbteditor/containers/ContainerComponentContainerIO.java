@@ -44,14 +44,4 @@ public class ContainerComponentContainerIO implements ContainerIO<ItemStack> {
 		return numSlots;
 	}
 	
-	@Override
-	public int getNumWritten(ItemStack container, ItemStack[] contents) {
-		return numSlots;
-	}
-	
-	@Override
-	public int getWrittenSlotIndex(ItemStack container, ItemStack[] contents, int slot) {
-		return slot;
-	}
-	
 }

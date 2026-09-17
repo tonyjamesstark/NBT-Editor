@@ -4,10 +4,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
@@ -40,7 +39,7 @@ public class LocalBlock implements LocalNBT {
 		
 		String id = MainUtil.updateDynamic(References.BLOCK_NAME,
 				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion).value();
-		Block block = MVRegistry.BLOCK.get(IdentifierInst.of(id));
+		Block block = MVRegistry.BLOCK.get(Identifier.parse(id));
 		
 		BlockStateProperties state = new BlockStateProperties(block.defaultBlockState());
 		state.setValues(MainUtil.updateDynamic(References.BLOCK_STATE,
@@ -102,14 +101,14 @@ public class LocalBlock implements LocalNBT {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> TextInst.of(getDefaultName()));
+		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
 	}
 	@Override
 	public void setName(Component name) {
 		if (name == null)
 			getOrCreateNBT().remove("CustomName");
 		else
-			getOrCreateNBT().put("CustomName", TextInst.toMinecraft(name));
+			getOrCreateNBT().put("CustomName", TextUtil.toMinecraft(name));
 	}
 	@Override
 	public String getDefaultName() {
@@ -200,20 +199,20 @@ public class LocalBlock implements LocalNBT {
 	}
 	@Override
 	public Component toHoverableText() {
-		MutableComponent tooltip = TextInst.translatable("gui.entity_tooltip.type", block.getName());
+		MutableComponent tooltip = Component.translatableEscape("gui.entity_tooltip.type", block.getName());
 		if (!state.getProperties().isEmpty())
 			tooltip.append("\n" + state);
 		Component customName = MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null);
 		if (customName != null)
-			tooltip = TextInst.literal("").append(customName).append("\n").append(tooltip);
+			tooltip = Component.literal("").append(customName).append("\n").append(tooltip);
 		final Component finalTooltip = tooltip;
-		return TextInst.bracketed(getName()).withStyle(
+		return Component.translatableEscape("chat.square_brackets", getName()).withStyle(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(finalTooltip)));
 	}
 	
 	public BlockReference place(BlockPos pos) {
 		BlockReference ref = BlockReference.getBlockWithoutNBT(pos);
-		ref.saveLocalNBT(this, TextInst.translatable("nbteditor.get.block").append(toHoverableText()));
+		ref.saveLocalNBT(this, Component.translatableEscape("nbteditor.get.block").append(toHoverableText()));
 		return ref;
 	}
 	

@@ -15,10 +15,19 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Attempt;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import org.jetbrains.annotations.Nullable;
+import com.mojang.serialization.DynamicOps;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.nbt.NbtFormatException;
 import net.minecraft.network.chat.FormattedText.StyledContentConsumer;
@@ -59,7 +68,7 @@ public class TextUtil {
 	public static List<Component> getLongTranslatableTextLines(String key) {
 		List<Component> lines = new ArrayList<>();
 		for (int i = 1; i <= 50; i++) {
-			Component line = TextInst.translatable(key + "_" + i);
+			Component line = Component.translatableEscape(key + "_" + i);
 			String str = line.getString();
 			if (str.equals(key + "_" + i))
 				break;
@@ -72,7 +81,7 @@ public class TextUtil {
 				} catch (URISyntaxException e) {
 					throw new IllegalArgumentException("Invalid link: " + url, e);
 				}
-				line = TextInst.literal(url)
+				line = Component.literal(url)
 						.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.OPEN_URL.newEvent(uri))
 						.withUnderlined(true).withItalic(true).withColor(ChatFormatting.GOLD));
 			}
@@ -87,19 +96,19 @@ public class TextUtil {
 	public static Component getLongTranslatableText(String key) {
 		List<Component> lines = getLongTranslatableTextLines(key);
 		if (lines.isEmpty())
-			return TextInst.of(key);
-		MutableComponent output = TextInst.copy(lines.get(0));
+			return Component.nullToEmpty(key);
+		MutableComponent output = lines.get(0).copy();
 		for (int i = 1; i < lines.size(); i++)
 			output.append("\n").append(lines.get(i));
 		return output;
 	}
 	
 	public static Component parseTranslatableFormatted(String key, Object... args) {
-		return FancyText.parse(TextInst.translatable(key, args).getString());
+		return FancyText.parse(Component.translatableEscape(key, args).getString());
 	}
 	
 	public static Component substring(Component text, int start, int end) {
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		text.visit(new StyledContentConsumer<Boolean>() {
 			private int i;
 			@Override
@@ -111,7 +120,7 @@ public class TextUtil {
 				if (i >= start) {
 					if (end >= 0 && i + str.length() > end)
 						return accept(style, str.substring(0, end - i));
-					output.append(TextInst.literal(str).withStyle(style));
+					output.append(Component.literal(str).withStyle(style));
 					i += str.length();
 					if (end >= 0 && i == end)
 						return Optional.of(true);
@@ -131,14 +140,14 @@ public class TextUtil {
 	}
 	
 	public static Component deleteCharAt(Component text, int index) {
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		AtomicInteger pos = new AtomicInteger(0);
 		text.visit((style, str) -> {
 			int strLen = str.length();
 			if (pos.getPlain() <= index && index < pos.getPlain() + strLen)
 				str = new StringBuilder(str).deleteCharAt(index - pos.getPlain()).toString();
 			if (!str.isEmpty())
-				output.append(TextInst.literal(str).setStyle(style));
+				output.append(Component.literal(str).setStyle(style));
 			pos.setPlain(pos.getPlain() + strLen);
 			return Optional.empty();
 		}, Style.EMPTY);
@@ -146,7 +155,7 @@ public class TextUtil {
 	}
 	
 	public static Component joinLines(List<Component> lines) {
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		for (int i = 0; i < lines.size(); i++) {
 			if (i > 0)
 				output.append("\n");
@@ -166,36 +175,36 @@ public class TextUtil {
 	}
 	
 	public static Component stripInvalidChars(Component text, boolean allowLineBreaks) {
-		MutableComponent output = TextInst.literal("");
+		MutableComponent output = Component.literal("");
 		text.visit((style, str) -> {
-			output.append(TextInst.literal(stripInvalidChars(str, allowLineBreaks)).setStyle(style));
+			output.append(Component.literal(stripInvalidChars(str, allowLineBreaks)).setStyle(style));
 			return Optional.empty();
 		}, Style.EMPTY);
 		return output;
 	}
 	
 	public static Component attachFileTextOptions(MutableComponent link, File file) {
-		return link.append(" ").append(TextInst.translatable("nbteditor.file_options.show").withStyle(style ->
+		return link.append(" ").append(Component.translatableEscape("nbteditor.file_options.show").withStyle(style ->
 				style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(
 						file.getAbsoluteFile().getParentFile().getAbsolutePath()))))
-				.append(" ").append(TextInst.translatable("nbteditor.file_options.delete").withStyle(style ->
+				.append(" ").append(Component.translatableEscape("nbteditor.file_options.delete").withStyle(style ->
 				MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreenAndShow(
 						new FancyConfirmScreen(confirmed -> {
 							if (confirmed) {
 								if (file.exists()) {
 									try {
 										Files.deleteIfExists(file.toPath());
-										MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.success", "§6" + file.getName()));
+										MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.success", "§6" + file.getName()));
 									} catch (IOException e) {
 										NBTEditor.LOGGER.error("Error deleting file", e);
-										MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.error", "§6" + file.getName()));
+										MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.error", "§6" + file.getName()));
 									}
 								} else
-									MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.missing", "§6" + file.getName()));
+									MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.missing", "§6" + file.getName()));
 							}
 							MainUtil.client.setScreenAndShow(null);
-						}, TextInst.translatable("nbteditor.file_options.delete.title", file.getName()),
-								TextInst.translatable("nbteditor.file_options.delete.desc", file.getName()))))));
+						}, Component.translatableEscape("nbteditor.file_options.delete.title", file.getName()),
+								Component.translatableEscape("nbteditor.file_options.delete.desc", file.getName()))))));
 	}
 	
 	public static boolean isTextFormatted(Component text, Style base) {
@@ -225,25 +234,95 @@ public class TextUtil {
 	
 	public static Component fromStringSafely(String str, boolean eitherFormat) {
 		try {
-			Component output = TextInst.fromString(str, eitherFormat);
+			Component output = fromString(str, eitherFormat);
 			if (output != null)
 				return output;
 		} catch (IllegalArgumentException e) {}
-		return TextInst.of(str);
+		return Component.nullToEmpty(str);
 	}
 	public static Component fromSNbtSafely(String snbt) {
 		try {
-			return TextInst.fromSNbt(snbt);
+			return fromSNbt(snbt);
 		} catch (CommandSyntaxException | NbtFormatException e) {}
-		return TextInst.of(snbt);
+		return Component.nullToEmpty(snbt);
 	}
 	public static Component fromJsonSafely(String json) {
 		try {
-			Component output = TextInst.fromJson(json);
+			Component output = fromJson(json);
 			if (output != null)
 				return output;
 		} catch (JsonParseException e) {}
-		return TextInst.of(json);
+		return Component.nullToEmpty(json);
+	}
+	
+	
+	/**
+	 * Throws when <code>str</code> is neither valid SNBT nor valid JSON; the suppressed causes say
+	 * which parse failed and why. {@link #fromStringSafely} yields the raw string instead.
+	 */
+	public static @Nullable Component fromString(String str, boolean eitherFormat) throws IllegalArgumentException {
+		IllegalArgumentException wrapper;
+		try {
+			return fromSNbt(str);
+		} catch (CommandSyntaxException | NbtFormatException e) {
+			wrapper = new IllegalArgumentException("Failed to parse text");
+			wrapper.addSuppressed(e);
+			if (!eitherFormat)
+				throw wrapper;
+		}
+
+		try {
+			return fromJson(str);
+		} catch (JsonParseException e) {
+			wrapper.addSuppressed(e);
+			throw wrapper;
+		}
+	}
+	public static String toString(Component text) throws IllegalArgumentException {
+		try {
+			return toSNbt(text);
+		} catch (NbtFormatException | JsonParseException e) {
+			throw new IllegalArgumentException("Failed to stringify text", e);
+		}
+	}
+	
+	public static @Nullable Component fromMinecraft(Tag mc) throws IllegalArgumentException {
+		try {
+			return fromNbt(mc);
+		} catch (NbtFormatException | JsonParseException e) {
+			throw new IllegalArgumentException("Failed to parse text", e);
+		}
+	}
+	public static Tag toMinecraft(Component text) throws IllegalArgumentException {
+		try {
+			return toNbt(text);
+		} catch (NbtFormatException | JsonParseException e) {
+			throw new IllegalArgumentException("Failed to stringify text", e);
+		}
+	}
+	
+	/** Throws when <code>snbt</code> is not valid SNBT; {@link #fromSNbtSafely} yields the raw string instead. */
+	public static Component fromSNbt(String snbt) throws CommandSyntaxException, NbtFormatException {
+		return fromNbt(NbtIO.parseSnbt(snbt));
+	}
+	public static String toSNbt(Component text) throws NbtFormatException {
+		return toNbt(text).toString();
+	}
+	
+	private static DynamicOps<JsonElement> jsonOps() {
+		return DynamicRegistryManagerHolder.get().createSerializationContext(JsonOps.INSTANCE);
+	}
+	/** Throws when <code>json</code> is not valid text JSON; {@link #fromJsonSafely} yields the raw string instead. */
+	public static @Nullable Component fromJson(String json) throws JsonParseException {
+		return Attempt.ofResult(ComponentSerialization.CODEC.parse(jsonOps(), JsonParser.parseString(json)))
+				.getSuccessOrThrow(JsonParseException::new);
+	}
+	
+	public static Component fromNbt(Tag nbt) throws NbtFormatException {
+		return Attempt.ofResult(ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, nbt)).getSuccessOrThrow(NbtFormatException::new);
+	}
+	public static Tag toNbt(Component text) throws NbtFormatException {
+		return Attempt.ofResult(ComponentSerialization.CODEC.encodeStart(NbtOps.INSTANCE, text)).getSuccessOrThrow(NbtFormatException::new);
 	}
 	
 }

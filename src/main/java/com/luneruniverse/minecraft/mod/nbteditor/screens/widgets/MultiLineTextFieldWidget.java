@@ -8,23 +8,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextSearch;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 
-import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -33,7 +28,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
@@ -41,190 +35,6 @@ import net.minecraft.util.Util;
 import net.minecraft.client.gui.narration.NarratableEntry.NarrationPriority;
 
 public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable, NarratableEntry {
-	
-	private class FindAndReplaceWidget extends TranslatedGroupWidget {
-		private static String findValue = "";
-		private static String replaceValue = "";
-		private static boolean regex = false;
-		
-		private final NamedTextFieldWidget find;
-		private final NamedTextFieldWidget replace;
-		private final Button regexBtn;
-		private boolean dragging;
-		private Matcher lastRegexMatch;
-		
-		public FindAndReplaceWidget() {
-			super(MainUtil.client.getWindow().getGuiScaledWidth() / 2 - 100,
-					MainUtil.client.getWindow().getGuiScaledHeight() / 2 - 30, 200);
-			find = addWidget(new NamedTextFieldWidget(0, 0, 176, 16)
-					.name(TextInst.translatable("nbteditor.multi_line_text.find")));
-			replace = addWidget(new NamedTextFieldWidget(0, 20, 200, 16)
-					.name(TextInst.translatable("nbteditor.multi_line_text.replace")));
-			regexBtn = addWidget(Buttons.of(180, -2, 20, 20,
-					TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")), btn -> {
-				regex = !regex;
-				btn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
-			}, new MVTooltip("nbteditor.multi_line_text.regex")));
-			addWidget(Buttons.of(0, 40, 40, 20, TextInst.translatable("nbteditor.multi_line_text.find"), btn -> {
-				goToNext(Keys.hasShiftDown(), true);
-			}));
-			addWidget(Buttons.of(44, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace"), btn -> {
-				if (goToNext(Keys.hasShiftDown(), true))
-					replaceSel();
-			}));
-			addWidget(Buttons.of(112, 40, 64, 20, TextInst.translatable("nbteditor.multi_line_text.replace_all"), btn -> {
-				boolean first = true;
-				int prevCursor = cursor;
-				cursor = 0;
-				while (goToNext(false, false)) {
-					if (first)
-						first = false;
-					else {
-						undo.remove(0);
-						onUndoDiscard();
-					}
-					replaceSel();
-				}
-				if (first)
-					cursor = prevCursor;
-			}));
-			addWidget(Buttons.of(180, 40, 20, 20, TextInst.translatable("nbteditor.multi_line_text.x"), btn -> {
-				OverlaySupportingScreen.setOverlayStatic(null);
-			}));
-			
-			if (selStart != selEnd)
-				findValue = getSelectedText();
-			find.setMaxLength(Integer.MAX_VALUE);
-			find.setValue(findValue);
-			find.setResponder(str -> findValue = str);
-			setFocused(find);
-			
-			replace.setMaxLength(Integer.MAX_VALUE);
-			replace.setValue(replaceValue);
-			replace.setResponder(str -> replaceValue = str);
-		}
-		
-		private boolean goToNext(boolean backward, boolean wrap) {
-			if (findValue.isEmpty())
-				return false;
-			if (backward) {
-				if (cursor == 0 || !goToRange(text, findValue, cursor - 1, true))
-					return wrap && goToRange(text, findValue, text.length(), true);
-			} else {
-				if (!goToRange(text, findValue, cursor, false))
-					return wrap && goToRange(text, findValue, 0, false);
-			}
-			return true;
-		}
-		private boolean goToRange(String str, String expr, int start, boolean last) {
-			if (regex) {
-				if (last)
-					str = str.substring(0, start);
-				try {
-					Matcher matcher = Pattern.compile(expr).matcher(str);
-					if (!matcher.find(last ? 0 : start))
-						return false;
-					int numMatches = 0;
-					do {
-						numMatches++;
-						selStart = matcher.start();
-						selEnd = matcher.end();
-						if (selStart == selEnd)
-							return false;
-					} while (last && matcher.find());
-					if (last) {
-						matcher.reset();
-						for (int i = 0; i < numMatches; i++)
-							matcher.find();
-					}
-					lastRegexMatch = matcher;
-				} catch (PatternSyntaxException e) {
-					return false;
-				}
-			} else {
-				int i = last ? str.substring(0, start).lastIndexOf(expr) : str.indexOf(expr, start);
-				if (i == -1)
-					return false;
-				selStart = i;
-				selEnd = selStart + expr.length();
-			}
-			cursor = selEnd;
-			cursorX = -1;
-			return true;
-		}
-		private void replaceSel() {
-			if (selStart == selEnd)
-				return;
-			if (!regex) {
-				write(replaceValue);
-				return;
-			}
-			StringBuilder replacement = new StringBuilder();
-			try {
-				lastRegexMatch.appendReplacement(replacement, replaceValue);
-				replacement.delete(0, lastRegexMatch.start());
-			} catch (IllegalArgumentException | IndexOutOfBoundsException e) {
-				replacement.setLength(0);
-				replacement.append(replaceValue);
-			}
-			write(replacement.toString());
-		}
-		
-		@Override
-		public void renderPre(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-			MVDrawableHelper.fill(context, -16, -16, 216, 76, 0xC8101010);
-		}
-		
-		@Override
-		protected boolean mouseClickedPre(double mouseX, double mouseY, int button) {
-			if (isMouseOver(mouseX, mouseY) && !(mouseX >= 0 && mouseX <= 200 && mouseY >= 0 && mouseY <= 60))
-				dragging = true;
-			return false;
-		}
-		@Override
-		protected boolean mouseReleasedPre(double mouseX, double mouseY, int button) {
-			dragging = false;
-			return false;
-		}
-		@Override
-		public boolean mouseDraggedPre(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-			if (dragging)
-				addTranslation(deltaX, deltaY, 0);
-			return false;
-		}
-		
-		@Override
-		public boolean keyPressed(KeyEvent input) {
-			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
-			if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-				OverlaySupportingScreen.setOverlayStatic(null);
-				return true;
-			}
-			if (keyCode == GLFW.GLFW_KEY_ENTER) {
-				goToNext(Keys.hasShiftDown(), true);
-				return true;
-			}
-			if (keyCode == GLFW.GLFW_KEY_TAB) {
-				if (getFocused() == find)
-					setFocused(replace);
-				else
-					setFocused(find);
-				return true;
-			}
-			if (keyCode == GLFW.GLFW_KEY_R && Keys.hasControlDown() && !Keys.hasShiftDown() && !Keys.hasAltDown()) {
-				regex = !regex;
-				regexBtn.setMessage(TextInst.translatable("nbteditor.multi_line_text.regex." + (regex ? "on" : "off")));
-				return true;
-			}
-			
-			return super.keyPressed(input);
-		}
-		
-		@Override
-		public boolean isMouseOver(double mouseX, double mouseY) {
-			return mouseX >= -16 && mouseX <= 216 && mouseY >= -16 && mouseY <= 76;
-		}
-	}
 	
 	private static final Font textRenderer = MainUtil.client.font;
 	
@@ -281,6 +91,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 	private ScrollBarWidget scrollBar;
 	
 	private SuggestingTextFieldWidget suggestor;
+	private TextSearch.Match lastMatch;
 	
 	protected MultiLineTextFieldWidget(int x, int y, int width, int height, String text,
 			Function<String, Component> formatter, boolean newLines, Consumer<String> onChange) {
@@ -488,13 +299,13 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		renderedLines.clear();
 		
 		String text = this.text;
-		Component formattedText = (formatter == null ? TextInst.of(text) : formatter.apply(text));
+		Component formattedText = (formatter == null ? Component.nullToEmpty(text) : formatter.apply(text));
 		boolean endsWithNewLine = false;
 		while (!text.isEmpty()) {
 			if (text.charAt(0) == '\n') {
 				endsWithNewLine = true;
-				lines.add(TextInst.of("\n"));
-				renderedLines.add(TextInst.of(""));
+				lines.add(Component.nullToEmpty("\n"));
+				renderedLines.add(Component.nullToEmpty(""));
 				text = text.substring(1);
 				formattedText = TextUtil.substring(formattedText, 1);
 				continue;
@@ -513,7 +324,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			formattedText = TextUtil.substring(formattedText, extraPos);
 		}
 		if (endsWithNewLine) {
-			Component emptyLine = TextInst.of("");
+			Component emptyLine = Component.nullToEmpty("");
 			lines.add(emptyLine);
 			renderedLines.add(emptyLine);
 		}
@@ -675,6 +486,72 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		return text.substring(getSelStart(), getSelEnd());
 	}
 	
+	/**
+	 * Moves the selection onto the next occurrence of <code>query</code>, searching from the cursor.
+	 * @param query A literal substring, or a regex when <code>regex</code> is set
+	 * @param regex
+	 * @param backward Whether to search towards the start of the text instead
+	 * @param wrap Whether to continue from the far end when there is no occurrence ahead
+	 * @return Whether one was found, and so whether the selection moved
+	 */
+	public boolean findNext(String query, boolean regex, boolean backward, boolean wrap) {
+		if (query.isEmpty())
+			return false;
+		if (backward) {
+			if (cursor == 0 || !selectMatch(query, regex, cursor - 1, true))
+				return wrap && selectMatch(query, regex, text.length(), true);
+		} else {
+			if (!selectMatch(query, regex, cursor, false))
+				return wrap && selectMatch(query, regex, 0, false);
+		}
+		return true;
+	}
+	private boolean selectMatch(String query, boolean regex, int from, boolean backward) {
+		TextSearch.Match match = TextSearch.find(text, query, from, backward, regex);
+		if (match == null)
+			return false;
+		lastMatch = match;
+		selStart = match.start();
+		selEnd = match.end();
+		cursor = selEnd;
+		cursorX = -1;
+		return true;
+	}
+	/**
+	 * Replaces the selection, which is expected to be an occurrence {@link #findNext} just moved
+	 * onto; a regex replacement resolves its group references against that occurrence.
+	 * @param replacement
+	 * @param regex
+	 */
+	public void replaceSelection(String replacement, boolean regex) {
+		if (selStart == selEnd)
+			return;
+		write(regex ? TextSearch.expandReplacement(lastMatch, replacement) : replacement);
+	}
+	/**
+	 * Replaces every occurrence of <code>query</code>, from the start of the text, as one undo
+	 * step. Leaves the cursor alone if there was nothing to replace.
+	 * @param query
+	 * @param replacement
+	 * @param regex
+	 */
+	public void replaceAll(String query, String replacement, boolean regex) {
+		boolean first = true;
+		int prevCursor = cursor;
+		cursor = 0;
+		while (findNext(query, regex, false, false)) {
+			if (first)
+				first = false;
+			else {
+				undo.remove(0);
+				onUndoDiscard();
+			}
+			replaceSelection(replacement, regex);
+		}
+		if (first)
+			cursor = prevCursor;
+	}
+	
 	private void moveCursorUp() {
 		Point pos = getXYPos(cursor);
 		if (cursorX == -1)
@@ -752,7 +629,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			return true;
 		}
 		if (isFind(keyCode)) {
-			OverlaySupportingScreen.setOverlayStatic(new FindAndReplaceWidget());
+			OverlaySupportingScreen.setOverlayStatic(new FindAndReplaceWidget(this));
 			return true;
 		}
 		switch (keyCode) {

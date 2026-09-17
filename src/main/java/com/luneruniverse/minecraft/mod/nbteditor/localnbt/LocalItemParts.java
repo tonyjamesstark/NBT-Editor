@@ -7,7 +7,7 @@ import java.util.Set;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
@@ -109,7 +109,7 @@ public class LocalItemParts extends LocalItem {
 		} else {
 			CompoundTag nbt = getOrCreateNBT();
 			nbt.put(nbt.contains("minecraft:custom_name") || !nbt.contains("custom_name") ?
-					"minecraft:custom_name" : "custom_name", TextInst.toMinecraft(name));
+					"minecraft:custom_name" : "custom_name", TextUtil.toMinecraft(name));
 		}
 	}
 	@Override

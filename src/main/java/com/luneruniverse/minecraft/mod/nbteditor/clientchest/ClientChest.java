@@ -28,7 +28,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageTasks.Access;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
@@ -687,10 +686,10 @@ public class ClientChest {
 	private void warnCorrupt() {
 		if (MainUtil.client.player == null)
 			return;
-		MainUtil.client.player.sendSystemMessage(attachShowFolder(TextInst.translatable("nbteditor.client_chest.corrupt_warning")));
+		MainUtil.client.player.sendSystemMessage(attachShowFolder(Component.translatableEscape("nbteditor.client_chest.corrupt_warning")));
 	}
 	public static Component attachShowFolder(MutableComponent text) {
-		return text.append(" ").append(TextInst.translatable("nbteditor.file_options.show").withStyle(
+		return text.append(" ").append(Component.translatableEscape("nbteditor.file_options.show").withStyle(
 				style -> style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(CLIENT_CHEST_FOLDER.getAbsolutePath()))));
 	}
 	

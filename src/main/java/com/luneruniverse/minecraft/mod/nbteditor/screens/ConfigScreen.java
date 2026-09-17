@@ -27,7 +27,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.SmallClientChestPag
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVEnchantments;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigButton;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigCategory;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigItem;
@@ -59,7 +58,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 		private final BiFunction<Integer, Integer, Boolean> showMax;
 		
 		private EnchantLevelMax(String key, BiFunction<Integer, Integer, Boolean> showMax) {
-			this.label = TextInst.translatable(key);
+			this.label = Component.translatableEscape(key);
 			this.showMax = showMax;
 		}
 		
@@ -93,8 +92,8 @@ public class ConfigScreen extends TickableSupportingScreen {
 		private final int level;
 		
 		private CheckUpdatesLevel(String key, int level) {
-			this.label = TextInst.translatable(key);
-			this.desc = TextInst.translatable(key + ".desc");
+			this.label = Component.translatableEscape(key);
+			this.desc = Component.translatableEscape(key + ".desc");
 			this.level = level;
 		}
 		
@@ -132,7 +131,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 		private final boolean compressed;
 		
 		private ItemSizeFormat(String key, int magnitude, boolean compressed) {
-			this.label = TextInst.translatable(key);
+			this.label = Component.translatableEscape(key);
 			this.magnitude = magnitude;
 			this.compressed = compressed;
 		}
@@ -161,7 +160,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 		private final Component label;
 		
 		private CreativeTabsPosition(String key) {
-			this.label = TextInst.translatable(key);
+			this.label = Component.translatableEscape(key);
 		}
 		
 		public boolean isTop() {
@@ -419,13 +418,13 @@ public class ConfigScreen extends TickableSupportingScreen {
 	}
 	
 	private static MutableComponent getEnchantName(Enchantment enchant, int level) {
-		MutableComponent output = TextInst.copy(MVEnchantments.getEnchantmentName(enchant));
+		MutableComponent output = MVEnchantments.getEnchantmentName(enchant).copy();
         if (level != 1 || enchant.getMaxLevel() != 1 || enchantLevelMax == EnchantLevelMax.ALWAYS) {
             output.append(" ");
             if (isEnchantNumberTypeArabic())
             	output.append("" + level);
             else
-            	output.append(TextInst.translatable("enchantment.level." + level));
+            	output.append(Component.translatableEscape("enchantment.level." + level));
         }
         return output;
 	}
@@ -434,8 +433,8 @@ public class ConfigScreen extends TickableSupportingScreen {
 		if (display.shouldShowMax(level, enchant.getMaxLevel())) {
 			text = text.append("/").append(
 					ConfigScreen.isEnchantNumberTypeArabic() ?
-							TextInst.of("" + enchant.getMaxLevel()) :
-							TextInst.translatable("enchantment.level." + enchant.getMaxLevel()));
+							Component.nullToEmpty("" + enchant.getMaxLevel()) :
+							Component.translatableEscape("enchantment.level." + enchant.getMaxLevel()));
 		}
 		return text;
 	}
@@ -452,13 +451,13 @@ public class ConfigScreen extends TickableSupportingScreen {
 	private ConfigPanel panel;
 	
 	public ConfigScreen(Screen parent) {
-		super(TextInst.translatable("nbteditor.config"));
+		super(Component.translatableEscape("nbteditor.config"));
 		this.parent = parent;
-		this.config = new ConfigCategory(TextInst.translatable("nbteditor.config"));
+		this.config = new ConfigCategory(Component.translatableEscape("nbteditor.config"));
 		
-		ConfigCategory mc = new ConfigCategory(TextInst.translatable("nbteditor.config.category.mc"));
-		ConfigCategory guis = new ConfigCategory(TextInst.translatable("nbteditor.config.category.guis"));
-		ConfigCategory functional = new ConfigCategory(TextInst.translatable("nbteditor.config.category.functional"));
+		ConfigCategory mc = new ConfigCategory(Component.translatableEscape("nbteditor.config.category.mc"));
+		ConfigCategory guis = new ConfigCategory(Component.translatableEscape("nbteditor.config.category.guis"));
+		ConfigCategory functional = new ConfigCategory(Component.translatableEscape("nbteditor.config.category.functional"));
 		this.config.setConfigurable("mc", mc);
 		this.config.setConfigurable("guis", guis);
 		this.config.setConfigurable("functional", functional);
@@ -466,126 +465,126 @@ public class ConfigScreen extends TickableSupportingScreen {
 		
 		// ---------- MC ----------
 		
-		mc.setConfigurable("extendChatLimit", new ConfigItem<>(TextInst.translatable("nbteditor.config.chat_limit"),
-				new ConfigValueBoolean(chatLimitExtended, false, 100, TextInst.translatable("nbteditor.config.chat_limit.extended"), TextInst.translatable("nbteditor.config.chat_limit.normal"))
+		mc.setConfigurable("extendChatLimit", new ConfigItem<>(Component.translatableEscape("nbteditor.config.chat_limit"),
+				new ConfigValueBoolean(chatLimitExtended, false, 100, Component.translatableEscape("nbteditor.config.chat_limit.extended"), Component.translatableEscape("nbteditor.config.chat_limit.normal"))
 				.addValueListener(value -> chatLimitExtended = value.getValidValue()))
 				.setTooltip("nbteditor.config.chat_limit.desc"));
 		
-		mc.setConfigurable("tooltipOverflowFix", new ConfigItem<>(TextInst.translatable("nbteditor.config.tooltip_overflow_fix"),
-				new ConfigValueBoolean(tooltipOverflowFix, true, 100, TextInst.translatable("nbteditor.config.tooltip_overflow_fix.enabled"), TextInst.translatable("nbteditor.config.tooltip_overflow_fix.disabled"))
+		mc.setConfigurable("tooltipOverflowFix", new ConfigItem<>(Component.translatableEscape("nbteditor.config.tooltip_overflow_fix"),
+				new ConfigValueBoolean(tooltipOverflowFix, true, 100, Component.translatableEscape("nbteditor.config.tooltip_overflow_fix.enabled"), Component.translatableEscape("nbteditor.config.tooltip_overflow_fix.disabled"))
 				.addValueListener(value -> tooltipOverflowFix = value.getValidValue()))
 				.setTooltip("nbteditor.config.tooltip_overflow_fix.desc"));
 		
-		mc.setConfigurable("maxEnchantLevelDisplay", new ConfigItem<>(TextInst.translatable("nbteditor.config.enchant_level_max"),
+		mc.setConfigurable("maxEnchantLevelDisplay", new ConfigItem<>(Component.translatableEscape("nbteditor.config.enchant_level_max"),
 				ConfigValueDropdown.forEnum(enchantLevelMax, EnchantLevelMax.NEVER, EnchantLevelMax.class)
 				.addValueListener(value -> enchantLevelMax = value.getValidValue()))
 				.setTooltip("nbteditor.config.enchant_level_max.desc"));
 		
-		mc.setConfigurable("useArabicEnchantLevels", new ConfigItem<>(TextInst.translatable("nbteditor.config.enchant_number_type"),
-				new ConfigValueBoolean(enchantNumberTypeArabic, false, 100, TextInst.translatable("nbteditor.config.enchant_number_type.arabic"),
-				TextInst.translatable("nbteditor.config.enchant_number_type.roman"), new MVTooltip(TextInst.translatable("nbteditor.config.enchant_number_type.desc2")))
+		mc.setConfigurable("useArabicEnchantLevels", new ConfigItem<>(Component.translatableEscape("nbteditor.config.enchant_number_type"),
+				new ConfigValueBoolean(enchantNumberTypeArabic, false, 100, Component.translatableEscape("nbteditor.config.enchant_number_type.arabic"),
+				Component.translatableEscape("nbteditor.config.enchant_number_type.roman"), new MVTooltip(Component.translatableEscape("nbteditor.config.enchant_number_type.desc2")))
 				.addValueListener(value -> enchantNumberTypeArabic = value.getValidValue()))
 				.setTooltip("nbteditor.config.enchant_number_type.desc"));
 		
-		mc.setConfigurable("noSlotRestrictions", new ConfigItem<>(TextInst.translatable("nbteditor.config.no_slot_restrictions"),
-				new ConfigValueBoolean(noSlotRestrictions, false, 100, TextInst.translatable("nbteditor.config.no_slot_restrictions.enabled"), TextInst.translatable("nbteditor.config.no_slot_restrictions.disabled"))
+		mc.setConfigurable("noSlotRestrictions", new ConfigItem<>(Component.translatableEscape("nbteditor.config.no_slot_restrictions"),
+				new ConfigValueBoolean(noSlotRestrictions, false, 100, Component.translatableEscape("nbteditor.config.no_slot_restrictions.enabled"), Component.translatableEscape("nbteditor.config.no_slot_restrictions.disabled"))
 				.addValueListener(value -> noSlotRestrictions = value.getValidValue()))
 				.setTooltip("nbteditor.config.no_slot_restrictions.desc"));
 		
-		mc.setConfigurable("screenshotOptions", new ConfigItem<>(TextInst.translatable("nbteditor.config.screenshot_options"),
-				new ConfigValueBoolean(screenshotOptions, true, 100, TextInst.translatable("nbteditor.config.screenshot_options.enabled"), TextInst.translatable("nbteditor.config.screenshot_options.disabled"))
+		mc.setConfigurable("screenshotOptions", new ConfigItem<>(Component.translatableEscape("nbteditor.config.screenshot_options"),
+				new ConfigValueBoolean(screenshotOptions, true, 100, Component.translatableEscape("nbteditor.config.screenshot_options.enabled"), Component.translatableEscape("nbteditor.config.screenshot_options.disabled"))
 				.addValueListener(value -> screenshotOptions = value.getValidValue()))
-				.setTooltip(new MVTooltip(TextInst.translatable("nbteditor.config.screenshot_options.desc", TextInst.translatable("nbteditor.file_options.show"), TextInst.translatable("nbteditor.file_options.delete")))));
+				.setTooltip(new MVTooltip(Component.translatableEscape("nbteditor.config.screenshot_options.desc", Component.translatableEscape("nbteditor.file_options.show"), Component.translatableEscape("nbteditor.file_options.delete")))));
 		
 		// ---------- GUIs ----------
 		
-		guis.setConfigurable("creativeTabsPos", new ConfigItem<>(TextInst.translatable("nbteditor.config.creative_tabs_pos"),
+		guis.setConfigurable("creativeTabsPos", new ConfigItem<>(Component.translatableEscape("nbteditor.config.creative_tabs_pos"),
 				ConfigValueDropdown.forEnum(creativeTabsPos, CreativeTabsPosition.BOTTOM_LEFT, CreativeTabsPosition.class)
 				.addValueListener(value -> creativeTabsPos = value.getValidValue()))
 				.setTooltip("nbteditor.config.creative_tabs_pos.desc"));
 		
-		guis.setConfigurable("scrollSpeed", new ConfigItem<>(TextInst.translatable("nbteditor.config.scroll_speed"),
-				ConfigValueSlider.forDouble(100, scrollSpeed, 5, 0.5, 10, 0.05, value -> TextInst.literal(String.format("%.2f", value)))
+		guis.setConfigurable("scrollSpeed", new ConfigItem<>(Component.translatableEscape("nbteditor.config.scroll_speed"),
+				ConfigValueSlider.forDouble(100, scrollSpeed, 5, 0.5, 10, 0.05, value -> Component.literal(String.format("%.2f", value)))
 				.addValueListener(value -> scrollSpeed = value.getValidValue()))
 				.setTooltip("nbteditor.config.scroll_speed.desc"));
 		
-		guis.setConfigurable("hideFormatButtons", new ConfigItem<>(TextInst.translatable("nbteditor.config.hide_format_buttons"),
-				new ConfigValueBoolean(hideFormatButtons, false, 100, TextInst.translatable("nbteditor.config.hide_format_buttons.enabled"), TextInst.translatable("nbteditor.config.hide_format_buttons.disabled"))
+		guis.setConfigurable("hideFormatButtons", new ConfigItem<>(Component.translatableEscape("nbteditor.config.hide_format_buttons"),
+				new ConfigValueBoolean(hideFormatButtons, false, 100, Component.translatableEscape("nbteditor.config.hide_format_buttons.enabled"), Component.translatableEscape("nbteditor.config.hide_format_buttons.disabled"))
 				.addValueListener(value -> hideFormatButtons = value.getValidValue()))
 				.setTooltip("nbteditor.config.hide_format_buttons.desc"));
 		
-		guis.setConfigurable("hideKeybinds", new ConfigItem<>(TextInst.translatable("nbteditor.config.keybinds"),
-				new ConfigValueBoolean(keybindsHidden, false, 100, TextInst.translatable("nbteditor.config.keybinds.hidden"), TextInst.translatable("nbteditor.config.keybinds.shown"),
+		guis.setConfigurable("hideKeybinds", new ConfigItem<>(Component.translatableEscape("nbteditor.config.keybinds"),
+				new ConfigValueBoolean(keybindsHidden, false, 100, Component.translatableEscape("nbteditor.config.keybinds.hidden"), Component.translatableEscape("nbteditor.config.keybinds.shown"),
 				new MVTooltip("nbteditor.keybind.edit", "nbteditor.keybind.factory", "nbteditor.keybind.container", "nbteditor.keybind.enchant", "nbteditor.keybind.delete"))
 				.addValueListener(value -> keybindsHidden = value.getValidValue()))
 				.setTooltip("nbteditor.config.keybinds.desc"));
 		
-		guis.setConfigurable("invertedPageKeybinds", new ConfigItem<>(TextInst.translatable("nbteditor.config.page_keybinds"),
-				new ConfigValueBoolean(invertedPageKeybinds, false, 100, TextInst.translatable("nbteditor.config.page_keybinds.inverted"), TextInst.translatable("nbteditor.config.page_keybinds.normal"))
+		guis.setConfigurable("invertedPageKeybinds", new ConfigItem<>(Component.translatableEscape("nbteditor.config.page_keybinds"),
+				new ConfigValueBoolean(invertedPageKeybinds, false, 100, Component.translatableEscape("nbteditor.config.page_keybinds.inverted"), Component.translatableEscape("nbteditor.config.page_keybinds.normal"))
 				.addValueListener(value -> invertedPageKeybinds = value.getValidValue()))
 				.setTooltip("nbteditor.config.page_keybinds.desc"));
 		
-		guis.setConfigurable("itemSize", new ConfigItem<>(TextInst.translatable("nbteditor.config.item_size"),
+		guis.setConfigurable("itemSize", new ConfigItem<>(Component.translatableEscape("nbteditor.config.item_size"),
 				ConfigValueDropdown.forEnum(itemSizeFormat, ItemSizeFormat.HIDDEN, ItemSizeFormat.class)
 				.addValueListener(value -> itemSizeFormat = value.getValidValue()))
 				.setTooltip("nbteditor.config.item_size.desc"));
 		
-		guis.setConfigurable("keyTextSize", new ConfigItem<>(TextInst.translatable("nbteditor.config.key_text_size"),
-				ConfigValueSlider.forDouble(100, keyTextSize, 0.5, 0.5, 1, 0.05, value -> TextInst.literal(String.format("%.2f", value)))
+		guis.setConfigurable("keyTextSize", new ConfigItem<>(Component.translatableEscape("nbteditor.config.key_text_size"),
+				ConfigValueSlider.forDouble(100, keyTextSize, 0.5, 0.5, 1, 0.05, value -> Component.literal(String.format("%.2f", value)))
 				.addValueListener(value -> keyTextSize = value.getValidValue()))
 				.setTooltip("nbteditor.config.key_text_size.desc"));
 		
-		guis.setConfigurable("checkUpdates", new ConfigItem<>(TextInst.translatable("nbteditor.config.check_updates"),
+		guis.setConfigurable("checkUpdates", new ConfigItem<>(Component.translatableEscape("nbteditor.config.check_updates"),
 				ConfigValueDropdown.forEnum(checkUpdates, CheckUpdatesLevel.MINOR, CheckUpdatesLevel.class)
 				.addValueListener(value -> checkUpdates = value.getValidValue()))
 				.setTooltip("nbteditor.config.check_updates.desc"));
 		
-		guis.setConfigurable("warnIncompatibleProtocol", new ConfigItem<>(TextInst.translatable("nbteditor.config.warn_incompatible_protocol"),
-				new ConfigValueBoolean(warnIncompatibleProtocol, true, 100, TextInst.translatable("nbteditor.config.warn_incompatible_protocol.enabled"), TextInst.translatable("nbteditor.config.warn_incompatible_protocol.disabled"))
+		guis.setConfigurable("warnIncompatibleProtocol", new ConfigItem<>(Component.translatableEscape("nbteditor.config.warn_incompatible_protocol"),
+				new ConfigValueBoolean(warnIncompatibleProtocol, true, 100, Component.translatableEscape("nbteditor.config.warn_incompatible_protocol.enabled"), Component.translatableEscape("nbteditor.config.warn_incompatible_protocol.disabled"))
 				.addValueListener(value -> warnIncompatibleProtocol = value.getValidValue()))
 				.setTooltip("nbteditor.config.warn_incompatible_protocol.desc"));
 		
 		// ---------- FUNCTIONAL ----------
 		
-		functional.setConfigurable("aliases", new ConfigButton(100, TextInst.translatable("nbteditor.config.aliases"),
+		functional.setConfigurable("aliases", new ConfigButton(100, Component.translatableEscape("nbteditor.config.aliases"),
 				btn -> minecraft.setScreenAndShow(new AliasesScreen(this)), new MVTooltip("nbteditor.config.aliases.desc")));
 		
-		functional.setConfigurable("shortcuts", new ConfigButton(100, TextInst.translatable("nbteditor.config.shortcuts"),
+		functional.setConfigurable("shortcuts", new ConfigButton(100, Component.translatableEscape("nbteditor.config.shortcuts"),
 				btn -> minecraft.setScreenAndShow(new ShortcutsScreen(this)), new MVTooltip("nbteditor.config.shortcuts.desc")));
 		
-		functional.setConfigurable("recreateBlocksAndEntities", new ConfigItem<>(TextInst.translatable("nbteditor.config.recreate_blocks_and_entities"),
-				new ConfigValueBoolean(recreateBlocksAndEntities, false, 100, TextInst.translatable("nbteditor.config.recreate_blocks_and_entities.enabled"), TextInst.translatable("nbteditor.config.recreate_blocks_and_entities.disabled"))
+		functional.setConfigurable("recreateBlocksAndEntities", new ConfigItem<>(Component.translatableEscape("nbteditor.config.recreate_blocks_and_entities"),
+				new ConfigValueBoolean(recreateBlocksAndEntities, false, 100, Component.translatableEscape("nbteditor.config.recreate_blocks_and_entities.enabled"), Component.translatableEscape("nbteditor.config.recreate_blocks_and_entities.disabled"))
 				.addValueListener(value -> recreateBlocksAndEntities = value.getValidValue()))
 				.setTooltip("nbteditor.config.recreate_blocks_and_entities.desc"));
 		
-		functional.setConfigurable("largeClientChest", new ConfigItem<>(TextInst.translatable("nbteditor.config.client_chest_size"),
-				new ConfigValueBoolean(largeClientChest, false, 100, TextInst.translatable("nbteditor.config.client_chest_size.large"), TextInst.translatable("nbteditor.config.client_chest_size.small"))
+		functional.setConfigurable("largeClientChest", new ConfigItem<>(Component.translatableEscape("nbteditor.config.client_chest_size"),
+				new ConfigValueBoolean(largeClientChest, false, 100, Component.translatableEscape("nbteditor.config.client_chest_size.large"), Component.translatableEscape("nbteditor.config.client_chest_size.small"))
 				.addValueListener(value -> largeClientChest = value.getValidValue()))
 				.setTooltip("nbteditor.config.client_chest_size.desc"));
 		
-		functional.setConfigurable("airEditable", new ConfigItem<>(TextInst.translatable("nbteditor.config.air_editable"),
-				new ConfigValueBoolean(airEditable, false, 100, TextInst.translatable("nbteditor.config.air_editable.yes"), TextInst.translatable("nbteditor.config.air_editable.no"))
+		functional.setConfigurable("airEditable", new ConfigItem<>(Component.translatableEscape("nbteditor.config.air_editable"),
+				new ConfigValueBoolean(airEditable, false, 100, Component.translatableEscape("nbteditor.config.air_editable.yes"), Component.translatableEscape("nbteditor.config.air_editable.no"))
 				.addValueListener(value -> airEditable = value.getValidValue()))
 				.setTooltip("nbteditor.config.air_editable.desc"));
 		
-		functional.setConfigurable("specialNumbers", new ConfigItem<>(TextInst.translatable("nbteditor.config.special_numbers"),
-				new ConfigValueBoolean(specialNumbers, true, 100, TextInst.translatable("nbteditor.config.special_numbers.enabled"), TextInst.translatable("nbteditor.config.special_numbers.disabled"))
+		functional.setConfigurable("specialNumbers", new ConfigItem<>(Component.translatableEscape("nbteditor.config.special_numbers"),
+				new ConfigValueBoolean(specialNumbers, true, 100, Component.translatableEscape("nbteditor.config.special_numbers.enabled"), Component.translatableEscape("nbteditor.config.special_numbers.disabled"))
 				.addValueListener(value -> specialNumbers = value.getValidValue()))
 				.setTooltip("nbteditor.config.special_numbers.desc"));
 		
-		functional.setConfigurable("triggerBlockUpdates", new ConfigItem<>(TextInst.translatable("nbteditor.config.trigger_block_updates"),
-				new ConfigValueBoolean(triggerBlockUpdates, true, 100, TextInst.translatable("nbteditor.config.trigger_block_updates.yes"), TextInst.translatable("nbteditor.config.trigger_block_updates.no"))
+		functional.setConfigurable("triggerBlockUpdates", new ConfigItem<>(Component.translatableEscape("nbteditor.config.trigger_block_updates"),
+				new ConfigValueBoolean(triggerBlockUpdates, true, 100, Component.translatableEscape("nbteditor.config.trigger_block_updates.yes"), Component.translatableEscape("nbteditor.config.trigger_block_updates.no"))
 				.addValueListener(value -> triggerBlockUpdates = value.getValidValue()))
 				.setTooltip("nbteditor.config.trigger_block_updates.desc"));
 		
-		functional.setConfigurable("normalText", new ConfigItem<>(TextInst.translatable("nbteditor.config.normal_text"),
-				new ConfigValueBoolean(normalText, false, 100, TextInst.translatable("nbteditor.config.normal_text.yes"), TextInst.translatable("nbteditor.config.normal_text.no"))
+		functional.setConfigurable("normalText", new ConfigItem<>(Component.translatableEscape("nbteditor.config.normal_text"),
+				new ConfigValueBoolean(normalText, false, 100, Component.translatableEscape("nbteditor.config.normal_text.yes"), Component.translatableEscape("nbteditor.config.normal_text.no"))
 				.addValueListener(value -> normalText = value.getValidValue()))
 				.setTooltip("nbteditor.config.normal_text.desc"));
 		
-		functional.setConfigurable("allowSingleQuotes", new ConfigItem<>(TextInst.translatable("nbteditor.config.single_quotes"),
-				new ConfigValueBoolean(singleQuotesAllowed, false, 100, TextInst.translatable("nbteditor.config.single_quotes.allowed"),
-				TextInst.translatable("nbteditor.config.single_quotes.not_allowed"), new MVTooltip("nbteditor.config.single_quotes.example"))
+		functional.setConfigurable("allowSingleQuotes", new ConfigItem<>(Component.translatableEscape("nbteditor.config.single_quotes"),
+				new ConfigValueBoolean(singleQuotesAllowed, false, 100, Component.translatableEscape("nbteditor.config.single_quotes.allowed"),
+				Component.translatableEscape("nbteditor.config.single_quotes.not_allowed"), new MVTooltip("nbteditor.config.single_quotes.example"))
 				.addValueListener(value -> singleQuotesAllowed = value.getValidValue()))
 				.setTooltip("nbteditor.config.single_quotes.desc"));
 		

@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.StyleOption;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
@@ -54,11 +54,11 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 	
 	public static String stringifyFancyText(Component text, Style base, boolean printErrors) {
 		if (ConfigScreen.isNormalText())
-			return TextInst.toString(text);
+			return TextUtil.toString(text);
 		
 		Map.Entry<String, Boolean> output = FancyText.stringify(text, base);
 		if (output.getValue() && printErrors)
-			MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.fancy_text_arg_type.stringify_unsupported"));
+			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.fancy_text_arg_type.stringify_unsupported"));
 		return output.getKey();
 	}
 	
@@ -98,9 +98,9 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 			builder = builder.createOffset(builder.getStart() + lastIndex + 1);
 			for (ChatFormatting format : ChatFormatting.values())
 				builder.suggest(format.code + "", () -> StyleUtil.getName(format));
-			builder.suggest("#", TextInst.translatable("nbteditor.fancy_text_arg_type.custom_color"));
+			builder.suggest("#", Component.translatableEscape("nbteditor.fancy_text_arg_type.custom_color"));
 			if (StyleUtil.SHADOW_COLOR_EXISTS && lastColor == lastIndex)
-				builder.suggest("_", TextInst.translatable("nbteditor.fancy_text_arg_type.shadow_color"));
+				builder.suggest("_", Component.translatableEscape("nbteditor.fancy_text_arg_type.shadow_color"));
 		} else if (lastCloseValue == lastIndex) {
 			if (lastValue != -1) {
 				builder = builder.createOffset(builder.getStart() + lastCloseValue + 1);

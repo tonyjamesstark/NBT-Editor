@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
@@ -26,20 +25,20 @@ import net.minecraft.resources.Identifier;
 
 public class NBTValue extends List2D.List2DValue {
 	
-	private static final Identifier BACK = IdentifierInst.of("nbteditor", "textures/nbt/back.png");
-	private static final Identifier BYTE = IdentifierInst.of("nbteditor", "textures/nbt/byte.png");
-	private static final Identifier SHORT = IdentifierInst.of("nbteditor", "textures/nbt/short.png");
-	private static final Identifier INT = IdentifierInst.of("nbteditor", "textures/nbt/int.png");
-	private static final Identifier LONG = IdentifierInst.of("nbteditor", "textures/nbt/long.png");
-	private static final Identifier FLOAT = IdentifierInst.of("nbteditor", "textures/nbt/float.png");
-	private static final Identifier DOUBLE = IdentifierInst.of("nbteditor", "textures/nbt/double.png");
-	private static final Identifier NUMBER = IdentifierInst.of("nbteditor", "textures/nbt/number.png");
-	private static final Identifier STRING = IdentifierInst.of("nbteditor", "textures/nbt/string.png");
-	private static final Identifier LIST = IdentifierInst.of("nbteditor", "textures/nbt/list.png");
-	private static final Identifier BYTE_ARRAY = IdentifierInst.of("nbteditor", "textures/nbt/byte_array.png");
-	private static final Identifier INT_ARRAY = IdentifierInst.of("nbteditor", "textures/nbt/int_array.png");
-	private static final Identifier LONG_ARRAY = IdentifierInst.of("nbteditor", "textures/nbt/long_array.png");
-	private static final Identifier COMPOUND = IdentifierInst.of("nbteditor", "textures/nbt/compound.png");
+	private static final Identifier BACK = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/back.png");
+	private static final Identifier BYTE = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/byte.png");
+	private static final Identifier SHORT = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/short.png");
+	private static final Identifier INT = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/int.png");
+	private static final Identifier LONG = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/long.png");
+	private static final Identifier FLOAT = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/float.png");
+	private static final Identifier DOUBLE = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/double.png");
+	private static final Identifier NUMBER = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/number.png");
+	private static final Identifier STRING = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/string.png");
+	private static final Identifier LIST = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/list.png");
+	private static final Identifier BYTE_ARRAY = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/byte_array.png");
+	private static final Identifier INT_ARRAY = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/int_array.png");
+	private static final Identifier LONG_ARRAY = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/long_array.png");
+	private static final Identifier COMPOUND = Identifier.fromNamespaceAndPath("nbteditor", "textures/nbt/compound.png");
 	
 	private final NBTEditorScreen<?> screen;
 	private final String key;

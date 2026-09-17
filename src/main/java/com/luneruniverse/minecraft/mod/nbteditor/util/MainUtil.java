@@ -20,11 +20,9 @@ import java.util.zip.ZipException;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.async.UpdateCheckerThread;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ActionResult;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.mojang.datafixers.DSL.TypeReference;
@@ -127,13 +125,13 @@ public class MainUtil {
 	}
 	public static void getWithMessage(ItemStack item) {
 		get(item, true);
-		client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.item").append(item.getDisplayName()));
+		client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.item").append(item.getDisplayName()));
 	}
 	
 	
 	
-	private static final Identifier LOGO = IdentifierInst.of("nbteditor", "textures/logo.png");
-	private static final Identifier LOGO_UPDATE_AVAILABLE = IdentifierInst.of("nbteditor", "textures/logo_update_available.png");
+	private static final Identifier LOGO = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo.png");
+	private static final Identifier LOGO_UPDATE_AVAILABLE = Identifier.fromNamespaceAndPath("nbteditor", "textures/logo_update_available.png");
 	public static void renderLogo(GuiGraphicsExtractor context) {
 		MVDrawableHelper.drawTexture(context,
 				UpdateCheckerThread.UPDATE_AVAILABLE ? LOGO_UPDATE_AVAILABLE : LOGO, 16, 16, 0, 0, 32, 32, 32, 32);
@@ -214,9 +212,9 @@ public class MainUtil {
 			line = lines.get(i);
 			int offsetY = i * renderer.lineHeight + (centerVertical ? -renderer.lineHeight * lines.size() / 2 : 0);
 			if (centerHorizontal)
-				MVDrawableHelper.drawCenteredTextWithShadow(context, renderer, TextInst.of(line), x, y + offsetY, color);
+				MVDrawableHelper.drawCenteredTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
 			else
-				MVDrawableHelper.drawTextWithShadow(context, renderer, TextInst.of(line), x, y + offsetY, color);
+				MVDrawableHelper.drawTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
 		}
 	}
 	
@@ -262,7 +260,7 @@ public class MainUtil {
 			Tag textNbt = nbt.get(key);
 			if (textNbt != null) {
 				try {
-					Component text = TextInst.fromMinecraft(textNbt);
+					Component text = TextUtil.fromMinecraft(textNbt);
 					if (text != null)
 						return text;
 				} catch (IllegalArgumentException e) {}

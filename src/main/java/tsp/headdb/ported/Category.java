@@ -3,7 +3,6 @@ package tsp.headdb.ported;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
@@ -31,7 +30,7 @@ public enum Category {
     
     Category(String name, String translatedName, ChatFormatting color, int location) {
         this.name = name;
-    	this.translatedName = TextInst.translatable(translatedName);
+    	this.translatedName = Component.translatableEscape(translatedName);
         this.color = color;
         this.location = location;
     }

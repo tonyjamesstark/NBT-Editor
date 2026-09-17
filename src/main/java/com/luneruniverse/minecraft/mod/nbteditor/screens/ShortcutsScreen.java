@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandManager;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigItem;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigList;
@@ -15,12 +14,13 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPath
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueText;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class ShortcutsScreen extends TickableSupportingScreen {
 	
-	private static final ConfigItem<ConfigValueText> SHORTCUT_ENTRY = new ConfigItem<>(TextInst.of(""), new ConfigValueText(200, "", ""));
+	private static final ConfigItem<ConfigValueText> SHORTCUT_ENTRY = new ConfigItem<>(Component.nullToEmpty(""), new ConfigValueText(200, "", ""));
 	
 	private final Screen parent;
 	private final ConfigList config;
@@ -28,10 +28,10 @@ public class ShortcutsScreen extends TickableSupportingScreen {
 	private boolean cancel;
 	
 	public ShortcutsScreen(Screen parent) {
-		super(TextInst.translatable("nbteditor.config.shortcuts"));
+		super(Component.translatableEscape("nbteditor.config.shortcuts"));
 		this.parent = parent;
-		this.config = new ConfigList(TextInst.translatable("nbteditor.config.shortcuts").append(" - ")
-				.append(TextInst.translatable("nbteditor.config.shortcuts.example")), false, SHORTCUT_ENTRY);
+		this.config = new ConfigList(Component.translatableEscape("nbteditor.config.shortcuts").append(" - ")
+				.append(Component.translatableEscape("nbteditor.config.shortcuts.example")), false, SHORTCUT_ENTRY);
 		for (String shortcut : ConfigScreen.getShortcuts()) {
 			ConfigItem<ConfigValueText> entry = SHORTCUT_ENTRY.clone(true);
 			entry.getValue().setValue(shortcut);

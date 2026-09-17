@@ -10,10 +10,9 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.EntityReference;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SummonEntityC2SPacket;
@@ -50,7 +49,7 @@ public class LocalEntity implements LocalNBT {
 		tag = MainUtil.updateDynamic(References.ENTITY, tag, nbt.get("DataVersion"), defaultDataVersion);
 		String id = tag.nbte$getStringOrDefault("id");
 		tag.remove("id");
-		return new LocalEntity(MVRegistry.ENTITY_TYPE.get(IdentifierInst.of(id)), tag);
+		return new LocalEntity(MVRegistry.ENTITY_TYPE.get(Identifier.parse(id)), tag);
 	}
 	
 	private EntityType<?> entityType;
@@ -83,14 +82,14 @@ public class LocalEntity implements LocalNBT {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> TextInst.of(getDefaultName()));
+		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
 	}
 	@Override
 	public void setName(Component name) {
 		if (name == null)
 			getOrCreateNBT().remove("CustomName");
 		else
-			getOrCreateNBT().put("CustomName", TextInst.toMinecraft(name));
+			getOrCreateNBT().put("CustomName", TextUtil.toMinecraft(name));
 	}
 	@Override
 	public String getDefaultName() {
@@ -214,7 +213,7 @@ public class LocalEntity implements LocalNBT {
 	@Override
 	public Component toHoverableText() {
 		UUID uuid = nbt.nbte$getUuid("UUID").orElseGet(() -> new UUID(0, 0));
-		return TextInst.bracketed(getName()).withStyle(
+		return Component.translatableEscape("chat.square_brackets", getName()).withStyle(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ENTITY.newEvent(new HoverEvent.EntityTooltipInfo(
 						entityType, uuid, MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null)))));
 	}
@@ -226,7 +225,7 @@ public class LocalEntity implements LocalNBT {
 						.map(packet -> {
 							EntityReference ref = new EntityReference(packet.getWorld(), packet.getUUID(),
 									MVRegistry.ENTITY_TYPE.get(packet.getId()), packet.getNbt());
-							MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.entity")
+							MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.entity")
 									.append(ref.getLocalNBT().toHoverableText()));
 							return ref;
 						}));

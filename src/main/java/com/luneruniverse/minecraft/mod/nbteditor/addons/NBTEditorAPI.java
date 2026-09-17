@@ -69,7 +69,7 @@ public class NBTEditorAPI {
 	 * 		ItemReference ref = MainUtil.getHeldItem();
 	 * 		ItemStack item = ref.getItem();
 	 * 		// Manipulate item
-	 * 		ref.saveItem(item, () -> MainUtil.client.player.sendMessage(TextInst.literal("Myfactory complete!")));
+	 * 		ref.saveItem(item, () -> MainUtil.client.player.sendMessage(Component.literal("Myfactory complete!")));
 	 * 		return Command.SINGLE_SUCCESS;
 	 * 	});
 	 * });

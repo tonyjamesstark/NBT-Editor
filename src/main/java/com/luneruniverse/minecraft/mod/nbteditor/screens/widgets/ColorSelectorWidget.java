@@ -5,13 +5,12 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVSliderWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.EditBox;
@@ -58,7 +57,7 @@ public class ColorSelectorWidget extends GroupWidget {
 		
 	}
 	
-	private static final Identifier HUES = IdentifierInst.of("nbteditor", "textures/hues.png");
+	private static final Identifier HUES = Identifier.fromNamespaceAndPath("nbteditor", "textures/hues.png");
 	
 	private class ColorArea implements Renderable, MVElement {
 		@Override
@@ -115,7 +114,7 @@ public class ColorSelectorWidget extends GroupWidget {
 		Color colorObj = new Color(color);
 		hueValue = (int) (Color.RGBtoHSB(colorObj.getRed(), colorObj.getGreen(), colorObj.getBlue(), new float[3])[0] * 360);
 		addWidget(new MVSliderWidget(x, y + areaSize + 4, areaSize, 20, hueValue / 359.0,
-				() -> TextInst.translatable("nbteditor.color_selector.hue", hueValue), value -> hueValue = (int) (value * 359)) {
+				() -> Component.translatableEscape("nbteditor.color_selector.hue", hueValue), value -> hueValue = (int) (value * 359)) {
 			@Override
 			protected boolean renderSlider(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 				MVDrawableHelper.drawTexture(context, HUES, x + 4, y, 0, 0, width - 8, 20, width - 8, 20);
@@ -136,7 +135,7 @@ public class ColorSelectorWidget extends GroupWidget {
 			}
 		});
 		
-		field = new EditBox(MainUtil.client.font, x + areaSize + 4, y + areaSize + 4, areaSize / 2, 20, TextInst.of(""));
+		field = new EditBox(MainUtil.client.font, x + areaSize + 4, y + areaSize + 4, areaSize / 2, 20, Component.nullToEmpty(""));
 		field.setMaxLength(7);
 		field.setValue("#" + String.format("%08X", color).substring(2, 8));
 		field.setResponder(str -> {

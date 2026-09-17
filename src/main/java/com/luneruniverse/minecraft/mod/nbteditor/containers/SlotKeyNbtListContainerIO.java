@@ -67,23 +67,13 @@ public class SlotKeyNbtListContainerIO implements ContainerIO<ListTag> {
 		container.clear();
 		for (int i = 0; i < Math.min(contents.length, numSlots); i++) {
 			ItemStack item = contents[i];
-			if (item == null || item.isEmpty())
+			if (ContainerIO.isEmpty(item))
 				continue;
 			CompoundTag itemNbt = item.nbte$serialize(true);
 			itemNbt.putByte("Slot", (byte) i);
 			container.add(itemNbt);
 		}
 		return numSlots;
-	}
-	
-	@Override
-	public int getNumWritten(ListTag container, ItemStack[] contents) {
-		return numSlots;
-	}
-	
-	@Override
-	public int getWrittenSlotIndex(ListTag container, ItemStack[] contents, int slot) {
-		return slot;
 	}
 	
 }

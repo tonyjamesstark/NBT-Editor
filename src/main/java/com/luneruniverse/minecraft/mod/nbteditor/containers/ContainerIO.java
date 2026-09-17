@@ -1,7 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.containers;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
@@ -13,18 +12,18 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 public interface ContainerIO<T> {
-	public static final Identifier HELMET_TEXTURE = IdentifierInst.of("minecraft", "container/slot/helmet");
-	public static final Identifier CHESTPLATE_TEXTURE = IdentifierInst.of("minecraft", "container/slot/chestplate");
-	public static final Identifier LEGGINGS_TEXTURE = IdentifierInst.of("minecraft", "container/slot/leggings");
-	public static final Identifier BOOTS_TEXTURE = IdentifierInst.of("minecraft", "container/slot/boots");
-	public static final Identifier SADDLE_TEXTURE = IdentifierInst.of("minecraft", "container/slot/saddle");
-	public static final Identifier HORSE_ARMOR_TEXTURE = IdentifierInst.of("minecraft", "container/slot/horse_armor");
-	public static final Identifier LLAMA_ARMOR_TEXTURE = IdentifierInst.of("minecraft", "container/slot/llama_armor");
-	public static final Identifier SWORD_TEXTURE = IdentifierInst.of("minecraft", "container/slot/sword");
-	public static final Identifier SHIELD_TEXTURE = IdentifierInst.of("minecraft", "container/slot/shield");
+	public static final Identifier HELMET_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/helmet");
+	public static final Identifier CHESTPLATE_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/chestplate");
+	public static final Identifier LEGGINGS_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/leggings");
+	public static final Identifier BOOTS_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/boots");
+	public static final Identifier SADDLE_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/saddle");
+	public static final Identifier HORSE_ARMOR_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/horse_armor");
+	public static final Identifier LLAMA_ARMOR_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/llama_armor");
+	public static final Identifier SWORD_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/sword");
+	public static final Identifier SHIELD_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/shield");
 	
-	public static final Identifier BREWING_FUEL_TEXTURE = IdentifierInst.of("minecraft", "container/slot/brewing_fuel");
-	public static final Identifier POTION_TEXTURE = IdentifierInst.of("minecraft", "container/slot/potion");
+	public static final Identifier BREWING_FUEL_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/brewing_fuel");
+	public static final Identifier POTION_TEXTURE = Identifier.fromNamespaceAndPath("minecraft", "container/slot/potion");
 	
 	public static ContainerIO<ItemStack> forItemStack(ContainerIO<CompoundTag> io) {
 		return DelegateContainerIO.map(io, item -> {
@@ -53,6 +52,30 @@ public interface ContainerIO<T> {
 	}
 	public static ContainerIO<ItemStack> forItemStackEntityTag(ContainerIO<CompoundTag> io, EntityType<?> entityId) {
 		return forItemStackEntityTag(io, EntityType.getKey(entityId).toString());
+	}
+	
+	/**
+	 * A slot holds nothing when it is null or when it is an empty stack. {@link #read} may produce
+	 * either, so every caller that inspects a slot has to accept both.
+	 */
+	public static boolean isEmpty(ItemStack item) {
+		return item == null || item.isEmpty();
+	}
+	
+	/**
+	 * {@link #getWrittenSlotIndex} for an io that compacts, meaning it drops empty slots rather
+	 * than recording them, so each item shifts down by the number of gaps preceding it.
+	 * @param contents
+	 * @param slot
+	 * @return The slot that the item contained within <code>slot</code> will end up in
+	 */
+	public static int getCompactedSlotIndex(ItemStack[] contents, int slot) {
+		int index = slot;
+		for (int i = 0; i < slot; i++) {
+			if (isEmpty(contents[i]))
+				index--;
+		}
+		return index;
 	}
 	
 	public static <T extends LocalNBT> ContainerIO<T> forLocalNBT(ContainerIO<CompoundTag> io) {
@@ -98,18 +121,26 @@ public interface ContainerIO<T> {
 	 * {@link #getWrittenSlotIndex} is not the identity. {@link ConcatContainerIO} uses this as both
 	 * the contents-space stride and the slot-space offset of the next io, so the two only agree when
 	 * this equals the number of slots occupied. A compacting io must therefore be last in a concat.
+	 * <p>Defaults to {@link #getMaxSlots}, which is the answer for every io that does not compact.
 	 * @param container
 	 * @param contents
 	 * @return The number of items in <code>contents</code> that will be written, including empty items
 	 */
-	public int getNumWritten(T container, ItemStack[] contents);
+	public default int getNumWritten(T container, ItemStack[] contents) {
+		return getMaxSlots(container);
+	}
 	/**
+	 * Defaults to the identity, which is the answer for every io that does not compact. An io that
+	 * does compact overrides this with {@link #getCompactedSlotIndex} and overrides
+	 * {@link #getNumWritten} to match.
 	 * @param container
 	 * @param contents
 	 * @param slot
 	 * @return The slot that the item contained within <code>slot</code> will end up in after being written
 	 */
-	public int getWrittenSlotIndex(T container, ItemStack[] contents, int slot);
+	public default int getWrittenSlotIndex(T container, ItemStack[] contents, int slot) {
+		return slot;
+	}
 	
 	public default ContainerIO<T> withTextures(Identifier... textures) {
 		return new DelegateContainerIO<>(this) {

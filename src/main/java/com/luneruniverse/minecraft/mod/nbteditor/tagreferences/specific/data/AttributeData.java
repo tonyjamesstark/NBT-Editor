@@ -5,9 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.AttributeModifierId;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.Operation;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.Slot;
@@ -39,7 +37,7 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 			
 			private final Component name;
 			private Operation(String key) {
-				this.name = TextInst.translatable(key);
+				this.name = Component.translatableEscape(key);
 			}
 			public net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation toMinecraft() {
 				return switch (this) {
@@ -85,7 +83,7 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 			
 			private final Component name;
 			private Slot(String key) {
-				this.name = TextInst.translatable(key);
+				this.name = Component.translatableEscape(key);
 			}
 			public Object toMinecraft() {
 				return switch (this) {
@@ -133,7 +131,7 @@ public record AttributeData(Attribute attribute, double value, Optional<Attribut
 			
 			public Identifier getIdentifier() {
 				if (id instanceof UUID uuid)
-					return IdentifierInst.of("minecraft", uuid.toString());
+					return Identifier.fromNamespaceAndPath("minecraft", uuid.toString());
 				return (Identifier) id;
 			}
 			

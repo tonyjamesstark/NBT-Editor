@@ -4,9 +4,16 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTMan
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 
+/**
+ * A container whose slots are named keys of one compound, as a lectern's {@code Book} or a
+ * jukebox's {@code RecordItem}.
+ *
+ * <p>Nothing here needs the key to already hold an item compound: {@link #read} yields an empty
+ * slot for a key that holds anything else, and {@link #write} overwrites it. So every compound is
+ * supported, including one an earlier edit left malformed -- which for an NBT editor is the point.
+ */
 public class KeysContainerIO implements ContainerIO<CompoundTag> {
 	
 	private final boolean removeWhenEmpty;
@@ -21,11 +28,6 @@ public class KeysContainerIO implements ContainerIO<CompoundTag> {
 	
 	@Override
 	public boolean isSupported(CompoundTag container) {
-		for (String key : keys) {
-			Tag itemNbtElement = container.get(key);
-			if (itemNbtElement != null && !(itemNbtElement instanceof CompoundTag))
-				return false;
-		}
 		return true;
 	}
 	
@@ -53,7 +55,7 @@ public class KeysContainerIO implements ContainerIO<CompoundTag> {
 	public int write(CompoundTag container, ItemStack[] contents) {
 		for (int i = 0; i < keys.length; i++) {
 			ItemStack item = contents[i];
-			if (item == null || item.isEmpty()) {
+			if (ContainerIO.isEmpty(item)) {
 				if (removeWhenEmpty) {
 					container.remove(keys[i]);
 					continue;
@@ -64,16 +66,6 @@ public class KeysContainerIO implements ContainerIO<CompoundTag> {
 			container.put(keys[i], item.nbte$serialize(true));
 		}
 		return keys.length;
-	}
-	
-	@Override
-	public int getNumWritten(CompoundTag container, ItemStack[] contents) {
-		return keys.length;
-	}
-	
-	@Override
-	public int getWrittenSlotIndex(CompoundTag container, ItemStack[] contents, int slot) {
-		return slot;
 	}
 	
 }

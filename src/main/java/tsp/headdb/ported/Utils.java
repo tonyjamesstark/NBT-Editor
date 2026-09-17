@@ -2,9 +2,9 @@ package tsp.headdb.ported;
 
 import java.util.regex.Pattern;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
 public class Utils {
@@ -23,7 +23,7 @@ public class Utils {
     }
 
     public static void sendMessage(String message) {
-        MainUtil.client.player.sendSystemMessage(TextInst.of(colorize(message)));
+        MainUtil.client.player.sendSystemMessage(Component.nullToEmpty(colorize(message)));
     }
 
     public static String colorize(String string) {

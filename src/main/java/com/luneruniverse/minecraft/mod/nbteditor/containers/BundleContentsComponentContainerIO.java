@@ -45,7 +45,7 @@ public class BundleContentsComponentContainerIO implements ContainerIO<ItemStack
 	@Override
 	public int write(ItemStack container, ItemStack[] contents) {
 		container.set(DataComponents.BUNDLE_CONTENTS, new BundleContents(
-				Arrays.stream(contents).filter(item -> item != null && !item.isEmpty()).map(ItemStackTemplate::fromStack).toList()));
+				Arrays.stream(contents).filter(item -> !ContainerIO.isEmpty(item)).map(ItemStackTemplate::fromStack).toList()));
 		return contents.length;
 	}
 	
@@ -56,12 +56,7 @@ public class BundleContentsComponentContainerIO implements ContainerIO<ItemStack
 	
 	@Override
 	public int getWrittenSlotIndex(ItemStack container, ItemStack[] contents, int slot) {
-		int output = slot;
-		for (int i = 0; i < slot; i++) {
-			if (contents[i] == null || contents[i].isEmpty())
-				output--;
-		}
-		return output;
+		return ContainerIO.getCompactedSlotIndex(contents, slot);
 	}
 	
 }

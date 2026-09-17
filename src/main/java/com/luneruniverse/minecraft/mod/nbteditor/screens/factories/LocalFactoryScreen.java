@@ -11,8 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.AttributesCo
 import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.BlockStatesCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.factories.SignboardCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
@@ -30,12 +28,12 @@ import net.minecraft.resources.Identifier;
 
 public class LocalFactoryScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
-	public static final Identifier FACTORY_ICON = IdentifierInst.of("nbteditor", "textures/factory.png");
+	public static final Identifier FACTORY_ICON = Identifier.fromNamespaceAndPath("nbteditor", "textures/factory.png");
 	
 	public record LocalFactoryReference(Component buttonText, Predicate<NBTReference<?>> supported, Consumer<NBTReference<?>> factory) {}
 	public static final List<LocalFactoryReference> BASIC_FACTORIES = new ArrayList<>();
 	private static void addFactory(String key, Predicate<NBTReference<?>> supported, Function<NBTReference<?>, Screen> screen) {
-		BASIC_FACTORIES.add(new LocalFactoryReference(TextInst.translatable(key), supported,
+		BASIC_FACTORIES.add(new LocalFactoryReference(Component.translatableEscape(key), supported,
 				ref -> MainUtil.client.setScreenAndShow(screen.apply(ref))));
 	}
 	private static <T extends NBTReference<?>> void addFactory(String key, Predicate<T> supported, Function<T, Screen> screen, Class<T> clazz) {
@@ -49,7 +47,7 @@ public class LocalFactoryScreen<L extends LocalNBT> extends LocalEditorScreen<L>
 	}
 	static {
 		addFactory("nbteditor", ref -> new NBTEditorScreen<>(ref));
-		BASIC_FACTORIES.add(new LocalFactoryReference(TextInst.translatable("nbteditor.container"),
+		BASIC_FACTORIES.add(new LocalFactoryReference(Component.translatableEscape("nbteditor.container"),
 				OpenCommand.CONTAINER_FILTER, ref -> ContainerScreen.show(ref)));
 		addFactory("nbteditor.book", ref -> ref.getItem().getItem() == Items.WRITTEN_BOOK, BookScreen::new, ItemReference.class);
 		addFactory("nbteditor.display", ref -> new DisplayScreen<>(ref));
@@ -63,7 +61,7 @@ public class LocalFactoryScreen<L extends LocalNBT> extends LocalEditorScreen<L>
 	private ConfigPanel panel;
 	
 	public LocalFactoryScreen(NBTReference<L> ref) {
-		super(TextInst.of("Factories"), ref);
+		super(Component.nullToEmpty("Factories"), ref);
 		this.config = new ConfigCategory();
 		for (LocalFactoryReference factory : BASIC_FACTORIES) {
 			if (factory.supported().test(ref)) {

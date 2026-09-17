@@ -6,10 +6,8 @@ import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
@@ -55,7 +53,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	private FormattedTextFieldWidget lines;
 	
 	public SignboardScreen(NBTReference<L> ref) {
-		super(TextInst.of("Signboard"), ref);
+		super(Component.nullToEmpty("Signboard"), ref);
 		
 		String woodType;
 		boolean hanging;
@@ -82,7 +80,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			};
 		} else
 			textureName = woodType + "_planks";
-		texture = IdentifierInst.of("minecraft", "textures/block/" + textureName + ".png");
+		texture = Identifier.fromNamespaceAndPath("minecraft", "textures/block/" + textureName + ".png");
 		
 		if (localNBT instanceof LocalItem localItem) {
 			CompoundTag nbt = ItemTagReferences.BLOCK_ENTITY_DATA.get(localItem.getEditableItem());
@@ -179,7 +177,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	private List<Component> getLines() {
 		List<Component> output = SignSideTagReferences.TEXT.get(getSideNbt());
 		while (output.size() < 4)
-			output.add(TextInst.of(""));
+			output.add(Component.nullToEmpty(""));
 		return output;
 	}
 	
@@ -187,7 +185,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		ClickEvent event = getClickEvent(line);
 		if (event == null)
 			return line;
-		return TextInst.copy(line).withStyle(style -> style.withClickEvent(event));
+		return line.copy().withStyle(style -> style.withClickEvent(event));
 	}
 	private ClickEvent getClickEvent(Component text) {
 		ClickEvent event = text.getStyle().getClickEvent();
@@ -213,16 +211,16 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	protected void initEditor() {
 		if (NEW_FEATURES) {
 			addRenderableWidget(Buttons.of(16, 64, 100, 20,
-					TextInst.translatable("nbteditor.signboard.side." + (back ? "back" : "front")), btn -> {
+					Component.translatableEscape("nbteditor.signboard.side." + (back ? "back" : "front")), btn -> {
 				back = !back;
 				clearWidgets();
 				init();
 			}));
 			addRenderableWidget(Buttons.of(16 + 104, 64, 100, 20,
-					TextInst.translatable("nbteditor.signboard.wax." + (isWaxed() ? "enabled" : "disabled")), btn -> {
+					Component.translatableEscape("nbteditor.signboard.wax." + (isWaxed() ? "enabled" : "disabled")), btn -> {
 				boolean prevWaxed = isWaxed();
 				setWaxed(!prevWaxed);
-				btn.setMessage(TextInst.translatable("nbteditor.signboard.wax." + (prevWaxed ? "disabled" : "enabled")));
+				btn.setMessage(Component.translatableEscape("nbteditor.signboard.wax." + (prevWaxed ? "disabled" : "enabled")));
 			}));
 		}
 		
@@ -240,17 +238,17 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 			}
 		});
 		for (DyeColor color : DyeColor.values()) {
-			colors.addButton(TextInst.literal("⬛").withStyle(style -> style.withColor(getRenderedColor(color))), btn -> {
+			colors.addButton(Component.literal("⬛").withStyle(style -> style.withColor(getRenderedColor(color))), btn -> {
 				setColor(color);
 				colors.setOpen(false);
-				glowingBtn.get().setMessage(TextInst.translatable("nbteditor.signboard.glowing.enabled")
+				glowingBtn.get().setMessage(Component.translatableEscape("nbteditor.signboard.glowing.enabled")
 						.withStyle(style -> style.withColor(getRenderedColor(getColor()))));
-			}, new MVTooltip(TextInst.of(color.getSerializedName())));
+			}, new MVTooltip(Component.nullToEmpty(color.getSerializedName())));
 		}
 		colors.build();
 		
 		glowingBtn.set(addRenderableWidget(Buttons.of(glowingBtnX, glowingBtnY, 100, 20,
-				TextInst.translatable("nbteditor.signboard.glowing." + (isGlowing() ? "enabled" : "disabled"))
+				Component.translatableEscape("nbteditor.signboard.glowing." + (isGlowing() ? "enabled" : "disabled"))
 				.withStyle(style -> style.withColor(getRenderedColor(getColor()))), btn -> {
 			boolean prevGlowing = isGlowing();
 			if (prevGlowing && Keys.hasShiftDown()) {
@@ -258,7 +256,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				return;
 			}
 			setGlowing(!prevGlowing);
-			btn.setMessage(TextInst.translatable("nbteditor.signboard.glowing." + (prevGlowing ? "disabled" : "enabled"))
+			btn.setMessage(Component.translatableEscape("nbteditor.signboard.glowing." + (prevGlowing ? "disabled" : "enabled"))
 					.withStyle(style -> style.withColor(getRenderedColor(getColor()))));
 			if (!prevGlowing)
 				colors.setOpen(true);

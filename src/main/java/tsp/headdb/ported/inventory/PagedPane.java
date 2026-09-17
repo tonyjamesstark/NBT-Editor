@@ -12,13 +12,13 @@ import java.util.stream.Collectors;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
@@ -46,7 +46,7 @@ public class PagedPane extends ClientHandledScreen {
      * @param pageSize The page size. inventory rows - 2
      */
     public PagedPane(int pageSize, int rows, String title) {
-    	super(rows, TextInst.of(MainUtil.colorize(title)));
+    	super(rows, Component.nullToEmpty(MainUtil.colorize(title)));
         this.pageSize = pageSize;
         pages.put(0, new Page(pageSize));
     }
@@ -263,9 +263,9 @@ public class PagedPane extends ClientHandledScreen {
             controlMain = new Button(itemStack, event -> {
                 if (event.getContainerInput() == ContainerInputMod.RIGHT) {
                 	InputOverlay.show(
-                			TextInst.of("Go to a Specific Page"),
+                			Component.nullToEmpty("Go to a Specific Page"),
                 			StringInput.builder()
-                					.withPlaceholder(TextInst.of("Page #"))
+                					.withPlaceholder(Component.nullToEmpty("Page #"))
                 					.withValidator(MainUtil.intPredicate(1, getPageAmount(), false))
                 					.build(),
                 			page -> selectPage(Integer.parseInt(page) - 1));
@@ -286,8 +286,8 @@ public class PagedPane extends ClientHandledScreen {
     }
 
     protected ItemStack setMeta(ItemStack itemStack, String name, String... lore) {
-        itemStack.nbte$setCustomName(TextInst.of(Utils.colorize(name)));
-        ItemTagReferences.LORE.set(itemStack, Arrays.stream(lore).map(MainUtil::colorize).map(TextInst::of).collect(Collectors.toList()));
+        itemStack.nbte$setCustomName(Component.nullToEmpty(Utils.colorize(name)));
+        ItemTagReferences.LORE.set(itemStack, Arrays.stream(lore).map(MainUtil::colorize).map(Component::nullToEmpty).collect(Collectors.toList()));
         return itemStack;
     }
 

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
@@ -13,6 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -142,7 +142,7 @@ public class InventoryUtils {
 
     public static void openDatabase() {
     	ClientHandledScreen screen = new ClientHandledScreen(6,
-    			TextInst.of(Utils.colorize("&c&lHeadDB &8(" + HeadAPI.getHeads().size() + ")"))) {
+    			Component.nullToEmpty(Utils.colorize("&c&lHeadDB &8(" + HeadAPI.getHeads().size() + ")"))) {
     		@Override
     		protected void slotClicked(Slot slot, int slotId, int button, ContainerInput actionType) {
     			if (slot == null)
@@ -166,8 +166,8 @@ public class InventoryUtils {
                         }
                         if (name.equalsIgnoreCase("search")) {
                         	InputOverlay.show(
-                        			TextInst.of("Search"),
-                        			StringInput.builder().withPlaceholder(TextInst.of("Query")).build(),
+                        			Component.nullToEmpty("Search"),
+                        			StringInput.builder().withPlaceholder(Component.nullToEmpty("Query")).build(),
                         			InventoryUtils::openSearchDatabase);
                             return;
                         }
@@ -189,9 +189,9 @@ public class InventoryUtils {
 
         for (Category category : Category.getValues()) {
             ItemStack item = getUIItem(category.getName(), category.getItem());
-            item.nbte$setCustomName(TextInst.of(Utils.colorize(category.getColor() + "&l" + category.getTranslatedName().toUpperCase())));
-            ItemTagReferences.LORE.set(item, List.of(TextInst.of(
-            		Utils.colorize("&e" + TextInst.translatable("nbteditor.hdb.head_count", HeadAPI.getHeads(category).size()).getString()))));
+            item.nbte$setCustomName(Component.nullToEmpty(Utils.colorize(category.getColor() + "&l" + category.getTranslatedName().toUpperCase())));
+            ItemTagReferences.LORE.set(item, List.of(Component.nullToEmpty(
+            		Utils.colorize("&e" + Component.translatableEscape("nbteditor.hdb.head_count", HeadAPI.getHeads(category).size()).getString()))));
             inventory.setItem(getUILocation(category.getName(), category.getLocation()), item);
         }
 
@@ -245,8 +245,8 @@ public class InventoryUtils {
     }
 
     private static ItemStack buildButton(ItemStack item, String name, String... lore) {
-        item.nbte$setCustomName(TextInst.of(Utils.colorize(name)));
-        ItemTagReferences.LORE.set(item, Arrays.stream(lore).map(Utils::colorize).map(TextInst::of).toList());
+        item.nbte$setCustomName(Component.nullToEmpty(Utils.colorize(name)));
+        ItemTagReferences.LORE.set(item, Arrays.stream(lore).map(Utils::colorize).map(Component::nullToEmpty).toList());
         return item;
     }
     

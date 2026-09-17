@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigCategory;
@@ -21,6 +20,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValu
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +41,7 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 	private ConfigPanel panel;
 	
 	public EnchantmentsScreen(ItemReference ref) {
-		super(TextInst.of("Enchantments"), ref);
+		super(Component.nullToEmpty("Enchantments"), ref);
 		
 		MVRegistry<Enchantment> registry = MVRegistry.getEnchantmentRegistry();
 		Map<String, Enchantment> allEnchantments = registry.getEntrySet().stream()
@@ -63,13 +63,13 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 				})
 				.map(Map.Entry::getKey).toList();
 		String firstEnchant = orderedEnchants.get(0);
-		entry.setConfigurable("enchantment", new ConfigItem<>(TextInst.translatable("nbteditor.enchantments.enchantment"),
+		entry.setConfigurable("enchantment", new ConfigItem<>(Component.translatableEscape("nbteditor.enchantments.enchantment"),
 				ConfigValueDropdown.forList(firstEnchant, firstEnchant, orderedEnchants,
 				allEnchantments.entrySet().stream().filter(enchant -> enchant.getValue().canEnchant(inputItem)).map(Map.Entry::getKey).toList())));
-		entry.setConfigurable("level", new ConfigItem<>(TextInst.translatable("nbteditor.enchantments.level"),
+		entry.setConfigurable("level", new ConfigItem<>(Component.translatableEscape("nbteditor.enchantments.level"),
 				ConfigValueNumber.forInt(1, 1, 1,
 						255)));
-		config = new ConfigList(TextInst.translatable("nbteditor.enchantments"), false, entry);
+		config = new ConfigList(Component.translatableEscape("nbteditor.enchantments"), false, entry);
 		
 		ItemTagReferences.ENCHANTMENTS.get(localNBT.getEditableItem()).getEnchants().forEach(enchant -> {
 			ConfigCategory enchantConfig = entry.clone(true);

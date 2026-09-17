@@ -5,7 +5,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import java.util.List;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
@@ -19,6 +18,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 
@@ -28,8 +28,8 @@ public class AttributesCommand extends ClientCommand {
 			ref -> true,
 			null,
 			ref -> ServerMVMisc.createEntity(ref.getEntityType(), MainUtil.client.level) instanceof Mob,
-			TextInst.translatable("nbteditor.no_ref.attributes"),
-			TextInst.translatable("nbteditor.no_hand.no_item.to_edit"));
+			Component.translatableEscape("nbteditor.no_ref.attributes"),
+			Component.translatableEscape("nbteditor.no_hand.no_item.to_edit"));
 	
 	@Override
 	public String getName() {
@@ -48,12 +48,12 @@ public class AttributesCommand extends ClientCommand {
 			ItemStack item = ref.getItem();
 			List<AttributeData> attributes = ItemTagReferences.ATTRIBUTES.get(item);
 			if (attributes.isEmpty())
-				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.attributes.new_uuids.no_attributes"));
+				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.attributes.new_uuids.no_attributes"));
 			else {
 				attributes.replaceAll(attribute -> new AttributeData(attribute.attribute(), attribute.value(),
 						attribute.modifierData().get().operation(), attribute.modifierData().get().slot(), AttributeModifierId.randomUUID()));
 				ItemTagReferences.ATTRIBUTES.set(item, attributes);
-				ref.saveItem(item, () -> MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.attributes.new_uuids.success")));
+				ref.saveItem(item, () -> MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.attributes.new_uuids.success")));
 			}
 			return Command.SINGLE_SUCCESS;
 		})).executes(context -> {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
@@ -13,6 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Att
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.Operation;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.AttributeData.AttributeModifierData.Slot;
 
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -74,7 +74,7 @@ public class AttributesNBTTagReference implements TagReference<List<AttributeDat
 			CompoundTag attributeNbt = (CompoundTag) attributeNbtElement;
 			
 			Attribute attribute = attributeNbt.nbte$getString(layout.getAttributeNameTag())
-					.map(IdentifierInst::of).map(MVRegistry.ATTRIBUTE::get).orElse(null);
+					.map(Identifier::parse).map(MVRegistry.ATTRIBUTE::get).orElse(null);
 			if (attribute == null)
 				continue;
 			

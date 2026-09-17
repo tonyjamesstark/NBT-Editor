@@ -9,10 +9,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVServerNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.GetBlockC2SPacket;
@@ -30,6 +28,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.packets.ViewEntityS2CPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -121,7 +120,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		
 		player.openMenu(new SimpleMenuProvider((syncId, inventory, player2) ->
 				ChestMenu.threeRows(syncId, inventory, player.getEnderChestInventory()),
-				TextInst.translatable("container.enderchest")));
+				Component.translatableEscape("container.enderchest")));
 	}
 	
 	private void onGetBlockPacket(GetBlockC2SPacket packet, ServerPlayer player) {
@@ -320,7 +319,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 			Identifier passengerId = null;
 			if (passengerNbt.nbte$contains("id", Tag.TAG_STRING)) {
 				try {
-					passengerId = IdentifierInst.of(passengerNbt.nbte$getStringOrDefault("id"));
+					passengerId = Identifier.parse(passengerNbt.nbte$getStringOrDefault("id"));
 					if (!MVRegistry.ENTITY_TYPE.containsId(passengerId))
 						passengerId = null;
 				} catch (IdentifierException e) {}
