@@ -353,7 +353,29 @@ Two access-widener lines were stale and failed `validateAccessWidener`:
 `AbstractWidget.render` (the method is gone) and `CommandSuggestions.updateUsageInfo()V` (it takes
 arguments now, and nothing calls it).
 
-`./gradlew build` is green at 26.2. Nothing has been run in-game yet.
+`./gradlew build` is green at 26.2.
+
+### What the first in-game run found (2026-09-17)
+
+One defect, reported as "the only menu that works is appearance". Every other row of the factory
+menu did nothing when clicked, on any item carrying a server's enchantment.
+
+`ServerMixinLink` resolved `ClientPacketListener` through the intermediary name `class_634`, so
+that a dedicated server could link the class. 26.2 declares intermediary as a `0.0.0` placeholder,
+so `MappingResolver` returns `class_634` unchanged and `Class.forName` fails into a `catch` that
+stores `null`. `isInstanceOfClientPlayNetworkHandlerSafely` then answered false for every listener,
+`setClientManager` was never called, and `DynamicRegistryManagerHolder` served the registry set
+built from the client's own resource packs for the whole session. A holder the server owns is
+foreign to that set, so `ComponentItemNBTManager.getNbt` threw and `MVRegistry.getId` returned
+null, both inside a button press, which Minecraft logs and swallows.
+
+The mod's own S2C packets and the client chest's dynamic items hung off the same dead answer.
+
+This is the failure mode the flagged runtime risks were the wrong shape for. The three named above
+(the GL scissor save/restore, the `require = 0` background redirect, the cursor nudge) were all
+rendering or input details. The one that bit was a silent `catch` around a name lookup, and nothing
+in the build looks at those. `scripts/dev-client.sh --screens` now fails when the client registry
+manager is unset.
 
 ### The version-guard failure mode, unchanged
 
