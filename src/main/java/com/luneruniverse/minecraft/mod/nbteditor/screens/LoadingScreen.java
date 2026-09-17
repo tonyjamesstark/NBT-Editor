@@ -10,11 +10,11 @@ import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class LoadingScreen extends MVScreen {
@@ -65,7 +65,7 @@ public class LoadingScreen extends MVScreen {
 	
 	@Override
 	protected void init() {
-		addRenderableWidget(MVMisc.newButton(width / 2 - 75, height / 2, 150, 20, TextInst.translatable("nbteditor.hide"), btn -> onClose()));
+		addRenderableWidget(Buttons.of(width / 2 - 75, height / 2, 150, 20, TextInst.translatable("nbteditor.hide"), btn -> onClose()));
 	}
 	
 	@Override

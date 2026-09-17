@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.containers;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SetCursorC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -79,8 +78,10 @@ public class CursorManager {
 	
 	public void showBranch(AbstractContainerScreen<?> branch) {
 		if (currentRoot == null) {
-			if (MVMisc.hasCreativeInventory()) {
-				currentRoot = MVMisc.newCreativeInventoryScreen(MainUtil.client.player);
+			if (MainUtil.client.player.hasInfiniteMaterials()) {
+				currentRoot = new CreativeModeInventoryScreen(MainUtil.client.player,
+						MainUtil.client.player.connection.enabledFeatures(),
+						MainUtil.client.options.operatorItemsTab().get());
 				currentRootHasServerCursor = false;
 			} else {
 				currentRoot = new InventoryScreen(MainUtil.client.player);

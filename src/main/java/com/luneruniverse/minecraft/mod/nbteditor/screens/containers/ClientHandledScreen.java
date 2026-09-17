@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.InventoryItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -21,6 +20,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.world.item.ItemStack;
@@ -60,10 +60,10 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 			return false;
 		
 		boolean notAir = item != null && !item.isEmpty();
-		if (MVMisc.hasControlDown()) {
+		if (Keys.hasControlDown()) {
 			if (notAir && ContainerIOs.isSupported(item))
 				ContainerScreen.show(ref);
-		} else if (MVMisc.hasShiftDown()) {
+		} else if (Keys.hasShiftDown()) {
 			if (notAir)
 				MainUtil.client.setScreenAndShow(new LocalFactoryScreen<>(ref));
 		} else
@@ -119,7 +119,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	}
 	
 	public void setInitialFocus(GuiEventListener element) {
-		MVMisc.setInitialFocus(this, element, super::setInitialFocus);
+		super.setInitialFocus(element);
+		setFocused(element);
 	}
 	@Override
 	protected void setInitialFocus() {}
@@ -205,7 +206,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 		if (!(this instanceof CursorHistoryScreen))
 			GetLostItemCommand.addToHistory(menu.getCarried());
 		
-		if (!(slot != null && allowEnchantmentCombine() && MVMisc.hasControlDown() && tryCombineEnchantments(slot, actionType)))
+		if (!(slot != null && allowEnchantmentCombine() && Keys.hasControlDown() && tryCombineEnchantments(slot, actionType)))
 			menu.clicked(slot == null ? slotId : slot.index, button, actionType, MainUtil.client.player);
 		
 		if (!(this instanceof CursorHistoryScreen))

@@ -7,7 +7,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestPage;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.DynamicItems;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageLoadLevel;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ClientChestItemReference;
@@ -18,6 +17,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -154,31 +155,31 @@ public class ClientChestScreen extends ClientHandledScreen {
 			nextKeybind = temp;
 		}
 		
-		this.addRenderableWidget(prevPage = MVMisc.newButton(this.leftPos - 87, this.topPos + 20, 20, 20, TextInst.of("<"), btn -> {
+		this.addRenderableWidget(prevPage = Buttons.of(this.leftPos - 87, this.topPos + 20, 20, 20, TextInst.of("<"), btn -> {
 			navigationClicked = true;
 			prevPage();
 		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
 				.append(prevKeybind).append(TextInst.translatable("nbteditor.keybind.page.prev")))));
 		
-		this.addRenderableWidget(nextPage = MVMisc.newButton(this.leftPos - 24, this.topPos + 20, 20, 20, TextInst.of(">"), btn -> {
+		this.addRenderableWidget(nextPage = Buttons.of(this.leftPos - 24, this.topPos + 20, 20, 20, TextInst.of(">"), btn -> {
 			navigationClicked = true;
 			nextPage();
 		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
 				.append(nextKeybind).append(TextInst.translatable("nbteditor.keybind.page.next")))));
 		
-		this.addRenderableWidget(prevPageJump = MVMisc.newButton(this.leftPos - 87, this.topPos + 44, 39, 20, TextInst.of("<<"), btn -> {
+		this.addRenderableWidget(prevPageJump = Buttons.of(this.leftPos - 87, this.topPos + 44, 39, 20, TextInst.of("<<"), btn -> {
 			navigationClicked = true;
 			prevPageJump();
 		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.translatable("nbteditor.keybind.page.shift")
 				.append(prevKeybind).append(TextInst.translatable("nbteditor.keybind.page.prev_jump")))));
 		
-		this.addRenderableWidget(nextPageJump = MVMisc.newButton(this.leftPos - 43, this.topPos + 44, 39, 20, TextInst.of(">>"), btn -> {
+		this.addRenderableWidget(nextPageJump = Buttons.of(this.leftPos - 43, this.topPos + 44, 39, 20, TextInst.of(">>"), btn -> {
 			navigationClicked = true;
 			nextPageJump();
 		}, ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.translatable("nbteditor.keybind.page.shift")
 				.append(nextKeybind).append(TextInst.translatable("nbteditor.keybind.page.next_jump")))));
 		
-		this.addRenderableWidget(MVMisc.newButton(this.leftPos - 87, this.topPos + 68, 83, 20, ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"), btn -> {
+		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 68, 83, 20, ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"), btn -> {
 			navigationClicked = true;
 			if (ConfigScreen.isLockSlotsRequired()) {
 				btn.active = false;
@@ -188,12 +189,12 @@ public class ClientChestScreen extends ClientHandledScreen {
 			btn.setMessage(ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"));
 		})).active = !ConfigScreen.isLockSlotsRequired();
 		
-		this.addRenderableWidget(MVMisc.newButton(this.leftPos - 87, this.topPos + 92, 83, 20, TextInst.translatable("nbteditor.client_chest.reload_page"), btn -> {
+		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 92, 83, 20, TextInst.translatable("nbteditor.client_chest.reload_page"), btn -> {
 			navigationClicked = true;
 			LoadingScreen.show(ClientChestHelper.reloadPage(PAGE), this::close, (loaded, pageData) -> show());
 		}));
 		
-		this.addRenderableWidget(MVMisc.newButton(this.leftPos - 87, this.topPos + 116, 83, 20, TextInst.translatable("nbteditor.client_chest.clear_page"), btn -> {
+		this.addRenderableWidget(Buttons.of(this.leftPos - 87, this.topPos + 116, 83, 20, TextInst.translatable("nbteditor.client_chest.clear_page"), btn -> {
 			navigationClicked = true;
 			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value) {
@@ -242,7 +243,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 			boolean prev = (keyCode == GLFW.GLFW_KEY_PAGE_DOWN);
 			if (ConfigScreen.isInvertedPageKeybinds())
 				prev = !prev;
-			boolean jump = MVMisc.hasShiftDown();
+			boolean jump = Keys.hasShiftDown();
 			if (prev) {
 				if (jump)
 					prevPageJump();
@@ -278,8 +279,8 @@ public class ClientChestScreen extends ClientHandledScreen {
 	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		navigationClicked = false;
-		MVMisc.setKeyboardRepeatEvents(this.nameField.mouseClicked(click, doubled) ||
-				this.pageField.mouseClicked(click, doubled));
+		if (!this.nameField.mouseClicked(click, doubled))
+			this.pageField.mouseClicked(click, doubled);
 		super.mouseClicked(click, doubled);
 		return true;
 	}
@@ -330,7 +331,6 @@ public class ClientChestScreen extends ClientHandledScreen {
 	
 	@Override
 	public void removed() {
-		MVMisc.setKeyboardRepeatEvents(false);
 	}
 	
 	private void prevPage() {

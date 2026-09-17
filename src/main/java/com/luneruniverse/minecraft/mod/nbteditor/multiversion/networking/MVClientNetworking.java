@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.fabricmc.fabric.api.event.Event;
@@ -59,7 +58,7 @@ public class MVClientNetworking {
 	
 	@SuppressWarnings("deprecation")
 	public static void send(MVPacket packet) {
-		MVMisc.sendC2SPacket(MVPacketCustomPayload.wrapC2S(packet));
+		MainUtil.client.getConnection().send(MVPacketCustomPayload.wrapC2S(packet));
 	}
 	
 	@SuppressWarnings("unchecked")

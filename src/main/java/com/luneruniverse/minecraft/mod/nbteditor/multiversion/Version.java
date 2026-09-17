@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.ModResources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -65,7 +66,7 @@ public class Version {
 	}
 	
 	private static void readDataVersionsJson() {
-		try (InputStream in = MVMisc.getResource(IdentifierInst.of("nbteditor", "data_versions.json")).orElseThrow()) {
+		try (InputStream in = ModResources.open(IdentifierInst.of("nbteditor", "data_versions.json")).orElseThrow()) {
 			dataVersions = new Gson().fromJson(new InputStreamReader(in), new TypeToken<Map<String, Integer>>() {}.getType());
 			mcVersions = dataVersions.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 		} catch (IOException e) {

@@ -12,7 +12,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItemStack;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
@@ -90,7 +89,7 @@ public class ContainerIOs {
 	private static final ItemBlockContainerIO CRAFTER_IO = ItemBlockContainerIO.forSlotKeyItems(9);
 	private static final ContainerIO<ItemStack> SPAWN_EGG_IO = new DelegateContainerIO<>(
 			(item, entity) -> get(entity),
-			item -> new LocalEntity(MVMisc.getEntityType(item), ItemTagReferences.ENTITY_DATA.get(item)),
+			item -> new LocalEntity(((SpawnEggItem) item.getItem()).getType(item), ItemTagReferences.ENTITY_DATA.get(item)),
 			(item, entity) -> ItemTagReferences.ENTITY_DATA.set(item, MainUtil.fillId(entity.getNBT(), entity.getId().toString())));
 	private static final Function<EntityType<?>, ItemEntityContainerIO> EQUIPMENT_IO =
 			entityId -> ItemEntityContainerIO.forEntityTagIO(new EquipmentContainerIO(false).forNbtCompoundEquipment(),

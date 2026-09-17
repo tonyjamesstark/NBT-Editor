@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientScreenHandler;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
@@ -29,7 +28,7 @@ public class ClientPlayNetworkHandlerMixin {
 		if (!MainUtil.client.isSameThread() || updatingClientInventory)
 			return;
 		
-		if (MVMisc.getSyncId(packet) == ClientScreenHandler.SYNC_ID) {
+		if (packet.containerId() == ClientScreenHandler.SYNC_ID) {
 			NBTEditor.LOGGER.warn("Ignoring an inventory packet with a ClientHandledScreen sync id!");
 			info.cancel();
 			return;

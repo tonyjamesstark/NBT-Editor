@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
+import java.awt.Color;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -15,6 +16,15 @@ import net.minecraft.ChatFormatting;
 public class StyleUtil {
 	
 	public static final boolean SHADOW_COLOR_EXISTS = true;
+	
+	/** Multiplies an ARGB colour's channels, keeping its alpha. Used to darken text into its shadow. */
+	public static int scaleRgb(int argb, double scale) {
+		Color color = new Color(argb, true);
+		int r = (int) (color.getRed() * scale);
+		int g = (int) (color.getGreen() * scale);
+		int b = (int) (color.getBlue() * scale);
+		return new Color(r, g, b, color.getAlpha()).getRGB();
+	}
 	
 	public static final Style RESET_STYLE = Style.EMPTY.withColor(ChatFormatting.WHITE)
 			.withBold(false).withItalic(false).withUnderlined(false).withStrikethrough(false).withObfuscated(false);

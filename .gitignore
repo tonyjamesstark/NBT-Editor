@@ -4,13 +4,12 @@
 bin/
 build/
 run/
+logs/
 .classpath
 .project
 
 nbteditor_client.launch
 nbteditor_server.launch
-
-src/test/
 
 # Local to this fork, deliberately not shared upstream.
 CLAUDE.md

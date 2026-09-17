@@ -11,7 +11,6 @@ import org.joml.Vector3f;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -23,6 +22,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.datafix.fixes.References;
@@ -151,7 +151,7 @@ public class LocalEntity implements LocalNBT {
 	public Optional<ItemStack> toItem(boolean cleanup) {
 		ItemStack output = null;
 		for (Item item : MVRegistry.ITEM) {
-			if (item instanceof SpawnEggItem spawnEggItem && MVMisc.getEntityType(new ItemStack(spawnEggItem)) == entityType)
+			if (item instanceof SpawnEggItem spawnEggItem && spawnEggItem.getType(new ItemStack(spawnEggItem)) == entityType)
 				output = new ItemStack(spawnEggItem);
 		}
 		if (output == null) {
@@ -176,7 +176,7 @@ public class LocalEntity implements LocalNBT {
 			else if (entityType == EntityTypes.TNT_MINECART)
 				output = new ItemStack(Items.TNT_MINECART);
 			else if (getCachedEntity() instanceof AbstractBoat)
-				output = new ItemStack(MVMisc.getBoatItem(entityType, nbt));
+				output = new ItemStack(AccessWidenedApi.getBoatItem(entityType));
 			else
 				output = new ItemStack(Items.PIG_SPAWN_EGG);
 		}

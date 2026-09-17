@@ -14,7 +14,6 @@ import com.google.gson.JsonParseException;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen;
@@ -28,6 +27,34 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
 public class TextUtil {
+	
+	/** Minecraft rejects the section sign, control characters, and DEL in typed text. */
+	public static boolean isValidChar(char c) {
+		return c != '§' && c >= ' ' && c != 127;
+	}
+	
+	/** Drops every character {@link #isValidChar} rejects, optionally sparing line breaks. */
+	public static String stripInvalidChars(String str, boolean allowLinebreaks) {
+		StringBuilder output = new StringBuilder();
+		for (char c : str.toCharArray()) {
+			if (isValidChar(c)) {
+				output.append(c);
+			} else if (allowLinebreaks && c == '\n') {
+				output.append(c);
+			}
+		}
+		return output.toString();
+	}
+	
+	/** The text's own literal content, without the content of its children. */
+	public static String getContent(Component text) {
+		StringBuilder output = new StringBuilder();
+		text.getContents().visit(str -> {
+			output.append(str);
+			return Optional.empty();
+		});
+		return output.toString();
+	}
 	
 	public static List<Component> getLongTranslatableTextLines(String key) {
 		List<Component> lines = new ArrayList<>();
@@ -141,7 +168,7 @@ public class TextUtil {
 	public static Component stripInvalidChars(Component text, boolean allowLineBreaks) {
 		MutableComponent output = TextInst.literal("");
 		text.visit((style, str) -> {
-			output.append(TextInst.literal(MVMisc.stripInvalidChars(str, allowLineBreaks)).setStyle(style));
+			output.append(TextInst.literal(stripInvalidChars(str, allowLineBreaks)).setStyle(style));
 			return Optional.empty();
 		}, Style.EMPTY);
 		return output;

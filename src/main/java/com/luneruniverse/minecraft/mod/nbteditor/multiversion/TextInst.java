@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.NbtIO;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.nbt.NbtFormatException;
 import net.minecraft.nbt.Tag;
@@ -33,10 +34,7 @@ public class TextInst {
 	public static MutableComponent copy(Component text) {
 		return text.copy();
 	}
-	public static MutableComponent copyContentOnly(Component text) {
-		return text.plainCopy();
-	}
-	
+
 	public static MutableComponent bracketed(Component text) {
 		return translatable("chat.square_brackets", text);
 	}
@@ -90,7 +88,7 @@ public class TextInst {
 	 * <strong>CONSIDER USING {@link TextUtil#fromSNbtSafely(String)}</strong>
 	 */
 	public static Component fromSNbt(String snbt) throws CommandSyntaxException, NbtFormatException {
-		return fromNbt(MVMisc.parseNbt(snbt));
+		return fromNbt(NbtIO.parseSnbt(snbt));
 	}
 	public static String toSNbt(Component text) throws NbtFormatException {
 		return toNbt(text).toString();

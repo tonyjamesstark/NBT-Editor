@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
@@ -22,6 +21,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.SignSideTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CeilingHangingSignBlock;
@@ -46,7 +47,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	private static int getRenderedColor(DyeColor dye) {
 		if (dye == DyeColor.BLACK)
 			return 0xFFF0EBCC;
-		return MVMisc.scaleRgb(dye.getTextColor(), 0.4);
+		return StyleUtil.scaleRgb(dye.getTextColor(), 0.4);
 	}
 	
 	private final Identifier texture;
@@ -211,13 +212,13 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	@Override
 	protected void initEditor() {
 		if (NEW_FEATURES) {
-			addRenderableWidget(MVMisc.newButton(16, 64, 100, 20,
+			addRenderableWidget(Buttons.of(16, 64, 100, 20,
 					TextInst.translatable("nbteditor.signboard.side." + (back ? "back" : "front")), btn -> {
 				back = !back;
 				clearWidgets();
 				init();
 			}));
-			addRenderableWidget(MVMisc.newButton(16 + 104, 64, 100, 20,
+			addRenderableWidget(Buttons.of(16 + 104, 64, 100, 20,
 					TextInst.translatable("nbteditor.signboard.wax." + (isWaxed() ? "enabled" : "disabled")), btn -> {
 				boolean prevWaxed = isWaxed();
 				setWaxed(!prevWaxed);
@@ -248,11 +249,11 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		}
 		colors.build();
 		
-		glowingBtn.set(addRenderableWidget(MVMisc.newButton(glowingBtnX, glowingBtnY, 100, 20,
+		glowingBtn.set(addRenderableWidget(Buttons.of(glowingBtnX, glowingBtnY, 100, 20,
 				TextInst.translatable("nbteditor.signboard.glowing." + (isGlowing() ? "enabled" : "disabled"))
 				.withStyle(style -> style.withColor(getRenderedColor(getColor()))), btn -> {
 			boolean prevGlowing = isGlowing();
-			if (prevGlowing && MVMisc.hasShiftDown()) {
+			if (prevGlowing && Keys.hasShiftDown()) {
 				colors.setOpen(true);
 				return;
 			}

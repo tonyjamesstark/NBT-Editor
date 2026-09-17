@@ -7,6 +7,7 @@ import java.util.function.Function;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -29,7 +30,7 @@ public class MVTextEvents {
 		};
 		private static final Function<String, Optional<String>> parseStr = Optional::of;
 		private static final Function<String, Optional<String>> parseCmd = valueStr -> {
-			return valueStr.chars().allMatch(c -> MVMisc.isValidChar((char) c)) ? Optional.of(valueStr) : Optional.empty();
+			return valueStr.chars().allMatch(c -> TextUtil.isValidChar((char) c)) ? Optional.of(valueStr) : Optional.empty();
 		};
 		private static final Function<String, Optional<Integer>> parsePage = valueStr -> {
 			try {
@@ -151,7 +152,7 @@ public class MVTextEvents {
 			return getter.apply(event);
 		}
 		public String getStringifiedValue(HoverEvent event) {
-			CompoundTag nbt = (CompoundTag) MVMisc.result(HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event)).orElseThrow();
+			CompoundTag nbt = (CompoundTag) HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event).result().orElseThrow();
 			if (this == SHOW_TEXT)
 				return nbt.get("value").toString();
 			nbt.remove("action");
@@ -178,7 +179,7 @@ public class MVTextEvents {
 			else
 				return Optional.empty();
 
-			return MVMisc.result(HoverEvent.CODEC.parse(NbtOps.INSTANCE, nbt));
+			return HoverEvent.CODEC.parse(NbtOps.INSTANCE, nbt).result();
 		}
 	}
 	

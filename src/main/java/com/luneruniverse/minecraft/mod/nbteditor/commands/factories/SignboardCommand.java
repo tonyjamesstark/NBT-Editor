@@ -5,7 +5,6 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.SignboardArgumentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
@@ -16,6 +15,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.world.item.SignItem;
 import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +23,7 @@ import net.minecraft.world.item.ItemStack;
 public class SignboardCommand extends ClientCommand {
 	
 	public static final NBTReferenceFilter SIGNBOARD_FILTER = NBTReferenceFilter.create(
-			ref -> MVMisc.isSignItem(ref.getItem().getItem()),
+			ref -> ref.getItem().getItem() instanceof SignItem,
 			ref -> ref.getBlock() instanceof SignBlock,
 			null,
 			TextInst.translatable("nbteditor.no_ref.signboard"),

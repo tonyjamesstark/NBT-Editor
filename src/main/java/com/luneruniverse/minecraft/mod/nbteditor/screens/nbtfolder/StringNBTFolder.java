@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTValue;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StringJsonWriterQuoted;
@@ -88,7 +87,7 @@ public class StringNBTFolder implements NBTFolder<StringTag> {
 	private <R> R exec(Function<NBTFolder<?>, R> executor, R defaultReturnValue, boolean save) {
 		Tag parsedNbt;
 		try {
-			parsedNbt = MixinLink.parseSpecialElement(new StringReader(MVMisc.value(getNBT())));
+			parsedNbt = MixinLink.parseSpecialElement(new StringReader(getNBT().value()));
 		} catch (CommandSyntaxException e) {
 			return defaultReturnValue;
 		}

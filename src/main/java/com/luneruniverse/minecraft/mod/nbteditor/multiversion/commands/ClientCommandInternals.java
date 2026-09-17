@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Iterables;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
@@ -50,6 +49,7 @@ import com.mojang.brigadier.tree.CommandNode;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.profiling.Profiler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -88,7 +88,7 @@ public final class ClientCommandInternals {
 		// noinspection ConstantConditions
 		FabricClientCommandSource commandSource = (FabricClientCommandSource) client.getConnection().getSuggestionsProvider();
 
-		MVMisc.getProfiler().push(command);
+		Profiler.get().push(command);
 
 		try {
 			// TODO: Check for server commands before executing.
@@ -112,7 +112,7 @@ public final class ClientCommandInternals {
 			commandSource.sendError(TextInst.of(e.getMessage()));
 			return true;
 		} finally {
-			MVMisc.getProfiler().pop();
+			Profiler.get().pop();
 		}
 	}
 

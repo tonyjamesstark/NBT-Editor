@@ -5,7 +5,6 @@ import org.lwjgl.glfw.GLFW;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
@@ -15,6 +14,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.item.ItemStack;
@@ -64,7 +64,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 		super.init();
 		
 		if (ref instanceof ItemReference item && item.isLockable()) {
-			this.addRenderableWidget(MVMisc.newButton(16, 64, 83, 20, ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"), btn -> {
+			this.addRenderableWidget(Buttons.of(16, 64, 83, 20, ConfigScreen.isLockSlots() ? TextInst.translatable("nbteditor.client_chest.slots.unlock") : TextInst.translatable("nbteditor.client_chest.slots.lock"), btn -> {
 				navigationClicked = true;
 				if (ConfigScreen.isLockSlotsRequired()) {
 					btn.active = false;
@@ -75,7 +75,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 			})).active = !ConfigScreen.isLockSlotsRequired();
 		}
 		
-		addRenderableWidget(MVMisc.newTexturedButton(width - 36, 22, 20, 20, 20,
+		addRenderableWidget(Buttons.textured(width - 36, 22, 20, 20, 20,
 				LocalFactoryScreen.FACTORY_ICON,
 				btn -> minecraft.setScreenAndShow(new LocalFactoryScreen<>(ref)),
 				new MVTooltip("nbteditor.factory")));

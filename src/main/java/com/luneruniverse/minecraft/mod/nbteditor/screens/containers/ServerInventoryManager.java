@@ -2,7 +2,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.containers;
 
 import java.util.List;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SlotUtil;
 
@@ -39,11 +38,11 @@ public class ServerInventoryManager {
 	}
 	
 	public void onInventoryPacket(ClientboundContainerSetContentPacket packet) {
-		AbstractContainerMenu handler = getScreenHandler(MVMisc.getSyncId(packet));
+		AbstractContainerMenu handler = getScreenHandler(packet.containerId());
 		if (handler == null)
 			return;
 		
-		List<ItemStack> contents = MVMisc.getContents(packet);
+		List<ItemStack> contents = packet.items();
 		for (int i = 0; i < contents.size(); i++) {
 			Slot slot = handler.getSlot(i);
 			if (slot.container == MainUtil.client.player.getInventory())

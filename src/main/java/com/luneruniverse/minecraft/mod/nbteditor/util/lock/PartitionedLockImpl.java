@@ -59,8 +59,10 @@ public class PartitionedLockImpl implements PartitionedLock {
 	
 	@Override
 	public void unlockAll() {
+		// Not cleared. Entries are per-partition locks that outlive any one acquisition, and a
+		// waiter parked on one must still find it here when it comes to release it. No new entry
+		// can appear between lockAll and here, since adding one requires the global lock.
 		locks.values().forEach(Lock::unlock);
-		locks.clear();
 		globalLock.unlock();
 		globallyLocked--;
 	}
@@ -68,24 +70,26 @@ public class PartitionedLockImpl implements PartitionedLock {
 	@Override
 	public void lock(int partition) {
 		lockedPartitions.compute(partition, (key, value) -> (value == null ? 0 : value) + 1);
+		Lock lock;
 		globalLock.lock();
 		try {
-			Lock lock = locks.get(partition);
-			if (lock == null)
-				lock = new ReentrantLock(true);
-			lock.lock();
-			locks.put(partition, lock);
+			lock = locks.computeIfAbsent(partition, key -> new ReentrantLock(true));
 		} finally {
 			globalLock.unlock();
 		}
-		
+
+		// Outside the global lock on purpose. Waiting here while holding it would make every
+		// other partition queue behind this one, which defeats partitioning entirely.
+		lock.lock();
+
 		checkStop(partition);
 	}
-	
+
 	@Override
 	public void unlock(int partition) {
-		locks.remove(partition).unlock();
+		Lock lock = locks.get(partition);
 		lockedPartitions.compute(partition, (key, value) -> value == 1 ? null : value - 1);
+		lock.unlock();
 	}
 	
 	@Override

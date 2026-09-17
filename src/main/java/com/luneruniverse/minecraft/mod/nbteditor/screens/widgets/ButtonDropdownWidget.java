@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
@@ -45,7 +45,7 @@ public class ButtonDropdownWidget extends GroupWidget {
 				QueuedButton btn = buttons.get(i);
 				int gridX = i % columns;
 				int gridY = i / columns;
-				addWidget(MVMisc.newButton(x + gridX * gridWidth, y + gridY * gridHeight, gridWidth, gridHeight,
+				addWidget(Buttons.of(x + gridX * gridWidth, y + gridY * gridHeight, gridWidth, gridHeight,
 						btn.msg(), btn.onPress(), btn.tooltip()));
 			}
 		}
@@ -67,7 +67,7 @@ public class ButtonDropdownWidget extends GroupWidget {
 	public ButtonDropdownWidget(int x, int y, int btnWidth, int btnHeight, Component msg, MVTooltip tooltip, int gridWidth, int gridHeight) {
 		grid = new ButtonGrid(x, y + (msg == null ? 0 : btnHeight), gridWidth, gridHeight, grid2 -> setOpen(false));
 		if (msg != null)
-			addWidget(MVMisc.newButton(x, y, btnWidth, btnHeight, msg, btn -> setOpen(!open), tooltip));
+			addWidget(Buttons.of(x, y, btnWidth, btnHeight, msg, btn -> setOpen(!open), tooltip));
 	}
 	public ButtonDropdownWidget(int x, int y, int btnWidth, int btnHeight, Component msg, int gridWidth, int gridHeight) {
 		this(x, y, btnWidth, btnHeight, msg, null, gridWidth, gridHeight);

@@ -17,13 +17,13 @@ import javax.imageio.ImageIO;
 import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
@@ -127,11 +127,11 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		if (prevImgHeight != null)
 			imgHeight.setValue(prevImgHeight);
 		
-		addWidget(MVMisc.newButton(width / 2 - 102, height / 2 + 2, 100, 20, ScreenTexts.DONE, btn -> {
+		addWidget(Buttons.of(width / 2 - 102, height / 2 + 2, 100, 20, ScreenTexts.DONE, btn -> {
 			optionsConsumer.accept(Optional.of(new ImageToLoreOptions(
 					MainUtil.parseOptionalInt(imgWidth.getValue()), MainUtil.parseOptionalInt(imgHeight.getValue()))));
 		}));
-		addWidget(MVMisc.newButton(width / 2 + 2, height / 2 + 2, 100, 20, ScreenTexts.CANCEL, btn -> {
+		addWidget(Buttons.of(width / 2 + 2, height / 2 + 2, 100, 20, ScreenTexts.CANCEL, btn -> {
 			optionsConsumer.accept(Optional.empty());
 		}));
 	}

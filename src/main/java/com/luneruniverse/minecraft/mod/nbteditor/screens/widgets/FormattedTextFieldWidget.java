@@ -13,7 +13,6 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -26,6 +25,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
@@ -140,7 +141,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				hoverValueField.setValue(hoverValue);
 				hoverValueField.setResponder(str -> updateOk());
 				
-				ok = addWidget(MVMisc.newButton(0, 0, 150, 20, TextInst.translatable("nbteditor.ok"), btn -> {
+				ok = addWidget(Buttons.of(0, 0, 150, 20, TextInst.translatable("nbteditor.ok"), btn -> {
 					onDone.onEventChange(
 							clickActionDropdown.getValidValue() == ClickAction.NONE ? null :
 								clickActionDropdown.getValidValue().value.newEventParse(clickValueField.getValue()).get(),
@@ -148,7 +149,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 								hoverActionDropdown.getValidValue().value.newEventParse(hoverValueField.getValue()).get());
 					OverlaySupportingScreen.setOverlayStatic(null);
 				}));
-				cancel = addWidget(MVMisc.newButton(0, 0, 150, 20, TextInst.translatable("nbteditor.cancel"), btn -> {
+				cancel = addWidget(Buttons.of(0, 0, 150, 20, TextInst.translatable("nbteditor.cancel"), btn -> {
 					OverlaySupportingScreen.setOverlayStatic(null);
 				}));
 				
@@ -261,7 +262,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		}
 		
 		private void genStyles(Component text, Style parent, int index) {
-			int len = MVMisc.getContent(text).length();
+			int len = TextUtil.getContent(text).length();
 			Style style = text.getStyle().applyTo(parent);
 			if (len > 0) {
 				setStyle(index, style);
@@ -269,7 +270,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			for (Component child : text.getSiblings()) {
 				genStyles(child, style, index);
-				index += MVMisc.stripInvalidChars(child.getString(), allowsNewLines()).length();
+				index += TextUtil.stripInvalidChars(child.getString(), allowsNewLines()).length();
 			}
 		}
 		
@@ -371,7 +372,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		
 		private void applyColor(ChatFormatting color, boolean shadow) {
 			if (shadow) {
-				int shadowColor = (MVMisc.scaleRgb(StyleUtil.getColor(color), 0.25) | 0xFF000000);
+				int shadowColor = (StyleUtil.scaleRgb(StyleUtil.getColor(color), 0.25) | 0xFF000000);
 				applyStyleChange(style -> style.withShadowColor(shadowColor), true);
 			} else
 				applyFormatting(color);
@@ -407,7 +408,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 					(base.getColor() == null ? -1 : base.getColor().getValue()) : initialStyle.getColor().getValue());
 			if (shadow) {
 				int initialShadow = (initialStyle.getShadowColor() == null ?
-						(base.getShadowColor() == null ? MVMisc.scaleRgb(initialColor, 0.25) : base.getShadowColor()) : initialStyle.getShadowColor());
+						(base.getShadowColor() == null ? StyleUtil.scaleRgb(initialColor, 0.25) : base.getShadowColor()) : initialStyle.getShadowColor());
 				InputOverlay.show(
 						TextInst.translatable("nbteditor.formatted_text.custom_color.shadow"),
 						new ColorSelectorWidget.ColorSelectorInput(initialShadow),
@@ -482,7 +483,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			if (super.keyPressed(input))
 				return true;
 			
-			if (MVMisc.hasControlDown() && !MVMisc.hasShiftDown()) {
+			if (Keys.hasControlDown() && !Keys.hasShiftDown()) {
 				ChatFormatting formatting = switch (keyCode) {
 					case GLFW.GLFW_KEY_B -> ChatFormatting.BOLD;
 					case GLFW.GLFW_KEY_I -> ChatFormatting.ITALIC;
@@ -498,7 +499,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				}
 			}
 			
-			if (MVMisc.hasControlDown() && MVMisc.hasShiftDown()) {
+			if (Keys.hasControlDown() && Keys.hasShiftDown()) {
 				switch (keyCode) {
 					case GLFW.GLFW_KEY_C -> showCustomColor(hasShadowKeyDown());
 					case GLFW.GLFW_KEY_E -> showEvents();
@@ -689,7 +690,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	
 	private static boolean hasShadowKeyDown() {
-		return StyleUtil.SHADOW_COLOR_EXISTS && MVMisc.hasAltDown();
+		return StyleUtil.SHADOW_COLOR_EXISTS && Keys.hasAltDown();
 	}
 	
 	private int x;
@@ -730,7 +731,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			for (ChatFormatting formatting : ChatFormatting.values()) {
 				if (!StyleUtil.isColor(formatting))
 					break;
-				addWidget(MVMisc.newButton(x + i * 20, y, 20, 20, TextInst.literal("⬛").withStyle(formatting),
+				addWidget(Buttons.of(x + i * 20, y, 20, 20, TextInst.literal("⬛").withStyle(formatting),
 						btn -> field.applyColor(formatting, hasShadowKeyDown()), createColorButtonTooltip(formatting)));
 				i++;
 			}
@@ -757,26 +758,26 @@ public class FormattedTextFieldWidget extends GroupWidget {
 					btnText = TextInst.literal(formatting.name().substring(0, 1)).withStyle(formatting);
 					btnTooltip = new MVTooltip(TextInst.of(StyleUtil.getName(formatting)));
 				}
-				addWidget(MVMisc.newButton(
+				addWidget(Buttons.of(
 						afterColorsX + 24 + i * 20 + (formatting == ChatFormatting.RESET ? 4 + 20 * 3 + 4 : 0), y, 20, 20,
 						btnText, btn -> field.applyFormatting(formatting), btnTooltip));
 				i++;
 			}
 			
-			addWidget(MVMisc.newButton(afterColorsX, y, 20, 20,
+			addWidget(Buttons.of(afterColorsX, y, 20, 20,
 					TextInst.literal("⬛").setStyle(Style.EMPTY.withColor(0x9999C0).applyFormat(ChatFormatting.ITALIC)),
 					btn -> field.showCustomColor(hasShadowKeyDown()),
 					createFormatButtonTooltip("custom_color", true)));
 			
-			addWidget(MVMisc.newButton(afterColorsX + 24 + 5 * 20 + 4, y, 20, 20,
+			addWidget(Buttons.of(afterColorsX + 24 + 5 * 20 + 4, y, 20, 20,
 					TextInst.literal("E"),
 					btn -> field.showEvents(),
 					createFormatButtonTooltip("events", false)));
-			addWidget(MVMisc.newButton(afterColorsX + 24 + 5 * 20 + 4 + 20, y, 20, 20,
+			addWidget(Buttons.of(afterColorsX + 24 + 5 * 20 + 4 + 20, y, 20, 20,
 					TextInst.literal("I"),
 					btn -> field.showInsertion(),
 					createFormatButtonTooltip("insertion", false)));
-			font = addWidget(MVMisc.newButton(afterColorsX + 24 + 5 * 20 + 4 + 20 * 2, y, 20, 20,
+			font = addWidget(Buttons.of(afterColorsX + 24 + 5 * 20 + 4 + 20 * 2, y, 20, 20,
 					TextInst.literal("F"), // Gets replaced before rendering
 					btn -> field.showFont(),
 					createFormatButtonTooltip("font", false)));

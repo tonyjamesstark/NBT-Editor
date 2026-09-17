@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
+import com.luneruniverse.minecraft.mod.nbteditor.screens.ItemTooltips;
 
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.PatchedDataComponentMap;
@@ -25,7 +26,7 @@ public class ItemStackMixin {
 	
 	@Inject(method = "getTooltipLines", at = @At("RETURN"))
 	private void getTooltipLines(Item.TooltipContext context, Player player, TooltipFlag type, CallbackInfoReturnable<List<Component>> info) {
-		MixinLink.modifyTooltip((ItemStack) (Object) this, info.getReturnValue());
+		ItemTooltips.modifyTooltip((ItemStack) (Object) this, info.getReturnValue());
 	}
 	
 	@Shadow

@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
@@ -15,6 +14,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.NbtViews;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
@@ -37,8 +38,8 @@ public class LocalBlock implements LocalNBT {
 	public static LocalBlock deserialize(CompoundTag nbt, int defaultDataVersion) {
 		Tag dataVersion = nbt.get("DataVersion");
 		
-		String id = MVMisc.value(MainUtil.updateDynamic(References.BLOCK_NAME,
-				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion));
+		String id = MainUtil.updateDynamic(References.BLOCK_NAME,
+				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion).value();
 		Block block = MVRegistry.BLOCK.get(IdentifierInst.of(id));
 		
 		BlockStateProperties state = new BlockStateProperties(block.defaultBlockState());
@@ -179,7 +180,7 @@ public class LocalBlock implements LocalNBT {
 					BlockEntity entity = provider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
 					entity.setLevel(MainUtil.client.level);
 					NBTManagers.BLOCK_ENTITY.setNbt(entity, nbt);
-					MVMisc.addBlockEntityNbtWithoutXYZ(output, entity);
+					addBlockEntityNbtWithoutXYZ(output, entity);
 				}
 				ItemTagReferences.BLOCK_STATE.set(output, state.getValuesMap());
 				return Optional.of(output);
@@ -226,6 +227,26 @@ public class LocalBlock implements LocalNBT {
 		if (nbt instanceof LocalBlock block)
 			return this.block == block.block && this.state.equals(block.state) && Objects.equals(this.nbt, block.nbt);
 		return false;
+	}
+	
+	
+	/**
+	 * Copies a block entity's data onto an item, the way {@code Minecraft#addBlockEntityNbt} does,
+	 * minus the position.
+	 *
+	 * <p>A block entity carries the x/y/z it was created at. The editor creates one at a throwaway
+	 * position purely to hold the data, so writing that position onto the item would bake a lie
+	 * into it. {@code writeComponentlessData} already omits x/y/z, so this is now just the vanilla
+	 * sequence; the hand-rolled position strip it used to need is gone.
+	 */
+	@SuppressWarnings("deprecation")
+	private static void addBlockEntityNbtWithoutXYZ(ItemStack item, BlockEntity entity) {
+		TagValueOutput view = NbtViews.newWriteView();
+		entity.saveCustomOnly(view);
+		BlockEntity.addEntityType(view, entity.getType());
+		entity.removeComponentsFromTag(view);
+		BlockItem.setBlockEntityData(item, entity.getType(), view);
+		item.applyComponents(entity.collectComponents());
 	}
 	
 }

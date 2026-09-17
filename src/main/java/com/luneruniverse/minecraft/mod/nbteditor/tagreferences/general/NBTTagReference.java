@@ -3,7 +3,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Array;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 
 import net.minecraft.nbt.CollectionTag;
@@ -65,7 +64,7 @@ public class NBTTagReference<T> implements TagReference<T, CompoundTag> {
 		}
 		
 		if (target.isAssignableFrom(String.class))
-			return (element instanceof StringTag str ? MVMisc.value(str) : "");
+			return (element instanceof StringTag str ? str.value() : "");
 		
 		if (target.isAssignableFrom(Component.class)) {
 			try {

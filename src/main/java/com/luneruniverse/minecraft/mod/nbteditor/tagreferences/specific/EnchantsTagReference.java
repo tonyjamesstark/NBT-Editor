@@ -3,13 +3,13 @@ package com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific;
 import java.util.stream.Collectors;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.ComponentTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -21,7 +21,7 @@ public class EnchantsTagReference implements TagReference<Enchants, ItemStack> {
 						null,
 						componentValue -> componentValue == null ? new Enchants() : new Enchants(componentValue.entrySet().stream()
 								.map(entry -> new Enchants.EnchantWithLevel(entry.getKey().value(), entry.getIntValue())).collect(Collectors.toList())),
-						(componentValue, enchants) -> (ItemEnchantments) MVMisc.withEnchantments(componentValue,
+						(componentValue, enchants) -> AccessWidenedApi.newEnchantments(
 								new Object2IntOpenHashMap<>(enchants.getEnchants().stream().collect(Collectors.toMap(
 										enchant -> MVRegistry.getEnchantmentRegistry().getInternalValue().wrapAsHolder(enchant.enchant()),
 										enchant -> Math.min(255, enchant.level()),

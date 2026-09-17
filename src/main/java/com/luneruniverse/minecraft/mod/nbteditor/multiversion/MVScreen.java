@@ -11,7 +11,8 @@ public class MVScreen extends Screen implements OldEventBehavior, IgnoreCloseScr
 	}
 	
 	public void setInitialFocus(GuiEventListener element) {
-		MVMisc.setInitialFocus(this, element, super::setInitialFocus);
+		super.setInitialFocus(element);
+		setFocused(element);
 	}
 	@Override
 	protected void setInitialFocus() {}

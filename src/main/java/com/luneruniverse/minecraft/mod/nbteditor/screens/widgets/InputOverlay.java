@@ -6,12 +6,12 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
@@ -59,12 +59,12 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 		addWidget(input);
 		setFocused(input);
 		
-		ok = addWidget(MVMisc.newButton(x, y + input.getHeight() + 4,
+		ok = addWidget(Buttons.of(x, y + input.getHeight() + 4,
 				(input.getWidth() - 4) / 2, 20, TextInst.translatable("nbteditor.ok"), btn -> {
 			close.run();
 			valueConsumer.accept(input.getValue());
 		}));
-		addWidget(MVMisc.newButton(width / 2 + 2, y + input.getHeight() + 4,
+		addWidget(Buttons.of(width / 2 + 2, y + input.getHeight() + 4,
 				(input.getWidth() - 4) / 2, 20, TextInst.translatable("nbteditor.cancel"), btn -> close.run()));
 		
 		ok.active = input.isValid();

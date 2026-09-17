@@ -7,7 +7,6 @@ import org.lwjgl.glfw.GLFW;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
@@ -18,6 +17,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.AlertWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.Screen;
@@ -83,7 +84,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		addRenderableWidget(name);
 		
 		if (isSaveRequried()) {
-			saveBtn = addRenderableWidget(MVMisc.newButton(16 + (32 + 8) * 2 + 100 + 8, 16 + 6, 100, 20, TextInst.translatable("nbteditor.editor.save"), btn -> {
+			saveBtn = addRenderableWidget(Buttons.of(16 + (32 + 8) * 2 + 100 + 8, 16 + 6, 100, 20, TextInst.translatable("nbteditor.editor.save"), btn -> {
 				save();
 			}));
 			saveBtn.active = !saved;
@@ -91,7 +92,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		
 		FactoryLink<L> link = getFactoryLink();
 		if (link != null) {
-			addRenderableWidget(MVMisc.newTexturedButton(width - 36, 22, 20, 20, 20,
+			addRenderableWidget(Buttons.textured(width - 36, 22, 20, 20, 20,
 					LocalFactoryScreen.FACTORY_ICON,
 					btn -> closeSafely(() -> minecraft.setScreenAndShow(link.factory().apply(ItemReference.toItemStackRef(ref)))),
 					new MVTooltip(link.langName())));
@@ -140,7 +141,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		if (super.keyPressed(input))
 			return true;
 		
-		if (MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown() && keyCode == GLFW.GLFW_KEY_S) {
+		if (Keys.hasControlDown() && !Keys.hasShiftDown() && !Keys.hasAltDown() && keyCode == GLFW.GLFW_KEY_S) {
 			save();
 			return true;
 		}
