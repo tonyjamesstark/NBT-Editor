@@ -144,3 +144,31 @@ tasks.register("validateMixinConfigs") {
 	}
 }
 check.dependsOn validateMixinConfigs
+
+// The configs above only prove the mixin classes exist. tools/check-mixin-targets.py
+// resolves what each one points *at* against the mapped jar: the target class, the
+// `method` selector, the `@At` member, and whether the selected method's bytecode
+// really contains that call. A stale name there compiles and remaps clean and fails
+// at launch, and a mixin on a screen class does not fail until that screen opens.
+tasks.register("checkMixinTargets") {
+	def script = file("tools/check-mixin-targets.py")
+	def sources = fileTree("src/main/java") { include "**/mixin/**/*.java" }
+	def classpath = configurations.compileClasspath
+	inputs.files(script, sources)
+	onlyIf {
+		if ("which python3".execute().waitFor() == 0) return true
+		logger.warn("checkMixinTargets: no python3, skipping")
+		false
+	}
+	doLast {
+		def jar = classpath.find { it.name.startsWith("minecraft-merged") }
+		if (jar == null)
+			throw new GradleException("no mapped Minecraft jar on the compile classpath")
+		def proc = new ProcessBuilder("python3", script.absolutePath, jar.absolutePath)
+				.directory(projectDir).redirectErrorStream(true).start()
+		proc.inputStream.eachLine { logger.lifecycle(it) }
+		if (proc.waitFor() != 0)
+			throw new GradleException("mixin targets do not resolve against ${jar.name}")
+	}
+}
+check.dependsOn checkMixinTargets

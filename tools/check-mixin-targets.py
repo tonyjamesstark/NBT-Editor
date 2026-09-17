@@ -1,147 +1,266 @@
-"""Check every mixin target and member reference against the loom-mapped Minecraft jar.
+"""Resolve every mixin reference against the loom-mapped Minecraft jar.
 
-A game bump renames or moves the members mixins point at, and nothing in the build
-notices: `method = "render"` and `@At(target = "L...;setScreen(...)V")` are plain
-strings. The mismatch surfaces as a launch crash, one per run. This reports them all
-at once.
+A game bump renames the members mixins point at, and nothing in the build notices:
+`method = "render"` and `@At(target = "L...;setScreen(...)V")` are plain strings that
+compile and remap clean. Each one then fails at launch, one crash per run, and a
+mixin on a screen class does not fail until that screen opens.
 
-Run it after bumping `minecraft_version`, against the jar loom already produced:
+This resolves the same four things mixin resolves, before launch:
 
-    python3 tools/check-mixin-targets.py
+  - the `@Mixin` target class exists
+  - the `method` selector matches exactly one non-bridge method on it
+  - the `@At` target member exists, with that descriptor
+  - the selected method's bytecode actually contains that call or field access
 
-Known false positives, all from javap output this does not fully model:
-  - `method = "init"` on a Screen subclass. Ambiguous only because `Screen.init(II)V`
-    is inherited; the subclass declares `init()V` and mixin resolves there first.
-  - `getId` on `Registry$1`. The `(Ljava/lang/Object;)I` arm is ACC_BRIDGE.
-  - `<init>` on a nested class. The constructor is named for the outer class too, so
-    it is not recognised as a constructor.
-  - `method_*` names. Deliberate intermediary names with no Mojang equivalent; they
-    are remapped at build time and cannot be resolved against a Mojang-mapped jar.
+Runs as part of `./gradlew check`, which passes the jar path. Standalone, it finds
+the jar from `minecraft_version`:
+
+    python3 tools/check-mixin-targets.py [path/to/minecraft-merged-deobf.jar]
+
+Names that cannot be resolved against a Mojang-mapped jar are reported as unchecked
+rather than as failures: owners outside `net.minecraft`, and the handful of
+deliberate `method_*` intermediary names that remapJar resolves at build time.
 """
-import re, os, subprocess, collections
+import collections
+import os
+import re
+import subprocess
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "src/main/java")
-JAR = os.path.expanduser("~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-merged-deobf/26.2/minecraft-merged-deobf-26.2.jar")
 JAVAP = os.path.expanduser("~/.sdkman/candidates/java/current/bin/javap")
+INTERMEDIARY = re.compile(r'^(method|field|comp)_\d+$')
 
-_cache = {}
-def klass(name):
-    """{'methods': {name: {desc: bridge?}}, 'fields': {name: {desc}}, 'super': str} or None."""
-    if name in _cache: return _cache[name]
+Member = collections.namedtuple("Member", "name desc bridge refs")
+
+
+def find_jar():
+    if len(sys.argv) > 1:
+        return sys.argv[1]
+    base = os.path.expanduser("~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft")
+    version = re.search(r'^\s*minecraft_version\s*=\s*(\S+)',
+                        open(os.path.join(ROOT, "gradle.properties")).read(), re.M).group(1)
+    jar = os.path.join(base, "minecraft-merged-deobf", version, f"minecraft-merged-deobf-{version}.jar")
+    if not os.path.exists(jar):
+        sys.exit(f"mapped jar not found at {jar}; run ./gradlew build first")
+    return jar
+
+
+JAR = find_jar()
+_classes = {}
+
+
+def load(name):
+    """Parse one class out of the jar. Returns None when it is not there."""
+    if name in _classes:
+        return _classes[name]
     p = subprocess.run([JAVAP, "-p", "-v", "-classpath", JAR, name], capture_output=True, text=True)
     if p.returncode != 0 or "Error:" in p.stderr:
-        _cache[name] = None
+        _classes[name] = None
         return None
-    simple = name.split(".")[-1].split("$")[-1]
-    methods, fields, sup = collections.defaultdict(dict), collections.defaultdict(set), None
     lines = p.stdout.splitlines()
-    for i, line in enumerate(lines):
-        m = re.match(r'\s{2}\S.*?([\w$<>]+)\s*(\(|;\s*$)', line)
-        if not m or i + 2 >= len(lines) or "descriptor:" not in lines[i+1]:
-            continue
-        desc = lines[i+1].split("descriptor:")[1].strip()
-        flags = lines[i+2] if "flags:" in lines[i+2] else ""
-        nm = m.group(1)
-        if desc.startswith("("):
-            if nm == simple: nm = "<init>"
-            if nm == "<clinit>" or "static {" in line: continue
-            methods[nm][desc] = ("ACC_BRIDGE" in flags or "ACC_SYNTHETIC" in flags)
-        else:
-            fields[nm].add(desc)
-    sm = re.search(r'^\s*super_class:.*//\s*(\S+)', p.stdout, re.M)
-    if sm: sup = sm.group(1).replace("/", ".")
-    ifaces = re.findall(r'^\s*#\d+.*', "")  # interfaces walked via javap class line below
-    cm = re.search(r'^\w.*\bimplements\s+([^{]+)\{', p.stdout, re.M)
-    impl = [c.strip().split("<")[0] for c in cm.group(1).split(",")] if cm else []
-    out = {"methods": methods, "fields": fields, "super": sup, "impl": impl}
-    _cache[name] = out
-    return out
+    decl = next((l for l in lines if re.match(r'^(public |final |abstract )*(class|interface|enum) ', l)), "")
+    sup = next((m.group(1).replace("/", ".") for l in lines
+                for m in [re.match(r'\s*super_class:.*//\s*(\S+)', l)] if m), None)
+    impl = []
+    if (m := re.search(r'\bimplements\s+([^{]+)', decl)):
+        impl = [c.strip().split("<")[0] for c in m.group(1).split(",")]
+    simple = name.split(".")[-1]
 
-def resolve(name, member, want):
-    if member == "<init>":
-        info = klass(name)
-        return None if info is None else (dict(info["methods"].get("<init>", {})) or None)
-    """Walk the class, its superclasses and interfaces for `member`. Returns dict/set or None."""
-    seen, queue = set(), [name]
-    found = {} if want == "methods" else set()
-    missing_root = klass(name) is None
+    methods, fields, member, in_code = collections.defaultdict(list), collections.defaultdict(set), None, False
+    body = lines[lines.index("{") + 1:] if "{" in lines else []
+    for line in body:
+        if re.match(r'^  \S', line):
+            member, in_code = {"sig": line.strip(), "refs": set()}, False
+            continue
+        if member is None:
+            continue
+        if (m := re.match(r'\s*descriptor:\s*(\S+)', line)):
+            member["desc"] = m.group(1)
+        elif (m := re.match(r'\s*flags:\s*(.*)', line)):
+            member["flags"] = m.group(1)
+            name_match = re.match(r'.*?([\w$<>]+)\s*\(', member["sig"]) if "(" in member["sig"] \
+                else re.search(r'([\w$]+)\s*;\s*$', member["sig"])
+            if not name_match or "desc" not in member:
+                member = None
+                continue
+            nm = name_match.group(1)
+            if nm.split(".")[-1] == simple:
+                nm = "<init>"
+            member["name"] = nm
+            if member["desc"].startswith("("):
+                methods[nm].append(member)
+            else:
+                fields[nm].add(member["desc"])
+                member = None
+        elif line.strip() == "Code:":
+            in_code = True
+        elif in_code and (m := re.search(r'//\s*(?:Interface)?Method\s+(\S+)', line)):
+            member["refs"].add(m.group(1))
+        elif in_code and (m := re.search(r'//\s*Field\s+(\S+)', line)):
+            member["refs"].add(m.group(1))
+
+    info = {
+        "methods": {k: [Member(v["name"], v["desc"], "ACC_BRIDGE" in v.get("flags", ""), v["refs"])
+                        for v in vs] for k, vs in methods.items()},
+        "fields": fields, "super": sup, "impl": impl,
+    }
+    _classes[name] = info
+    return info
+
+
+def lookup(cls, member, kind):
+    """First class in the hierarchy declaring `member`, and what it declares.
+
+    Constructors are not inherited, so the walk stops at `cls` for `<init>`.
+    """
+    queue, seen = [cls], set()
     while queue:
         c = queue.pop(0)
-        if c in seen: continue
-        seen.add(c)
-        info = klass(c)
-        if not info: continue
-        hit = info[want].get(member)
-        if hit:
-            if want == "methods": found.update(hit)
-            else: found |= hit
-        if info["super"]: queue.append(info["super"])
-        queue.extend(info["impl"])
-    return None if missing_root else (found or None)
-
-mixin_files = [os.path.join(d, f) for d, _, fs in os.walk(SRC) for f in fs
-               if f.endswith(".java") and "/mixin" in d.replace(os.sep, "/")]
-
-def imports(text):
-    return {i.split(".")[-1]: i for i in re.findall(r'^import\s+(?:static\s+)?([\w.$]+);', text, re.M)}
-
-def targets_of(text, imp):
-    mx = re.search(r'@Mixin\s*\((.*?)\)\s*(?:public|abstract|class|interface|@)', text, re.S)
-    if not mx: return []
-    body, out = mx.group(1), []
-    for cls in re.findall(r'([\w.]+)\.class', body):
-        parts = cls.split(".")
-        out.append(imp.get(parts[0], parts[0]) + ("$" + "$".join(parts[1:]) if len(parts) > 1 else ""))
-    out += re.findall(r'"([\w.$]+)"', body)
-    return out
-
-INJECTORS = r'@(?:Inject|Redirect|ModifyArg|ModifyArgs|ModifyVariable|ModifyConstant|ModifyReturnValue|ModifyExpressionValue|WrapOperation|WrapWithCondition)'
-problems, skipped = set(), set()
-for path in mixin_files:
-    text, rel = open(path).read(), os.path.relpath(path, ROOT)
-    imp = imports(text)
-    tgts = targets_of(text, imp)
-    for t in tgts:
-        if klass(t) is None:
-            (problems if t.startswith("net.minecraft") else skipped).add(f"{rel}: @Mixin target not in jar: {t}")
-    # @At(target = "Lowner;name(desc)ret" | "Lowner;name:Ldesc;")
-    for tgt in re.findall(r'target\s*=\s*"(L[^"]+)"', text):
-        m = re.match(r'L([\w/$]+);([\w<>$]+)(\(.*)$', tgt) or re.match(r'L([\w/$]+);([\w$]+):(.+)$', tgt)
-        if not m: continue
-        owner, name, desc = m.group(1).replace("/", "."), m.group(2), m.group(3)
-        want = "methods" if desc.startswith("(") else "fields"
-        if klass(owner) is None:
-            (problems if owner.startswith("net.minecraft") else skipped).add(f"{rel}: @At owner not in jar: {owner}")
+        if c in seen:
             continue
-        have = resolve(owner, name, want)
-        if not have:
-            problems.add(f"{rel}: @At {owner}.{name} -- no such {want[:-1]}")
-        elif desc not in have:
-            problems.add(f"{rel}: @At {owner}.{name}{desc} -- descriptor mismatch, jar has {sorted(have)}")
-    # method = "..." on injector annotations
-    for ann in re.findall(INJECTORS + r'\s*\((.*?)\)\s*\n?\s*(?:private|public|protected)', text, re.S):
-        for grp in re.findall(r'method\s*=\s*(?:\{([^}]*)\}|"([^"]*)")', ann):
-            for name in (re.findall(r'"([^"]*)"', grp[0]) if grp[0] else [grp[1]]):
-                if "(" in name: continue          # already fully qualified
-                for t in tgts:
-                    if klass(t) is None: continue
-                    have = resolve(t, name, "methods")
-                    if not have:
-                        problems.add(f"{rel}: method=\"{name}\" -- {t} has no such method")
-                        continue
-                    real = [d for d, bridge in have.items() if not bridge]
-                    if len(real) > 1:
-                        problems.add(f"{rel}: method=\"{name}\" -- AMBIGUOUS in {t}: {sorted(real)}")
-    # @Accessor("x") / @Invoker("x")
-    for name in re.findall(r'@(?:Accessor|Invoker)\s*\(\s*"([\w$]+)"', text):
-        for t in tgts:
-            if klass(t) is None: continue
-            if not (resolve(t, name, "fields") or resolve(t, name, "methods")):
-                problems.add(f"{rel}: @Accessor/@Invoker \"{name}\" -- {t} has no such member")
+        seen.add(c)
+        info = load(c)
+        if not info:
+            continue
+        if (hit := info[kind].get(member)):
+            return c, hit
+        if member == "<init>":
+            return None, None
+        if info["super"]:
+            queue.append(info["super"])
+        queue.extend(info["impl"])
+    return None, None
 
-print("PROBLEMS")
-for p in sorted(problems): print("  " + p)
-print(f"\nSKIPPED (owner not a Minecraft class, cannot check)")
-for s in sorted(skipped): print("  " + s)
-print(f"\n{len(problems)} problem(s), {len(skipped)} unchecked, across {len(mixin_files)} mixin files")
+
+def parse_at(target):
+    """"Lowner;name(args)ret" or "Lowner;name:Ldesc;" -> (owner, name, desc, kind)."""
+    if (m := re.match(r'L([\w/$]+);([\w<>$]+)(\(.*)$', target)):
+        return m.group(1).replace("/", "."), m.group(2), m.group(3), "methods"
+    if (m := re.match(r'L([\w/$]+);([\w$]+):(.+)$', target)):
+        return m.group(1).replace("/", "."), m.group(2), m.group(3), "fields"
+    return None
+
+
+INJECTOR = (r'@(?:Inject|Redirect|ModifyArg|ModifyArgs|ModifyVariable|ModifyConstant|ModifyReturnValue'
+            r'|ModifyExpressionValue|WrapOperation|WrapWithCondition)\s*\((.*?)\)\s*\n\s*'
+            r'(?:private|public|protected|static)')
+
+problems, unchecked = set(), set()
+
+
+def report(where, message, checkable=True):
+    (problems if checkable else unchecked).add(f"{where}: {message}")
+
+
+def check(path):
+    text = open(path).read()
+    where = os.path.relpath(path, ROOT)
+    imports = {i.split(".")[-1]: i for i in re.findall(r'^import\s+(?:static\s+)?([\w.$]+);', text, re.M)}
+
+    mx = re.search(r'@Mixin\s*\((.*?)\)\s*(?:public|abstract|class|interface|@)', text, re.S)
+    if not mx:
+        return
+    targets = []
+    for cls in re.findall(r'([\w.]+)\.class', mx.group(1)):
+        head, *nested = cls.split(".")
+        targets.append(imports.get(head, head) + ("$" + "$".join(nested) if nested else ""))
+    targets += re.findall(r'"([\w.$]+)"', mx.group(1))
+    for t in targets:
+        if load(t) is None:
+            report(where, f"@Mixin target not in jar: {t}", t.startswith("net.minecraft"))
+    targets = [t for t in targets if load(t)]
+
+    for ann in re.findall(INJECTOR, text, re.S):
+        selectors = []
+        for braced, single in re.findall(r'method\s*=\s*(?:\{([^}]*)\}|"([^"]*)")', ann):
+            selectors += re.findall(r'"([^"]*)"', braced) if braced else [single]
+        selectors += re.findall(r'@Desc\s*\(\s*value\s*=\s*"([^"]*)"', ann)
+        # An @At target holds its own parentheses, so split on the annotation name
+        # rather than trying to balance them.
+        ats = [(re.search(r'value\s*=\s*"(\w+)"', at), re.search(r'target\s*=\s*"(L[^"]+)"', at))
+               for at in re.split(r'@At\b', ann)[1:]]
+
+        for selector in selectors:
+            name = selector.split("(")[0]
+            if INTERMEDIARY.match(name):
+                report(where, f'method = "{selector}" is an intermediary name', False)
+                continue
+            for t in targets:
+                owner, found = lookup(t, name, "methods")
+                if not found:
+                    report(where, f'method = "{selector}" -- {t} has no method {name}')
+                    continue
+                real = [m for m in found if not m.bridge]
+                if "(" not in selector and len(real) > 1:
+                    report(where, f'method = "{selector}" -- AMBIGUOUS on {owner}, '
+                                  f'name a descriptor: {sorted(m.desc for m in real)}')
+                    continue
+                wanted = selector[len(name):]
+                picked = [m for m in real if not wanted or m.desc == wanted]
+                if wanted and not picked:
+                    report(where, f'method = "{selector}" -- {owner}.{name} has no such descriptor, '
+                                  f'jar has {sorted(m.desc for m in real)}')
+                    continue
+                for value, target in ats:
+                    if not target or (value and value.group(1) not in ("INVOKE", "FIELD", "NEW",
+                                                                      "INVOKE_ASSIGN")):
+                        continue
+                    at = parse_at(target.group(1))
+                    if not at:
+                        continue
+                    at_owner, at_name, at_desc, kind = at
+                    if load(at_owner) is None:
+                        report(where, f"@At owner not in jar: {at_owner}",
+                               at_owner.startswith("net.minecraft"))
+                        continue
+                    _, have = lookup(at_owner, at_name, kind)
+                    if not have:
+                        report(where, f"@At {at_owner}.{at_name} -- no such {kind[:-1]}")
+                        continue
+                    descs = [m.desc for m in have] if kind == "methods" else sorted(have)
+                    if at_desc not in descs:
+                        report(where, f"@At {at_owner}.{at_name}{at_desc} -- descriptor mismatch, "
+                                      f"jar has {sorted(descs)}")
+                        continue
+                    # javap omits the owner on a self-reference, so a call inside the
+                    # declaring class prints as a bare `name:desc`.
+                    shown = f'"{at_name}"' if at_name == "<init>" else at_name
+                    refs = {f"{at_owner.replace('.', '/')}.{shown}:{at_desc}"}
+                    if at_owner == owner:
+                        refs.add(f"{shown}:{at_desc}")
+                    if not any(r in m.refs for m in picked for r in refs):
+                        report(where, f'@At {at_owner}.{at_name} is never reached from '
+                                      f'{owner}.{name}{picked[0].desc if picked else ""}')
+
+    for name in re.findall(r'@(?:Accessor|Invoker)\s*\(\s*"([\w$]+)"', text):
+        for t in targets:
+            if not (lookup(t, name, "fields")[1] or lookup(t, name, "methods")[1]):
+                report(where, f'@Accessor/@Invoker "{name}" -- {t} has no such member')
+
+    for decl in re.findall(r'@Shadow[^;]*?\n\s*(?:public|private|protected)[^;{]*', text):
+        shadow = re.search(r'([\w$]+)\s*\(', decl) or re.search(r'([\w$]+)\s*$', decl.strip())
+        if not shadow:
+            continue
+        name, kind = shadow.group(1), "methods" if "(" in decl else "fields"
+        for t in targets:
+            if not lookup(t, name, kind)[1]:
+                report(where, f'@Shadow {kind[:-1]} "{name}" -- {t} has no such member')
+
+
+for directory, _, files in os.walk(SRC):
+    if "/mixin" not in directory.replace(os.sep, "/"):
+        continue
+    for f in sorted(files):
+        if f.endswith(".java"):
+            check(os.path.join(directory, f))
+
+for p in sorted(problems):
+    print(p)
+if unchecked:
+    print("\nunchecked:")
+    for u in sorted(unchecked):
+        print("  " + u)
+print(f"\n{len(problems)} problem(s), {len(unchecked)} unchecked")
+sys.exit(1 if problems else 0)
