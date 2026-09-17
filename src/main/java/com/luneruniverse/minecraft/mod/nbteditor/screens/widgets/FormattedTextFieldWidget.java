@@ -30,7 +30,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
@@ -186,12 +186,12 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			
 			@Override
-			public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-				MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
+			public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+				MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
 				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font,
 						TextInst.translatable("nbteditor.formatted_text.events"),
 						x, y - 38 - MainUtil.client.font.lineHeight, -1);
-				super.render(context, mouseX, mouseY, delta);
+				super.extractRenderState(context, mouseX, mouseY, delta);
 			}
 			
 			@Override
@@ -371,7 +371,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		
 		private void applyColor(ChatFormatting color, boolean shadow) {
 			if (shadow) {
-				int shadowColor = (MVMisc.scaleRgb(color.getColor(), 0.25) | 0xFF000000);
+				int shadowColor = (MVMisc.scaleRgb(StyleUtil.getColor(color), 0.25) | 0xFF000000);
 				applyStyleChange(style -> style.withShadowColor(shadowColor), true);
 			} else
 				applyFormatting(color);
@@ -457,7 +457,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		}
 		
 		@Override
-		protected void renderHighlightsBelow(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		protected void renderHighlightsBelow(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 			Style initialStyle = getStyle(0);
 			int start = (initialStyle.getClickEvent() != null || initialStyle.getHoverEvent() != null || initialStyle.getInsertion() != null ? 0 : -1);
 			for (int i = 0; i < styles.size(); i++) {
@@ -716,7 +716,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		if (width < 16 * 20 + (ConfigScreen.isHideFormatButtons() ? 0 : 20 + 4 + 5 * 20 + (4 + 20) * 2)) {
 			colors = addElement(new ButtonDropdownWidget(x, y, 20, 20, TextInst.literal("⬛").withStyle(ChatFormatting.AQUA), 20, 20));
 			for (ChatFormatting formatting : ChatFormatting.values()) {
-				if (!formatting.isColor())
+				if (!StyleUtil.isColor(formatting))
 					break;
 				colors.addButton(TextInst.literal("⬛").withStyle(formatting), btn -> {
 					field.applyColor(formatting, hasShadowKeyDown());
@@ -728,7 +728,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			colors = null;
 			int i = 0;
 			for (ChatFormatting formatting : ChatFormatting.values()) {
-				if (!formatting.isColor())
+				if (!StyleUtil.isColor(formatting))
 					break;
 				addWidget(MVMisc.newButton(x + i * 20, y, 20, 20, TextInst.literal("⬛").withStyle(formatting),
 						btn -> field.applyColor(formatting, hasShadowKeyDown()), createColorButtonTooltip(formatting)));
@@ -747,15 +747,15 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				if (formatting == ChatFormatting.RESET) {
 					btnText = TextInst.of("");
 					if (ConfigScreen.isKeybindsHidden())
-						btnTooltip = new MVTooltip(TextInst.of(formatting.getName()));
+						btnTooltip = new MVTooltip(TextInst.of(StyleUtil.getName(formatting)));
 					else {
 						btnTooltip = new MVTooltip(
-								TextInst.of(formatting.getName()),
+								TextInst.of(StyleUtil.getName(formatting)),
 								TextInst.translatable("nbteditor.keybind.formatted_text.reset"));
 					}
 				} else {
 					btnText = TextInst.literal(formatting.name().substring(0, 1)).withStyle(formatting);
-					btnTooltip = new MVTooltip(TextInst.of(formatting.getName()));
+					btnTooltip = new MVTooltip(TextInst.of(StyleUtil.getName(formatting)));
 				}
 				addWidget(MVMisc.newButton(
 						afterColorsX + 24 + i * 20 + (formatting == ChatFormatting.RESET ? 4 + 20 * 3 + 4 : 0), y, 20, 20,
@@ -783,7 +783,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 		}
 	}
 	private MVTooltip createColorButtonTooltip(ChatFormatting color) {
-		Component name = TextInst.of(color.getName());
+		Component name = TextInst.of(StyleUtil.getName(color));
 		if (ConfigScreen.isKeybindsHidden() || !StyleUtil.SHADOW_COLOR_EXISTS)
 			return new MVTooltip(name);
 		return new MVTooltip(name, TextInst.translatable("nbteditor.keybind.formatted_text.shadow"));
@@ -860,14 +860,14 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		setFocused(isMultiFocused() ? field : null);
-		field.render(context, mouseX, mouseY, delta);
+		field.extractRenderState(context, mouseX, mouseY, delta);
 		
 		if (colors != null) {
 			context.pose().pushMatrix();
 			context.pose().translate((float) (0.0), (float) (0.0));
-			colors.render(context, mouseX, mouseY, delta);
+			colors.extractRenderState(context, mouseX, mouseY, delta);
 			context.pose().popMatrix();
 		}
 		
@@ -881,7 +881,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 		}
 		
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	@Override

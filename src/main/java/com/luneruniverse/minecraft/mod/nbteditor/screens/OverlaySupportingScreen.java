@@ -9,19 +9,19 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	public static <T extends Renderable & GuiEventListener> T setOverlayStatic(T overlay, double z) {
-		return ((OverlaySupportingScreen) MainUtil.client.screen).setOverlay(overlay, z);
+		return ((OverlaySupportingScreen) MainUtil.client.gui.screen()).setOverlay(overlay, z);
 	}
 	public static <T extends Renderable & GuiEventListener> T setOverlayStatic(T overlay) {
 		return setOverlayStatic(overlay, 0);
 	}
 	public static <T extends Screen> T setOverlayScreenStatic(T overlay, double z) {
-		return ((OverlaySupportingScreen) MainUtil.client.screen).setOverlayScreen(overlay, z);
+		return ((OverlaySupportingScreen) MainUtil.client.gui.screen()).setOverlayScreen(overlay, z);
 	}
 	public static <T extends Screen> T setOverlayScreenStatic(T overlay) {
 		return setOverlayScreenStatic(overlay, 0);
@@ -79,18 +79,18 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public final void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public final void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		int bgMouseX = (overlay == null ? mouseX : -314);
 		int bgMouseY = (overlay == null ? mouseY : -314);
 		renderMain(context, bgMouseX, bgMouseY, delta);
 		if (overlay != null) {
 			if (overlayZ != 0)
 				context.nextStratum();
-			((Renderable) overlay).render(context, mouseX, mouseY, delta);
+			((Renderable) overlay).extractRenderState(context, mouseX, mouseY, delta);
 		}
 	}
-	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
+	protected void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	@Override
@@ -143,7 +143,6 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.keyPressed(input);
 		return super.keyPressed(input);
@@ -151,7 +150,6 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	@Override
 	public boolean keyReleased(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.keyReleased(input);
 		return super.keyReleased(input);
@@ -159,7 +157,6 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
 	@Override
 	public boolean charTyped(CharacterEvent input) {
-		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.charTyped(input);
 		return super.charTyped(input);

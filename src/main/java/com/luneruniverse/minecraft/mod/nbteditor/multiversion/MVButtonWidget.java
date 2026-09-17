@@ -1,6 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.input.InputWithModifiers;
@@ -41,12 +41,12 @@ public class MVButtonWidget extends AbstractButton {
 	 * Paints the whole button. This is the hook subclasses replace; 1.21.9 made
 	 * {@code renderWidget} final and moved widget painting into {@code drawIcon}.
 	 */
-	public void renderButton(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		renderDefaultSprite(context);
-		renderDefaultLabel(context.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+	public void renderButton(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		extractDefaultSprite(context);
+		extractDefaultLabel(context.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
 	}
 	@Override
-	protected final void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected final void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		renderButton(context, mouseX, mouseY, delta);
 	}
 	

@@ -151,11 +151,11 @@ public class FancyText {
 			}
 			
 			if (changes.getColor() != null) {
-				ChatFormatting formatting = ChatFormatting.getByName(changes.getColor().serialize());
+				ChatFormatting formatting = StyleUtil.getByName(changes.getColor().serialize());
 				if (formatting == null)
 					output.append("&" + changes.getColor().formatValue() + ";");
 				else
-					output.append("&" + formatting.getChar());
+					output.append("&" + formatting.code);
 			}
 			if (StyleUtil.SHADOW_COLOR_EXISTS && changes.getShadowColor() != null) {
 				if (changes.getShadowColor() >>> 24 == 0xFF)

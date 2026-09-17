@@ -15,18 +15,18 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 
 @Mixin(AbstractContainerScreen.class)
 public class HandledScreenMixin {
-	@Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V", at = @At("HEAD"), cancellable = true)
-	private void onMouseClick(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
+	@Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V", at = @At("HEAD"), cancellable = true)
+	private void onMouseClick(Slot slot, int slotId, int button, ContainerInput actionType, CallbackInfo info) {
 		if ((AbstractContainerScreen<?>) (Object) this instanceof ClientHandledScreen)
 			return;
 		MixinLink.onMouseClick((AbstractContainerScreen<?>) (Object) this, slot, slotId, button, actionType, info);
 	}
-	@Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V", at = @At("RETURN"))
-	private void onMouseClickReturn(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
+	@Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V", at = @At("RETURN"))
+	private void onMouseClickReturn(Slot slot, int slotId, int button, ContainerInput actionType, CallbackInfo info) {
 		if ((AbstractContainerScreen<?>) (Object) this instanceof ClientHandledScreen)
 			return;
 		ItemStack cursor = ((AbstractContainerScreen<?>) (Object) this).getMenu().getCarried();

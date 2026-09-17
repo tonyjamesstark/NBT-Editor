@@ -40,7 +40,7 @@ public class NBTCommand extends ClientCommandGroup {
 		super.register(builder, path);
 		builder.executes(context -> {
 			NBTReference.getReference(NBTReferenceFilter.ANY, ConfigScreen.isAirEditable(),
-					ref -> MainUtil.client.setScreen(new NBTEditorScreen<>(ref)));
+					ref -> MainUtil.client.setScreenAndShow(new NBTEditorScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

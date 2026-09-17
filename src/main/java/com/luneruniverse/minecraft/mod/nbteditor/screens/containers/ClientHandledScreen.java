@@ -21,12 +21,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -65,9 +65,9 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 				ContainerScreen.show(ref);
 		} else if (MVMisc.hasShiftDown()) {
 			if (notAir)
-				MainUtil.client.setScreen(new LocalFactoryScreen<>(ref));
+				MainUtil.client.setScreenAndShow(new LocalFactoryScreen<>(ref));
 		} else
-			MainUtil.client.setScreen(new NBTEditorScreen<>(ref));
+			MainUtil.client.setScreenAndShow(new NBTEditorScreen<>(ref));
 		
 		return true;
 	}
@@ -95,7 +95,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	}
 	
 	@Override
-	protected void renderBg(GuiGraphics context, float delta, int mouseX, int mouseY) {
+	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		super.extractBackground(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos, 0, 0, imageWidth, menu.getRowCount() * 18 + 17);
 		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos + menu.getRowCount() * 18 + 17, 0, 126, imageWidth, 96);
 		
@@ -107,7 +108,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	}
 	
 	@Override
-	protected void renderLabels(GuiGraphics context, int mouseX, int mouseY) {
+	protected void extractLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
 		getLockedSlotsInfo().renderLockedHighlights(context, menu, true, false, true);
 		
 		MVDrawableHelper.drawTextWithoutShadow(context, font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752);
@@ -145,7 +146,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	
 	
 	@Override
-	protected void slotClicked(Slot slot, int slotId, int button, ClickType actionType) {
+	protected void slotClicked(Slot slot, int slotId, int button, ContainerInput actionType) {
 		if (slot != null) {
 			LockedSlotsInfo lockedSlotsInfo = getLockedSlotsInfo();
 			if (lockedSlotsInfo.isBlocked(slot, button, actionType, false)) {
@@ -194,7 +195,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 							MainUtil.dropCreativeStack(item);
 						}
 						case SWAP -> {}
-						case QUICK_CRAFT -> throw new IllegalArgumentException("Invalid ClickType: " + actionType);
+						case QUICK_CRAFT -> throw new IllegalArgumentException("Invalid ContainerInput: " + actionType);
 					}
 				}
 				return;
@@ -214,8 +215,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 		onChange();
 	}
 	
-	private boolean tryCombineEnchantments(Slot slot, ClickType actionType) {
-		if (actionType == ClickType.PICKUP && slot != null) {
+	private boolean tryCombineEnchantments(Slot slot, ContainerInput actionType) {
+		if (actionType == ContainerInput.PICKUP && slot != null) {
 			ItemStack cursor = menu.getCarried();
 			ItemStack item = slot.getItem();
 			if (cursor == null || cursor.isEmpty() || item == null || item.isEmpty())

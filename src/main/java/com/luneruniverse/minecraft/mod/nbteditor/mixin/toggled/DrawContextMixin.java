@@ -17,12 +17,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.resources.Identifier;
 
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public abstract class DrawContextMixin {
 	
 	@Shadow
@@ -38,11 +38,11 @@ public abstract class DrawContextMixin {
 			return;
 		
 		int[] size = MixinLink.getTooltipSize(tooltip);
-		Vector2ic pos = MVMisc.getPosition(positioner, MainUtil.client.screen, x, y, size[0], size[1]);
+		Vector2ic pos = MVMisc.getPosition(positioner, MainUtil.client.gui.screen(), x, y, size[0], size[1]);
 		int screenWidth = MainUtil.client.getWindow().getGuiScaledWidth();
 		int screenHeight = MainUtil.client.getWindow().getGuiScaledHeight();
 		
-		MixinLink.renderTooltipFromComponents((GuiGraphics) (Object) this,
+		MixinLink.renderTooltipFromComponents((GuiGraphicsExtractor) (Object) this,
 				pos.x(), pos.y(), size[0], size[1], screenWidth, screenHeight);
 	}
 	

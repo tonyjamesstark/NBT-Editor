@@ -22,7 +22,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySupportingScreen {
@@ -93,7 +93,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		if (link != null) {
 			addRenderableWidget(MVMisc.newTexturedButton(width - 36, 22, 20, 20, 20,
 					LocalFactoryScreen.FACTORY_ICON,
-					btn -> closeSafely(() -> minecraft.setScreen(link.factory().apply(ItemReference.toItemStackRef(ref)))),
+					btn -> closeSafely(() -> minecraft.setScreenAndShow(link.factory().apply(ItemReference.toItemStackRef(ref)))),
 					new MVTooltip(link.langName())));
 		}
 		
@@ -102,7 +102,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 	protected void initEditor() {}
 	
 	@Override
-	public final void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public final void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(this, context);
 		preRenderEditor(context, mouseX, mouseY, delta);
 		super.renderMain(context, mouseX, mouseY, delta);
@@ -110,7 +110,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		MainUtil.renderLogo(context);
 		renderPreview(context, delta);
 	}
-	private void renderPreview(GuiGraphics context, float tickDelta) {
+	private void renderPreview(GuiGraphicsExtractor context, float tickDelta) {
 		int scaleX = 2;
 		int scaleY = 2;
 		int x = (16 + 32 + 8) / scaleX;
@@ -121,10 +121,10 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		localNBT.renderIcon(context, x, y, tickDelta);
 		context.pose().popMatrix();
 	}
-	protected void preRenderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {}
-	protected void renderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {}
+	protected void preRenderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
+	protected void renderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {}
 	
-	protected void renderTip(GuiGraphics context, String langHint) {
+	protected void renderTip(GuiGraphicsExtractor context, String langHint) {
 		if (!ConfigScreen.isKeybindsHidden()) {
 			int x = 16 + (32 + 8) * 2 + (100 + 8) * 2;
 			MainUtil.drawWrappingString(context, font, TextInst.translatable(langHint).getString(),
@@ -189,7 +189,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		if (saved)
 			onClose.run();
 		else {
-			minecraft.setScreen(new FancyConfirmScreen(value -> {
+			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (!value || save())
 					onClose.run();
 			}, TextInst.translatable("nbteditor.editor.unsaved.title"), TextInst.translatable("nbteditor.editor.unsaved.desc"),

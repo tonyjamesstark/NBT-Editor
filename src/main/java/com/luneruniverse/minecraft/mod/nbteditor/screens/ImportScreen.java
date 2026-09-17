@@ -27,7 +27,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -50,9 +50,9 @@ public class ImportScreen extends OverlaySupportingScreen {
 				try (FileInputStream in = new FileInputStream(file)) {
 					CompoundTag nbt = MainUtil.readNBT(in);
 					if (defaultDataVersion.isEmpty() && !nbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE))
-						MainUtil.client.player.displayClientMessage(TextUtil.parseTranslatableFormatted("nbteditor.nbt.import.data_version.unknown", file.getName()), false);
+						MainUtil.client.player.sendSystemMessage(TextUtil.parseTranslatableFormatted("nbteditor.nbt.import.data_version.unknown", file.getName()));
 					if (nbt.nbte$getIntOrDefault("DataVersion") > Version.getDataVersion())
-						MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.nbt.import.data_version.new", file.getName()), false);
+						MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.import.data_version.new", file.getName()));
 					LocalNBT.deserialize(nbt, defaultDataVersion.orElse(Version.getDataVersion())).ifPresent(localNBT -> {
 						if (localNBT instanceof LocalItem item)
 							item.receive();
@@ -63,7 +63,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 					});
 				} catch (Exception e) {
 					NBTEditor.LOGGER.error("Error while importing a .nbt file", e);
-					MainUtil.client.player.displayClientMessage(TextInst.literal(e.getClass().getName() + ": " + e.getMessage()).withStyle(ChatFormatting.RED), false);
+					MainUtil.client.player.sendSystemMessage(TextInst.literal(e.getClass().getName() + ": " + e.getMessage()).withStyle(ChatFormatting.RED));
 				}
 				continue;
 			}
@@ -107,7 +107,7 @@ public class ImportScreen extends OverlaySupportingScreen {
 	}
 	
 	@Override
-	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		dataVersion.setValid(dataVersion.getValue().isEmpty() ||
 				Version.getDataVersion(dataVersion.getValue()).filter(value -> value <= Version.getDataVersion()).isPresent());
 		

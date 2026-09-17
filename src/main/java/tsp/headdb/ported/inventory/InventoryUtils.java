@@ -17,12 +17,13 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import tsp.headdb.ported.Category;
 import tsp.headdb.ported.Head;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.LocalHead;
 import tsp.headdb.ported.Utils;
+import net.minecraft.world.item.DyeColor;
 
 public class InventoryUtils {
 
@@ -53,15 +54,15 @@ public class InventoryUtils {
         List<LocalHead> heads = HeadAPI.getLocalHeads();
         for (LocalHead localHead : heads) {
             pane.addButton(new Button(localHead.getItemStack(), e -> {
-                if (e.getClickType() == ClickTypeMod.LEFT_SHIFT) {
+                if (e.getContainerInput() == ContainerInputMod.LEFT_SHIFT) {
                     purchaseHead(localHead, 64, "local", localHead.getName());
                     return;
                 }
-                if (e.getClickType() == ClickTypeMod.LEFT) {
+                if (e.getContainerInput() == ContainerInputMod.LEFT) {
                     purchaseHead(localHead, 1, "local", localHead.getName());
                     return;
                 }
-                if (e.getClickType() == ClickTypeMod.RIGHT) {
+                if (e.getContainerInput() == ContainerInputMod.RIGHT) {
 //                    player.closeInventory();
                     Utils.sendMessage("&cLocal heads can not be added to favorites!");
                 }
@@ -77,14 +78,14 @@ public class InventoryUtils {
         List<Head> heads = HeadAPI.getFavoriteHeads();
         for (Head head : heads) {
             pane.addButton(new Button(head.getItemStack(), e -> {
-                if (e.getClickType() == ClickTypeMod.LEFT_SHIFT) {
+                if (e.getContainerInput() == ContainerInputMod.LEFT_SHIFT) {
                     purchaseHead(head, 64, head.getCategory().getName(), head.getName());
                     return;
                 }
-                if (e.getClickType() == ClickTypeMod.LEFT) {
+                if (e.getContainerInput() == ContainerInputMod.LEFT) {
                     purchaseHead(head, 1, head.getCategory().getName(), head.getName());
                 }
-                if (e.getClickType() == ClickTypeMod.RIGHT) {
+                if (e.getContainerInput() == ContainerInputMod.RIGHT) {
                     HeadAPI.removeFavoriteHead(head.getValue());
                     openFavoritesMenu();
                     Utils.sendMessage("Removed &e" + head.getName() + " &7from favorites.");
@@ -130,11 +131,11 @@ public class InventoryUtils {
     
     private static Button genButton(Head head) {
     	return new Button(head.getItemStack(), e -> {
-            if (e.getClickType() == ClickTypeMod.LEFT_SHIFT)
+            if (e.getContainerInput() == ContainerInputMod.LEFT_SHIFT)
                 purchaseHead(head, 64, head.getCategory().getName(), head.getName());
-            else if (e.getClickType() == ClickTypeMod.LEFT)
+            else if (e.getContainerInput() == ContainerInputMod.LEFT)
                 purchaseHead(head, 1, head.getCategory().getName(), head.getName());
-            else if (e.getClickType() == ClickTypeMod.RIGHT)
+            else if (e.getContainerInput() == ContainerInputMod.RIGHT)
                 HeadAPI.toggleFavoriteHead(head);
         });
     }
@@ -143,7 +144,7 @@ public class InventoryUtils {
     	ClientHandledScreen screen = new ClientHandledScreen(6,
     			TextInst.of(Utils.colorize("&c&lHeadDB &8(" + HeadAPI.getHeads().size() + ")"))) {
     		@Override
-    		protected void slotClicked(Slot slot, int slotId, int button, ClickType actionType) {
+    		protected void slotClicked(Slot slot, int slotId, int button, ContainerInput actionType) {
     			if (slot == null)
     				return;
     			slotId = slot.index;
@@ -222,11 +223,11 @@ public class InventoryUtils {
         }
 
         fill(inventory);
-        MainUtil.client.setScreen(screen);
+        MainUtil.client.setScreenAndShow(screen);
     }
 
     public static void fill(Container inv) {
-        ItemStack item = getUIItem("fill", new ItemStack(Items.BLACK_STAINED_GLASS_PANE));
+        ItemStack item = getUIItem("fill", new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)));
         // Do not bother filling the inventory if item to fill it with is AIR.
         if (item == null || item.isEmpty()) return;
         

@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical<K, T>> extends ConfigGrouping<K, T> {
@@ -22,7 +22,7 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.fill(context, 0, 0, PADDING, getSpacingHeight(), isValueValid() ? 0xFFAAAAAA : 0xFFDF4949);
 		
 		int yOffset = 0;
@@ -43,7 +43,7 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 			
 			context.pose().pushMatrix();
 			context.pose().translate((float) (PADDING * 2), (float) (yOffset));
-			path.render(context, mouseX - PADDING * 2, mouseY - yOffset, delta);
+			path.extractRenderState(context, mouseX - PADDING * 2, mouseY - yOffset, delta);
 			context.pose().popMatrix();
 		}
 	}

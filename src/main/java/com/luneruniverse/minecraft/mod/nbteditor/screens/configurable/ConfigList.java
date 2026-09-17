@@ -20,7 +20,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
@@ -97,19 +97,19 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		}
 		
 		@Override
-		public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 			if (named)
-				value.render(context, mouseX, mouseY, delta);
+				value.extractRenderState(context, mouseX, mouseY, delta);
 			else {
 				MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, indexText, 0, (getSpacingHeight() - MainUtil.client.font.lineHeight) / 2, -1);
 				context.pose().pushMatrix();
 				context.pose().translate((float) (indexTextOffset), (float) (0.0));
-				value.render(context, mouseX - indexTextOffset, mouseY, delta);
+				value.extractRenderState(context, mouseX - indexTextOffset, mouseY, delta);
 				context.pose().popMatrix();
 			}
 		}
 		
-		public void renderContextMenu(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		public void renderContextMenu(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 			if (!contextMenuOpen)
 				return;
 			
@@ -305,17 +305,14 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 		
 		@Override
 		public boolean keyPressed(KeyEvent input) {
-			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 			return value.keyPressed(input);
 		}
 		@Override
 		public boolean keyReleased(KeyEvent input) {
-			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 			return value.keyReleased(input);
 		}
 		@Override
 		public boolean charTyped(CharacterEvent input) {
-			char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 			return value.charTyped(input);
 		}
 		
@@ -398,8 +395,8 @@ public class ConfigList extends ConfigGroupingVertical<Integer, ConfigList> {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		
 		if (isValueValid()) {
 			int yOffset = getNameHeight();

@@ -23,7 +23,7 @@ public class Utils {
     }
 
     public static void sendMessage(String message) {
-        MainUtil.client.player.displayClientMessage(TextInst.of(colorize(message)), false);
+        MainUtil.client.player.sendSystemMessage(TextInst.of(colorize(message)));
     }
 
     public static String colorize(String string) {

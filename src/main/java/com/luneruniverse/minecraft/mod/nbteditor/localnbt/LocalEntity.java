@@ -23,11 +23,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -130,7 +131,7 @@ public class LocalEntity implements LocalNBT {
 	}
 	
 	@Override
-	public void renderIcon(GuiGraphics context, int x, int y, float tickDelta) {
+	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta) {
 		// 1.21.9 turned GUI entity rendering into a queued render state; there is no
 		// longer a matrix stack to push the entity onto.
 		Entity entity = getCachedEntity();
@@ -141,7 +142,7 @@ public class LocalEntity implements LocalNBT {
 		state.outlineColor = 0;
 		
 		float scale = 16 / Math.max(Math.max(state.boundingBoxWidth, state.boundingBoxHeight), 1.0E-4F);
-		context.submitEntityRenderState(state, scale, new Vector3f(0, state.boundingBoxHeight / 2, 0),
+		context.entity(state, scale, new Vector3f(0, state.boundingBoxHeight / 2, 0),
 				new Quaternionf().rotateZ((float) Math.PI), LocalNBT.iconSpin(),
 				x, y, x + 16, y + 16);
 	}
@@ -154,25 +155,25 @@ public class LocalEntity implements LocalNBT {
 				output = new ItemStack(spawnEggItem);
 		}
 		if (output == null) {
-			if (entityType == EntityType.ARMOR_STAND)
+			if (entityType == EntityTypes.ARMOR_STAND)
 				output = new ItemStack(Items.ARMOR_STAND);
-			else if (entityType == EntityType.ITEM_FRAME)
+			else if (entityType == EntityTypes.ITEM_FRAME)
 				output = new ItemStack(Items.ITEM_FRAME);
-			else if (entityType == EntityType.GLOW_ITEM_FRAME)
+			else if (entityType == EntityTypes.GLOW_ITEM_FRAME)
 				output = new ItemStack(Items.GLOW_ITEM_FRAME);
-			else if (entityType == EntityType.PAINTING)
+			else if (entityType == EntityTypes.PAINTING)
 				output = new ItemStack(Items.PAINTING);
-			else if (entityType == EntityType.COMMAND_BLOCK_MINECART)
+			else if (entityType == EntityTypes.COMMAND_BLOCK_MINECART)
 				output = new ItemStack(Items.COMMAND_BLOCK_MINECART);
-			else if (entityType == EntityType.FURNACE_MINECART)
+			else if (entityType == EntityTypes.FURNACE_MINECART)
 				output = new ItemStack(Items.FURNACE_MINECART);
-			else if (entityType == EntityType.MINECART)
+			else if (entityType == EntityTypes.MINECART)
 				output = new ItemStack(Items.MINECART);
-			else if (entityType == EntityType.CHEST_MINECART)
+			else if (entityType == EntityTypes.CHEST_MINECART)
 				output = new ItemStack(Items.CHEST_MINECART);
-			else if (entityType == EntityType.HOPPER_MINECART)
+			else if (entityType == EntityTypes.HOPPER_MINECART)
 				output = new ItemStack(Items.HOPPER_MINECART);
-			else if (entityType == EntityType.TNT_MINECART)
+			else if (entityType == EntityTypes.TNT_MINECART)
 				output = new ItemStack(Items.TNT_MINECART);
 			else if (getCachedEntity() instanceof AbstractBoat)
 				output = new ItemStack(MVMisc.getBoatItem(entityType, nbt));
@@ -187,11 +188,11 @@ public class LocalEntity implements LocalNBT {
 			nbt.remove("Passengers"); // Passengers don't work on spawn eggs
 			nbt.remove("UUID");
 			nbt.remove("Pos");
-			if (entityType == EntityType.ITEM_FRAME || entityType == EntityType.GLOW_ITEM_FRAME ||
-					entityType == EntityType.PAINTING) {
+			if (entityType == EntityTypes.ITEM_FRAME || entityType == EntityTypes.GLOW_ITEM_FRAME ||
+					entityType == EntityTypes.PAINTING) {
 				nbt.remove("Rotation");
 				nbt.remove("block_pos");
-				if (entityType == EntityType.PAINTING)
+				if (entityType == EntityTypes.PAINTING)
 					nbt.remove("facing");
 				else
 					nbt.remove("Facing");
@@ -225,8 +226,8 @@ public class LocalEntity implements LocalNBT {
 						.map(packet -> {
 							EntityReference ref = new EntityReference(packet.getWorld(), packet.getUUID(),
 									MVRegistry.ENTITY_TYPE.get(packet.getId()), packet.getNbt());
-							MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.get.entity")
-									.append(ref.getLocalNBT().toHoverableText()), false);
+							MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.get.entity")
+									.append(ref.getLocalNBT().toHoverableText()));
 							return ref;
 						}));
 	}

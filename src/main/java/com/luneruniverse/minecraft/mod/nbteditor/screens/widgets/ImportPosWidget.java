@@ -16,7 +16,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.BlockPos;
 
 public class ImportPosWidget extends GroupWidget implements InitializableOverlay<Screen> {
@@ -61,9 +61,9 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 		z = addWidget(new NamedTextFieldWidget(width / 2 + 36, height / 2 - 18, 66, 16, z)
 				.name(TextInst.translatable("nbteditor.nbt.import.pos.z")));
 		
-		x.setFilter(MainUtil.intPredicate());
-		y.setFilter(MainUtil.intPredicate());
-		z.setFilter(MainUtil.intPredicate());
+		x.nbte$setFilter(MainUtil.intPredicate());
+		y.nbte$setFilter(MainUtil.intPredicate());
+		z.nbte$setFilter(MainUtil.intPredicate());
 		
 		if (firstInit) {
 			x.setValue("" + defaultPos.getX());
@@ -76,9 +76,9 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
-		super.render(context, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.nbt.import.pos"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
 		MainUtil.renderLogo(context);

@@ -117,13 +117,13 @@ public record FancyTextToken(Type type, Optional<Object> content) {
 						}
 					} else {
 						ChatFormatting formatting = ChatFormatting.getByCode(c2);
-						if (formatting == null || shadow && !formatting.isColor()) {
+						if (formatting == null || shadow && !StyleUtil.isColor(formatting)) {
 							content.append(c);
 							str.setCursor(startCursor);
 						} else {
 							if (shadow) {
 									output.add(new FancyTextToken(Type.SHADOW_COLOR,
-											MVMisc.scaleRgb(formatting.getColor(), 0.25) | 0xFF000000));
+											MVMisc.scaleRgb(StyleUtil.getColor(formatting), 0.25) | 0xFF000000));
 							} else
 								output.add(new FancyTextToken(Type.FORMATTING, formatting));
 						}

@@ -14,7 +14,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.network.chat.Component;
 
@@ -49,7 +49,7 @@ public class MVTooltip {
 		}
 		return false;
 	}
-	public static boolean renderOneTooltip(GuiGraphics context, int mouseX, int mouseY) {
+	public static boolean renderOneTooltip(GuiGraphicsExtractor context, int mouseX, int mouseY) {
 		MVTooltip tooltip = setOneTooltip(false, false);
 		if (tooltip == null)
 			return false;
@@ -106,7 +106,7 @@ public class MVTooltip {
 		return output;
 	}
 	
-	public void render(GuiGraphics context, int mouseX, int mouseY) {
+	public void render(GuiGraphicsExtractor context, int mouseX, int mouseY) {
 		if (oneTooltip) {
 			if (lastTooltip || theOneTooltip == null)
 				theOneTooltip = this;

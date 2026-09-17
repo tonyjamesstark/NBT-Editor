@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.IdentifierException;
+import net.minecraft.world.item.ItemStackTemplate;
 
 public record FancyTextStyleOptionNode(StyleOption option, String value, List<FancyTextNode> contents) implements FancyTextNode {
 	
@@ -38,7 +39,7 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 						item = ItemStack.EMPTY;
 					}
 				}
-				yield style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ITEM.newEvent(item));
+				yield style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ITEM.newEvent(ItemStackTemplate.fromStack(item)));
 			}
 			case SHOW_ENTITY -> {
 				Entity entity;

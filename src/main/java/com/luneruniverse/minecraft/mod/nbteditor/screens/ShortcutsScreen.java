@@ -16,7 +16,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPath
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueText;
 
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class ShortcutsScreen extends TickableSupportingScreen {
 	
@@ -53,13 +53,13 @@ public class ShortcutsScreen extends TickableSupportingScreen {
 		}));
 	}
 	
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(this, context);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	public void close() {
-		minecraft.setScreen(this.parent);
+		minecraft.setScreenAndShow(this.parent);
 	}
 	
 	@SuppressWarnings("unchecked")

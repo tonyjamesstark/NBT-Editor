@@ -7,16 +7,16 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class OverlayScreen extends OverlaySupportingScreen {
 	
 	public static <T extends Renderable & GuiEventListener & NarratableEntry> T setOverlayOrScreen(T overlay, double z, boolean restoreParent) {
-		if (MainUtil.client.screen instanceof OverlaySupportingScreen screen)
+		if (MainUtil.client.gui.screen() instanceof OverlaySupportingScreen screen)
 			screen.setOverlay(overlay, z);
 		else
-			MainUtil.client.setScreen(new OverlayScreen(TextInst.of(overlay.getClass().getName()), overlay, z, restoreParent));
+			MainUtil.client.setScreenAndShow(new OverlayScreen(TextInst.of(overlay.getClass().getName()), overlay, z, restoreParent));
 		return overlay;
 	}
 	public static <T extends Renderable & GuiEventListener & NarratableEntry> T setOverlayOrScreen(T overlay, boolean restoreParent) {
@@ -29,13 +29,13 @@ public class OverlayScreen extends OverlaySupportingScreen {
 		super(title);
 		setOverlay(widget, z);
 		if (restoreParent)
-			parent = MainUtil.client.screen;
+			parent = MainUtil.client.gui.screen();
 	}
 	
 	@Override
 	public <T extends Renderable & GuiEventListener> T setOverlay(T overlay, double z) {
 		if (overlay == null)
-			MainUtil.client.setScreen(parent);
+			MainUtil.client.setScreenAndShow(parent);
 		else
 			parent = null;
 		return super.setOverlay(overlay, z);
@@ -43,7 +43,7 @@ public class OverlayScreen extends OverlaySupportingScreen {
 	@Override
 	public <T extends Screen> T setOverlayScreen(T overlay, double z) {
 		if (overlay == null)
-			MainUtil.client.setScreen(parent);
+			MainUtil.client.setScreenAndShow(parent);
 		else
 			parent = null;
 		return super.setOverlayScreen(overlay, z);
@@ -57,9 +57,9 @@ public class OverlayScreen extends OverlaySupportingScreen {
 	}
 	
 	@Override
-	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (parent != null)
-			parent.render(context, -314, -314, delta);
+			parent.extractRenderState(context, -314, -314, delta);
 	}
 	
 }

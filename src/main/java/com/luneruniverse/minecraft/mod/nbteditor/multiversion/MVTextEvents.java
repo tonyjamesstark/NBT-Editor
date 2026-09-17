@@ -15,6 +15,7 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStackTemplate;
 
 public class MVTextEvents {
 	
@@ -106,7 +107,7 @@ public class MVTextEvents {
 	
 	public static class HoverAction<T> {
 		public static final HoverAction<Component> SHOW_TEXT = new HoverAction<>("show_text", HoverEvent.ShowText::value, HoverEvent.ShowText::new);
-		public static final HoverAction<ItemStack> SHOW_ITEM = new HoverAction<>("show_item", HoverEvent.ShowItem::item, HoverEvent.ShowItem::new);
+		public static final HoverAction<ItemStackTemplate> SHOW_ITEM = new HoverAction<>("show_item", HoverEvent.ShowItem::item, HoverEvent.ShowItem::new);
 		public static final HoverAction<HoverEvent.EntityTooltipInfo> SHOW_ENTITY = new HoverAction<>("show_entity", HoverEvent.ShowEntity::entity, HoverEvent.ShowEntity::new);
 		public static final HoverAction<?>[] VALUES = new HoverAction<?>[] {SHOW_TEXT, SHOW_ITEM, SHOW_ENTITY};
 		

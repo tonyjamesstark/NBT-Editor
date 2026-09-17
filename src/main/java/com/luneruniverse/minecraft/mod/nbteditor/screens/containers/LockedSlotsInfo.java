@@ -8,11 +8,11 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.It
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SlotUtil;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 
 public class LockedSlotsInfo {
 	
@@ -69,8 +69,8 @@ public class LockedSlotsInfo {
 		return this;
 	}
 	
-	public boolean isBlocked(Slot slot, int button, ClickType actionType, boolean explicitly) {
-		if (actionType == ClickType.SWAP && playerLockedHotbarSlots.contains(button))
+	public boolean isBlocked(Slot slot, int button, ContainerInput actionType, boolean explicitly) {
+		if (actionType == ContainerInput.SWAP && playerLockedHotbarSlots.contains(button))
 			return true;
 		
 		if (slot.container == MainUtil.client.player.getInventory()) {
@@ -95,10 +95,10 @@ public class LockedSlotsInfo {
 		return false;
 	}
 	public boolean isBlocked(Slot slot, boolean explicitly) {
-		return isBlocked(slot, 0, ClickType.PICKUP, explicitly);
+		return isBlocked(slot, 0, ContainerInput.PICKUP, explicitly);
 	}
 	
-	public void renderLockedHighlights(GuiGraphics context, AbstractContainerMenu handler, boolean explicitly, boolean player, boolean container) {
+	public void renderLockedHighlights(GuiGraphicsExtractor context, AbstractContainerMenu handler, boolean explicitly, boolean player, boolean container) {
 		for (Slot slot : handler.slots) {
 			if ((slot.container == MainUtil.client.player.getInventory() ? player : container) && isBlocked(slot, explicitly))
 				MVDrawableHelper.drawSlotHighlight(context, slot.x, slot.y, 0x60FF0000);

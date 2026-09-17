@@ -62,7 +62,7 @@ public class BookCommand extends ClientCommand {
 		ItemTagReferences.WRITABLE_BOOK_PAGES.set(item, convertedPages);
 		item.remove(MVComponentType.WRITTEN_BOOK_CONTENT);
 		if (formatted) {
-			MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.book.convert.formatting_saved"), false);
+			MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.book.convert.formatting_saved"));
 			MainUtil.get(item, true);
 		} else
 			ref.saveItem(item, TextInst.translatable("nbteditor.book.convert.success"));
@@ -92,10 +92,10 @@ public class BookCommand extends ClientCommand {
 			WrittenBookTagReferences.GENERATION.set(book, 0);
 			WrittenBookTagReferences.PAGES.set(book, new ArrayList<>());
 			ref.saveItem(book);
-			MainUtil.client.setScreen(new BookScreen(ref));
+			MainUtil.client.setScreenAndShow(new BookScreen(ref));
 			return Command.SINGLE_SUCCESS;
 		})).executes(context -> {
-			getReference(ref -> MainUtil.client.setScreen(new BookScreen(ref)));
+			getReference(ref -> MainUtil.client.setScreenAndShow(new BookScreen(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

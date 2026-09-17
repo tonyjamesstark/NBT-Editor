@@ -15,7 +15,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -62,7 +62,7 @@ public class ColorSelectorWidget extends GroupWidget {
 	
 	private class ColorArea implements Renderable, MVElement {
 		@Override
-		public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 			// For a fixed hue, HSV is separable: each column is a straight fade from
 			// full value down to black, so vanilla's gradient fill draws it exactly.
 			// ponytail: one fill per column (128); a custom GUI render pipeline would
@@ -117,7 +117,7 @@ public class ColorSelectorWidget extends GroupWidget {
 		addWidget(new MVSliderWidget(x, y + areaSize + 4, areaSize, 20, hueValue / 359.0,
 				() -> TextInst.translatable("nbteditor.color_selector.hue", hueValue), value -> hueValue = (int) (value * 359)) {
 			@Override
-			protected boolean renderSlider(GuiGraphics context, int mouseX, int mouseY, float delta) {
+			protected boolean renderSlider(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 				MVDrawableHelper.drawTexture(context, HUES, x + 4, y, 0, 0, width - 8, 20, width - 8, 20);
 				return true;
 			}
@@ -149,8 +149,8 @@ public class ColorSelectorWidget extends GroupWidget {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		super.render(context, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MVDrawableHelper.fill(context, x + areaSize + 4, y, x + areaSize + 4 + areaSize / 2, y + areaSize, color | 0xFF000000);
 	}
 	

@@ -13,16 +13,16 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 
 @Mixin(CreativeModeInventoryScreen.class)
 public class CreativeInventoryScreenMixin {
 	@Inject(method = "slotClicked", at = @At(value = "HEAD"), cancellable = true)
-	private void onMouseClick(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
+	private void onMouseClick(Slot slot, int slotId, int button, ContainerInput actionType, CallbackInfo info) {
 		MixinLink.onMouseClick((CreativeModeInventoryScreen) (Object) this, slot, slotId, button, actionType, info);
 	}
 	@Inject(method = "slotClicked", at = @At(value = "RETURN"))
-	private void onMouseClickReturn(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
+	private void onMouseClickReturn(Slot slot, int slotId, int button, ContainerInput actionType, CallbackInfo info) {
 		ItemStack cursor = ((CreativeModeInventoryScreen) (Object) this).getMenu().getCarried();
 		if (!cursor.isEmpty())
 			GetLostItemCommand.addToHistory(cursor);

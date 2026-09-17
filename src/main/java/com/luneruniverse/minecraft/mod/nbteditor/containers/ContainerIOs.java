@@ -23,8 +23,10 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.vehicle.boat.ChestBoat;
 import net.minecraft.world.item.BlockItem;
@@ -73,16 +75,16 @@ public class ContainerIOs {
 	private static final ItemBlockContainerIO CAMPFIRE_IO = ItemBlockContainerIO.forSlotKeyItems(4);
 	private static final ItemBlockContainerIO DISPENSER_IO = ItemBlockContainerIO.forSlotKeyItems(9);
 	private static final ItemBlockContainerIO HOPPER_IO = ItemBlockContainerIO.forSlotKeyItems(5);
-	private static final ItemBlockContainerIO JUKEBOX_IO = ItemBlockContainerIO.forKeys(BlockEntityType.JUKEBOX, "RecordItem");
+	private static final ItemBlockContainerIO JUKEBOX_IO = ItemBlockContainerIO.forKeys(BlockEntityTypes.JUKEBOX, "RecordItem");
 	private static final ItemBlockContainerIO LECTERN_IO = BlockStateUpdatingContainerIO.forItemBlock(
-			ItemBlockContainerIO.forKeys(BlockEntityType.LECTERN, "Book"), "has_book");
+			ItemBlockContainerIO.forKeys(BlockEntityTypes.LECTERN, "Book"), "has_book");
 	private static final Function<EntityType<?>, ItemEntityContainerIO> ITEM_FRAME_IO =
 			entityId -> ItemEntityContainerIO.forKeys(entityId, "Item");
 	private static final ContainerIO<ItemStack> BUNDLE_IO = new BundleContentsComponentContainerIO(27);
 	private static final ItemBlockContainerIO CHISELED_BOOKSHELF_IO = BlockStateUpdatingContainerIO.forItemBlock(
 					ItemBlockContainerIO.forSlotKeyItems(6), "slot_0_occupied", "slot_1_occupied", "slot_2_occupied",
 					"slot_3_occupied", "slot_4_occupied", "slot_5_occupied");
-	private static final ItemBlockContainerIO SUSPICIOUS_SAND_IO = ItemBlockContainerIO.forKeys(BlockEntityType.BRUSHABLE_BLOCK, "item");
+	private static final ItemBlockContainerIO SUSPICIOUS_SAND_IO = ItemBlockContainerIO.forKeys(BlockEntityTypes.BRUSHABLE_BLOCK, "item");
 	private static final ItemBlockContainerIO DECORATED_POT_IO = new ItemBlockContainerIO(
 					new ContainerComponentContainerIO(1), ContainerIO.forLocalNBT(new KeysContainerIO(false, "item")));
 	private static final ItemBlockContainerIO CRAFTER_IO = ItemBlockContainerIO.forSlotKeyItems(9);
@@ -104,17 +106,17 @@ public class ContainerIOs {
 			new ConcatContainerIO<>(
 							new EquipmentContainerIO(true).forNbtCompoundEquipment(), new DonkeyChestContainerIO(true)));
 	private static final ContainerIO<LocalEntity> VILLAGER_IO = new ConcatContainerIO<>(
-			EQUIPMENT_IO.apply(EntityType.VILLAGER).entity(),
+			EQUIPMENT_IO.apply(EntityTypes.VILLAGER).entity(),
 			ContainerIO.forLocalNBT(new OrderNbtListContainerIO(8).forNbtCompound("Inventory")));
 	private static final ItemEntityContainerIO CHEST_MINECART_IO = ItemEntityContainerIO.forEntityTagIO(
-			new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), EntityType.CHEST_MINECART);
+			new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), EntityTypes.CHEST_MINECART);
 	private static final ItemEntityContainerIO HOPPER_MINECART_IO = ItemEntityContainerIO.forEntityTagIO(
-			new SlotKeyNbtListContainerIO(5).forNbtCompoundItems(), EntityType.FURNACE_MINECART);
+			new SlotKeyNbtListContainerIO(5).forNbtCompoundItems(), EntityTypes.FURNACE_MINECART);
 	private static final Function<EntityType<?>, ItemEntityContainerIO> CHEST_BOAT_IO =
 			entityType -> ItemEntityContainerIO.forEntityTagIO(
 							new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), entityType);
 	private static final ContainerIO<LocalEntity> ALLAY_IO = (new ConcatContainerIO<>(
-					EQUIPMENT_IO.apply(EntityType.ALLAY).entity(),
+					EQUIPMENT_IO.apply(EntityTypes.ALLAY).entity(),
 					ContainerIO.forLocalNBT(new OrderNbtListContainerIO(1).forNbtCompound("Inventory"))));
 	
 	public static void loadClass() {}
@@ -140,8 +142,8 @@ public class ContainerIOs {
 		registerItemBlockIO((BlockItem) Items.HOPPER, HOPPER_IO);
 		registerItemBlockIO((BlockItem) Items.JUKEBOX, JUKEBOX_IO);
 		registerItemBlockIO((BlockItem) Items.LECTERN, LECTERN_IO);
-		registerItemEntityIO(Items.ITEM_FRAME, EntityType.ITEM_FRAME, ITEM_FRAME_IO);
-		registerItemEntityIO(Items.GLOW_ITEM_FRAME, EntityType.GLOW_ITEM_FRAME, ITEM_FRAME_IO);
+		registerItemEntityIO(Items.ITEM_FRAME, EntityTypes.ITEM_FRAME, ITEM_FRAME_IO);
+		registerItemEntityIO(Items.GLOW_ITEM_FRAME, EntityTypes.GLOW_ITEM_FRAME, ITEM_FRAME_IO);
 		for (Item item : MVRegistry.ITEM) {
 			if (item instanceof BundleItem bundle)
 				registerItemIO(bundle, BUNDLE_IO);
@@ -152,29 +154,29 @@ public class ContainerIOs {
 		registerItemBlockIO((BlockItem) Items.DECORATED_POT, DECORATED_POT_IO);
 		registerItemBlockIO((BlockItem) Items.CRAFTER, CRAFTER_IO);
 		
-		registerItemEntityIO(Items.ARMOR_STAND, EntityType.ARMOR_STAND, EQUIPMENT_IO);
+		registerItemEntityIO(Items.ARMOR_STAND, EntityTypes.ARMOR_STAND, EQUIPMENT_IO);
 		for (Item item : MVRegistry.ITEM) {
 			if (item instanceof SpawnEggItem spawnEgg)
 				registerItemIO(spawnEgg, SPAWN_EGG_IO);
 		}
 		
-		registerEntityIO(EntityType.HORSE, HORSE_IO);
-		registerEntityIO(EntityType.SKELETON_HORSE, BASIC_HORSE_IO);
-		registerEntityIO(EntityType.ZOMBIE_HORSE, BASIC_HORSE_IO);
-		registerEntityIO(EntityType.CAMEL, BASIC_HORSE_IO);
-		registerEntityIO(EntityType.DONKEY, DONKEY_IO);
-		registerEntityIO(EntityType.MULE, DONKEY_IO);
-		registerEntityIO(EntityType.LLAMA, LLAMA_IO);
-		registerEntityIO(EntityType.TRADER_LLAMA, LLAMA_IO);
-		registerEntityIO(EntityType.VILLAGER, VILLAGER_IO);
-		registerItemEntityIO(Items.CHEST_MINECART, EntityType.CHEST_MINECART, CHEST_MINECART_IO);
-		registerItemEntityIO(Items.HOPPER_MINECART, EntityType.HOPPER_MINECART, HOPPER_MINECART_IO);
+		registerEntityIO(EntityTypes.HORSE, HORSE_IO);
+		registerEntityIO(EntityTypes.SKELETON_HORSE, BASIC_HORSE_IO);
+		registerEntityIO(EntityTypes.ZOMBIE_HORSE, BASIC_HORSE_IO);
+		registerEntityIO(EntityTypes.CAMEL, BASIC_HORSE_IO);
+		registerEntityIO(EntityTypes.DONKEY, DONKEY_IO);
+		registerEntityIO(EntityTypes.MULE, DONKEY_IO);
+		registerEntityIO(EntityTypes.LLAMA, LLAMA_IO);
+		registerEntityIO(EntityTypes.TRADER_LLAMA, LLAMA_IO);
+		registerEntityIO(EntityTypes.VILLAGER, VILLAGER_IO);
+		registerItemEntityIO(Items.CHEST_MINECART, EntityTypes.CHEST_MINECART, CHEST_MINECART_IO);
+		registerItemEntityIO(Items.HOPPER_MINECART, EntityTypes.HOPPER_MINECART, HOPPER_MINECART_IO);
 		Map<EntityType<?>, BoatItem> boatItems = new HashMap<>();
 		for (Item item : MVRegistry.ITEM) {
 			if (item instanceof BoatItem boat)
 				boatItems.put(boat.entityType, boat);
 		}
-		registerEntityIO(EntityType.ALLAY, ALLAY_IO);
+		registerEntityIO(EntityTypes.ALLAY, ALLAY_IO);
 		MVClientNetworking.PlayNetworkStateEvents.Join.EVENT.register(() -> {
 			for (EntityType<?> entityType : MVRegistry.ENTITY_TYPE) {
 				if (ENTITY_IO.containsKey(entityType))

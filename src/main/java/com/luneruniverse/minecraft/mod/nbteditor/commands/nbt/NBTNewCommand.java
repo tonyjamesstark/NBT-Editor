@@ -29,8 +29,8 @@ public class NBTNewCommand extends ClientCommand {
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		builder.then(argument("item", MVMisc.getItemStackArg()).executes(context -> {
 			ItemReference ref = ItemReference.getHeldAir();
-			ref.saveItem(context.getArgument("item", ItemInput.class).createItemStack(1, true));
-			MainUtil.client.setScreen(new NBTEditorScreen<>(ref));
+			ref.saveItem(context.getArgument("item", ItemInput.class).createItemStack(1));
+			MainUtil.client.setScreenAndShow(new NBTEditorScreen<>(ref));
 			return Command.SINGLE_SUCCESS;
 		}));
 	}

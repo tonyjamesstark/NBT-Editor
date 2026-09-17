@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -157,7 +157,7 @@ public class LocalBlock implements LocalNBT {
 	private CompoundTag cachedItemNbt;
 	
 	@Override
-	public void renderIcon(GuiGraphics context, int x, int y, float tickDelta) {
+	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta) {
 		// The GUI lost its world-space rendering path in 1.21.9. Drawing the block's
 		// item form keeps block entity detail (shulker colour, banner patterns) without
 		// a hand-rolled render pipeline.
@@ -167,7 +167,7 @@ public class LocalBlock implements LocalNBT {
 			cachedItemState = state.copy();
 			cachedItemNbt = nbt == null ? null : nbt.copy();
 		}
-		context.renderItem(cachedItem, x, y);
+		context.item(cachedItem, x, y);
 	}
 	
 	@Override

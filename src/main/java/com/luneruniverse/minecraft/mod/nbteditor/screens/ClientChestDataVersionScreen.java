@@ -22,7 +22,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
 
@@ -78,13 +78,13 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		}));
 		addRenderableWidget(MVMisc.newButton(dontUpdatePageX, height / 2 + 14, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.clear_page"), btn -> {
-			minecraft.setScreen(new FancyConfirmScreen(value -> {
+			minecraft.setScreenAndShow(new FancyConfirmScreen(value -> {
 				if (value) {
 					LoadingScreen.show(ClientChestHelper.discardPage(ClientChestScreen.PAGE), success -> ClientChestScreen.show());
 					return;
 				}
 				
-				minecraft.setScreen(this);
+				minecraft.setScreenAndShow(this);
 			}, TextInst.translatable("nbteditor.client_chest.clear_page.title"), TextInst.translatable("nbteditor.client_chest.clear_page.desc"),
 					TextInst.translatable("nbteditor.client_chest.clear_page.yes"), TextInst.translatable("nbteditor.client_chest.clear_page.no")));
 		}));
@@ -137,7 +137,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		boolean fullButtons = (dataVersionStatus != DataVersionStatus.TOO_UPDATED);
 		
 		if (fullButtons) {
@@ -149,7 +149,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		MVTooltip.setOneTooltip(true, false);
 		
 		MVDrawableHelper.renderBackground(this, context);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, font,
 				msg, width / 2, height / 2 - 44 - font.lineHeight / 2, -1);
 		if (fullButtons) {
@@ -203,7 +203,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 					msg = TextInst.translatable("nbteditor.client_chest.data_version.update_page_success",
 							TextInst.literal(ClientChestScreen.PAGE + 1 + "").withStyle(ChatFormatting.GREEN));
 				}
-				MainUtil.client.player.displayClientMessage(ClientChest.attachShowFolder(msg), false);
+				MainUtil.client.player.sendSystemMessage(ClientChest.attachShowFolder(msg));
 			}
 		});
 		return future;

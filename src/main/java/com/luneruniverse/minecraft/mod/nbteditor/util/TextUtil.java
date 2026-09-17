@@ -152,21 +152,21 @@ public class TextUtil {
 				style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(
 						file.getAbsoluteFile().getParentFile().getAbsolutePath()))))
 				.append(" ").append(TextInst.translatable("nbteditor.file_options.delete").withStyle(style ->
-				MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreen(
+				MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreenAndShow(
 						new FancyConfirmScreen(confirmed -> {
 							if (confirmed) {
 								if (file.exists()) {
 									try {
 										Files.deleteIfExists(file.toPath());
-										MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.file_options.delete.success", "§6" + file.getName()), false);
+										MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.success", "§6" + file.getName()));
 									} catch (IOException e) {
 										NBTEditor.LOGGER.error("Error deleting file", e);
-										MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.file_options.delete.error", "§6" + file.getName()), false);
+										MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.error", "§6" + file.getName()));
 									}
 								} else
-									MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.file_options.delete.missing", "§6" + file.getName()), false);
+									MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.file_options.delete.missing", "§6" + file.getName()));
 							}
-							MainUtil.client.setScreen(null);
+							MainUtil.client.setScreenAndShow(null);
 						}, TextInst.translatable("nbteditor.file_options.delete.title", file.getName()),
 								TextInst.translatable("nbteditor.file_options.delete.desc", file.getName()))))));
 	}

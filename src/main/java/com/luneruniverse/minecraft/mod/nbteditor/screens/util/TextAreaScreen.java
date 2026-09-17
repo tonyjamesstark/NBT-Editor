@@ -16,7 +16,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class TextAreaScreen extends OverlaySupportingScreen {
 	
@@ -73,14 +73,13 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	}
 	
 	@Override
-	public void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(this, context);
 		super.renderMain(context, mouseX, mouseY, delta);
 	}
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (getOverlay() == null && textArea.keyPressed(input))
 			return true;
 		return super.keyPressed(input);
@@ -93,7 +92,7 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	
 	@Override
 	public void onClose() {
-		this.minecraft.setScreen(parent);
+		this.minecraft.setScreenAndShow(parent);
 	}
 	
 	@Override

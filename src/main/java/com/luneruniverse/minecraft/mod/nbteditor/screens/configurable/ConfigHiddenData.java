@@ -5,7 +5,7 @@ import java.util.function.BiFunction;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	
@@ -31,8 +31,8 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		visible.render(context, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		visible.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	@Override
@@ -103,17 +103,14 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return visible.keyPressed(input);
 	}
 	@Override
 	public boolean keyReleased(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return visible.keyReleased(input);
 	}
 	@Override
 	public boolean charTyped(CharacterEvent input) {
-		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		return visible.charTyped(input);
 	}
 	

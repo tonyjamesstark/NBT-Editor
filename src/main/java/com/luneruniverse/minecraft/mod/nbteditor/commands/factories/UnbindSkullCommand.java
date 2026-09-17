@@ -50,7 +50,7 @@ public class UnbindSkullCommand extends ClientCommand {
 						ItemTagReferences.PROFILE.get(itemRef.getItem()) :
 						BlockTagReferences.PROFILE.get((LocalBlock) ref.getLocalNBT()));
 				if (profile.isEmpty() || profile.get().properties().isEmpty()) {
-					MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.unbind_skull.no_textures"), false);
+					MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.unbind_skull.no_textures"));
 					return;
 				}
 				GameProfile newProfile = new GameProfile(new UUID(0L, 0L), "Unbound_Player", profile.get().properties());

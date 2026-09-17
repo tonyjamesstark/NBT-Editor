@@ -15,7 +15,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
@@ -82,10 +82,10 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (!isDropdownOnly())
-			super.render(context, mouseX, mouseY, delta);
-		suggestor.render(context, mouseX, mouseY);
+			super.extractWidgetRenderState(context, mouseX, mouseY, delta);
+		suggestor.extractRenderState(context, mouseX, mouseY);
 	}
 	@Override
 	protected boolean shouldShowName() {
@@ -111,7 +111,6 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (!isMultiFocused())
 			return false;
 		return suggestor.keyPressed(input) || !isDropdownOnly() && super.keyPressed(input);

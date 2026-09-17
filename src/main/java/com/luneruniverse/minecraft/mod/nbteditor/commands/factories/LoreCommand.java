@@ -128,7 +128,7 @@ public class LoreCommand extends ClientCommand {
 						.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
 								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore remove " + finalI))))
 						.append(TextInst.literal(" ").withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.ITALIC).append(line)
-						.withStyle(style -> MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreen(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
+						.withStyle(style -> MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreenAndShow(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
 								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(TextInst.of("/factory display lore set " + finalI))))));
 				i++;
 			}
@@ -150,7 +150,7 @@ public class LoreCommand extends ClientCommand {
 				.then(literal("clear").executes(clear))
 				.then(literal("list").executes(list))
 			.executes(context -> {
-				MainUtil.client.setScreen(new DisplayScreen<>(ItemReference.getHeldItem()));
+				MainUtil.client.setScreenAndShow(new DisplayScreen<>(ItemReference.getHeldItem()));
 				return Command.SINGLE_SUCCESS;
 			});
 	}

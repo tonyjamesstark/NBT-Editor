@@ -34,7 +34,7 @@ public class ConfigValueNumber<T extends Number> extends NamedTextFieldWidget im
 		setMaxLength(Integer.MAX_VALUE);
 		name(TextInst.of(defaultValue + ""));
 		super.setValue(value + "");
-		setFilter(str -> {
+		nbte$setFilter(str -> {
 			if (str.isEmpty() || str.equals("-") || str.equals("+"))
 				return true;
 			try {

@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 import org.joml.Quaternionf;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -65,7 +65,7 @@ public interface LocalNBT {
 		setNBT(nbt);
 	}
 	
-	public void renderIcon(GuiGraphics context, int x, int y, float tickDelta);
+	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta);
 	
 	public Optional<ItemStack> toItem(boolean cleanup);
 	public CompoundTag serialize();

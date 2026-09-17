@@ -81,7 +81,6 @@ public class NBTEditorClient implements ClientModInitializer {
 		ItemStack clientChestIcon = new ItemStack(Items.ENDER_CHEST)
 				.nbte$setCustomName(TextInst.translatable("itemGroup.nbteditor.client_chest"));
 		MVEnchantments.addEnchantment(clientChestIcon, MVEnchantments.LOYALTY, 1);
-		MixinLink.ENCHANT_GLINT_FIX.add(clientChestIcon);
 		NBTEditorAPI.registerInventoryTab(clientChestIcon,
 				ClientChestScreen::show,
 				screen -> screen instanceof CreativeModeInventoryScreen || (screen instanceof InventoryScreen && SERVER_CONN.isEditingExpanded()));

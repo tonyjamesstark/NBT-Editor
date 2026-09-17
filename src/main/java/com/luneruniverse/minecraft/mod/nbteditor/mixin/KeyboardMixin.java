@@ -16,8 +16,8 @@ import net.minecraft.client.GameNarrator;
 public class KeyboardMixin {
 	@Redirect(method = "keyPress", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/GameNarrator;isActive()Z"))
 	private boolean isActive(GameNarrator manager) {
-		if (MainUtil.client.screen != null) {
-			GuiEventListener focused = MainUtil.client.screen.getFocused();
+		if (MainUtil.client.gui.screen() != null) {
+			GuiEventListener focused = MainUtil.client.gui.screen().getFocused();
 			while (focused != null) {
 				if (focused instanceof FormattedTextFieldWidget)
 					return false;

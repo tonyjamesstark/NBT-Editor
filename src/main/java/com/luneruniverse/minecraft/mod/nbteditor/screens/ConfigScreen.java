@@ -43,7 +43,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.network.chat.Component;
 
@@ -216,7 +216,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 	private static boolean invertedPageKeybinds;
 	private static boolean triggerBlockUpdates;
 	private static boolean warnIncompatibleProtocol;
-	private static boolean enchantGlintFix;
 	private static boolean recreateBlocksAndEntities;
 	private static CreativeTabsPosition creativeTabsPos;
 	
@@ -247,7 +246,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 		invertedPageKeybinds = false;
 		triggerBlockUpdates = true;
 		warnIncompatibleProtocol = true;
-		enchantGlintFix = false;
 		recreateBlocksAndEntities = false;
 		creativeTabsPos = CreativeTabsPosition.BOTTOM_LEFT;
 		
@@ -284,7 +282,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 			invertedPageKeybinds = settings.get("invertedPageKeybinds").getAsBoolean();
 			triggerBlockUpdates = settings.get("triggerBlockUpdates").getAsBoolean();
 			warnIncompatibleProtocol = settings.get("warnIncompatibleProtocol").getAsBoolean();
-			enchantGlintFix = settings.get("enchantGlintFix").getAsBoolean();
 			recreateBlocksAndEntities = settings.get("recreateBlocksAndEntities").getAsBoolean();
 			creativeTabsPos = CreativeTabsPosition.valueOf(settings.get("creativeTabsPos").getAsString());
 		} catch (NoSuchFileException | ClassCastException | NullPointerException e) {
@@ -324,7 +321,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 		settings.addProperty("invertedPageKeybinds", invertedPageKeybinds);
 		settings.addProperty("triggerBlockUpdates", triggerBlockUpdates);
 		settings.addProperty("warnIncompatibleProtocol", warnIncompatibleProtocol);
-		settings.addProperty("enchantGlintFix", enchantGlintFix);
 		settings.addProperty("recreateBlocksAndEntities", recreateBlocksAndEntities);
 		settings.addProperty("creativeTabsPos", creativeTabsPos.name());
 		
@@ -415,9 +411,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 	public static boolean isWarnIncompatibleProtocol() {
 		return warnIncompatibleProtocol;
 	}
-	public static boolean isEnchantGlintFix() {
-		return enchantGlintFix;
-	}
 	public static boolean isRecreateBlocksAndEntities() {
 		return recreateBlocksAndEntities;
 	}
@@ -504,11 +497,6 @@ public class ConfigScreen extends TickableSupportingScreen {
 				.addValueListener(value -> screenshotOptions = value.getValidValue()))
 				.setTooltip(new MVTooltip(TextInst.translatable("nbteditor.config.screenshot_options.desc", TextInst.translatable("nbteditor.file_options.show"), TextInst.translatable("nbteditor.file_options.delete")))));
 		
-		mc.setConfigurable("enchantGlintFix", new ConfigItem<>(TextInst.translatable("nbteditor.config.enchant_glint_fix"),
-				new ConfigValueBoolean(enchantGlintFix, false, 100, TextInst.translatable("nbteditor.config.enchant_glint_fix.enabled"), TextInst.translatable("nbteditor.config.enchant_glint_fix.disabled"))
-				.addValueListener(value -> enchantGlintFix = value.getValidValue()))
-				.setTooltip("nbteditor.config.enchant_glint_fix.desc"));
-		
 		// ---------- GUIs ----------
 		
 		guis.setConfigurable("creativeTabsPos", new ConfigItem<>(TextInst.translatable("nbteditor.config.creative_tabs_pos"),
@@ -560,10 +548,10 @@ public class ConfigScreen extends TickableSupportingScreen {
 		// ---------- FUNCTIONAL ----------
 		
 		functional.setConfigurable("aliases", new ConfigButton(100, TextInst.translatable("nbteditor.config.aliases"),
-				btn -> minecraft.setScreen(new AliasesScreen(this)), new MVTooltip("nbteditor.config.aliases.desc")));
+				btn -> minecraft.setScreenAndShow(new AliasesScreen(this)), new MVTooltip("nbteditor.config.aliases.desc")));
 		
 		functional.setConfigurable("shortcuts", new ConfigButton(100, TextInst.translatable("nbteditor.config.shortcuts"),
-				btn -> minecraft.setScreen(new ShortcutsScreen(this)), new MVTooltip("nbteditor.config.shortcuts.desc")));
+				btn -> minecraft.setScreenAndShow(new ShortcutsScreen(this)), new MVTooltip("nbteditor.config.shortcuts.desc")));
 		
 		functional.setConfigurable("recreateBlocksAndEntities", new ConfigItem<>(TextInst.translatable("nbteditor.config.recreate_blocks_and_entities"),
 				new ConfigValueBoolean(recreateBlocksAndEntities, false, 100, TextInst.translatable("nbteditor.config.recreate_blocks_and_entities.enabled"), TextInst.translatable("nbteditor.config.recreate_blocks_and_entities.disabled"))
@@ -614,13 +602,13 @@ public class ConfigScreen extends TickableSupportingScreen {
 		this.addRenderableWidget(MVMisc.newButton(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
 	}
 	
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.renderBackground(this, context);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	public void close() {
-		minecraft.setScreen(this.parent);
+		minecraft.setScreenAndShow(this.parent);
 	}
 	
 	@Override

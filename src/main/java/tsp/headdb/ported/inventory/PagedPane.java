@@ -24,9 +24,10 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.Utils;
+import net.minecraft.world.item.DyeColor;
 
 /**
  * A paged pane. Credits @ I Al Ianstaan
@@ -159,12 +160,12 @@ public class PagedPane extends ClientHandledScreen {
     }
     
     @Override
-    protected void slotClicked(Slot slot, int slotId, int button, ClickType actionType) {
+    protected void slotClicked(Slot slot, int slotId, int button, ContainerInput actionType) {
     	if (slot == null)
     		return;
     	slotId = slot.index;
     	
-    	InventoryClickEvent event = new InventoryClickEvent(slot, slotId, button, actionType, ClickTypeMod.get(button == 1, shiftKey));
+    	InventoryClickEvent event = new InventoryClickEvent(slot, slotId, button, actionType, ContainerInputMod.get(button == 1, shiftKey));
     	
     	// back item
         if (event.getSlotId() == getInventory().getContainerSize() - 8) {
@@ -213,7 +214,7 @@ public class PagedPane extends ClientHandledScreen {
         // create separator
         fillRow(
                 inventory.getContainerSize() / 9 - 2,
-                new ItemStack(Items.BLACK_STAINED_GLASS_PANE),
+                new ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)),
                 inventory
         );
 
@@ -260,7 +261,7 @@ public class PagedPane extends ClientHandledScreen {
                     "&7Left-Click to go to the &cMain Menu",
                     "&7Right-Click to go to a &6Specific Page");
             controlMain = new Button(itemStack, event -> {
-                if (event.getClickType() == ClickTypeMod.RIGHT) {
+                if (event.getContainerInput() == ContainerInputMod.RIGHT) {
                 	InputOverlay.show(
                 			TextInst.of("Go to a Specific Page"),
                 			StringInput.builder()
@@ -295,7 +296,7 @@ public class PagedPane extends ClientHandledScreen {
      */
     public void open() {
         reRender();
-        MainUtil.client.setScreen(this);
+        MainUtil.client.setScreenAndShow(this);
     }
 
     private static class Page {

@@ -28,7 +28,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class ImageToLoreWidget extends GroupWidget implements InitializableOverlay<Screen> {
@@ -119,8 +119,8 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		imgHeight = addWidget(new NamedTextFieldWidget(width / 2 + 2, height / 2 - 18, 100, 16)
 				.name(TextInst.translatable("nbteditor.img_to_lore.height")));
 		
-		imgWidth.setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
-		imgHeight.setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
+		imgWidth.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
+		imgHeight.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
 		
 		if (prevImgWidth != null)
 			imgWidth.setValue(prevImgWidth);
@@ -137,9 +137,9 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.screen, context);
-		super.render(context, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
+		super.extractRenderState(context, mouseX, mouseY, delta);
 		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
 		MainUtil.renderLogo(context);

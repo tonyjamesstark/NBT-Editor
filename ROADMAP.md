@@ -147,7 +147,7 @@ slicing is consistent. That is a separate claim from 3.1 and does not rescue it.
 pre-existing mixin warnings and no new ones. Both bounds confirmed in the bytecode with `javap`
 rather than read off the build log. Not exercised in-game.
 
-## Phase 4: the 26.2 migration (re-scoped 2026-09-13, not started)
+## Phase 4: the 26.2 migration (re-scoped 2026-09-13, compiling on 26.2 2026-09-14)
 
 The earlier version of this section said Phase 4 was gated on Fabric shipping 26.2 support, and
 that the work was predominantly a deletion. Both were wrong. Fabric shipped 26.2 and is already
@@ -275,11 +275,85 @@ Each step ends in a build. Do not start the next until the previous compiles.
   interface, `MVRegistry` reflected over `Registry` for the same reason, `MVRegistryKeys` held one
   constant, and `MVElementParent` grafted a three-argument `mouseScrolled` onto a `GuiEventListener`
   that declares the four-argument one itself. `Reflection` went from 191 lines to 66.
-- [ ] **4.5 Bump 1.21.11 to 26.2.** Loom 1.10-SNAPSHOT to 1.16.x, fabric-api 0.160.0+26.2, loader
-  0.19.5, and *remove* the `mappings` line rather than repointing it. Relax
-  `Version.parseVersion`, which rejects any version whose first component is not `1` and runs
-  inside `NBTEditorMixinPlugin.getMixins()` with `"required": true`. Add 26.x entries to
-  `data_versions.json`. Raise `fabric.mod.json`'s `"java": ">=16"` to `>=25`.
+- [x] **4.5 Bump 1.21.11 to 26.2.** Done. The build configuration and the API migration both
+  landed; see "What 26.2 actually changes" and "How it actually went" below.
+
+  Original scope: Loom 1.10-SNAPSHOT to 1.16.x, fabric-api 0.160.0+26.2, loader 0.19.5, and
+  *remove* the `mappings` line rather than repointing it. Relax `Version.parseVersion`, which
+  rejects any version whose first component is not `1`. Add 26.x entries to `data_versions.json`.
+  Raise `fabric.mod.json`'s `"java": ">=16"` to `>=25`.
+
+  `Version.parseVersion` no longer exists - 4.2 deleted it along with the rest of the version
+  gating - so that part of the step was already satisfied. `data_versions.json` now carries
+  `"26.2": 4903`, read out of the game's own `version.json`.
+
+  Still outstanding: **nothing in phases 1 through 4 has been run in-game.** The flagged runtime
+  risks are the raw GL scissor save/restore in `MVTooltip.render`, the `ScreenMixin` redirect on
+  `Screen.extractBackground` (declared `require = 0`, so it fails silently if the target moved
+  again), and the cursor nudge on a filtered keystroke in `TextFieldWidgetMixin`.
+
+### What 26.2 actually changes (2026-09-14)
+
+The configuration bump landed in one pass and behaved as the notes above predicted:
+`net.fabricmc.fabric-loom` in place of `fabric-loom-remap`, no `mappings` line, `implementation`
+in place of `modImplementation`, no `remapJar` (the git-hash classifier moved to `jar`), and the
+access widener header changed from `named` to `official` because there is no longer a named
+namespace to widen against. `loom:injected_interfaces` still works: the injected parent shows up
+on `ServerboundContainerClickPacket` in the 26.2 jar.
+
+What the notes did not predict is the size of the API change behind it. **468 compile errors
+across 134 files**, and they are not renames. 26.2 replaced immediate-mode GUI drawing with
+retained-mode render-state extraction:
+
+- `Renderable.render(GuiGraphics, int, int, float)` is now
+  `extractRenderState(GuiGraphicsExtractor, int, int, float)`, and `GuiGraphics` no longer exists.
+- `AbstractWidget.renderWidget` is now `extractWidgetRenderState`, and `extractRenderState` is
+  final, so widgets hook the extractor instead of the draw call.
+- `Screen.render`, `renderBackground` and friends follow the same shape: `extractRenderState`,
+  `extractBackground`, `extractMenuBackground`, `extractTransparentBackground`.
+
+Alongside it, a set of ordinary renames: `Minecraft.setScreen` to `setScreenAndShow`,
+`Player.displayClientMessage(Component, boolean)` split into `sendSystemMessage` and
+`sendOverlayMessage`, `ClickType` to `ContainerInput` (same seven constants, now with an `id()`),
+and `Minecraft.screen` no longer exposed as a field.
+
+This is the bulk of the remaining work and it is a rewrite of the mod's rendering, not a
+migration of it. It wants its own phase rather than a line in 4.5.
+
+### How it actually went (2026-09-14, same day)
+
+It was a rename after all, not a rewrite. 26.2 renamed every `render*` hook to a matching
+`extract*` and `GuiGraphics` to `GuiGraphicsExtractor`; the drawing calls underneath kept their
+shape (`drawString` to `text`, `drawCenteredString` to `centeredText`, `renderItem` to `item`).
+`MVDrawableHelper` absorbed the whole of it, so ~60 call sites never moved. 468 errors down to
+zero in four passes.
+
+What was not mechanical:
+
+- **`EditBox.setFilter` is gone.** Grafted back on as `nbte$setFilter` via `FilterableTextField`
+  and a `@Redirect` on the `value` field write in `TextFieldWidgetMixin`. A rejected keystroke
+  still moves the cursor; the ceiling is marked in the mixin.
+- **`ChatFormatting` lost its metadata** — it is now a code and a `toString`. `isColor`,
+  `getColor`, `getName` and `getByName` moved into `StyleUtil`, backed by `TextColor`; `getChar`
+  became the access-widened `code` field.
+- **`Minecraft` no longer owns the screen and overlay stack** — `Gui` does. The `setScreen` and
+  `setOverlay` injections moved out of `MinecraftClientMixin` into a new `GuiMixin`.
+- **`DataComponentPatch.get` folded in a prototype lookup**, losing the absent-versus-removed
+  distinction the item NBT manager depends on. `MVMisc.getPatched` reads `entrySet()` directly.
+- **The enchant-glint fix is gone.** It worked around MC-69683 by wrapping the buffer source for
+  block items; 26.2 passes `hasFoil` through `SpecialModelRenderer.submit` itself, so vanilla
+  fixed it. The mixin, the config option and its lang keys were deleted.
+- **Colored items are `ColorCollection`s** — `Items.BLACK_STAINED_GLASS_PANE` is now
+  `Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)`, and `ShulkerBoxBlock.getColoredItemStack` is
+  gone in favour of `Items.DYED_SHULKER_BOX.pick(...)`.
+- **`MultiBufferSource` and `ItemRenderer` no longer exist**; submission goes through
+  `SubmitNodeCollector`. Only the deleted glint mixin touched them.
+
+Two access-widener lines were stale and failed `validateAccessWidener`:
+`AbstractWidget.render` (the method is gone) and `CommandSuggestions.updateUsageInfo()V` (it takes
+arguments now, and nothing calls it).
+
+`./gradlew build` is green at 26.2. Nothing has been run in-game yet.
 
 ### The version-guard failure mode, unchanged
 

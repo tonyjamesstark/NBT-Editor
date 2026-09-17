@@ -1,6 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.Identifier;
@@ -26,12 +26,12 @@ class MVTexturedButtonWidget_1_20_2 extends Button {
 	}
 	
 	@Override
-	protected void renderContents(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		drawTexture(context, this.texture, getX(), getY(), this.u, this.v, this.hoveredVOffset, this.width, this.height,
 				this.textureWidth, this.textureHeight);
 	}
 	
-	public void drawTexture(GuiGraphics context, Identifier texture, int x, int y, int u, int v, int hoveredVOffset,
+	public void drawTexture(GuiGraphicsExtractor context, Identifier texture, int x, int y, int u, int v, int hoveredVOffset,
 			int width, int height, int textureWidth, int textureHeight) {
 		int i = v;
 		if (!isActive()) {

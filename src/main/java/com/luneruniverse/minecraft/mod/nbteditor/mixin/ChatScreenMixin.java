@@ -12,7 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.ChatScreen;
 
 @Mixin(ChatScreen.class)
@@ -24,13 +24,13 @@ public class ChatScreenMixin {
 		return length;
 	}
 	@Inject(method = "render", at = @At("HEAD"))
-	private void render(GuiGraphics context, int mouseX, int mouseY, float delta, CallbackInfo info) {
+	private void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo info) {
 		MixinLink.renderChatLimitWarning((ChatScreen) (Object) this, context);
 	}
 	
 	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"), cancellable = true)
 	private void keyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> info) {
-		if (!(MainUtil.client.screen instanceof ChatScreen)) {
+		if (!(MainUtil.client.gui.screen() instanceof ChatScreen)) {
 			info.setReturnValue(true);
 			info.cancel();
 		}

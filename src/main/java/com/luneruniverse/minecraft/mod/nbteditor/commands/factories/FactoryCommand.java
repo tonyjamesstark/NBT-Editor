@@ -53,7 +53,7 @@ public class FactoryCommand extends ClientCommandGroup {
 		super.register(builder, path);
 		builder.executes(context -> {
 			NBTReference.getReference(NBTReferenceFilter.ANY, false,
-					ref -> MainUtil.client.setScreen(new LocalFactoryScreen<>(ref)));
+					ref -> MainUtil.client.setScreenAndShow(new LocalFactoryScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

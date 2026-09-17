@@ -19,7 +19,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 
 public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
@@ -77,7 +77,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 		
 		addRenderableWidget(MVMisc.newTexturedButton(width - 36, 22, 20, 20, 20,
 				LocalFactoryScreen.FACTORY_ICON,
-				btn -> minecraft.setScreen(new LocalFactoryScreen<>(ref)),
+				btn -> minecraft.setScreenAndShow(new LocalFactoryScreen<>(ref)),
 				new MVTooltip("nbteditor.factory")));
 	}
 	
@@ -94,7 +94,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 	}
 	
 	@Override
-	protected void slotClicked(Slot slot, int slotId, int button, ClickType actionType) {
+	protected void slotClicked(Slot slot, int slotId, int button, ContainerInput actionType) {
 		if (navigationClicked)
 			return;
 		

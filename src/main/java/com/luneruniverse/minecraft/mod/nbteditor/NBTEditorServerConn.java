@@ -72,7 +72,7 @@ public class NBTEditorServerConn implements MVClientNetworking.PlayNetworkStateE
 	}
 	
 	public boolean isScreenEditable() {
-		Screen screen = MainUtil.client.screen;
+		Screen screen = MainUtil.client.gui.screen();
 		return screen instanceof CreativeModeInventoryScreen ||
 				screen instanceof ClientChestScreen ||
 				screen instanceof ContainerScreen ||

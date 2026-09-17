@@ -47,7 +47,7 @@ public class RandomUUIDCommand extends ClientCommand {
 			ItemStack item = ref.getItem();
 			CompoundTag nbt = ItemTagReferences.CUSTOM_DATA.get(item);
 			if (!nbt.nbte$containsUuid("UUID")) {
-				MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.random_uuid.already_removed"), false);
+				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.random_uuid.already_removed"));
 				return Command.SINGLE_SUCCESS;
 			}
 			nbt.remove("UUID");

@@ -34,10 +34,10 @@
   ],
   "accessWidener": "nbteditor.accesswidener",
   "depends": {
-    "fabricloader": ">=0.16.0",
+    "fabricloader": ">=0.19.0",
     "fabric": "*",
-    "minecraft": ">=1.21.11-",
-    "java": ">=21"
+    "minecraft": ">=26.2-",
+    "java": ">=25"
   },
   "suggests": {
     "nbt_ac": ">=1.1"
@@ -52,7 +52,8 @@
     },
     "loom:injected_interfaces": {
       "net/minecraft/client/gui/components/EditBox": [
-        "com/luneruniverse/minecraft/mod/nbteditor/screens/InjectableTickable"
+        "com/luneruniverse/minecraft/mod/nbteditor/screens/InjectableTickable",
+        "com/luneruniverse/minecraft/mod/nbteditor/screens/FilterableTextField"
       ],
       "net/minecraft/network/syncher/SynchedEntityData": [
         "com/luneruniverse/minecraft/mod/nbteditor/misc/ResetableDataTracker"

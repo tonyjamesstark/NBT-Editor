@@ -20,7 +20,7 @@ public class ClickSlotC2SPacketMixin_1_21_5 implements ClickSlotC2SPacketParent 
 	@Shadow
 	private byte buttonNum;
 	
-	@ModifyVariable(method = "<init>(IISBLnet/minecraft/world/inventory/ClickType;Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;Lnet/minecraft/network/HashedStack;)V", at = @At("HEAD"))
+	@ModifyVariable(method = "<init>(IISBLnet/minecraft/world/inventory/ContainerInput;Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;Lnet/minecraft/network/HashedStack;)V", at = @At("HEAD"))
 	private static byte init(byte buttonNum) {
 		if (ConfigScreen.isNoSlotRestrictions() && NBTEditorClient.SERVER_CONN.isEditingExpanded())
 			return (byte) (buttonNum | NO_SLOT_RESTRICTIONS_FLAG);

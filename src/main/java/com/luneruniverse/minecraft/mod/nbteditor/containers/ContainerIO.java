@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public interface ContainerIO<T> {
 	public static final Identifier HELMET_TEXTURE = IdentifierInst.of("minecraft", "container/slot/helmet");
@@ -41,7 +42,7 @@ public interface ContainerIO<T> {
 						item, MainUtil.fillId(blockEntityNbt, entityId)));
 	}
 	public static ContainerIO<ItemStack> forItemStackBlockEntityTag(ContainerIO<CompoundTag> io, BlockEntityType<?> entityId) {
-		return forItemStackBlockEntityTag(io, BlockEntityType.getKey(entityId).toString());
+		return forItemStackBlockEntityTag(io, BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entityId).toString());
 	}
 	
 	public static ContainerIO<ItemStack> forItemStackEntityTag(ContainerIO<CompoundTag> io, String entityId) {

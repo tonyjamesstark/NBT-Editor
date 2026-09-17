@@ -40,7 +40,7 @@ public class DisplayCommand extends ClientCommandGroup {
 		super.register(builder, path);
 		builder.executes(context -> {
 			NBTReference.getReference(NBTReferenceFilter.ANY_NBT, false,
-					ref -> MainUtil.client.setScreen(new DisplayScreen<>(ref)));
+					ref -> MainUtil.client.setScreenAndShow(new DisplayScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

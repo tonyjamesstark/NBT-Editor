@@ -34,7 +34,7 @@ public class BlockStatesCommand extends ClientCommand {
 	@Override
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		builder.executes(context -> {
-			NBTReference.getReference(BLOCK_FILTER, false, ref -> MainUtil.client.setScreen(new BlockStatesScreen<>(ref)));
+			NBTReference.getReference(BLOCK_FILTER, false, ref -> MainUtil.client.setScreenAndShow(new BlockStatesScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

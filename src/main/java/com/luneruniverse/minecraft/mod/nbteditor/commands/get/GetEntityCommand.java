@@ -50,11 +50,11 @@ public class GetEntityCommand extends ClientCommand {
 			
 			if (pos == null) {
 				entity.toItem(false).ifPresentOrElse(MainUtil::getWithMessage,
-						() -> MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.nbt.export.item.error"), false));
+						() -> MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.nbt.export.item.error")));
 			} else if (NBTEditorClient.SERVER_CONN.isEditingExpanded())
 				entity.summon(MainUtil.client.level.dimension(), pos);
 			else
-				MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.requires_server"), false);
+				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.requires_server"));
 			
 			return Command.SINGLE_SUCCESS;
 		};

@@ -48,13 +48,13 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -94,7 +94,7 @@ public class MixinLink {
 		}
 		return new int[] {width, height};
 	}
-	public static void renderTooltipFromComponents(GuiGraphics context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
+	public static void renderTooltipFromComponents(GuiGraphicsExtractor context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
 		x -= 5;
 		y -= 5;
 		width += 10;
@@ -151,7 +151,7 @@ public class MixinLink {
 	}
 	
 	
-	public static void renderChatLimitWarning(ChatScreen source, GuiGraphics context) {
+	public static void renderChatLimitWarning(ChatScreen source, GuiGraphicsExtractor context) {
 		if (!ConfigScreen.isChatLimitExtended())
 			return;
 		
@@ -176,7 +176,7 @@ public class MixinLink {
 	}
 	
 	
-	public static void onMouseClick(AbstractContainerScreen<?> source, Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
+	public static void onMouseClick(AbstractContainerScreen<?> source, Slot slot, int slotId, int button, ContainerInput actionType, CallbackInfo info) {
 		if (!source.getMenu().getCarried().isEmpty())
 			GetLostItemCommand.addToHistory(source.getMenu().getCarried());
 		
@@ -191,7 +191,7 @@ public class MixinLink {
 		if (slot instanceof CreativeModeInventoryScreen.SlotWrapper creativeSlot)
 			slot = creativeSlot.target;
 		
-		if (actionType == ClickType.PICKUP && slot != null &&
+		if (actionType == ContainerInput.PICKUP && slot != null &&
 				(slot.container == MainUtil.client.player.getInventory() || !creativeInv) &&
 				(!(source instanceof InventoryScreen) || slot.index > 4)) {
 			ItemStack cursor = source.getMenu().getCarried();
@@ -237,8 +237,6 @@ public class MixinLink {
 		}
 	}
 	
-	
-	public static final List<ItemStack> ENCHANT_GLINT_FIX = new ArrayList<>();
 	
 	
 	/**
@@ -311,7 +309,7 @@ public class MixinLink {
 			// Checking slots in your hotbar vs item selection is difficult, so the lore is just disabled in non-inventory tabs
 			boolean creativeInv = MVMisc.isCreativeInventoryTabSelected();
 			
-			if (creativeInv || (!(MainUtil.client.screen instanceof CreativeModeInventoryScreen) &&
+			if (creativeInv || (!(MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen) &&
 					NBTEditorClient.SERVER_CONN.isScreenEditable())) {
 				tooltip.add(TextInst.translatable("nbteditor.keybind.edit"));
 				tooltip.add(TextInst.translatable("nbteditor.keybind.factory"));

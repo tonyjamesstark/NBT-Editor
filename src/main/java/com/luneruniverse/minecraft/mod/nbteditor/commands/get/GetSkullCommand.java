@@ -35,7 +35,7 @@ public class GetSkullCommand extends ClientCommand {
 		builder.then(argument("player", StringArgumentType.word()).executes(context -> {
 			String player = context.getArgument("player", String.class);
 			if (!StringUtil.isValidPlayerName(player)) {
-				MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.skull.invalid_player_name"), false);
+				MainUtil.client.player.sendSystemMessage(TextInst.translatable("nbteditor.skull.invalid_player_name"));
 				return Command.SINGLE_SUCCESS;
 			}
 			ItemStack item = new ItemStack(Items.PLAYER_HEAD, 1);

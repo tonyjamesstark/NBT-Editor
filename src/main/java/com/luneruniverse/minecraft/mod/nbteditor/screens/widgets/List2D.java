@@ -140,17 +140,14 @@ public class List2D extends Panel<List2D.List2DValue> {
 	
 	@Override
 	public boolean keyPressed(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return super.keyPressed(input) || finalEventHandler.keyPressed(input);
 	}
 	@Override
 	public boolean keyReleased(KeyEvent input) {
-		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		return super.keyReleased(input) || finalEventHandler.keyReleased(input);
 	}
 	@Override
 	public boolean charTyped(CharacterEvent input) {
-		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		return super.charTyped(input) || finalEventHandler.charTyped(input);
 	}
 	

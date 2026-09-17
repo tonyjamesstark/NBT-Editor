@@ -4,7 +4,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 
 public class NamedTextFieldWidget extends MVTextFieldWidget {
@@ -39,10 +39,10 @@ public class NamedTextFieldWidget extends MVTextFieldWidget {
 	
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractWidgetRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (name != null && shouldShowName())
 			setSuggestion(value.isEmpty() ? name.getString() : null);
-		super.render(context, mouseX, mouseY, delta);
+		super.extractWidgetRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	protected boolean shouldShowName() {

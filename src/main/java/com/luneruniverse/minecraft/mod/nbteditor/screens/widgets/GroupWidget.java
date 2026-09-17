@@ -15,7 +15,7 @@ import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.narration.NarratableEntry.NarrationPriority;
 
 public class GroupWidget extends AbstractContainerEventHandler implements Renderable, MVElement, Tickable, NarratableEntry, OldEventBehavior {
@@ -122,9 +122,9 @@ public class GroupWidget extends AbstractContainerEventHandler implements Render
 	}
 	
 	@Override
-	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		for (Renderable drawable : drawables)
-			drawable.render(context, mouseX, mouseY, delta);
+			drawable.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	
 	@Override

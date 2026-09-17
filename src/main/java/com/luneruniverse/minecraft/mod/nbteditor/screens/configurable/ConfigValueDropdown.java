@@ -13,7 +13,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValue<T, ConfigValueDropdown<T>> {
 	
@@ -77,7 +77,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	}
 	
 	@Override
-	public void renderButton(GuiGraphics context, int mouseX, int mouseY, float delta) {
+	public void renderButton(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		// The open list has to sit above its siblings; z-ordering became layering in 1.21.9.
 		// ponytail: raises everything drawn after this point too, which the reverse-order
 		// render in ConfigGroupingVertical already relies on.

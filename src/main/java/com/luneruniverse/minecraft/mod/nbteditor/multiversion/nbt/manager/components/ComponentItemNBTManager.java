@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 
 public class ComponentItemNBTManager implements DeserializableNBTManager<ItemStack> {
 	
@@ -66,8 +67,8 @@ public class ComponentItemNBTManager implements DeserializableNBTManager<ItemSta
 	public void setNbt(ItemStack subject, CompoundTag nbt) {
 		DataComponentPatch components = DataComponentPatch.CODEC.decode(
 				DynamicRegistryManagerHolder.get().createSerializationContext(NbtOps.INSTANCE), nbt.copy()).getPartialOrThrow().getFirst();
-		Optional<? extends Integer> maxDamage = components.get(DataComponents.MAX_DAMAGE);
-		Optional<? extends Integer> maxStackSize = components.get(DataComponents.MAX_STACK_SIZE);
+		Optional<? extends Integer> maxDamage = MVMisc.getPatched(components, DataComponents.MAX_DAMAGE);
+		Optional<? extends Integer> maxStackSize = MVMisc.getPatched(components, DataComponents.MAX_STACK_SIZE);
 		if (maxDamage != null && maxDamage.isPresent() &&
 				(maxStackSize == null ?
 						subject.getPrototype().get(DataComponents.MAX_STACK_SIZE) > 1 :

@@ -32,7 +32,7 @@ public class ClientPlayNetworkHandlerMixin {
 	
 	@Inject(method = "handleSetPlayerInventory", at = @At("RETURN"), cancellable = true)
 	private void onSetPlayerInventory_return(ClientboundSetPlayerInventoryPacket packet, CallbackInfo info) {
-		if (MainUtil.client.screen instanceof ClientHandledScreen clientHandledScreen)
+		if (MainUtil.client.gui.screen() instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onSetPlayerInventoryPacket(packet);
 	}
 	

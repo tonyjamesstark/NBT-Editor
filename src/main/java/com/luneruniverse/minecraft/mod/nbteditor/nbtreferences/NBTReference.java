@@ -64,7 +64,7 @@ public interface NBTReference<T extends LocalNBT> {
 		NBTReference.getReference(filter, airable).thenAccept(ref -> MainUtil.client.execute(() -> {
 			ref.ifPresentOrElse(consumer, () -> {
 				if (MainUtil.client.player != null)
-					MainUtil.client.player.displayClientMessage(filter.getFailMessage(), false);
+					MainUtil.client.player.sendSystemMessage(filter.getFailMessage());
 			});
 		}));
 	}
@@ -76,7 +76,7 @@ public interface NBTReference<T extends LocalNBT> {
 		saveNBT(nbt.getId(), nbt.getNBT(), onFinished);
 	}
 	public default void saveLocalNBT(T nbt, Component msg) {
-		saveLocalNBT(nbt, () -> MainUtil.client.player.displayClientMessage(msg, false));
+		saveLocalNBT(nbt, () -> MainUtil.client.player.sendSystemMessage(msg));
 	}
 	public default void saveLocalNBT(T nbt) {
 		saveLocalNBT(nbt, () -> {});
@@ -87,7 +87,7 @@ public interface NBTReference<T extends LocalNBT> {
 		saveLocalNBT(nbt, onFinished);
 	}
 	public default void modifyLocalNBT(Consumer<T> nbtConsumer, Component msg) {
-		modifyLocalNBT(nbtConsumer, () -> MainUtil.client.player.displayClientMessage(msg, false));
+		modifyLocalNBT(nbtConsumer, () -> MainUtil.client.player.sendSystemMessage(msg));
 	}
 	public default void modifyLocalNBT(Consumer<T> nbtConsumer) {
 		modifyLocalNBT(nbtConsumer, () -> {});
@@ -97,7 +97,7 @@ public interface NBTReference<T extends LocalNBT> {
 	public CompoundTag getNBT();
 	public void saveNBT(Identifier id, CompoundTag toSave, Runnable onFinished);
 	public default void saveNBT(Identifier id, CompoundTag toSave, Component msg) {
-		saveNBT(id, toSave, () -> MainUtil.client.player.displayClientMessage(msg, false));
+		saveNBT(id, toSave, () -> MainUtil.client.player.sendSystemMessage(msg));
 	}
 	public default void saveNBT(Identifier id, CompoundTag toSave) {
 		saveNBT(id, toSave, () -> {});

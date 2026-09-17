@@ -14,7 +14,7 @@ public class ClientChestHelper {
 	
 	private static void trySend(String key) {
 		if (MainUtil.client.player != null)
-			MainUtil.client.player.displayClientMessage(TextInst.translatable(key), false);
+			MainUtil.client.player.sendSystemMessage(TextInst.translatable(key));
 	}
 	
 	public static boolean setNameOfPage(int page, String name) {
