@@ -16,6 +16,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageLoadLevel;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.SmallClientChestPageCache;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandHandler;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
+import com.luneruniverse.minecraft.mod.nbteditor.misc.DevScreenSweep;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVEnchantments;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
@@ -105,6 +106,8 @@ public class NBTEditorClient implements ClientModInitializer {
 			addons.put(container.getProvider().getMetadata().getId(), container.getEntrypoint());
 		}
 		addons.forEach((id, addon) -> addon.onInit());
+		
+		DevScreenSweep.install();
 	}
 	
 }

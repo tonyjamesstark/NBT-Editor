@@ -45,6 +45,14 @@ loom {
 			if (project.hasProperty("join")) {
 				programArgs "--quickPlayMultiplayer", project.property("join")
 			}
+			// -Pdevscreens[=lore] runs misc/DevScreenSweep once joined, which is the only
+			// thing in the build that opens an editor screen at all.
+			if (project.hasProperty("devscreens")) {
+				vmArgs "-Dnbte.devscreens=" + project.property("devscreens")
+			}
+			if (project.hasProperty("devscreensFrom")) {
+				vmArgs "-Dnbte.devscreens.from=" + project.property("devscreensFrom")
+			}
 		}
 		server {
 			runDir = "run/server"
