@@ -34,6 +34,23 @@ repositories {
 
 loom {
 	accessWidenerPath = file("src/main/resources/nbteditor.accesswidener")
+
+	// The dev client and server share a 7.8G host with a VM on it, so neither gets
+	// to take the JVM default of a quarter of RAM. See scripts/dev-client.sh.
+	runs {
+		client {
+			vmArgs "-Xms256m", "-Xmx1G", "-Dnbte.devrun=client"
+			// -Pjoin=host:port sends the client straight into a world, which is the only
+			// place item components are bound. See scripts/dev-client.sh --join.
+			if (project.hasProperty("join")) {
+				programArgs "--quickPlayMultiplayer", project.property("join")
+			}
+		}
+		server {
+			runDir = "run/server"
+			vmArgs "-Xms256m", "-Xmx1G", "-Dnbte.devrun=server"
+		}
+	}
 }
 
 dependencies {

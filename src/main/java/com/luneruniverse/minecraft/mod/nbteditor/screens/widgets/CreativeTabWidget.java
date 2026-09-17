@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
@@ -19,7 +20,11 @@ import net.minecraft.resources.Identifier;
 
 public class CreativeTabWidget implements Renderable, MVElement {
 	
-	public static record CreativeTabData(ItemStack item, Runnable onClick, Predicate<Screen> whenToShow) {}
+	/**
+	 * The icon is a supplier because 26.2 binds item components at world load, so an
+	 * ItemStack cannot exist yet when a tab is registered during client init.
+	 */
+	public static record CreativeTabData(Supplier<ItemStack> item, Runnable onClick, Predicate<Screen> whenToShow) {}
 	public static final List<CreativeTabData> TABS = new ArrayList<>();
 	
 	public static void addCreativeTabs(Screen screen) {
@@ -36,7 +41,7 @@ public class CreativeTabWidget implements Renderable, MVElement {
 			for (int i = 0; i < tabs.size(); i++) {
 				CreativeTabWidget.CreativeTabData tab = tabs.get(i);
 				Point pos = ConfigScreen.getCreativeTabsPos().position(i, tabs.size(), screen.width, screen.height);
-				group.addWidget(new CreativeTabWidget(ConfigScreen.getCreativeTabsPos().isTop(), pos.x, pos.y, tab.item(), tab.onClick()));
+				group.addWidget(new CreativeTabWidget(ConfigScreen.getCreativeTabsPos().isTop(), pos.x, pos.y, tab.item().get(), tab.onClick()));
 			}
 			screen.addRenderableWidget(group);
 		}
