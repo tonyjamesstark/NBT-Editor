@@ -13,8 +13,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public class Head {
 
@@ -39,7 +39,7 @@ public class Head {
         ItemStack item = new ItemStack(Items.PLAYER_HEAD);
         item.nbte$setCustomName(TextInst.of(Utils.colorize(category != null ? category.getColor() + name : "&8" + name)));
         // set skull owner
-        GameProfile profile = new GameProfile(uuid, NBTManagers.COMPONENTS_EXIST ? "HDB_Head" : name);
+        GameProfile profile = new GameProfile(uuid, "HDB_Head");
         profile.properties().put("textures", new Property("textures", value));
         ItemTagReferences.PROFILE.set(item, Optional.of(profile));
         

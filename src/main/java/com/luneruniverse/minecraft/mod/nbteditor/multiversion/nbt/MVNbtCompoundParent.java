@@ -3,16 +3,11 @@ package com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 
 public interface MVNbtCompoundParent {
-	
-	public static boolean NBT_CODE_REFACTORED = Version.<Boolean>newSwitch()
-			.range("1.21.5", null, true)
-			.get();
 	
 	public static final byte NUMBER_TYPE = 99;
 	
@@ -94,29 +89,29 @@ public interface MVNbtCompoundParent {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getLongArrayOrDefault");
 	}
 	
-	public default Optional<NbtCompound> nbte$getCompound(String key) {
+	public default Optional<CompoundTag> nbte$getCompound(String key) {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getCompound");
 	}
-	public default NbtCompound nbte$getCompoundOrDefault(String key) {
+	public default CompoundTag nbte$getCompoundOrDefault(String key) {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getCompoundOrDefault");
 	}
 	
-	public default Optional<NbtList> nbte$getList(String key) {
+	public default Optional<ListTag> nbte$getList(String key) {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getList");
 	}
-	public default NbtList nbte$getListOrDefault(String key) {
+	public default ListTag nbte$getListOrDefault(String key) {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getListOrDefault");
 	}
-	public default Optional<NbtList> nbte$getList(String key, byte type) {
+	public default Optional<ListTag> nbte$getList(String key, byte type) {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getList");
 	}
-	public default NbtList nbte$getListOrDefault(String key, byte type) {
+	public default ListTag nbte$getListOrDefault(String key, byte type) {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getListOrDefault");
 	}
-	public default Optional<NbtList> nbte$getPartialList(String key, byte type) {
+	public default Optional<ListTag> nbte$getPartialList(String key, byte type) {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getPartialList");
 	}
-	public default NbtList nbte$getPartialListOrDefault(String key, byte type) {
+	public default ListTag nbte$getPartialListOrDefault(String key, byte type) {
 		throw new RuntimeException("Missing implementation for MVNbtCompoundParent#nbte$getPartialListOrDefault");
 	}
 	

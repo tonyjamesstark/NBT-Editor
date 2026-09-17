@@ -3,37 +3,37 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 public class OverlayScreen extends OverlaySupportingScreen {
 	
-	public static <T extends Drawable & Element & Selectable> T setOverlayOrScreen(T overlay, double z, boolean restoreParent) {
-		if (MainUtil.client.currentScreen instanceof OverlaySupportingScreen screen)
+	public static <T extends Renderable & GuiEventListener & NarratableEntry> T setOverlayOrScreen(T overlay, double z, boolean restoreParent) {
+		if (MainUtil.client.screen instanceof OverlaySupportingScreen screen)
 			screen.setOverlay(overlay, z);
 		else
 			MainUtil.client.setScreen(new OverlayScreen(TextInst.of(overlay.getClass().getName()), overlay, z, restoreParent));
 		return overlay;
 	}
-	public static <T extends Drawable & Element & Selectable> T setOverlayOrScreen(T overlay, boolean restoreParent) {
+	public static <T extends Renderable & GuiEventListener & NarratableEntry> T setOverlayOrScreen(T overlay, boolean restoreParent) {
 		return setOverlayOrScreen(overlay, 0, restoreParent);
 	}
 	
 	private Screen parent;
 	
-	private <T extends Drawable & Element & Selectable> OverlayScreen(Text title, T widget, double z, boolean restoreParent) {
+	private <T extends Renderable & GuiEventListener & NarratableEntry> OverlayScreen(Component title, T widget, double z, boolean restoreParent) {
 		super(title);
 		setOverlay(widget, z);
 		if (restoreParent)
-			parent = MainUtil.client.currentScreen;
+			parent = MainUtil.client.screen;
 	}
 	
 	@Override
-	public <T extends Drawable & Element> T setOverlay(T overlay, double z) {
+	public <T extends Renderable & GuiEventListener> T setOverlay(T overlay, double z) {
 		if (overlay == null)
 			MainUtil.client.setScreen(parent);
 		else
@@ -57,7 +57,7 @@ public class OverlayScreen extends OverlaySupportingScreen {
 	}
 	
 	@Override
-	protected void renderMain(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		if (parent != null)
 			parent.render(context, -314, -314, delta);
 	}

@@ -7,14 +7,13 @@ import java.util.function.Predicate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVButtonWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMatrix4f;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValue<T, ConfigValueDropdown<T>> {
 	
@@ -58,7 +57,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	
 	@SuppressWarnings("unchecked")
 	private ConfigValueDropdown(T value, T defaultValue, List<T> allValues, List<T> importantValues) {
-		super(0, 0, getMaxWidth(allValues) + MainUtil.client.textRenderer.fontHeight * 2, 20, TextInst.of(value.toString()),
+		super(0, 0, getMaxWidth(allValues) + MainUtil.client.font.lineHeight * 2, 20, TextInst.of(value.toString()),
 				btn -> ((ConfigValueDropdown<T>) btn).open = !((ConfigValueDropdown<T>) btn).open);
 		
 		this.value = value;
@@ -69,7 +68,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 		this.onChanged = new ArrayList<>();
 	}
 	private static int getMaxWidth(List<?> allValues) {
-		return allValues.stream().map(Object::toString).mapToInt(MainUtil.client.textRenderer::getWidth).max().orElse(0);
+		return allValues.stream().map(Object::toString).mapToInt(MainUtil.client.font::width).max().orElse(0);
 	}
 	private ConfigValueDropdown(T value, T defaultValue, List<T> allValues, List<T> importantValues, boolean open, List<ConfigValueListener<ConfigValueDropdown<T>>> onChanged) {
 		this(value, defaultValue, allValues, importantValues);
@@ -78,12 +77,12 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	}
 	
 	@Override
-	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderButton(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		// The open list has to sit above its siblings; z-ordering became layering in 1.21.9.
 		// ponytail: raises everything drawn after this point too, which the reverse-order
 		// render in ConfigGroupingVertical already relies on.
 		if (open)
-			context.createNewRootLayer();
+			context.nextStratum();
 		
 		super.renderButton(context, mouseX, mouseY, delta);
 		if (open) {
@@ -99,19 +98,19 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 					color = 0xFF257789;
 				else if (importantValues.contains(option))
 					color = 0xFFFFAA00;
-				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer, TextInst.of(option.toString()),
-						this.x + this.width / 2, y + (this.height - MainUtil.client.textRenderer.fontHeight) / 2, color);
+				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, TextInst.of(option.toString()),
+						this.x + this.width / 2, y + (this.height - MainUtil.client.font.lineHeight) / 2, color);
 				if (color != -1 && option instanceof ConfigTooltipSupplier) // Hovering
 					((ConfigTooltipSupplier) option).getTooltip().render(context, mouseX, mouseY);
 			}
 		}
-		if (isSelected() && value instanceof ConfigTooltipSupplier)
+		if (isHoveredOrFocused() && value instanceof ConfigTooltipSupplier)
 			((ConfigTooltipSupplier) value).getTooltip().render(context, mouseX, mouseY);
 		
 	}
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		boolean output = super.mouseClicked(click, doubled);
 		if (!output && this.active && this.visible && open && mouseX >= this.x && mouseX < this.x + this.width) {
@@ -121,8 +120,8 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 					continue;
 				int y = this.y + (++i * this.height);
 				if (mouseY >= y && mouseY < y + this.height) {
-					this.playDownSound(MinecraftClient.getInstance().getSoundManager());
-					setValue(option);
+					this.playDownSound(Minecraft.getInstance().getSoundManager());
+					setConfigValue(option);
 					open = false;
 					return true;
 				}
@@ -146,13 +145,13 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	}
 	
 	@Override
-	public void setValue(T value) {
+	public void setConfigValue(T value) {
 		this.value = value;
 		setMessage(TextInst.of(value.toString()));
 		onChanged.forEach(listener -> listener.onValueChanged(this));
 	}
 	@Override
-	public T getValue() {
+	public T getConfigValue() {
 		return value;
 	}
 	@Override
@@ -190,7 +189,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		return false; // Stop space from triggering the button
 	}
 	

@@ -8,16 +8,12 @@ import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.resources.Identifier;
 
 public class MVClientNetworking {
 	
@@ -27,7 +23,7 @@ public class MVClientNetworking {
 				for (Start listener : listeners)
 					listener.onPlayStart(networkHandler);
 			});
-			public void onPlayStart(ClientPlayNetworkHandler networkHandler);
+			public void onPlayStart(ClientPacketListener networkHandler);
 		}
 		public static interface Join {
 			public static final Event<Join> EVENT = EventFactory.createArrayBacked(Join.class, listeners -> () -> {
@@ -45,12 +41,8 @@ public class MVClientNetworking {
 		}
 	}
 	
-	public static void onPlayStart(ClientPlayNetworkHandler networkHandler) {
-		Version.newSwitch()
-				.range("1.20.5", null, () -> {
-					DynamicRegistryManagerHolder.setClientManager(networkHandler);
-				})
-				.run();
+	public static void onPlayStart(ClientPacketListener networkHandler) {
+		DynamicRegistryManagerHolder.setClientManager(networkHandler);
 		
 		PlayNetworkStateEvents.Start.EVENT.invoker().onPlayStart(networkHandler);
 	}
@@ -60,20 +52,14 @@ public class MVClientNetworking {
 	public static void onPlayStop() {
 		PlayNetworkStateEvents.Stop.EVENT.invoker().onPlayStop();
 		
-		Version.newSwitch()
-				.range("1.20.5", null, () -> {
-					DynamicRegistryManagerHolder.setClientManager(null);
-				})
-				.run();
+		DynamicRegistryManagerHolder.setClientManager(null);
 	}
 	
 	private static final Map<Identifier, List<Consumer<MVPacket>>> listeners = new HashMap<>();
 	
 	@SuppressWarnings("deprecation")
 	public static void send(MVPacket packet) {
-		MVMisc.sendC2SPacket(Version.<CustomPayloadC2SPacket>newSwitch()
-				.range("1.20.2", null, () -> MVPacketCustomPayload.wrapC2S(packet))
-				.get());
+		MVMisc.sendC2SPacket(MVPacketCustomPayload.wrapC2S(packet));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -82,7 +68,7 @@ public class MVClientNetworking {
 	}
 	
 	public static void callListeners(MVPacket packet) {
-		if (!MainUtil.client.isOnThread()) {
+		if (!MainUtil.client.isSameThread()) {
 			MainUtil.client.execute(() -> callListeners(packet));
 			return;
 		}

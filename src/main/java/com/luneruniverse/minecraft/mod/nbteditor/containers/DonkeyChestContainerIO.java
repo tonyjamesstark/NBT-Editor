@@ -1,19 +1,16 @@
 package com.luneruniverse.minecraft.mod.nbteditor.containers;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 
-public class DonkeyChestContainerIO implements ContainerIO<NbtCompound> {
+public class DonkeyChestContainerIO implements ContainerIO<CompoundTag> {
 	
-	private static final boolean ITEMS_SHIFTED = Version.<Boolean>newSwitch()
-			.range("1.20.5", null, false)
-			.get();
+	private static final boolean ITEMS_SHIFTED = false;
 	
 	private final boolean llama;
-	private final ContainerIO<NbtCompound> delegate;
+	private final ContainerIO<CompoundTag> delegate;
 	private final Identifier[] textures;
 	
 	public DonkeyChestContainerIO(boolean llama) {
@@ -23,22 +20,22 @@ public class DonkeyChestContainerIO implements ContainerIO<NbtCompound> {
 	}
 	
 	@Override
-	public boolean isSupported(NbtCompound container) {
+	public boolean isSupported(CompoundTag container) {
 		return delegate.isSupported(container);
 	}
 	
 	@Override
-	public int getMaxSlots(NbtCompound container) {
+	public int getMaxSlots(CompoundTag container) {
 		return 15;
 	}
 	
 	@Override
-	public Identifier[] getTextures(NbtCompound container) {
+	public Identifier[] getTextures(CompoundTag container) {
 		return textures;
 	}
 	
 	@Override
-	public ItemStack[] read(NbtCompound container) {
+	public ItemStack[] read(CompoundTag container) {
 		ItemStack[] contents = delegate.read(container);
 		if (ITEMS_SHIFTED) {
 			ItemStack[] temp = new ItemStack[15];
@@ -49,7 +46,7 @@ public class DonkeyChestContainerIO implements ContainerIO<NbtCompound> {
 	}
 	
 	@Override
-	public int write(NbtCompound container, ItemStack[] contents) {
+	public int write(CompoundTag container, ItemStack[] contents) {
 		ItemStack[] shiftedContents = contents;
 		if (ITEMS_SHIFTED) {
 			shiftedContents = new ItemStack[17];
@@ -80,12 +77,12 @@ public class DonkeyChestContainerIO implements ContainerIO<NbtCompound> {
 	}
 	
 	@Override
-	public int getNumWritten(NbtCompound container, ItemStack[] contents) {
+	public int getNumWritten(CompoundTag container, ItemStack[] contents) {
 		return 15;
 	}
 	
 	@Override
-	public int getWrittenSlotIndex(NbtCompound container, ItemStack[] contents, int slot) {
+	public int getWrittenSlotIndex(CompoundTag container, ItemStack[] contents, int slot) {
 		return slot;
 	}
 	

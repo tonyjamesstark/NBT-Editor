@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Iterables;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection.MethodInvoker;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.mixin.HelpCommandAccessor;
@@ -51,9 +50,9 @@ import com.mojang.brigadier.tree.CommandNode;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
 
 @Environment(EnvType.CLIENT)
 public final class ClientCommandInternals {
@@ -61,16 +60,9 @@ public final class ClientCommandInternals {
 	private static final String API_COMMAND_NAME;
 	private static final String SHORT_API_COMMAND_NAME = "fcc";
 	private static @Nullable CommandDispatcher<FabricClientCommandSource> activeDispatcher;
-	private static final Supplier<Class<?>> CommandException = () -> Reflection.getClass("net.minecraft.class_2164");
-	private static final Supplier<MethodInvoker> CommandException_getTextMessage =
-			Reflection.getOptionalMethod(CommandException, () -> "method_9199", () -> MethodType.methodType(Text.class));
 	static {
-		API_COMMAND_NAME = Version.<String>newSwitch()
-				.range("1.19.0", null, "fabric-command-api-v2:client")
-				.get();
-		activeDispatcher = Version.<CommandDispatcher<FabricClientCommandSource>>newSwitch()
-				.range("1.19.0", null, () -> null)
-				.get();
+		API_COMMAND_NAME = "fabric-command-api-v2:client";
+		activeDispatcher = null;
 	}
 
 	public static void setActiveDispatcher(@Nullable CommandDispatcher<FabricClientCommandSource> dispatcher) {
@@ -90,11 +82,11 @@ public final class ClientCommandInternals {
 	 * @return true if the command should not be sent to the server, false otherwise
 	 */
 	public static boolean executeCommand(String command) {
-		MinecraftClient client = MinecraftClient.getInstance();
+		Minecraft client = Minecraft.getInstance();
 
 		// The interface is implemented on ClientCommandSource with a mixin.
 		// noinspection ConstantConditions
-		FabricClientCommandSource commandSource = (FabricClientCommandSource) client.getNetworkHandler().getCommandSource();
+		FabricClientCommandSource commandSource = (FabricClientCommandSource) client.getConnection().getSuggestionsProvider();
 
 		MVMisc.getProfiler().push(command);
 
@@ -116,16 +108,9 @@ public final class ClientCommandInternals {
 			commandSource.sendError(getErrorMessage(e));
 			return true;
 		} catch (RuntimeException e) {
-			if (Version.<Boolean>newSwitch().range("1.20.3", null, false).get() &&
-					CommandException.get().isInstance(e)) {
-				LOGGER.warn("Error while executing client-sided command '{}'", command, e);
-				commandSource.sendError(CommandException_getTextMessage.get().invoke(e));
-				return true;
-			} else {
-				LOGGER.warn("Error while executing client-sided command '{}'", command, e);
-				commandSource.sendError(TextInst.of(e.getMessage()));
-				return true;
-			}
+			LOGGER.warn("Error while executing client-sided command '{}'", command, e);
+			commandSource.sendError(TextInst.of(e.getMessage()));
+			return true;
 		} finally {
 			MVMisc.getProfiler().pop();
 		}
@@ -147,9 +132,9 @@ public final class ClientCommandInternals {
 		return type == builtins.dispatcherUnknownCommand() || type == builtins.dispatcherParseException();
 	}
 
-	// See ChatInputSuggestor.formatException. That cannot be used directly as it returns an OrderedText instead of a Text.
-	public static Text getErrorMessage(CommandSyntaxException e) {
-		Text msg = Texts.toText(e.getRawMessage());
+	// See ChatInputSuggestor.formatException. That cannot be used directly as it returns an OrderedText instead of a Component.
+	public static Component getErrorMessage(CommandSyntaxException e) {
+		Component msg = ComponentUtils.fromMessage(e.getRawMessage());
 		String context = e.getContext();
 		if (context == null)
 			return msg;

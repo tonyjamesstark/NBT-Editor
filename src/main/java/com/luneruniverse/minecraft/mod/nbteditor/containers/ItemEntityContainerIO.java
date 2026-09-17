@@ -1,30 +1,25 @@
 package com.luneruniverse.minecraft.mod.nbteditor.containers;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
 
 public record ItemEntityContainerIO(ContainerIO<ItemStack> item, ContainerIO<LocalEntity> entity) {
 	
-	public static ItemEntityContainerIO forEntityTagIO(ContainerIO<NbtCompound> io, String entityId) {
+	public static ItemEntityContainerIO forEntityTagIO(ContainerIO<CompoundTag> io, String entityId) {
 		return new ItemEntityContainerIO(ContainerIO.forItemStackEntityTag(io, entityId), ContainerIO.forLocalNBT(io));
 	}
-	public static ItemEntityContainerIO forEntityTagIO(ContainerIO<NbtCompound> io, EntityType<?> entityId) {
-		return forEntityTagIO(io, EntityType.getId(entityId).toString());
+	public static ItemEntityContainerIO forEntityTagIO(ContainerIO<CompoundTag> io, EntityType<?> entityId) {
+		return forEntityTagIO(io, EntityType.getKey(entityId).toString());
 	}
 	
 	public static ItemEntityContainerIO forSlotKeyItems(int numSlots) {
-		return Version.<ItemEntityContainerIO>newSwitch()
-				.range("1.20.5", null, () -> {
-					return new ItemEntityContainerIO(
-							new ContainerComponentContainerIO(numSlots),
-							ContainerIO.forLocalNBT(new SlotKeyNbtListContainerIO(numSlots).forNbtCompoundItems()));
-				})
-				.get();
+		return new ItemEntityContainerIO(
+				new ContainerComponentContainerIO(numSlots),
+				ContainerIO.forLocalNBT(new SlotKeyNbtListContainerIO(numSlots).forNbtCompoundItems()));
 	}
 	
 	public static ItemEntityContainerIO forKeys(String entityId, String... keys) {
@@ -33,7 +28,7 @@ public record ItemEntityContainerIO(ContainerIO<ItemStack> item, ContainerIO<Loc
 				ContainerIO.forLocalNBT(new KeysContainerIO(false, keys)));
 	}
 	public static ItemEntityContainerIO forKeys(EntityType<?> entityId, String... keys) {
-		return forKeys(EntityType.getId(entityId).toString(), keys);
+		return forKeys(EntityType.getKey(entityId).toString(), keys);
 	}
 	
 	public ItemEntityContainerIO withTextures(Identifier... textures) {

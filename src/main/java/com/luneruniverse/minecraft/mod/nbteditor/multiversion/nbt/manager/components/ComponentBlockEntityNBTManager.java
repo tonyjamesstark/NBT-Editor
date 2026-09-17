@@ -5,14 +5,14 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryMan
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.NbtViews;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManager;
 
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.nbt.CompoundTag;
 
 public class ComponentBlockEntityNBTManager implements NBTManager<BlockEntity> {
 	
 	@Override
-	public Attempt<NbtCompound> trySerialize(BlockEntity subject) {
-		return new Attempt<>(subject.createNbtWithIdentifyingData(DynamicRegistryManagerHolder.get()));
+	public Attempt<CompoundTag> trySerialize(BlockEntity subject) {
+		return new Attempt<>(subject.saveWithFullMetadata(DynamicRegistryManagerHolder.get()));
 	}
 	
 	@Override
@@ -20,16 +20,16 @@ public class ComponentBlockEntityNBTManager implements NBTManager<BlockEntity> {
 		return true;
 	}
 	@Override
-	public NbtCompound getNbt(BlockEntity subject) {
-		return subject.createNbt(DynamicRegistryManagerHolder.get());
+	public CompoundTag getNbt(BlockEntity subject) {
+		return subject.saveWithoutMetadata(DynamicRegistryManagerHolder.get());
 	}
 	@Override
-	public NbtCompound getOrCreateNbt(BlockEntity subject) {
+	public CompoundTag getOrCreateNbt(BlockEntity subject) {
 		return getNbt(subject);
 	}
 	@Override
-	public void setNbt(BlockEntity subject, NbtCompound nbt) {
-		NbtViews.read(nbt, subject::read);
+	public void setNbt(BlockEntity subject, CompoundTag nbt) {
+		NbtViews.read(nbt, subject::loadWithComponents);
 	}
 	
 }

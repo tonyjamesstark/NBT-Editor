@@ -9,7 +9,6 @@
     "CommandManagerMixin",
     "HelpCommandAccessor",
     "client.ClientCommandSourceMixin",
-    "client.ClientPlayerEntityMixin",
     "client.ClientPlayNetworkHandlerMixin",
     "client.ChatScreenMixin"
   ],

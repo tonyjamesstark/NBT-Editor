@@ -1,17 +1,16 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 public class MVScreen extends Screen implements OldEventBehavior, IgnoreCloseScreenPacket {
 	
-	protected MVScreen(Text title) {
+	protected MVScreen(Component title) {
 		super(title);
 	}
 	
-	public void setInitialFocus(Element element) {
+	public void setInitialFocus(GuiEventListener element) {
 		MVMisc.setInitialFocus(this, element, super::setInitialFocus);
 	}
 	@Override

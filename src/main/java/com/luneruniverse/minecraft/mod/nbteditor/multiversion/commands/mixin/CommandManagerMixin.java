@@ -28,20 +28,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.CommandRegistrationCallback;
 import com.mojang.brigadier.CommandDispatcher;
 
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.CommandManager.RegistrationEnvironment;
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.Commands.CommandSelection;
+import net.minecraft.commands.CommandSourceStack;
 
-@Mixin(value = CommandManager.class)
+@Mixin(value = Commands.class)
 public abstract class CommandManagerMixin {
 	@Shadow
 	@Final
-	private CommandDispatcher<ServerCommandSource> dispatcher;
+	private CommandDispatcher<CommandSourceStack> dispatcher;
 
 	// 1.18
-	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/command/CommandManager;dispatcher:Lcom/mojang/brigadier/CommandDispatcher;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER), target = @Desc(value = "<init>", args = RegistrationEnvironment.class), require = 0)
+	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/command/Commands;dispatcher:Lcom/mojang/brigadier/CommandDispatcher;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER), target = @Desc(value = "<init>", args = CommandSelection.class), require = 0)
 	@SuppressWarnings("target")
-	private void fabric_addCommands(CommandManager.RegistrationEnvironment environment, CallbackInfo ci) {
+	private void fabric_addCommands(Commands.CommandSelection environment, CallbackInfo ci) {
 		CommandRegistrationCallback.EVENT.invoker().register(this.dispatcher, null, environment);
 	}
 }

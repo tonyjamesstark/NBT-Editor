@@ -18,10 +18,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Formatting;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.ChatFormatting;
 
 public class UnbindSkullCommand extends ClientCommand {
 	
@@ -50,7 +50,7 @@ public class UnbindSkullCommand extends ClientCommand {
 						ItemTagReferences.PROFILE.get(itemRef.getItem()) :
 						BlockTagReferences.PROFILE.get((LocalBlock) ref.getLocalNBT()));
 				if (profile.isEmpty() || profile.get().properties().isEmpty()) {
-					MainUtil.client.player.sendMessage(TextInst.translatable("nbteditor.unbind_skull.no_textures"), false);
+					MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.unbind_skull.no_textures"), false);
 					return;
 				}
 				GameProfile newProfile = new GameProfile(new UUID(0L, 0L), "Unbound_Player", profile.get().properties());
@@ -59,7 +59,7 @@ public class UnbindSkullCommand extends ClientCommand {
 					ItemTagReferences.PROFILE.set(item, Optional.of(newProfile));
 					if (!item.nbte$hasCustomName()) {
 						item.nbte$setCustomName(TextInst.translatable("block.minecraft.player_head.named", profile.get().name())
-								.styled(style -> style.withItalic(false).withColor(Formatting.YELLOW)));
+								.withStyle(style -> style.withItalic(false).withColor(ChatFormatting.YELLOW)));
 					}
 					itemRef.saveItem(item, TextInst.translatable("nbteditor.unbind_skull.unbound"));
 				} else {

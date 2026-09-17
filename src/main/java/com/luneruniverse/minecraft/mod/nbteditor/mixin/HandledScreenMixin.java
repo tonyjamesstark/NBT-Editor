@@ -10,34 +10,34 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.ClickType;
 
-@Mixin(HandledScreen.class)
+@Mixin(AbstractContainerScreen.class)
 public class HandledScreenMixin {
-	@Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", at = @At("HEAD"), cancellable = true)
-	private void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo info) {
-		if ((HandledScreen<?>) (Object) this instanceof ClientHandledScreen)
+	@Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V", at = @At("HEAD"), cancellable = true)
+	private void onMouseClick(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
+		if ((AbstractContainerScreen<?>) (Object) this instanceof ClientHandledScreen)
 			return;
-		MixinLink.onMouseClick((HandledScreen<?>) (Object) this, slot, slotId, button, actionType, info);
+		MixinLink.onMouseClick((AbstractContainerScreen<?>) (Object) this, slot, slotId, button, actionType, info);
 	}
-	@Inject(method = "onMouseClick(Lnet/minecraft/screen/slot/Slot;IILnet/minecraft/screen/slot/SlotActionType;)V", at = @At("RETURN"))
-	private void onMouseClickReturn(Slot slot, int slotId, int button, SlotActionType actionType, CallbackInfo info) {
-		if ((HandledScreen<?>) (Object) this instanceof ClientHandledScreen)
+	@Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ClickType;)V", at = @At("RETURN"))
+	private void onMouseClickReturn(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo info) {
+		if ((AbstractContainerScreen<?>) (Object) this instanceof ClientHandledScreen)
 			return;
-		ItemStack cursor = ((HandledScreen<?>) (Object) this).getScreenHandler().getCursorStack();
+		ItemStack cursor = ((AbstractContainerScreen<?>) (Object) this).getMenu().getCarried();
 		if (!cursor.isEmpty())
 			GetLostItemCommand.addToHistory(cursor);
 	}
 	
 	@Inject(method = "keyPressed", at = @At(value = "HEAD"), cancellable = true)
-	private void keyPressed(KeyInput input, CallbackInfoReturnable<Boolean> info) {
-		HandledScreen<?> source = (HandledScreen<?>) (Object) this;
-		if (source instanceof CreativeInventoryScreen || source instanceof ClientHandledScreen)
+	private void keyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> info) {
+		AbstractContainerScreen<?> source = (AbstractContainerScreen<?>) (Object) this;
+		if (source instanceof CreativeModeInventoryScreen || source instanceof ClientHandledScreen)
 			return;
 		MixinLink.keyPressed(source, input, info);
 	}

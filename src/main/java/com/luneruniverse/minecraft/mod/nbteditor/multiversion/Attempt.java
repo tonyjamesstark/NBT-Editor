@@ -1,26 +1,16 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import java.lang.invoke.MethodType;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.mojang.serialization.DataResult;
 
 public record Attempt<T>(Optional<T> value, String error) {
 	
-	private static final Supplier<Reflection.MethodInvoker> DataResult_resultOrPartial =
-			Reflection.getOptionalMethod(DataResult.class, "resultOrPartial", MethodType.methodType(Optional.class));
-	private static final Supplier<Reflection.MethodInvoker> DataResult_error =
-			Reflection.getOptionalMethod(DataResult.class, "error", MethodType.methodType(Optional.class));
 	public static <T> Attempt<T> ofResult(DataResult<T> result) {
-		Optional<T> value = Version.<Optional<T>>newSwitch()
-				.range("1.20.5", null, () -> result.resultOrPartial())
-				.get();
+		Optional<T> value = result.resultOrPartial();
 		
-		String error = Version.<Optional<DataResult.Error<T>>>newSwitch()
-				.range("1.20.5", null, () -> result.error())
-				.get()
+		String error = result.error()
 				.map(DataResult.Error::message).orElse(null);
 		
 		return new Attempt<>(value, error);

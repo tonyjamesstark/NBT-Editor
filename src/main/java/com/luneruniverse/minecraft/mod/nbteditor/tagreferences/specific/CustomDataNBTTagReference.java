@@ -2,21 +2,21 @@ package com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific;
 
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
-public class CustomDataNBTTagReference implements TagReference<NbtCompound, ItemStack> {
+public class CustomDataNBTTagReference implements TagReference<CompoundTag, ItemStack> {
 	
 	@Override
-	public NbtCompound get(ItemStack object) {
-		NbtCompound nbt = object.nbte$getNbt();
+	public CompoundTag get(ItemStack object) {
+		CompoundTag nbt = object.nbte$getNbt();
 		if (nbt == null)
-			return new NbtCompound();
+			return new CompoundTag();
 		return nbt;
 	}
 	
 	@Override
-	public void set(ItemStack object, NbtCompound value) {
+	public void set(ItemStack object, CompoundTag value) {
 		object.nbte$setNbt(value);
 	}
 	

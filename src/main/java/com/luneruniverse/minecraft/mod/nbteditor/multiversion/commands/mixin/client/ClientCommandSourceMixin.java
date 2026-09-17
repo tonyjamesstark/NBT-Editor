@@ -20,8 +20,8 @@ import org.spongepowered.asm.mixin.Mixin;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 
-import net.minecraft.client.network.ClientCommandSource;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 
-@Mixin(ClientCommandSource.class)
+@Mixin(ClientSuggestionProvider.class)
 abstract class ClientCommandSourceMixin implements FabricClientCommandSource {
 }

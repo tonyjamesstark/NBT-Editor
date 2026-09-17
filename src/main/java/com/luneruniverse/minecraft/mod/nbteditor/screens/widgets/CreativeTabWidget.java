@@ -9,17 +9,16 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.Identifier;
 
-public class CreativeTabWidget implements Drawable, MVElement {
+public class CreativeTabWidget implements Renderable, MVElement {
 	
 	public static record CreativeTabData(ItemStack item, Runnable onClick, Predicate<Screen> whenToShow) {}
 	public static final List<CreativeTabData> TABS = new ArrayList<>();
@@ -29,7 +28,7 @@ public class CreativeTabWidget implements Drawable, MVElement {
 		if (!tabs.isEmpty()) {
 			GroupWidget group = new GroupWidget() {
 				@Override
-				public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+				public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 					MVTooltip.setOneTooltip(true, false);
 					super.render(context, mouseX, mouseY, delta);
 					MVTooltip.renderOneTooltip(context, mouseX, mouseY);
@@ -40,13 +39,11 @@ public class CreativeTabWidget implements Drawable, MVElement {
 				Point pos = ConfigScreen.getCreativeTabsPos().position(i, tabs.size(), screen.width, screen.height);
 				group.addWidget(new CreativeTabWidget(ConfigScreen.getCreativeTabsPos().isTop(), pos.x, pos.y, tab.item(), tab.onClick()));
 			}
-			screen.addDrawableChild(group);
+			screen.addRenderableWidget(group);
 		}
 	}
 	
-	public static final int WIDTH = Version.<Integer>newSwitch()
-			.range("1.19.3", null, 26)
-			.get();
+	public static final int WIDTH = 26;
 	public static final int HEIGHT = 32;
 	
 	private static final Identifier TEXTURE_TOP;
@@ -54,19 +51,10 @@ public class CreativeTabWidget implements Drawable, MVElement {
 	private static final int V_TOP;
 	private static final int V_BOTTOM;
 	static {
-		if (Version.<Boolean>newSwitch()
-				.range("1.20.2", null, true)
-				.get()) {
-			TEXTURE_TOP = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_top_unselected.png");
-			TEXTURE_BOTTOM = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_bottom_unselected.png");
-			V_TOP = 0;
-			V_BOTTOM = 0;
-		} else {
-			TEXTURE_TOP = IdentifierInst.of("textures/gui/container/creative_inventory/tabs.png");
-			TEXTURE_BOTTOM = IdentifierInst.of("textures/gui/container/creative_inventory/tabs.png");
-			V_TOP = 0;
-			V_BOTTOM = 64;
-		}
+		TEXTURE_TOP = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_top_unselected.png");
+		TEXTURE_BOTTOM = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_bottom_unselected.png");
+		V_TOP = 0;
+		V_BOTTOM = 0;
 	}
 	
 	private final boolean bottom;
@@ -82,16 +70,14 @@ public class CreativeTabWidget implements Drawable, MVElement {
 		this.y = y;
 		this.item = item;
 		this.onClick = onClick;
-		this.tooltip = new MVTooltip(item.getName());
+		this.tooltip = new MVTooltip(item.getHoverName());
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.drawTexture(context, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
 		
-		int xOffset = Version.<Integer>newSwitch()
-				.range("1.19.3", null, 5)
-				.get();
+		int xOffset = 5;
 		MVDrawableHelper.renderItem(context, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
 		
 		if (isMouseOver(mouseX, mouseY))
@@ -103,7 +89,7 @@ public class CreativeTabWidget implements Drawable, MVElement {
 		return x <= mouseX && mouseX < x + WIDTH && y <= mouseY && mouseY < y + HEIGHT;
 	}
 	
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y();
 		if (isMouseOver(mouseX, mouseY)) {
 			onClick.run();

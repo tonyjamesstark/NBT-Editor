@@ -27,14 +27,14 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 public class ImportScreen extends OverlaySupportingScreen {
 	
@@ -48,29 +48,29 @@ public class ImportScreen extends OverlaySupportingScreen {
 			
 			if (file.getName().endsWith(".nbt")) {
 				try (FileInputStream in = new FileInputStream(file)) {
-					NbtCompound nbt = MainUtil.readNBT(in);
+					CompoundTag nbt = MainUtil.readNBT(in);
 					if (defaultDataVersion.isEmpty() && !nbt.nbte$contains("DataVersion", MVNbtCompoundParent.NUMBER_TYPE))
-						MainUtil.client.player.sendMessage(TextUtil.parseTranslatableFormatted("nbteditor.nbt.import.data_version.unknown", file.getName()), false);
+						MainUtil.client.player.displayClientMessage(TextUtil.parseTranslatableFormatted("nbteditor.nbt.import.data_version.unknown", file.getName()), false);
 					if (nbt.nbte$getIntOrDefault("DataVersion") > Version.getDataVersion())
-						MainUtil.client.player.sendMessage(TextInst.translatable("nbteditor.nbt.import.data_version.new", file.getName()), false);
+						MainUtil.client.player.displayClientMessage(TextInst.translatable("nbteditor.nbt.import.data_version.new", file.getName()), false);
 					LocalNBT.deserialize(nbt, defaultDataVersion.orElse(Version.getDataVersion())).ifPresent(localNBT -> {
 						if (localNBT instanceof LocalItem item)
 							item.receive();
 						else if (localNBT instanceof LocalBlock block)
 							posConsumers.add(pos -> block.place(pos));
 						else if (localNBT instanceof LocalEntity entity)
-							posConsumers.add(pos -> entity.summon(MainUtil.client.world.getRegistryKey(), Vec3d.ofCenter(pos)));
+							posConsumers.add(pos -> entity.summon(MainUtil.client.level.dimension(), Vec3.atCenterOf(pos)));
 					});
 				} catch (Exception e) {
 					NBTEditor.LOGGER.error("Error while importing a .nbt file", e);
-					MainUtil.client.player.sendMessage(TextInst.literal(e.getClass().getName() + ": " + e.getMessage()).formatted(Formatting.RED), false);
+					MainUtil.client.player.displayClientMessage(TextInst.literal(e.getClass().getName() + ": " + e.getMessage()).withStyle(ChatFormatting.RED), false);
 				}
 				continue;
 			}
 		}
 		
 		if (!posConsumers.isEmpty()) {
-			ImportPosWidget.openImportPos(MainUtil.client.player.getBlockPos(),
+			ImportPosWidget.openImportPos(MainUtil.client.player.blockPosition(),
 					pos -> posConsumers.forEach(consumer -> consumer.accept(pos)));
 			return;
 		}
@@ -82,13 +82,13 @@ public class ImportScreen extends OverlaySupportingScreen {
 				name = name.substring(0, nameDot);
 			
 			ItemStack painting = new ItemStack(Items.PAINTING);
-			painting.nbte$setCustomName(TextInst.literal(name).styled(style -> style.withItalic(false).withColor(Formatting.GOLD)));
+			painting.nbte$setCustomName(TextInst.literal(name).withStyle(style -> style.withItalic(false).withColor(ChatFormatting.GOLD)));
 			ItemTagReferences.LORE.set(painting, imgLore);
 			MainUtil.getWithMessage(painting);
 		}, () -> {});
 	}
 	
-	private final List<Text> msg;
+	private final List<Component> msg;
 	private NamedTextFieldWidget dataVersion;
 	
 	public ImportScreen() {
@@ -99,28 +99,28 @@ public class ImportScreen extends OverlaySupportingScreen {
 	@Override
 	protected void init() {
 		super.init();
-		dataVersion = addDrawableChild(
-				new NamedTextFieldWidget(16, 64 + textRenderer.fontHeight * msg.size() + 16, 100, 16, dataVersion)
+		dataVersion = addRenderableWidget(
+				new NamedTextFieldWidget(16, 64 + font.lineHeight * msg.size() + 16, 100, 16, dataVersion)
 				.name(TextInst.translatable("nbteditor.nbt.import.data_version"))
 				.tooltip(new MVTooltip("nbteditor.nbt.import.data_version.desc")));
-		addDrawableChild(MVMisc.newButton(this.width - 116, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
+		addRenderableWidget(MVMisc.newButton(this.width - 116, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> onClose()));
 	}
 	
 	@Override
-	protected void renderMain(DrawContext context, int mouseX, int mouseY, float delta) {
-		dataVersion.setValid(dataVersion.getText().isEmpty() ||
-				Version.getDataVersion(dataVersion.getText()).filter(value -> value <= Version.getDataVersion()).isPresent());
+	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		dataVersion.setValid(dataVersion.getValue().isEmpty() ||
+				Version.getDataVersion(dataVersion.getValue()).filter(value -> value <= Version.getDataVersion()).isPresent());
 		
 		MVDrawableHelper.renderBackground(this, context);
 		super.renderMain(context, mouseX, mouseY, delta);
 		for (int i = 0; i < msg.size(); i++)
-			MVDrawableHelper.drawText(context, textRenderer, msg.get(i), 16, 64 + textRenderer.fontHeight * i, -1, true);
+			MVDrawableHelper.drawText(context, font, msg.get(i), 16, 64 + font.lineHeight * i, -1, true);
 		MainUtil.renderLogo(context);
 	}
 	
 	@Override
-	public void onFilesDropped(List<Path> paths) {
-		importFiles(paths, Version.getDataVersion(dataVersion.getText()).filter(value -> value <= Version.getDataVersion()));
+	public void onFilesDrop(List<Path> paths) {
+		importFiles(paths, Version.getDataVersion(dataVersion.getValue()).filter(value -> value <= Version.getDataVersion()));
 	}
 	
 }

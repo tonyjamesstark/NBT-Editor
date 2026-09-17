@@ -15,40 +15,40 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMixinLink;
 
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.entity.LockableContainerBlockEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.screen.GenericContainerScreenHandler;
-import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.Container;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.server.level.ServerPlayer;
 
-@Mixin(ServerPlayerEntity.class)
+@Mixin(ServerPlayer.class)
 public class ServerPlayerEntityMixin {
-	@Inject(method = "openHandledScreen", at = @At("HEAD"))
-	private void openHandledScreen(NamedScreenHandlerFactory factory, CallbackInfoReturnable<OptionalInt> info) {
-		if (factory instanceof LockableContainerBlockEntity ||
+	@Inject(method = "openMenu", at = @At("HEAD"))
+	private void openMenu(MenuProvider factory, CallbackInfoReturnable<OptionalInt> info) {
+		if (factory instanceof BaseContainerBlockEntity ||
 				ServerMainUtil.getRootEnclosingClass(factory.getClass()) == ChestBlock.class || // Double chests
 				ServerMVMisc.isInstanceOfVehicleInventory(factory))
-			MVServerNetworking.send((ServerPlayerEntity) (Object) this, new ContainerScreenS2CPacket());
+			MVServerNetworking.send((ServerPlayer) (Object) this, new ContainerScreenS2CPacket());
 	}
-	@ModifyVariable(method = "openHandledScreen", at = @At("STORE"), ordinal = 0)
-	private ScreenHandler openHandledScreen_screenHandler(ScreenHandler screenHandler) {
-		ServerPlayerEntity source = (ServerPlayerEntity) (Object) this;
-		if (screenHandler instanceof GenericContainerScreenHandler generic && generic.getInventory() == source.getEnderChestInventory())
+	@ModifyVariable(method = "openMenu", at = @At("STORE"), ordinal = 0)
+	private AbstractContainerMenu openHandledScreen_screenHandler(AbstractContainerMenu screenHandler) {
+		ServerPlayer source = (ServerPlayer) (Object) this;
+		if (screenHandler instanceof ChestMenu generic && generic.getContainer() == source.getEnderChestInventory())
 			MVServerNetworking.send(source, new ContainerScreenS2CPacket());
 		return screenHandler;
 	}
 	@Inject(method = "openHorseInventory", at = @At("HEAD"))
-	private void openHorseInventory(AbstractHorseEntity horse, Inventory inventory, CallbackInfo info) {
-		MVServerNetworking.send((ServerPlayerEntity) (Object) this, new ContainerScreenS2CPacket());
+	private void openHorseInventory(AbstractHorse horse, Container inventory, CallbackInfo info) {
+		MVServerNetworking.send((ServerPlayer) (Object) this, new ContainerScreenS2CPacket());
 	}
 	
-	@Inject(method = "onScreenHandlerOpened", at = @At("HEAD"))
-	private void onScreenHandlerOpened(ScreenHandler screenHandler, CallbackInfo info) {
+	@Inject(method = "initMenu", at = @At("HEAD"))
+	private void initMenu(AbstractContainerMenu screenHandler, CallbackInfo info) {
 		for (Slot slot : screenHandler.slots)
-			ServerMixinLink.SLOT_OWNER.put(slot, (ServerPlayerEntity) (Object) this);
+			ServerMixinLink.SLOT_OWNER.put(slot, (ServerPlayer) (Object) this);
 	}
 }

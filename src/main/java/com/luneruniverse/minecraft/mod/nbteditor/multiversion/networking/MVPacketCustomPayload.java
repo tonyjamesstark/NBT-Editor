@@ -1,42 +1,40 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
-import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 
 /**
  * Used internally in multiversion.networking; DO NOT USE
  */
 @Deprecated
-public class MVPacketCustomPayload implements CustomPayload {
+public class MVPacketCustomPayload implements CustomPacketPayload {
 	
 	/**
-	 * Hides the {@link CustomPayload} in {@link CustomPayloadC2SPacket#CustomPayloadC2SPacket(CustomPayload)}
+	 * Hides the {@link CustomPacketPayload} in {@link ServerboundCustomPayloadPacket#ServerboundCustomPayloadPacket(CustomPacketPayload)}
 	 */
-	public static CustomPayloadC2SPacket wrapC2S(MVPacket packet) {
-		return new CustomPayloadC2SPacket(new MVPacketCustomPayload(packet));
+	public static ServerboundCustomPayloadPacket wrapC2S(MVPacket packet) {
+		return new ServerboundCustomPayloadPacket(new MVPacketCustomPayload(packet));
 	}
 	/**
-	 * Hides the {@link CustomPayload} in {@link CustomPayloadS2CPacket#CustomPayloadS2CPacket(CustomPayload)}
+	 * Hides the {@link CustomPacketPayload} in {@link ClientboundCustomPayloadPacket#ClientboundCustomPayloadPacket(CustomPacketPayload)}
 	 */
-	public static CustomPayloadS2CPacket wrapS2C(MVPacket packet) {
-		return new CustomPayloadS2CPacket(new MVPacketCustomPayload(packet));
+	public static ClientboundCustomPayloadPacket wrapS2C(MVPacket packet) {
+		return new ClientboundCustomPayloadPacket(new MVPacketCustomPayload(packet));
 	}
 	
 	/**
-	 * Hides the {@link CustomPayload} in {@link CustomPayloadC2SPacket#payload()}
+	 * Hides the {@link CustomPacketPayload} in {@link ServerboundCustomPayloadPacket#payload()}
 	 */
-	public static MVPacket unwrapC2S(CustomPayloadC2SPacket packet) {
+	public static MVPacket unwrapC2S(ServerboundCustomPayloadPacket packet) {
 		if (packet.payload() instanceof MVPacketCustomPayload mvPacket)
 			return mvPacket.getPacket();
 		return null;
 	}
 	/**
-	 * Hides the {@link CustomPayload} in {@link CustomPayloadS2CPacket#payload()}
+	 * Hides the {@link CustomPacketPayload} in {@link ClientboundCustomPayloadPacket#payload()}
 	 */
-	public static MVPacket unwrapS2C(CustomPayloadS2CPacket packet) {
+	public static MVPacket unwrapS2C(ClientboundCustomPayloadPacket packet) {
 		if (packet.payload() instanceof MVPacketCustomPayload mvPacket)
 			return mvPacket.getPacket();
 		return null;
@@ -53,18 +51,8 @@ public class MVPacketCustomPayload implements CustomPayload {
 	}
 	
 	@Override
-	public Id<MVPacketCustomPayload> getId() {
-		return new Id<>(packet.getPacketId());
-	}
-	
-	// write
-	public void method_53028(PacketByteBuf payload) {
-		packet.write(payload);
-	}
-	
-	// id
-	public Identifier comp_1678() {
-		return packet.getPacketId();
+	public Type<MVPacketCustomPayload> type() {
+		return new Type<>(packet.getPacketId());
 	}
 	
 }

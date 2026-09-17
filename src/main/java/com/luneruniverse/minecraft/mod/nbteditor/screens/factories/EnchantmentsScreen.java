@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigCategory;
@@ -22,9 +21,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValu
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.ItemStack;
 
 public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 	
@@ -53,7 +52,7 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 		ItemStack inputItem = ref.getItem();
 		ConfigCategory entry = new ConfigCategory();
 		List<String> orderedEnchants = allEnchantments.entrySet().stream()
-				.map(enchant -> Map.entry(enchant.getKey(), enchant.getValue().isAcceptableItem(inputItem)))
+				.map(enchant -> Map.entry(enchant.getKey(), enchant.getValue().canEnchant(inputItem)))
 				.sorted((a, b) -> {
 					if (a.getValue()) {
 						if (!b.getValue())
@@ -66,18 +65,16 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 		String firstEnchant = orderedEnchants.get(0);
 		entry.setConfigurable("enchantment", new ConfigItem<>(TextInst.translatable("nbteditor.enchantments.enchantment"),
 				ConfigValueDropdown.forList(firstEnchant, firstEnchant, orderedEnchants,
-				allEnchantments.entrySet().stream().filter(enchant -> enchant.getValue().isAcceptableItem(inputItem)).map(Map.Entry::getKey).toList())));
+				allEnchantments.entrySet().stream().filter(enchant -> enchant.getValue().canEnchant(inputItem)).map(Map.Entry::getKey).toList())));
 		entry.setConfigurable("level", new ConfigItem<>(TextInst.translatable("nbteditor.enchantments.level"),
 				ConfigValueNumber.forInt(1, 1, 1,
-						Version.<Integer>newSwitch()
-								.range("1.17.1", null, 255)
-								.get())));
+						255)));
 		config = new ConfigList(TextInst.translatable("nbteditor.enchantments"), false, entry);
 		
 		ItemTagReferences.ENCHANTMENTS.get(localNBT.getEditableItem()).getEnchants().forEach(enchant -> {
 			ConfigCategory enchantConfig = entry.clone(true);
-			getConfigEnchantment(enchantConfig).setValue(registry.getId(enchant.enchant()).toString());
-			getConfigLevel(enchantConfig).setValue(enchant.level());
+			getConfigEnchantment(enchantConfig).setConfigValue(registry.getId(enchant.enchant()).toString());
+			getConfigLevel(enchantConfig).setConfigValue(enchant.level());
 			config.addConfigurable(enchantConfig);
 		});
 		
@@ -96,14 +93,14 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 	
 	@Override
 	protected void initEditor() {
-		ConfigPanel newPanel = addDrawableChild(new ConfigPanel(16, 64, width - 32, height - 80, config));
+		ConfigPanel newPanel = addRenderableWidget(new ConfigPanel(16, 64, width - 32, height - 80, config));
 		if (panel != null)
 			newPanel.setScroll(panel.getScroll());
 		panel = newPanel;
 	}
 	
 	@Override
-	protected void renderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected void renderEditor(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		renderTip(context, "nbteditor.enchantments.tip");
 	}
 	

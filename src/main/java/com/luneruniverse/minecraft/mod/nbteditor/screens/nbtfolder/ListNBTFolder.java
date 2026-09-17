@@ -13,45 +13,45 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTValue;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.nbt.AbstractNbtList;
-import net.minecraft.nbt.AbstractNbtNumber;
-import net.minecraft.nbt.NbtByte;
-import net.minecraft.nbt.NbtByteArray;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtFloat;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtIntArray;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtLong;
-import net.minecraft.nbt.NbtLongArray;
-import net.minecraft.nbt.NbtShort;
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.CollectionTag;
+import net.minecraft.nbt.NumericTag;
+import net.minecraft.nbt.ByteTag;
+import net.minecraft.nbt.ByteArrayTag;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.FloatTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.LongTag;
+import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.nbt.ShortTag;
+import net.minecraft.nbt.StringTag;
 
-public class ListNBTFolder implements NBTFolder<AbstractNbtList> {
+public class ListNBTFolder implements NBTFolder<CollectionTag> {
 	
-	private final Supplier<AbstractNbtList> get;
-	private final Consumer<AbstractNbtList> set;
+	private final Supplier<CollectionTag> get;
+	private final Consumer<CollectionTag> set;
 	
-	public ListNBTFolder(Supplier<AbstractNbtList> get, Consumer<AbstractNbtList> set) {
+	public ListNBTFolder(Supplier<CollectionTag> get, Consumer<CollectionTag> set) {
 		this.get = get;
 		this.set = set;
 	}
 	
 	@Override
-	public AbstractNbtList getNBT() {
+	public CollectionTag getNBT() {
 		return get.get();
 	}
 	
 	@Override
-	public void setNBT(AbstractNbtList value) {
+	public void setNBT(CollectionTag value) {
 		set.accept(value);
 	}
 	
 	@Override
 	public List<NBTValue> getEntries(NBTEditorScreen<?> screen) {
-		AbstractNbtList nbt = getNBT();
+		CollectionTag nbt = getNBT();
 		return IntStream.range(0, nbt.nbte$size())
 				.mapToObj(i -> new NBTValue(screen, i + "", nbt.nbte$get(i), nbt)).collect(Collectors.toList());
 	}
@@ -62,8 +62,8 @@ public class ListNBTFolder implements NBTFolder<AbstractNbtList> {
 	}
 	
 	@Override
-	public NbtElement getValue(String key) {
-		AbstractNbtList nbt = getNBT();
+	public Tag getValue(String key) {
+		CollectionTag nbt = getNBT();
 		try {
 			int i = Integer.parseInt(key);
 			if (i < 0 || i >= nbt.nbte$size())
@@ -75,36 +75,28 @@ public class ListNBTFolder implements NBTFolder<AbstractNbtList> {
 	}
 	
 	@Override
-	public void setValue(String key, NbtElement value) {
-		AbstractNbtList nbt = getNBT();
+	public void setValue(String key, Tag value) {
+		CollectionTag nbt = getNBT();
 		int i = Integer.parseInt(key);
-		if (nbt.nbte$size() == 1 && i == 0 && nbt instanceof NbtList list) {
-			if (MVNbtCompoundParent.NBT_CODE_REFACTORED) {
-				list.setElement(0, value);
-			} else {
-				list.remove(0);
-				list.add(value);
-			}
+		if (nbt.nbte$size() == 1 && i == 0 && nbt instanceof ListTag list) {
+			list.setTag(0, value);
 			setNBT(nbt);
 		} else {
-			NbtElement convertedValue = convertToType(nbt, value);
-			if (convertedValue != null) {
-				nbt.nbte$set(i, convertedValue);
-				setNBT(nbt);
-			}
+			nbt.nbte$set(i, value);
+			setNBT(nbt);
 		}
 	}
 	
 	@Override
 	public void addKey(String key) {
-		AbstractNbtList nbt = getNBT();
+		CollectionTag nbt = getNBT();
 		nbt.nbte$add(Integer.parseInt(key), getDefaultValue(nbt));
 		setNBT(nbt);
 	}
 	
 	@Override
 	public void removeKey(String key) {
-		AbstractNbtList nbt = getNBT();
+		CollectionTag nbt = getNBT();
 		try {
 			int i = Integer.parseInt(key);
 			if (i >= 0 && i < nbt.nbte$size()) {
@@ -119,60 +111,20 @@ public class ListNBTFolder implements NBTFolder<AbstractNbtList> {
 		return Optional.of(getNBT().nbte$size() + "");
 	}
 	
-	private NbtElement convertToType(AbstractNbtList nbt, NbtElement value) {
-		if (MVNbtCompoundParent.NBT_CODE_REFACTORED)
-			return value;
-		
-		int heldType = nbt.nbte$getHeldType().get();
-		
-		if (heldType == 0 || heldType == value.getType())
-			return value;
-		
-		if (heldType == NbtElement.COMPOUND_TYPE) {
-			NbtCompound output = new NbtCompound();
-			output.put("value", value);
-			return output;
-		}
-		if (heldType == NbtElement.LIST_TYPE) {
-			NbtList output = new NbtList();
-			output.add(value);
-			return output;
-		}
-		if (heldType == NbtElement.STRING_TYPE)
-			return NbtString.of(value.toString());
-		
-		if (value instanceof AbstractNbtNumber num) {
-			return switch (heldType) {
-				case NbtElement.BYTE_TYPE -> NbtByte.of(num.nbte$byteValue());
-				case NbtElement.SHORT_TYPE -> NbtShort.of(num.nbte$shortValue());
-				case NbtElement.INT_TYPE -> NbtInt.of(num.nbte$intValue());
-				case NbtElement.LONG_TYPE -> NbtLong.of(num.nbte$longValue());
-				case NbtElement.FLOAT_TYPE -> NbtFloat.of(num.nbte$floatValue());
-				case NbtElement.DOUBLE_TYPE -> NbtDouble.of(num.nbte$doubleValue());
-				case NbtElement.BYTE_ARRAY_TYPE -> new NbtByteArray(new byte[] {num.nbte$byteValue()});
-				case NbtElement.INT_ARRAY_TYPE -> new NbtIntArray(new int[] {num.nbte$intValue()});
-				case NbtElement.LONG_ARRAY_TYPE -> new NbtLongArray(new long[] {num.nbte$longValue()});
-				default -> null;
-			};
-		}
-		
-		return null;
-	}
-	
-	private NbtElement getDefaultValue(AbstractNbtList nbt) {
+	private Tag getDefaultValue(CollectionTag nbt) {
 		return switch (nbt.nbte$getHeldType().orElse((byte) 0)) {
-			case NbtElement.BYTE_TYPE -> NbtByte.ZERO;
-			case NbtElement.SHORT_TYPE -> NbtShort.of((short) 0);
-			case 0, NbtElement.INT_TYPE -> NbtInt.of(0);
-			case NbtElement.LONG_TYPE -> NbtLong.of(0);
-			case NbtElement.FLOAT_TYPE -> NbtFloat.ZERO;
-			case NbtElement.DOUBLE_TYPE -> NbtDouble.ZERO;
-			case NbtElement.BYTE_ARRAY_TYPE -> new NbtByteArray(new byte[0]);
-			case NbtElement.INT_ARRAY_TYPE -> new NbtIntArray(new int[0]);
-			case NbtElement.LONG_ARRAY_TYPE -> new NbtLongArray(new long[0]);
-			case NbtElement.LIST_TYPE -> new NbtList();
-			case NbtElement.COMPOUND_TYPE -> new NbtCompound();
-			case NbtElement.STRING_TYPE -> NbtString.of("");
+			case Tag.TAG_BYTE -> ByteTag.ZERO;
+			case Tag.TAG_SHORT -> ShortTag.valueOf((short) 0);
+			case 0, Tag.TAG_INT -> IntTag.valueOf(0);
+			case Tag.TAG_LONG -> LongTag.valueOf(0);
+			case Tag.TAG_FLOAT -> FloatTag.ZERO;
+			case Tag.TAG_DOUBLE -> DoubleTag.ZERO;
+			case Tag.TAG_BYTE_ARRAY -> new ByteArrayTag(new byte[0]);
+			case Tag.TAG_INT_ARRAY -> new IntArrayTag(new int[0]);
+			case Tag.TAG_LONG_ARRAY -> new LongArrayTag(new long[0]);
+			case Tag.TAG_LIST -> new ListTag();
+			case Tag.TAG_COMPOUND -> new CompoundTag();
+			case Tag.TAG_STRING -> StringTag.valueOf("");
 			default -> throw new IllegalArgumentException("Unknown NBT type: " + nbt.nbte$getHeldType().get());
 		};
 	}

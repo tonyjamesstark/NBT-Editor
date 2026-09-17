@@ -4,15 +4,15 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.screens.Screen;
 
-public interface InitializableOverlay<T extends Screen> extends Drawable, MVElement, Tickable {
+public interface InitializableOverlay<T extends Screen> extends Renderable, MVElement, Tickable {
 	public void init(T parent, int width, int height);
 	public default void tick() {}
 	
 	@SuppressWarnings("unchecked")
 	public default void initUnchecked(Screen parent) {
-		init((T) parent, MainUtil.client.getWindow().getScaledWidth(), MainUtil.client.getWindow().getScaledHeight());
+		init((T) parent, MainUtil.client.getWindow().getGuiScaledWidth(), MainUtil.client.getWindow().getGuiScaledHeight());
 	}
 }

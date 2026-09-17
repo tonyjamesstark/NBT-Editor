@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChest;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.EditableText;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
@@ -20,18 +19,19 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
 
 public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	
 	private final DataVersionStatus dataVersionStatus;
-	private final Text msg;
+	private final Component msg;
 	private NamedTextFieldWidget dataVersion;
-	private ButtonWidget updatePageBtn;
+	private Button updatePageBtn;
 	
 	public ClientChestDataVersionScreen(Optional<Integer> dataVersion) {
 		super(TextInst.of("Client Chest DataVersion"));
@@ -51,40 +51,40 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	
 	@Override
 	protected void init() {
-		EditableText prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
-		EditableText nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
+		MutableComponent prevKeybind = TextInst.translatable("nbteditor.keybind.page.down");
+		MutableComponent nextKeybind = TextInst.translatable("nbteditor.keybind.page.up");
 		if (ConfigScreen.isInvertedPageKeybinds()) {
-			EditableText temp = prevKeybind;
+			MutableComponent temp = prevKeybind;
 			prevKeybind = nextKeybind;
 			nextKeybind = temp;
 		}
 		
 		int dontUpdatePageX = width / 2 + (dataVersionStatus == DataVersionStatus.TOO_UPDATED ? -50 : 58);
 		
-		addDrawableChild(MVMisc.newButton(dontUpdatePageX, height / 2 - 34, 52, 20,
-				TextInst.translatable("nbteditor.client_chest.data_version.dont_update_page"), btn -> close()));
-		addDrawableChild(MVMisc.newButton(dontUpdatePageX + 56, height / 2 - 34, 20, 20, TextInst.of("<"), btn -> prevPage(),
+		addRenderableWidget(MVMisc.newButton(dontUpdatePageX, height / 2 - 34, 52, 20,
+				TextInst.translatable("nbteditor.client_chest.data_version.dont_update_page"), btn -> onClose()));
+		addRenderableWidget(MVMisc.newButton(dontUpdatePageX + 56, height / 2 - 34, 20, 20, TextInst.of("<"), btn -> prevPage(),
 				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
 						.append(prevKeybind).append(TextInst.translatable("nbteditor.keybind.page.prev")))))
 				.active = ClientChestScreen.PAGE > 0;
-		addDrawableChild(MVMisc.newButton(dontUpdatePageX + 80, height / 2 - 34, 20, 20, TextInst.of(">"), btn -> nextPage(),
+		addRenderableWidget(MVMisc.newButton(dontUpdatePageX + 80, height / 2 - 34, 20, 20, TextInst.of(">"), btn -> nextPage(),
 				ConfigScreen.isKeybindsHidden() ? null : new MVTooltip(TextInst.literal("")
 						.append(nextKeybind).append(TextInst.translatable("nbteditor.keybind.page.next")))))
 				.active = ClientChestScreen.PAGE < NBTEditorClient.CLIENT_CHEST.getPageCount() - 1;
 		
-		addDrawableChild(MVMisc.newButton(dontUpdatePageX, height / 2 - 10, 100, 20,
+		addRenderableWidget(MVMisc.newButton(dontUpdatePageX, height / 2 - 10, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.reload_page"), btn -> {
 			LoadingScreen.show(ClientChestHelper.reloadPage(ClientChestScreen.PAGE), pageData -> ClientChestScreen.show());
 		}));
-		addDrawableChild(MVMisc.newButton(dontUpdatePageX, height / 2 + 14, 100, 20,
+		addRenderableWidget(MVMisc.newButton(dontUpdatePageX, height / 2 + 14, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.clear_page"), btn -> {
-			client.setScreen(new FancyConfirmScreen(value -> {
+			minecraft.setScreen(new FancyConfirmScreen(value -> {
 				if (value) {
 					LoadingScreen.show(ClientChestHelper.discardPage(ClientChestScreen.PAGE), success -> ClientChestScreen.show());
 					return;
 				}
 				
-				client.setScreen(this);
+				minecraft.setScreen(this);
 			}, TextInst.translatable("nbteditor.client_chest.clear_page.title"), TextInst.translatable("nbteditor.client_chest.clear_page.desc"),
 					TextInst.translatable("nbteditor.client_chest.clear_page.yes"), TextInst.translatable("nbteditor.client_chest.clear_page.no")));
 		}));
@@ -92,27 +92,27 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		if (dataVersionStatus == DataVersionStatus.TOO_UPDATED)
 			return;
 		
-		addDrawableChild(MVMisc.newButton(width / 2 - 158, height / 2 - 10, 100, 20,
+		addRenderableWidget(MVMisc.newButton(width / 2 - 158, height / 2 - 10, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.import_page"), btn -> {
 					LoadingScreen.show(
 							addSuccessMessage(ClientChestHelper.importPage(ClientChestScreen.PAGE), false),
 							success -> ClientChestScreen.show());
 				}, new MVTooltip("nbteditor.client_chest.data_version.import_page.desc")))
 				.active = (dataVersionStatus == DataVersionStatus.UNKNOWN);
-		addDrawableChild(MVMisc.newButton(width / 2 - 158, height / 2 + 14, 100, 20,
+		addRenderableWidget(MVMisc.newButton(width / 2 - 158, height / 2 + 14, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.import_all_pages"), btn -> {
 					LoadingScreen.show(
 							addSuccessMessage(ClientChestHelper.importAllPages(), true),
 							success -> ClientChestScreen.show());
 				}, new MVTooltip("nbteditor.client_chest.data_version.import_all_pages.desc")));
 		
-		dataVersion = addDrawableChild(
+		dataVersion = addRenderableWidget(
 				new NamedTextFieldWidget(width / 2 - 50, height / 2 - 32, 100, 16, dataVersion)
 				.name(TextInst.translatable("nbteditor.nbt.import.data_version"))
 				.tooltip(new MVTooltip("nbteditor.nbt.import.data_version.desc")));
-		updatePageBtn = addDrawableChild(MVMisc.newButton(width / 2 - 50, height / 2 - 10, 100, 20,
+		updatePageBtn = addRenderableWidget(MVMisc.newButton(width / 2 - 50, height / 2 - 10, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.update_page"), btn -> {
-					Optional<Integer> dataVersionValue = Version.getDataVersion(dataVersion.getText())
+					Optional<Integer> dataVersionValue = Version.getDataVersion(dataVersion.getValue())
 							.filter(value -> value < Version.getDataVersion());
 					if (dataVersionStatus == DataVersionStatus.UNKNOWN && dataVersionValue.isEmpty())
 						return;
@@ -123,9 +123,9 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 								success -> ClientChestScreen.show());
 					});
 				}, new MVTooltip("nbteditor.client_chest.data_version.update_page.desc." + (dataVersionStatus == DataVersionStatus.UNKNOWN ? "unknown" : "old"))));
-		addDrawableChild(MVMisc.newButton(width / 2 - 50, height / 2 + 14, 100, 20,
+		addRenderableWidget(MVMisc.newButton(width / 2 - 50, height / 2 + 14, 100, 20,
 				TextInst.translatable("nbteditor.client_chest.data_version.update_all_pages"), btn -> {
-					Optional<Integer> dataVersionValue = Version.getDataVersion(dataVersion.getText())
+					Optional<Integer> dataVersionValue = Version.getDataVersion(dataVersion.getValue())
 							.filter(value -> value < Version.getDataVersion());
 					
 					updateWithWarning(() -> {
@@ -137,27 +137,27 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		boolean fullButtons = (dataVersionStatus != DataVersionStatus.TOO_UPDATED);
 		
 		if (fullButtons) {
-			dataVersion.setValid((dataVersionStatus == DataVersionStatus.OUTDATED && dataVersion.getText().isEmpty()) ||
-					Version.getDataVersion(dataVersion.getText()).filter(value -> value < Version.getDataVersion()).isPresent());
-			updatePageBtn.active = (dataVersionStatus == DataVersionStatus.UNKNOWN ? dataVersion.isValid() : dataVersion.getText().isEmpty());
+			dataVersion.setValid((dataVersionStatus == DataVersionStatus.OUTDATED && dataVersion.getValue().isEmpty()) ||
+					Version.getDataVersion(dataVersion.getValue()).filter(value -> value < Version.getDataVersion()).isPresent());
+			updatePageBtn.active = (dataVersionStatus == DataVersionStatus.UNKNOWN ? dataVersion.isValid() : dataVersion.getValue().isEmpty());
 		}
 		
 		MVTooltip.setOneTooltip(true, false);
 		
 		MVDrawableHelper.renderBackground(this, context);
 		super.render(context, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer,
-				msg, width / 2, height / 2 - 44 - textRenderer.fontHeight / 2, -1);
+		MVDrawableHelper.drawCenteredTextWithShadow(context, font,
+				msg, width / 2, height / 2 - 44 - font.lineHeight / 2, -1);
 		if (fullButtons) {
 			MVDrawableHelper.fill(context, width / 2 - 55, height / 2 - 34, width / 2 - 53, height / 2 + 34, 0xFFAAAAAA);
 			MVDrawableHelper.fill(context, width / 2 + 53, height / 2 - 34, width / 2 + 55, height / 2 + 34, 0xFFAAAAAA);
-			MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer,
+			MVDrawableHelper.drawCenteredTextWithShadow(context, font,
 					TextInst.translatable("nbteditor.client_chest.data_version.import", Version.getReleaseTarget()),
-					width / 2 - 108, height / 2 - 24 - textRenderer.fontHeight / 2, -1);
+					width / 2 - 108, height / 2 - 24 - font.lineHeight / 2, -1);
 		}
 		MainUtil.renderLogo(context);
 		
@@ -165,7 +165,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (keyCode == GLFW.GLFW_KEY_PAGE_UP || keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
 			boolean prev = (keyCode == GLFW.GLFW_KEY_PAGE_DOWN);
@@ -196,34 +196,21 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	private CompletableFuture<Boolean> addSuccessMessage(CompletableFuture<Boolean> future, boolean all) {
 		future.thenAccept(success -> {
 			if (success) {
-				EditableText msg;
+				MutableComponent msg;
 				if (all) {
 					msg = TextInst.translatable("nbteditor.client_chest.data_version.update_all_pages_success");
 				} else {
 					msg = TextInst.translatable("nbteditor.client_chest.data_version.update_page_success",
-							TextInst.literal(ClientChestScreen.PAGE + 1 + "").formatted(Formatting.GREEN));
+							TextInst.literal(ClientChestScreen.PAGE + 1 + "").withStyle(ChatFormatting.GREEN));
 				}
-				MainUtil.client.player.sendMessage(ClientChest.attachShowFolder(msg), false);
+				MainUtil.client.player.displayClientMessage(ClientChest.attachShowFolder(msg), false);
 			}
 		});
 		return future;
 	}
 	
 	private void updateWithWarning(Runnable callback) {
-		if (Version.<Boolean>newSwitch()
-				.range("1.21", null, true)
-				.get()) {
-			callback.run();
-			return;
-		}
-		
-		client.setScreen(new FancyConfirmScreen(value -> {
-			if (value)
-				callback.run();
-			else
-				client.setScreen(this);
-		}, TextInst.translatable("nbteditor.client_chest.data_version.update_page_confirm_1.20.5_1.20.6.title"),
-				TextInst.translatable("nbteditor.client_chest.data_version.update_page_confirm_1.20.5_1.20.6.desc")));
+		callback.run();
 	}
 	
 }

@@ -7,28 +7,28 @@ import java.util.List;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical<K, T>> extends ConfigGrouping<K, T> {
 	
-	protected ConfigGroupingVertical(Text name, Constructor<K, T> cloneImpl) {
+	protected ConfigGroupingVertical(Component name, Constructor<K, T> cloneImpl) {
 		super(name, cloneImpl);
 	}
 	
 	protected int getNameHeight() {
-		return name == null ? 0 : MainUtil.client.textRenderer.fontHeight + PADDING;
+		return name == null ? 0 : MainUtil.client.font.lineHeight + PADDING;
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		MVDrawableHelper.fill(context, 0, 0, PADDING, getSpacingHeight(), isValueValid() ? 0xFFAAAAAA : 0xFFDF4949);
 		
 		int yOffset = 0;
-		Text fullName = getFullName();
+		Component fullName = getFullName();
 		if (fullName != null) {
-			MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, fullName, PADDING * 2, 0, 0xFFFFFFFF);
+			MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, fullName, PADDING * 2, 0, 0xFFFFFFFF);
 			yOffset += getNameHeight();
 		}
 		
@@ -41,10 +41,10 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 		for (ConfigPath path : paths) {
 			yOffset -= path.getSpacingHeight() + PADDING;
 			
-			context.getMatrices().pushMatrix();
-			context.getMatrices().translate((float) (PADDING * 2), (float) (yOffset));
+			context.pose().pushMatrix();
+			context.pose().translate((float) (PADDING * 2), (float) (yOffset));
 			path.render(context, mouseX - PADDING * 2, mouseY - yOffset, delta);
-			context.getMatrices().popMatrix();
+			context.pose().popMatrix();
 		}
 	}
 	
@@ -89,24 +89,24 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 	}
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
-			if (path.mouseClicked(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo()), doubled))
+			if (path.mouseClicked(new MouseButtonEvent(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo()), doubled))
 				return true;
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
 		return false;
 	}
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(MouseButtonEvent click) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
-			if (path.mouseReleased(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo())))
+			if (path.mouseReleased(new MouseButtonEvent(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo())))
 				return true;
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
@@ -122,13 +122,13 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 		}
 	}
 	@Override
-	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
 			// Buttons return true by default, causing problems with returning early
-			path.mouseDragged(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo()), deltaX, deltaY);
+			path.mouseDragged(new MouseButtonEvent(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo()), deltaX, deltaY);
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
 		return false;

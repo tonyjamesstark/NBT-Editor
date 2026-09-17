@@ -8,20 +8,20 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.datafix.fixes.References;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 public class LocalItemStack extends LocalItem {
 	
-	public static LocalItemStack deserialize(NbtCompound nbt, int defaultDataVersion) {
+	public static LocalItemStack deserialize(CompoundTag nbt, int defaultDataVersion) {
 		return new LocalItemStack(NBTManagers.ITEM.deserialize(
-				MainUtil.updateDynamic(TypeReferences.ITEM_STACK, nbt, defaultDataVersion), true));
+				MainUtil.updateDynamic(References.ITEM_STACK, nbt, defaultDataVersion), true));
 	}
 	
 	private ItemStack item;
@@ -58,11 +58,11 @@ public class LocalItemStack extends LocalItem {
 	}
 	
 	@Override
-	public Text getName() {
+	public Component getName() {
 		return MainUtil.getCustomItemNameSafely(item);
 	}
 	@Override
-	public void setName(Text name) {
+	public void setName(Component name) {
 		item.nbte$setCustomName(name);
 	}
 	@Override
@@ -97,20 +97,20 @@ public class LocalItemStack extends LocalItem {
 	}
 	
 	@Override
-	public NbtCompound getNBT() {
+	public CompoundTag getNBT() {
 		return item.nbte$getNbt();
 	}
 	@Override
-	public void setNBT(NbtCompound nbt) {
+	public void setNBT(CompoundTag nbt) {
 		item.nbte$setNbt(nbt);
 	}
 	@Override
-	public NbtCompound getOrCreateNBT() {
+	public CompoundTag getOrCreateNBT() {
 		return item.nbte$getOrCreateNbt();
 	}
 	
 	@Override
-	public void renderIcon(DrawContext context, int x, int y, float tickDelta) {
+	public void renderIcon(GuiGraphics context, int x, int y, float tickDelta) {
 		MVDrawableHelper.renderItem(context, 200.0F, true, item, x, y);
 	}
 	
@@ -119,14 +119,14 @@ public class LocalItemStack extends LocalItem {
 		return Optional.of(item.copy());
 	}
 	@Override
-	public NbtCompound serialize() {
-		NbtCompound output = item.nbte$serialize(true);
+	public CompoundTag serialize() {
+		CompoundTag output = item.nbte$serialize(true);
 		output.putString("type", "item");
 		return output;
 	}
 	@Override
-	public Text toHoverableText() {
-		return item.toHoverableText();
+	public Component toHoverableText() {
+		return item.getDisplayName();
 	}
 	
 	@Override

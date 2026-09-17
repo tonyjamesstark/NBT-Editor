@@ -6,8 +6,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Panel;
 
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarratableEntry.NarrationPriority;
 
 public class ConfigPanel extends Panel<ConfigPath> implements Tickable {
 	
@@ -38,7 +39,7 @@ public class ConfigPanel extends Panel<ConfigPath> implements Tickable {
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		boolean prevOneTooltip = MVTooltip.isOneTooltip();
 		if (!prevOneTooltip)
 			MVTooltip.setOneTooltip(true, true);
@@ -58,12 +59,12 @@ public class ConfigPanel extends Panel<ConfigPath> implements Tickable {
 	
 	
 	@Override
-	public SelectionType getType() {
-		return SelectionType.NONE;
+	public NarrationPriority narrationPriority() {
+		return NarrationPriority.NONE;
 	}
 	
 	@Override
-	public void appendNarrations(NarrationMessageBuilder builder) {
+	public void updateNarration(NarrationElementOutput builder) {
 		
 	}
 	

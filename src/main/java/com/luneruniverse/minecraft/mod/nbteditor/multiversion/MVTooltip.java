@@ -1,24 +1,26 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
-import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.joml.Matrix3x2fStack;
 import org.lwjgl.opengl.GL20;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
+import com.luneruniverse.minecraft.mod.nbteditor.mixin.TooltipAccessor;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.network.chat.Component;
 
 public class MVTooltip {
 	
-	public static final MVTooltip EMPTY = new MVTooltip(new Text[0]);
+	public static final MVTooltip EMPTY = new MVTooltip(new Component[0]);
 	private static boolean oneTooltip = false;
 	private static boolean lastTooltip = false;
 	private static MVTooltip theOneTooltip;
@@ -39,7 +41,7 @@ public class MVTooltip {
 	public static MVTooltip getTheOneTooltip() {
 		return theOneTooltip;
 	}
-	public static boolean setExternalOneTooltip(List<OrderedText> tooltip) {
+	public static boolean setExternalOneTooltip(List<FormattedCharSequence> tooltip) {
 		if (isOneTooltip()) {
 			if (lastTooltip || theOneTooltip == null)
 				theOneTooltip = new MVTooltip(tooltip, null);
@@ -47,7 +49,7 @@ public class MVTooltip {
 		}
 		return false;
 	}
-	public static boolean renderOneTooltip(DrawContext context, int mouseX, int mouseY) {
+	public static boolean renderOneTooltip(GuiGraphics context, int mouseX, int mouseY) {
 		MVTooltip tooltip = setOneTooltip(false, false);
 		if (tooltip == null)
 			return false;
@@ -55,8 +57,8 @@ public class MVTooltip {
 		return true;
 	}
 	
-	private static Text combine(List<Text> lines) {
-		EditableText combined = TextInst.literal("");
+	private static Component combine(List<Component> lines) {
+		MutableComponent combined = TextInst.literal("");
 		for (int i = 0; i < lines.size(); i++) {
 			if (i > 0)
 				combined = combined.append(" ");
@@ -65,28 +67,28 @@ public class MVTooltip {
 		return combined;
 	}
 	
-	private final List<OrderedText> lines;
-	private final Text combined;
+	private final List<FormattedCharSequence> lines;
+	private final Component combined;
 	
-	private MVTooltip(List<OrderedText> lines, Text combined) {
+	private MVTooltip(List<FormattedCharSequence> lines, Component combined) {
 		this.lines = lines;
 		this.combined = combined;
 	}
-	public MVTooltip(List<Text> lines) {
-		this(lines.stream().map(Text::asOrderedText).collect(Collectors.toList()), combine(lines));
+	public MVTooltip(List<Component> lines) {
+		this(lines.stream().map(Component::getVisualOrderText).collect(Collectors.toList()), combine(lines));
 	}
-	public MVTooltip(Text... lines) {
+	public MVTooltip(Component... lines) {
 		this(Arrays.stream(lines).flatMap(line -> TextUtil.splitText(line).stream()).toList());
 	}
 	public MVTooltip(String... keys) {
-		this(Arrays.asList(keys).stream().map(TextInst::translatable).toList().toArray(new EditableText[0]));
+		this(Arrays.asList(keys).stream().map(TextInst::translatable).toList().toArray(new MutableComponent[0]));
 	}
 	
-	public List<OrderedText> getLines() {
+	public List<FormattedCharSequence> getLines() {
 		return lines;
 	}
 	
-	public Text getCombined() {
+	public Component getCombined() {
 		return combined;
 	}
 	
@@ -98,13 +100,13 @@ public class MVTooltip {
 		if (isEmpty())
 			return null;
 		
-		Tooltip output = Tooltip.of(combined);
-		Reflection.getField(Tooltip.class, "field_41103", "Ljava/util/List;").set(output, lines);
+		Tooltip output = Tooltip.create(combined);
+		((TooltipAccessor) (Object) output).setCachedTooltip(lines);
 		MixinLink.NEW_TOOLTIPS.put(output, true);
 		return output;
 	}
 	
-	public void render(DrawContext context, int mouseX, int mouseY) {
+	public void render(GuiGraphics context, int mouseX, int mouseY) {
 		if (oneTooltip) {
 			if (lastTooltip || theOneTooltip == null)
 				theOneTooltip = this;
@@ -113,18 +115,22 @@ public class MVTooltip {
 		
 		// Undo translations and render at actual position
 		// This allows Screen#renderTooltip to adjust for window height
-		float[] translation = MVMatrix4f.getTranslation(context.getMatrices());
-		context.getMatrices().pushMatrix();
-		context.getMatrices().translate((float) (-translation[0]), (float) (-translation[1]));
-		boolean scissor = MVGlStateManager.isScissorEnabled();
+		Matrix3x2fStack matrices = context.pose();
+		float dx = matrices.m20();
+		float dy = matrices.m21();
+		matrices.pushMatrix();
+		matrices.translate(-dx, -dy);
+		// ponytail: reads and pokes raw GL scissor state. 1.21.9 defers GUI draws through
+		// GuiRenderState, so this needs an in-game check before it can be trusted.
+		boolean scissor = GlStateManager.SCISSOR.mode.enabled;
 		if (scissor)
 			GL20.glDisable(GL20.GL_SCISSOR_TEST);
 		
-		MVDrawableHelper.renderTooltip(context, lines, mouseX + (int) translation[0], mouseY + (int) translation[1]);
+		MVDrawableHelper.renderTooltip(context, lines, mouseX + (int) dx, mouseY + (int) dy);
 		
 		if (scissor)
 			GL20.glEnable(GL20.GL_SCISSOR_TEST);
-		context.getMatrices().popMatrix();
+		matrices.popMatrix();
 	}
 	
 }

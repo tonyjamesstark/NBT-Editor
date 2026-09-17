@@ -7,13 +7,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
-	@Inject(method = "onGameJoin", at = @At("RETURN"))
-	private void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
+	@Inject(method = "handleLogin", at = @At("RETURN"))
+	private void handleLogin(ClientboundLoginPacket packet, CallbackInfo info) {
 		MVClientNetworking.onPlayJoin();
 	}
 }

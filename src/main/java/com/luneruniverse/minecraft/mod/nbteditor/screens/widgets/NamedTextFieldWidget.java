@@ -3,16 +3,16 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 public class NamedTextFieldWidget extends MVTextFieldWidget {
 	
-	protected Text name;
+	protected Component name;
 	protected boolean valid;
 	
-	public NamedTextFieldWidget(int x, int y, int width, int height, TextFieldWidget copyFrom) {
+	public NamedTextFieldWidget(int x, int y, int width, int height, EditBox copyFrom) {
 		super(x, y, width, height, copyFrom);
 		valid = true;
 	}
@@ -25,7 +25,7 @@ public class NamedTextFieldWidget extends MVTextFieldWidget {
 		super.tooltip(tooltip);
 		return this;
 	}
-	public NamedTextFieldWidget name(Text name) {
+	public NamedTextFieldWidget name(Component name) {
 		this.name = name;
 		return this;
 	}
@@ -39,9 +39,9 @@ public class NamedTextFieldWidget extends MVTextFieldWidget {
 	
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		if (name != null && shouldShowName())
-			setSuggestion(text.isEmpty() ? name.getString() : null);
+			setSuggestion(value.isEmpty() ? name.getString() : null);
 		super.render(context, mouseX, mouseY, delta);
 	}
 	

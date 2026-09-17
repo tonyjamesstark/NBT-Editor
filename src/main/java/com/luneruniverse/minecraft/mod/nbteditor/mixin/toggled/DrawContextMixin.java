@@ -12,48 +12,47 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMatrix4f;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.gui.tooltip.TooltipPositioner;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
+import net.minecraft.resources.Identifier;
 
-@Mixin(DrawContext.class)
+@Mixin(GuiGraphics.class)
 public abstract class DrawContextMixin {
 	
 	@Shadow
-	public abstract Matrix3x2fStack getMatrices();
+	public abstract Matrix3x2fStack pose();
 	
-	// 1.21.9 split tooltip drawing out of drawTooltip into drawTooltipImmediately,
+	// 1.21.9 split tooltip drawing out of drawTooltip into renderTooltip,
 	// and the matrix it pushes is the 2D GUI stack.
-	@Inject(method = "drawTooltipImmediately", at = @At(value = "INVOKE",
+	@Inject(method = "renderTooltip", at = @At(value = "INVOKE",
 			target = "Lorg/joml/Matrix3x2fStack;pushMatrix()Lorg/joml/Matrix3x2fStack;", shift = At.Shift.AFTER))
-	private void drawTooltipImmediately(TextRenderer textRenderer, List<TooltipComponent> tooltip, int x, int y,
-			TooltipPositioner positioner, Identifier texture, CallbackInfo info) {
+	private void renderTooltip(Font textRenderer, List<ClientTooltipComponent> tooltip, int x, int y,
+			ClientTooltipPositioner positioner, Identifier texture, CallbackInfo info) {
 		if (!ConfigScreen.isTooltipOverflowFix())
 			return;
 		
 		int[] size = MixinLink.getTooltipSize(tooltip);
-		Vector2ic pos = MVMisc.getPosition(positioner, MainUtil.client.currentScreen, x, y, size[0], size[1]);
-		int screenWidth = MainUtil.client.getWindow().getScaledWidth();
-		int screenHeight = MainUtil.client.getWindow().getScaledHeight();
+		Vector2ic pos = MVMisc.getPosition(positioner, MainUtil.client.screen, x, y, size[0], size[1]);
+		int screenWidth = MainUtil.client.getWindow().getGuiScaledWidth();
+		int screenHeight = MainUtil.client.getWindow().getGuiScaledHeight();
 		
-		MixinLink.renderTooltipFromComponents((DrawContext) (Object) this,
+		MixinLink.renderTooltipFromComponents((GuiGraphics) (Object) this,
 				pos.x(), pos.y(), size[0], size[1], screenWidth, screenHeight);
 	}
 	
-	@ModifyVariable(method = "scissorContains", at = @At("HEAD"), ordinal = 0, require = 0)
+	@ModifyVariable(method = "containsPointInScissor", at = @At("HEAD"), ordinal = 0, require = 0)
 	private int scissorContainsX(int x) {
-		return x + (int) MVMatrix4f.getTranslation(getMatrices())[0];
+		return x + (int) pose().m20();
 	}
-	@ModifyVariable(method = "scissorContains", at = @At("HEAD"), ordinal = 1, require = 0)
+	@ModifyVariable(method = "containsPointInScissor", at = @At("HEAD"), ordinal = 1, require = 0)
 	private int scissorContainsY(int y) {
-		return y + (int) MVMatrix4f.getTranslation(getMatrices())[1];
+		return y + (int) pose().m21();
 	}
 	
 }

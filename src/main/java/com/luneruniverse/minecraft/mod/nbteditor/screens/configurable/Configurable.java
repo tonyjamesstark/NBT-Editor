@@ -4,9 +4,9 @@ import java.util.WeakHashMap;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 
-import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.components.Renderable;
 
-public interface Configurable<T extends Configurable<T>> extends Drawable, MVElement {
+public interface Configurable<T extends Configurable<T>> extends Renderable, MVElement {
 	public static final int PADDING = 8;
 	public boolean isValueValid();
 	public int getSpacingWidth();

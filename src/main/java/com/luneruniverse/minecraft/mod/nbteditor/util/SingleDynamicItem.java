@@ -5,8 +5,8 @@ import java.util.WeakHashMap;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.DynamicItems;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 
 public class SingleDynamicItem {
 	
@@ -26,7 +26,7 @@ public class SingleDynamicItem {
 		
 		SINGLE_DYNAMIC_ITEMS.put(this, true);
 	}
-	public SingleDynamicItem(NbtCompound nbt) {
+	public SingleDynamicItem(CompoundTag nbt) {
 		this.items = new DynamicItems();
 		this.items.add(SLOT, nbt, false);
 		this.item = this.items.tryLoad(SLOT);
@@ -37,7 +37,7 @@ public class SingleDynamicItem {
 	public synchronized ItemStack getItem() {
 		return item;
 	}
-	public synchronized NbtCompound getOriginalNbt() {
+	public synchronized CompoundTag getOriginalNbt() {
 		if (items.isSlot(SLOT))
 			return items.getOriginalNbt(SLOT);
 		return item.nbte$serialize(true);

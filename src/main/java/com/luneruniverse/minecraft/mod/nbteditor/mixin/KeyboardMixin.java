@@ -7,21 +7,21 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.FormattedTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.Keyboard;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.ParentElement;
-import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.GameNarrator;
 
-@Mixin(Keyboard.class)
+@Mixin(KeyboardHandler.class)
 public class KeyboardMixin {
-	@Redirect(method = "onKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/NarratorManager;isActive()Z"))
-	private boolean isActive(NarratorManager manager) {
-		if (MainUtil.client.currentScreen != null) {
-			Element focused = MainUtil.client.currentScreen.getFocused();
+	@Redirect(method = "keyPress", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/GameNarrator;isActive()Z"))
+	private boolean isActive(GameNarrator manager) {
+		if (MainUtil.client.screen != null) {
+			GuiEventListener focused = MainUtil.client.screen.getFocused();
 			while (focused != null) {
 				if (focused instanceof FormattedTextFieldWidget)
 					return false;
-				else if (focused instanceof ParentElement parent)
+				else if (focused instanceof ContainerEventHandler parent)
 					focused = parent.getFocused();
 				else
 					break;

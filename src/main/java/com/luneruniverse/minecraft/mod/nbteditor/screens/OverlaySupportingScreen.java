@@ -3,39 +3,39 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InitializableOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 
 public class OverlaySupportingScreen extends TickableSupportingScreen {
 	
-	public static <T extends Drawable & Element> T setOverlayStatic(T overlay, double z) {
-		return ((OverlaySupportingScreen) MainUtil.client.currentScreen).setOverlay(overlay, z);
+	public static <T extends Renderable & GuiEventListener> T setOverlayStatic(T overlay, double z) {
+		return ((OverlaySupportingScreen) MainUtil.client.screen).setOverlay(overlay, z);
 	}
-	public static <T extends Drawable & Element> T setOverlayStatic(T overlay) {
+	public static <T extends Renderable & GuiEventListener> T setOverlayStatic(T overlay) {
 		return setOverlayStatic(overlay, 0);
 	}
 	public static <T extends Screen> T setOverlayScreenStatic(T overlay, double z) {
-		return ((OverlaySupportingScreen) MainUtil.client.currentScreen).setOverlayScreen(overlay, z);
+		return ((OverlaySupportingScreen) MainUtil.client.screen).setOverlayScreen(overlay, z);
 	}
 	public static <T extends Screen> T setOverlayScreenStatic(T overlay) {
 		return setOverlayScreenStatic(overlay, 0);
 	}
 	
-	private Element overlay; // extends Drawable & Element
+	private GuiEventListener overlay; // extends Renderable & GuiEventListener
 	private Screen overlayScreen;
 	private double overlayZ;
 	
-	protected OverlaySupportingScreen(Text title) {
+	protected OverlaySupportingScreen(Component title) {
 		super(title);
 	}
 	
-	public <T extends Drawable & Element> T setOverlay(T overlay, double z) {
+	public <T extends Renderable & GuiEventListener> T setOverlay(T overlay, double z) {
 		this.overlay = overlay;
 		this.overlayScreen = null;
 		this.overlayZ = z;
@@ -43,7 +43,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 			initable.initUnchecked(this);
 		return overlay;
 	}
-	public <T extends Drawable & Element> T setOverlay(T overlay) {
+	public <T extends Renderable & GuiEventListener> T setOverlay(T overlay) {
 		return setOverlay(overlay, 0);
 	}
 	public <T extends Screen> T setOverlayScreen(T overlay, double z) {
@@ -60,7 +60,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T extends Drawable & Element> T getOverlay() {
+	public <T extends Renderable & GuiEventListener> T getOverlay() {
 		return (T) overlay;
 	}
 	public Screen getOverlayScreen() {
@@ -79,17 +79,17 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public final void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public final void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		int bgMouseX = (overlay == null ? mouseX : -314);
 		int bgMouseY = (overlay == null ? mouseY : -314);
 		renderMain(context, bgMouseX, bgMouseY, delta);
 		if (overlay != null) {
 			if (overlayZ != 0)
-				context.createNewRootLayer();
-			((Drawable) overlay).render(context, mouseX, mouseY, delta);
+				context.nextStratum();
+			((Renderable) overlay).render(context, mouseX, mouseY, delta);
 		}
 	}
-	protected void renderMain(DrawContext context, int mouseX, int mouseY, float delta) {
+	protected void renderMain(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		super.render(context, mouseX, mouseY, delta);
 	}
 	
@@ -103,7 +103,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		if (overlay != null)
 			return overlay.mouseClicked(click, doubled);
@@ -111,7 +111,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(MouseButtonEvent click) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		if (overlay != null)
 			return overlay.mouseReleased(click);
@@ -127,7 +127,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		if (overlay != null)
 			return overlay.mouseDragged(click, deltaX, deltaY);
@@ -142,7 +142,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean keyPressed(KeyInput input) {
+	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.keyPressed(input);
@@ -150,7 +150,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean keyReleased(KeyInput input) {
+	public boolean keyReleased(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.keyReleased(input);
@@ -158,7 +158,7 @@ public class OverlaySupportingScreen extends TickableSupportingScreen {
 	}
 	
 	@Override
-	public boolean charTyped(CharInput input) {
+	public boolean charTyped(CharacterEvent input) {
 		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
 		if (overlay != null)
 			return overlay.charTyped(input);

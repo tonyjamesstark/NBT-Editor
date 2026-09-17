@@ -12,24 +12,24 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandle
 import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkSide;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 
-@Mixin(ClientConnection.class)
+@Mixin(Connection.class)
 public abstract class ClientConnectionMixin {
 	
 	@Shadow
-	public abstract NetworkSide getSide();
+	public abstract PacketFlow getReceiving();
 	
-	@Inject(method = "send(Lnet/minecraft/network/packet/Packet;)V", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "send(Lnet/minecraft/network/protocol/Packet;)V", at = @At("HEAD"), cancellable = true)
 	private void send(Packet<?> packet, CallbackInfo info) {
-		if (getSide() != NetworkSide.CLIENTBOUND)
+		if (getReceiving() != PacketFlow.CLIENTBOUND)
 			return;
 		
-		if (MainUtil.client.currentScreen instanceof ClientHandledScreen) {
-			if (packet instanceof ClickSlotC2SPacket slotPacket) {
+		if (MainUtil.client.screen instanceof ClientHandledScreen) {
+			if (packet instanceof ServerboundContainerClickPacket slotPacket) {
 				info.cancel();
 				NBTEditor.LOGGER.warn("Tried to send a slot click packet while on a ClientHandledScreen: slot=" +
 						MVMisc.getSlot(slotPacket) + ", button=" + MVMisc.getButton(slotPacket) + ", action=" +
@@ -39,9 +39,9 @@ public abstract class ClientConnectionMixin {
 	}
 	
 	@Inject(method = "<init>", at = @At("HEAD"))
-	private static void init(NetworkSide side, CallbackInfo info) {
+	private static void init(PacketFlow receiving, CallbackInfo info) {
 		// When on a dedicated server, all threads are already server threads
-		if (side == NetworkSide.SERVERBOUND)
+		if (receiving == PacketFlow.SERVERBOUND)
 			NBTEditorServer.registerServerThread(Thread.currentThread());
 	}
 	

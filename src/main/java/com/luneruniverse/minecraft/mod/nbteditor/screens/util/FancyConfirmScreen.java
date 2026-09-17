@@ -1,26 +1,25 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.util;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
 
 public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScreenPacket {
 	
 	private Screen parent;
 	
-	public FancyConfirmScreen(BooleanConsumer callback, Text title, Text message, Text yesTranslated, Text noTranslated) {
+	public FancyConfirmScreen(BooleanConsumer callback, Component title, Component message, Component yesTranslated, Component noTranslated) {
 		super(callback, title, message, yesTranslated, noTranslated);
-		parent = MainUtil.client.currentScreen;
+		parent = MainUtil.client.screen;
 	}
-	public FancyConfirmScreen(BooleanConsumer callback, Text title, Text message) {
+	public FancyConfirmScreen(BooleanConsumer callback, Component title, Component message) {
 		super(callback, title, message);
-		parent = MainUtil.client.currentScreen;
+		parent = MainUtil.client.screen;
 	}
 	
 	public FancyConfirmScreen setParent(Screen parent) {
@@ -36,20 +35,20 @@ public class FancyConfirmScreen extends ConfirmScreen implements IgnoreCloseScre
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
 		if (parent != null)
 			parent.render(context, -314, -314, delta);
 		
-		context.createNewRootLayer();
+		context.nextStratum();
 		super.render(context, mouseX, mouseY, delta);
 		MainUtil.renderLogo(context);
 	}
 	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
-		if (MainUtil.client.world == null)
+	public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		if (MainUtil.client.level == null)
 			super.renderBackground(context, mouseX, mouseY, delta);
 		else
-			renderInGameBackground(context);
+			renderTransparentBackground(context);
 	}
 	
 }

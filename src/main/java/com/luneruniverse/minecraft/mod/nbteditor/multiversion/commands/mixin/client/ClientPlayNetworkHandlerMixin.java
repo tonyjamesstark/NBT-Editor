@@ -29,35 +29,35 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCom
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.mojang.brigadier.CommandDispatcher;
 
-import net.minecraft.client.network.ClientCommandSource;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.command.CommandSource;
-import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.client.multiplayer.ClientSuggestionProvider;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
+import net.minecraft.network.protocol.game.ClientboundLoginPacket;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 abstract class ClientPlayNetworkHandlerMixin {
 	@Shadow
-	private CommandDispatcher<CommandSource> commandDispatcher;
+	private CommandDispatcher<SharedSuggestionProvider> commands;
 
 	@Shadow
 	@Final
-	private ClientCommandSource commandSource;
+	private ClientSuggestionProvider suggestionsProvider;
 
-	@Inject(method = "onGameJoin", at = @At("RETURN"))
-	private void onGameJoin(GameJoinS2CPacket packet, CallbackInfo info) {
+	@Inject(method = "handleLogin", at = @At("RETURN"))
+	private void handleLogin(ClientboundLoginPacket packet, CallbackInfo info) {
 		ClientCommandManager.lastGamePacket = packet;
 		ClientCommandManager.createDispatcher();
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	@Inject(method = "onCommandTree", at = @At("RETURN"))
-	private void onOnCommandTree(CommandTreeS2CPacket packet, CallbackInfo info) {
+	@Inject(method = "handleCommands", at = @At("RETURN"))
+	private void onOnCommandTree(ClientboundCommandsPacket packet, CallbackInfo info) {
 		ClientCommandManager.lastCommandPacket = packet;
 		// Add the commands to the vanilla dispatcher for completion.
 		// It's done here because both the server and the client commands have
 		// to be in the same dispatcher and completion results.
-		ClientCommandInternals.addCommands((CommandDispatcher) commandDispatcher, (FabricClientCommandSource) commandSource);
+		ClientCommandInternals.addCommands((CommandDispatcher) commands, (FabricClientCommandSource) suggestionsProvider);
 	}
 	
 	// 1.19.3
@@ -69,7 +69,7 @@ abstract class ClientPlayNetworkHandlerMixin {
 		}
 	}
 	
-	@Inject(method = "sendChatCommand", at = @At("HEAD"), cancellable = true, require = 0)
+	@Inject(method = "sendCommand", at = @At("HEAD"), cancellable = true, require = 0)
 //	@Group(name = "sendChatMessage", min = 1)
 	private void onSendCommand(String command, CallbackInfo info) {
 		if (ClientCommandInternals.executeCommand(command)) {

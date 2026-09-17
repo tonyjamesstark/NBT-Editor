@@ -1,16 +1,16 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class TranslatedGroupWidget extends GroupWidget {
 	
-	public static <T extends Drawable & Element> TranslatedGroupWidget forWidget(T widget, double x, double y, double z) {
+	public static <T extends Renderable & GuiEventListener> TranslatedGroupWidget forWidget(T widget, double x, double y, double z) {
 		TranslatedGroupWidget output = new TranslatedGroupWidget(x, y, z) {
 			@Override
-			protected void renderPre(DrawContext context, int mouseX, int mouseY, float delta) {
+			protected void renderPre(GuiGraphics context, int mouseX, int mouseY, float delta) {
 				setFocused(isMultiFocused() ? widget : null);
 			}
 		};
@@ -46,21 +46,21 @@ public class TranslatedGroupWidget extends GroupWidget {
 	}
 	
 	@Override
-	public final void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.getMatrices().pushMatrix();
-		context.getMatrices().translate((float) x, (float) y);
+	public final void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		context.pose().pushMatrix();
+		context.pose().translate((float) x, (float) y);
 		mouseX -= (int) x;
 		mouseY -= (int) y;
 		renderPre(context, mouseX, mouseY, delta);
 		super.render(context, mouseX, mouseY, delta);
 		renderPost(context, mouseX, mouseY, delta);
-		context.getMatrices().popMatrix();
+		context.pose().popMatrix();
 	}
-	protected void renderPre(DrawContext context, int mouseX, int mouseY, float delta) {}
-	protected void renderPost(DrawContext context, int mouseX, int mouseY, float delta) {}
+	protected void renderPre(GuiGraphics context, int mouseX, int mouseY, float delta) {}
+	protected void renderPost(GuiGraphics context, int mouseX, int mouseY, float delta) {}
 	
 	@Override
-	public boolean mouseClicked(Click click, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		mouseX -= x;
 		mouseY -= y;
@@ -76,7 +76,7 @@ public class TranslatedGroupWidget extends GroupWidget {
 	}
 	
 	@Override
-	public boolean mouseReleased(Click click) {
+	public boolean mouseReleased(MouseButtonEvent click) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		mouseX -= x;
 		mouseY -= y;
@@ -103,7 +103,7 @@ public class TranslatedGroupWidget extends GroupWidget {
 	protected void mouseMovedPost(double mouseX, double mouseY) {}
 	
 	@Override
-	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent click, double deltaX, double deltaY) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		mouseX -= x;
 		mouseY -= y;

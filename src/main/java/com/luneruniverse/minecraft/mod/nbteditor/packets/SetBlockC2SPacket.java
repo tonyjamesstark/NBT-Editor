@@ -1,31 +1,31 @@
 package com.luneruniverse.minecraft.mod.nbteditor.packets;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistryKeys;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.Identifier;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public class SetBlockC2SPacket implements MVPacket {
 	
 	public static final Identifier ID = IdentifierInst.of("nbteditor", "set_block");
 	
-	private final RegistryKey<World> world;
+	private final ResourceKey<Level> world;
 	private final BlockPos pos;
 	private final Identifier id;
 	private final BlockStateProperties state;
-	private final NbtCompound nbt;
+	private final CompoundTag nbt;
 	private final boolean recreate;
 	private final boolean triggerUpdate;
 	
-	public SetBlockC2SPacket(RegistryKey<World> world, BlockPos pos, Identifier id,
-			BlockStateProperties state, NbtCompound nbt, boolean recreate, boolean triggerUpdate) {
+	public SetBlockC2SPacket(ResourceKey<Level> world, BlockPos pos, Identifier id,
+			BlockStateProperties state, CompoundTag nbt, boolean recreate, boolean triggerUpdate) {
 		this.world = world;
 		this.pos = pos;
 		this.id = id;
@@ -34,8 +34,8 @@ public class SetBlockC2SPacket implements MVPacket {
 		this.recreate = recreate;
 		this.triggerUpdate = triggerUpdate;
 	}
-	public SetBlockC2SPacket(PacketByteBuf payload) {
-		this.world = payload.readRegistryKey(MVRegistryKeys.WORLD);
+	public SetBlockC2SPacket(FriendlyByteBuf payload) {
+		this.world = payload.readRegistryKey(Registries.DIMENSION);
 		this.pos = payload.readBlockPos();
 		this.id = payload.readIdentifier();
 		this.state = new BlockStateProperties(payload);
@@ -44,7 +44,7 @@ public class SetBlockC2SPacket implements MVPacket {
 		this.triggerUpdate = payload.readBoolean();
 	}
 	
-	public RegistryKey<World> getWorld() {
+	public ResourceKey<Level> getWorld() {
 		return world;
 	}
 	public BlockPos getPos() {
@@ -56,7 +56,7 @@ public class SetBlockC2SPacket implements MVPacket {
 	public BlockStateProperties getState() {
 		return state;
 	}
-	public NbtCompound getNbt() {
+	public CompoundTag getNbt() {
 		return nbt;
 	}
 	public boolean isRecreate() {
@@ -67,7 +67,7 @@ public class SetBlockC2SPacket implements MVPacket {
 	}
 	
 	@Override
-	public void write(PacketByteBuf payload) {
+	public void write(FriendlyByteBuf payload) {
 		payload.writeRegistryKey(world);
 		payload.writeBlockPos(pos);
 		payload.writeIdentifier(id);

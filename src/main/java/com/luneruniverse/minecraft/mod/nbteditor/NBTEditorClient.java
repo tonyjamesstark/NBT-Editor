@@ -20,7 +20,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVEnchantments;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.OpenEnderChestC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
@@ -31,10 +30,10 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import tsp.headdb.ported.HeadAPI;
 
 public class NBTEditorClient implements ClientModInitializer {
@@ -85,7 +84,7 @@ public class NBTEditorClient implements ClientModInitializer {
 		MixinLink.ENCHANT_GLINT_FIX.add(clientChestIcon);
 		NBTEditorAPI.registerInventoryTab(clientChestIcon,
 				ClientChestScreen::show,
-				screen -> screen instanceof CreativeInventoryScreen || (screen instanceof InventoryScreen && SERVER_CONN.isEditingExpanded()));
+				screen -> screen instanceof CreativeModeInventoryScreen || (screen instanceof InventoryScreen && SERVER_CONN.isEditingExpanded()));
 		NBTEditorAPI.registerInventoryTab(new ItemStack(Items.CHEST)
 				.nbte$setCustomName(TextInst.translatable("itemGroup.nbteditor.inventory")),
 				CURSOR_MANAGER::showRoot,
@@ -95,7 +94,7 @@ public class NBTEditorClient implements ClientModInitializer {
 					CURSOR_MANAGER.closeRoot();
 					MVClientNetworking.send(new OpenEnderChestC2SPacket());
 				},
-				screen -> (screen instanceof CreativeInventoryScreen || screen instanceof InventoryScreen || screen instanceof ClientChestScreen)
+				screen -> (screen instanceof CreativeModeInventoryScreen || screen instanceof InventoryScreen || screen instanceof ClientChestScreen)
 						&& SERVER_CONN.isEditingExpanded());
 		
 		SERVER_CONN = new NBTEditorServerConn();

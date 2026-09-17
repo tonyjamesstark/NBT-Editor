@@ -1,7 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,20 +8,20 @@ import java.util.function.Predicate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 
-import net.minecraft.client.gui.AbstractParentElement;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarratableEntry.NarrationPriority;
 
-public class GroupWidget extends AbstractParentElement implements Drawable, MVElement, Tickable, Selectable, OldEventBehavior {
+public class GroupWidget extends AbstractContainerEventHandler implements Renderable, MVElement, Tickable, NarratableEntry, OldEventBehavior {
 	
-	private final List<Drawable> drawables;
-	private final List<Element> elements;
+	private final List<Renderable> drawables;
+	private final List<GuiEventListener> elements;
 	private final List<Tickable> tickables;
 	
 	public GroupWidget() {
@@ -32,13 +30,13 @@ public class GroupWidget extends AbstractParentElement implements Drawable, MVEl
 		this.tickables = new ArrayList<>();
 	}
 	
-	public <T extends Drawable> T addDrawable(T drawable) {
+	public <T extends Renderable> T addDrawable(T drawable) {
 		if (!this.drawables.contains(drawable))
 			this.drawables.add(drawable);
 		return drawable;
 	}
 	
-	public <T extends Element> T addElement(T element) {
+	public <T extends GuiEventListener> T addElement(T element) {
 		if (!this.elements.contains(element))
 			this.elements.add(element);
 		return element;
@@ -50,7 +48,7 @@ public class GroupWidget extends AbstractParentElement implements Drawable, MVEl
 		return tickable;
 	}
 	
-	public <T extends Drawable & Element> T addWidget(T widget) {
+	public <T extends Renderable & GuiEventListener> T addWidget(T widget) {
 		addDrawable(widget);
 		addElement(widget);
 		if (widget instanceof Tickable tickable)
@@ -58,11 +56,11 @@ public class GroupWidget extends AbstractParentElement implements Drawable, MVEl
 		return widget;
 	}
 	
-	public boolean removeDrawable(Drawable drawable) {
+	public boolean removeDrawable(Renderable drawable) {
 		return this.drawables.remove(drawable);
 	}
 	
-	public boolean removeElement(Element element) {
+	public boolean removeElement(GuiEventListener element) {
 		return this.elements.remove(element);
 	}
 	
@@ -70,16 +68,16 @@ public class GroupWidget extends AbstractParentElement implements Drawable, MVEl
 		return this.tickables.remove(tickable);
 	}
 	
-	public <T extends Drawable & Element> boolean removeWidget(T widget) {
+	public <T extends Renderable & GuiEventListener> boolean removeWidget(T widget) {
 		return removeDrawable(widget) | removeElement(widget) |
 				(widget instanceof Tickable tickable && removeTickable(tickable));
 	}
 	
-	public boolean filterDrawables(Predicate<Drawable> filter) {
+	public boolean filterDrawables(Predicate<Renderable> filter) {
 		return this.drawables.removeIf(filter.negate());
 	}
 	
-	public boolean filterElements(Predicate<Element> filter) {
+	public boolean filterElements(Predicate<GuiEventListener> filter) {
 		return this.elements.removeIf(filter.negate());
 	}
 	
@@ -124,8 +122,8 @@ public class GroupWidget extends AbstractParentElement implements Drawable, MVEl
 	}
 	
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		for (Drawable drawable : drawables)
+	public void render(GuiGraphics context, int mouseX, int mouseY, float delta) {
+		for (Renderable drawable : drawables)
 			drawable.render(context, mouseX, mouseY, delta);
 	}
 	
@@ -136,13 +134,13 @@ public class GroupWidget extends AbstractParentElement implements Drawable, MVEl
 	}
 	
 	@Override
-	public List<? extends Element> children() {
+	public List<? extends GuiEventListener> children() {
 		return new ArrayList<>(elements);
 	}
 	
 	@Override
 	public boolean isMouseOver(double mouseX, double mouseY) {
-		for (Element element : elements) {
+		for (GuiEventListener element : elements) {
 			if (element.isMouseOver(mouseX, mouseY))
 				return true;
 		}
@@ -167,12 +165,12 @@ public class GroupWidget extends AbstractParentElement implements Drawable, MVEl
 	
 	
 	@Override
-	public SelectionType getType() {
-		return SelectionType.NONE;
+	public NarrationPriority narrationPriority() {
+		return NarrationPriority.NONE;
 	}
 	
 	@Override
-	public void appendNarrations(NarrationMessageBuilder var1) {
+	public void updateNarration(NarrationElementOutput var1) {
 		
 	}
 	
