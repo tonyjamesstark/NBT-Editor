@@ -78,17 +78,19 @@ public class NBTEditorClient implements ClientModInitializer {
 		MVClientNetworking.PlayNetworkStateEvents.Start.EVENT.register(networkHandler -> ClientChestHelper.loadDefaultPages(PageLoadLevel.DYNAMIC_ITEMS));
 		MVClientNetworking.PlayNetworkStateEvents.Stop.EVENT.register(() -> ClientChestHelper.unloadAllPages(PageLoadLevel.NORMAL_ITEMS));
 		
-		ItemStack clientChestIcon = new ItemStack(Items.ENDER_CHEST)
-				.nbte$setCustomName(Component.translatableEscape("itemGroup.nbteditor.client_chest"));
-		MVEnchantments.addEnchantment(clientChestIcon, MVEnchantments.LOYALTY, 1);
-		NBTEditorAPI.registerInventoryTab(clientChestIcon,
+		NBTEditorAPI.registerInventoryTab(() -> {
+					ItemStack icon = new ItemStack(Items.ENDER_CHEST)
+							.nbte$setCustomName(Component.translatableEscape("itemGroup.nbteditor.client_chest"));
+					MVEnchantments.addEnchantment(icon, MVEnchantments.LOYALTY, 1);
+					return icon;
+				},
 				ClientChestScreen::show,
 				screen -> screen instanceof CreativeModeInventoryScreen || (screen instanceof InventoryScreen && SERVER_CONN.isEditingExpanded()));
-		NBTEditorAPI.registerInventoryTab(new ItemStack(Items.CHEST)
+		NBTEditorAPI.registerInventoryTab(() -> new ItemStack(Items.CHEST)
 				.nbte$setCustomName(Component.translatableEscape("itemGroup.nbteditor.inventory")),
 				CURSOR_MANAGER::showRoot,
 				screen -> screen instanceof ClientChestScreen);
-		NBTEditorAPI.registerInventoryTab(new ItemStack(Items.ENDER_CHEST),
+		NBTEditorAPI.registerInventoryTab(() -> new ItemStack(Items.ENDER_CHEST),
 				() -> {
 					CURSOR_MANAGER.closeRoot();
 					MVClientNetworking.send(new OpenEnderChestC2SPacket());

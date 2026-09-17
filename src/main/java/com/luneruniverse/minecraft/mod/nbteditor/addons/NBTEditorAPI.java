@@ -312,13 +312,27 @@ public class NBTEditorAPI {
 	
 	/**
 	 * Create a tab on the screen, located in the bottom left
+	 * @param item Supplies the item to display on the tab, called every time the tab is shown
+	 * @param onClick Called when the tab is clicked
+	 * @param whenToShow Set which screens the tab should appear on
+	 * @see #registerInventoryTab(ItemStack, Runnable, Predicate)
+	 */
+	public static void registerInventoryTab(Supplier<ItemStack> item, Runnable onClick, Predicate<Screen> whenToShow) {
+		CreativeTabWidget.TABS.add(new CreativeTabWidget.CreativeTabData(item, onClick, whenToShow));
+	}
+	
+	/**
+	 * Create a tab on the screen, located in the bottom left<br>
+	 * Registering a tab happens during client init, and 26.2 does not bind item components
+	 * until a world loads, so prefer the {@link Supplier} overload over building the stack
+	 * eagerly to pass here.
 	 * @param item The item to display on the tab
 	 * @param onClick Called when the tab is clicked
 	 * @param whenToShow Set which screens the tab should appear on
-	 * @see #registerInventoryTab(ItemStack, Runnable)
+	 * @see #registerInventoryTab(Supplier, Runnable, Predicate)
 	 */
 	public static void registerInventoryTab(ItemStack item, Runnable onClick, Predicate<Screen> whenToShow) {
-		CreativeTabWidget.TABS.add(new CreativeTabWidget.CreativeTabData(item, onClick, whenToShow));
+		registerInventoryTab(() -> item, onClick, whenToShow);
 	}
 	
 	/**
