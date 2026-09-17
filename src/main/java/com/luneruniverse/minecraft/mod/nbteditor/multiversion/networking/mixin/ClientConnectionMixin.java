@@ -12,8 +12,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacke
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVPacketCustomPayload;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVServerNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
-import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMixinLink;
 
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
@@ -33,7 +33,7 @@ public abstract class ClientConnectionMixin {
 	@Inject(method = "disconnect(Lnet/minecraft/network/chat/Component;)V", at = @At("HEAD"))
 	private void disconnect(Component reason, CallbackInfo info) {
 		if (isConnected()) {
-			if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(packetListener))
+			if (!NBTEditorServer.IS_DEDICATED && packetListener instanceof ClientPacketListener)
 				MVClientNetworking.onPlayStop();
 			if (packetListener instanceof ServerGamePacketListenerImpl handler)
 				MVServerNetworking.onPlayStop(handler.player);
@@ -42,7 +42,7 @@ public abstract class ClientConnectionMixin {
 	
 	@Inject(method = "genericsFtw", at = @At("HEAD"), cancellable = true)
 	private static void genericsFtw(Packet<?> packet, PacketListener listener, CallbackInfo info) {
-		if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(listener) && packet instanceof ClientboundCustomPayloadPacket customPacket) {
+		if (!NBTEditorServer.IS_DEDICATED && listener instanceof ClientPacketListener && packet instanceof ClientboundCustomPayloadPacket customPacket) {
 			MVPacket mvPacket = MVPacketCustomPayload.unwrapS2C(customPacket);
 			if (mvPacket != null) {
 				MVClientNetworking.callListeners(mvPacket);

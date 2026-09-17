@@ -6,20 +6,15 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.MappingResolver;
 
 /**
- * Intermediary-name lookups for the handful of members that have no Mojang name
- * (synthetics) or that a dedicated server cannot link against.
+ * Intermediary-name lookups for the handful of members that have no Mojang name.
+ *
+ * <p>Class lookups are not among them. 26.2 ships deobfuscated and carries no intermediary
+ * namespace, so {@link MappingResolver#mapClassName} returns a {@code class_NNNNN} name
+ * unchanged and {@code Class.forName} then fails. Name a class directly.
  */
 public class Reflection {
 	
 	private static final MappingResolver mappings = FabricLoader.getInstance().getMappingResolver();
-	
-	public static Class<?> getClass(String name) {
-		try {
-			return Class.forName(mappings.mapClassName("intermediary", name));
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Error getting class", e);
-		}
-	}
 	
 	
 	public static class FieldReference {
