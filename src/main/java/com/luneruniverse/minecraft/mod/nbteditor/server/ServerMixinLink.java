@@ -8,12 +8,10 @@ import java.util.WeakHashMap;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.PacketListener;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -46,22 +44,5 @@ public class ServerMixinLink {
 	
 	
 	public static final Set<Thread> BLOCK_ENTITY_WRITE_NBT_WITHOUT_IDENTIFYING_DATA = Collections.synchronizedSet(new HashSet<>());
-	
-	
-	// Fake players show as a clientbound ClientConnection. Looked up by name because
-	// a dedicated server has no client classes to link against.
-	private static final Class<?> ClientPlayNetworkHandler;
-	static {
-		Class<?> ClientPlayNetworkHandler_holder;
-		try {
-			ClientPlayNetworkHandler_holder = Reflection.getClass("net.minecraft.class_634");
-		} catch (RuntimeException e) {
-			ClientPlayNetworkHandler_holder = null;
-		}
-		ClientPlayNetworkHandler = ClientPlayNetworkHandler_holder;
-	}
-	public static boolean isInstanceOfClientPlayNetworkHandlerSafely(PacketListener listener) {
-		return ClientPlayNetworkHandler != null && ClientPlayNetworkHandler.isInstance(listener);
-	}
 	
 }

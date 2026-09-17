@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVServerNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
-import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMixinLink;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
@@ -35,9 +34,9 @@ public class ClientConnectionMixin_1_20_5 {
 	@Inject(method = "setupInboundProtocol", at = @At("RETURN"))
 	private void transitionInbound_return(ProtocolInfo<?> state, PacketListener listener, CallbackInfo info) {
 		if (receiving == PacketFlow.CLIENTBOUND && !NBTEditorServer.IS_DEDICATED) {
-			if (ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(listener))
-				MVClientNetworking.onPlayStart((ClientPacketListener) listener);
-			else if (ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(prevListener))
+			if (listener instanceof ClientPacketListener clientListener)
+				MVClientNetworking.onPlayStart(clientListener);
+			else if (prevListener instanceof ClientPacketListener)
 				MVClientNetworking.onPlayStop();
 		}
 		if (receiving == PacketFlow.SERVERBOUND) {

@@ -11,18 +11,40 @@
 # player in. A local dev server is started if one is not already up, and stopped again on
 # the way out; pass a host:port to use one that is already running elsewhere.
 #
-# Usage: scripts/dev-client.sh [--join [host:port]] [timeout-seconds]
+# With --screens it implies --join and then runs misc/DevScreenSweep, which opens every
+# factory screen in turn against an item carrying the lore given (default: non-ASCII).
+# Success is the sweep reaching its last screen; any screen that threw is reported.
+# NBTE_SCREENS_NBT gives the item a component patch as SNBT instead, ';;' separating
+# patches to sweep in turn; NBTE_SCREENS_FROM resumes at a row.
+#
+# Usage: scripts/dev-client.sh [--join [host:port]] [--screens [lore]] [timeout-seconds]
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
 JOIN=
-if [ "${1:-}" = "--join" ]; then
-	shift
+SCREENS=
+SCREENS_LORE=
+while :; do
 	case "${1:-}" in
-		*:*) JOIN=$1; shift ;;
-		*) JOIN=127.0.0.1:25565 ;;
+		--join)
+			shift
+			case "${1:-}" in
+				*:*) JOIN=$1; shift ;;
+				*) JOIN=127.0.0.1:25565 ;;
+			esac
+			;;
+		--screens)
+			shift
+			SCREENS=1
+			JOIN=${JOIN:-127.0.0.1:25565}
+			case "${1:-}" in
+				''|[0-9]*) ;;
+				*) SCREENS_LORE=$1; shift ;;
+			esac
+			;;
+		*) break ;;
 	esac
-fi
+done
 
 DEADLINE=${1:-300}
 LOG=run/dev-client.log
@@ -83,7 +105,7 @@ if [ -n "$JOIN" ]; then
 		echo "dev server up in $((SECONDS - waited))s"
 	fi
 	joined=$(grep -c 'joined the game' "$SERVER_LOG")
-	./gradlew runClient --console=plain "-Pjoin=$JOIN" >"$LOG" 2>&1 &
+	./gradlew runClient --console=plain "-Pjoin=$JOIN" ${SCREENS:+"-Pdevscreens=$SCREENS_LORE"} ${NBTE_SCREENS_FROM:+"-PdevscreensFrom=$NBTE_SCREENS_FROM"} ${NBTE_SCREENS_NBT:+"-PdevscreensNbt=$NBTE_SCREENS_NBT"} >"$LOG" 2>&1 &
 else
 	./gradlew runClient --console=plain >"$LOG" 2>&1 &
 fi
@@ -96,7 +118,18 @@ while (( SECONDS - started < DEADLINE )); do
 		grep -nE -m1 -A22 -- "$CRASHED" "$LOG"
 		exit 1
 	fi
-	if [ -n "$JOIN" ]; then
+	if [ -n "$SCREENS" ]; then
+		if grep -q 'SWEEP done' "$LOG"; then
+			grep -o 'SWEEP .*' "$LOG"
+			if grep -q 'SWEEP fail' "$LOG"; then
+				echo "FAILED, $(grep -c 'SWEEP fail' "$LOG") screen(s) threw after $((SECONDS - started))s"
+				grep -m1 -A22 'SWEEP fail' "$LOG"
+				exit 1
+			fi
+			echo "OK, swept every factory screen in $((SECONDS - started))s"
+			exit 0
+		fi
+	elif [ -n "$JOIN" ]; then
 		if (( $(grep -c 'joined the game' "$SERVER_LOG") > joined )); then
 			echo "OK, joined $JOIN in $((SECONDS - started))s"
 			exit 0
@@ -113,6 +146,7 @@ while (( SECONDS - started < DEADLINE )); do
 	sleep 3
 done
 
-echo "timed out after ${DEADLINE}s short of ${JOIN:+joining $JOIN}${JOIN:-the title screen}"
+echo "timed out after ${DEADLINE}s short of ${SCREENS:+sweeping the factory screens}${SCREENS:-${JOIN:+joining $JOIN}${JOIN:-the title screen}}"
+grep -o 'SWEEP .*' "$LOG" || true
 tail -25 "$LOG"
 exit 1
