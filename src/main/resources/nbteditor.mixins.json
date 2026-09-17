@@ -19,7 +19,6 @@
     "ClientPlayNetworkHandlerMixin",
     "StringNbtWriterAccessor",
     "CreativeInventoryScreenMixin",
-    "ItemStackMixin",
     "HandledScreenAccessor",
     "TextFieldWidgetMixin",
     "MinecraftClientMixin",
@@ -33,7 +32,6 @@
     "KeyboardMixin",
     "ChatInputSuggestorMixin",
     "ClientPlayerEntityMixin",
-    "EnchantmentMixin",
     "SplashOverlayMixin",
     "ScreenHandlerMixin"
   ],

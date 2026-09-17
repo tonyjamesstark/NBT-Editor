@@ -13,7 +13,7 @@ import net.minecraft.world.inventory.FurnaceResultSlot;
 import net.minecraft.world.inventory.ShulkerBoxSlot;
 import net.minecraft.world.inventory.Slot;
 
-@Mixin(value = {ShulkerBoxSlot.class, FurnaceFuelSlot.class, FurnaceResultSlot.class}, targets = {"net.minecraft.world.inventory.BrewingStandMenu$PotionSlot", "net.minecraft.world.inventory.BrewingStandMenu$IngredientSlot", "net.minecraft.world.inventory.BrewingStandMenu$FuelSlot"})
+@Mixin(value = {ShulkerBoxSlot.class, FurnaceFuelSlot.class, FurnaceResultSlot.class}, targets = {"net.minecraft.world.inventory.BrewingStandMenu$PotionSlot", "net.minecraft.world.inventory.BrewingStandMenu$IngredientsSlot", "net.minecraft.world.inventory.BrewingStandMenu$FuelSlot"})
 public class ManySlotMixin {
 	@Inject(method = "mayPlace(Lnet/minecraft/world/item/ItemStack;)Z", at = @At("HEAD"), cancellable = true)
 	private void mayPlace(ItemStack item, CallbackInfoReturnable<Boolean> info) {

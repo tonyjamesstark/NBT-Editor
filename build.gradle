@@ -118,3 +118,29 @@ test {
 		events 'passed', 'skipped', 'failed'
 	}
 }
+// Mixin configs name their classes as plain strings, so a rename or deletion that misses the
+// JSON compiles clean and only surfaces as a crash at game launch. Fail the build instead.
+// ponytail: source-file existence only; the toggled names the mixin plugins add at runtime,
+// and the @Mixin targets = "..." strings, are still unchecked.
+tasks.register("validateMixinConfigs") {
+	def configs = fileTree("src/main/resources").matching { include "*.mixins.json" }
+	def sourceDir = file("src/main/java")
+	inputs.files(configs)
+	inputs.dir(sourceDir)
+	doLast {
+		def missing = []
+		configs.each { config ->
+			def json = new groovy.json.JsonSlurper().parse(config)
+			def pkg = json["package"]
+			["mixins", "client", "server"].each { side ->
+				(json[side] ?: []).each { name ->
+					if (!new File(sourceDir, "${pkg}.${name}".replace(".", "/") + ".java").exists())
+						missing << "${config.name} ${side}: ${pkg}.${name}"
+				}
+			}
+		}
+		if (!missing.isEmpty())
+			throw new GradleException("Mixin classes named in a config but absent:\n\t" + missing.join("\n\t"))
+	}
+}
+check.dependsOn validateMixinConfigs
