@@ -28,7 +28,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.HangingSignBlock;
 import net.minecraft.block.WallHangingSignBlock;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.HangingSignItem;
 import net.minecraft.item.SignItem;
 import net.minecraft.nbt.NbtCompound;
@@ -44,7 +44,6 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	// Double sided & waxable
 	private static boolean NEW_FEATURES = Version.<Boolean>newSwitch()
 			.range("1.20.0", null, true)
-			.range(null, "1.19.4", false)
 			.get();
 	
 	private static int getRenderedColor(DyeColor dye) {
@@ -237,11 +236,11 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		
 		ButtonDropdownWidget colors = addSelectableChild(new ButtonDropdownWidget(glowingBtnX, glowingBtnY + 20, 20, 20, null, 20, 20) {
 			@Override
-			public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-				matrices.push();
-				matrices.translate(0.0, 0.0, 2.0);
-				super.render(matrices, mouseX, mouseY, delta);
-				matrices.pop();
+			public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+				context.getMatrices().pushMatrix();
+				context.getMatrices().translate((float) (0.0), (float) (0.0));
+				super.render(context, mouseX, mouseY, delta);
+				context.getMatrices().popMatrix();
 			}
 		});
 		for (DyeColor color : DyeColor.values()) {
@@ -258,7 +257,7 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				TextInst.translatable("nbteditor.signboard.glowing." + (isGlowing() ? "enabled" : "disabled"))
 				.styled(style -> style.withColor(getRenderedColor(getColor()))), btn -> {
 			boolean prevGlowing = isGlowing();
-			if (prevGlowing && hasShiftDown()) {
+			if (prevGlowing && MVMisc.hasShiftDown()) {
 				colors.setOpen(true);
 				return;
 			}
@@ -279,8 +278,8 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	protected void preRenderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTexture(matrices, texture, 16, 64 + 24 * 2, 0, 0, width - 32, height - 80 - 24 * 2);
+	protected void preRenderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.drawTexture(context, texture, 16, 64 + 24 * 2, 0, 0, width - 32, height - 80 - 24 * 2);
 	}
 	
 }

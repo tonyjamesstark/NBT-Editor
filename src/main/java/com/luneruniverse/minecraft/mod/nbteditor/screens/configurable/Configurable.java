@@ -2,10 +2,11 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 
 import java.util.WeakHashMap;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 
-public interface Configurable<T extends Configurable<T>> extends MVDrawable, MVElement {
+import net.minecraft.client.gui.Drawable;
+
+public interface Configurable<T extends Configurable<T>> extends Drawable, MVElement {
 	public static final int PADDING = 8;
 	public boolean isValueValid();
 	public int getSpacingWidth();

@@ -37,7 +37,6 @@ public class ClickSlotC2SPacketMixin_1_21_4 implements ClickSlotC2SPacketParent 
 	private static int init_old(int button) {
 		if (Version.<Boolean>newSwitch()
 				.range("1.17.1", null, true)
-				.range(null, "1.17", false)
 				.get()) {
 			// https://github.com/SpongePowered/Mixin/issues/677
 			return button;

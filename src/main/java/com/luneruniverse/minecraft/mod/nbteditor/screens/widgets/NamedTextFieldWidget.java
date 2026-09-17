@@ -4,7 +4,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextFieldWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class NamedTextFieldWidget extends MVTextFieldWidget {
@@ -39,10 +39,10 @@ public class NamedTextFieldWidget extends MVTextFieldWidget {
 	
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (name != null && shouldShowName())
 			setSuggestion(text.isEmpty() ? name.getString() : null);
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 	
 	protected boolean shouldShowName() {

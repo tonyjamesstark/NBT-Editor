@@ -15,7 +15,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
 public class LoadingScreen extends MVScreen {
 	
@@ -86,12 +86,12 @@ public class LoadingScreen extends MVScreen {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
-		MainUtil.renderLogo(matrices);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(this, context);
+		super.render(context, mouseX, mouseY, delta);
+		MainUtil.renderLogo(context);
 		
-		MVDrawableHelper.drawCenteredTextWithShadow(matrices, textRenderer, TextInst.translatable("nbteditor.loading"),
+		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.loading"),
 				width / 2, height / 2 - textRenderer.fontHeight / 2 - 10, -1);
 	}
 	

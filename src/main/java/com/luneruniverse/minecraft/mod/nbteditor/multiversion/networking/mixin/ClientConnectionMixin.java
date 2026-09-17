@@ -60,9 +60,6 @@ public abstract class ClientConnectionMixin {
 		if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(listener) && packet instanceof CustomPayloadS2CPacket customPacket) {
 			MVPacket mvPacket = Version.<MVPacket>newSwitch()
 					.range("1.20.2", null, () -> MVPacketCustomPayload.unwrapS2C(customPacket))
-					.range(null, "1.20.1", () -> MVNetworking.readPacket(
-							CustomPayloadS2CPacket_getChannel.get().invoke(customPacket),
-							CustomPayloadS2CPacket_getData.get().invoke(customPacket)))
 					.get();
 			if (mvPacket != null) {
 				MVClientNetworking.callListeners(mvPacket);
@@ -72,9 +69,6 @@ public abstract class ClientConnectionMixin {
 		if (listener instanceof ServerPlayNetworkHandler handler && packet instanceof CustomPayloadC2SPacket customPacket) {
 			MVPacket mvPacket = Version.<MVPacket>newSwitch()
 					.range("1.20.2", null, () -> MVPacketCustomPayload.unwrapC2S(customPacket))
-					.range(null, "1.20.1", () -> MVNetworking.readPacket(
-							CustomPayloadC2SPacket_getChannel.get().invoke(customPacket),
-							CustomPayloadC2SPacket_getData.get().invoke(customPacket)))
 					.get();
 			if (mvPacket != null) {
 				MVServerNetworking.callListeners(mvPacket, handler.player);

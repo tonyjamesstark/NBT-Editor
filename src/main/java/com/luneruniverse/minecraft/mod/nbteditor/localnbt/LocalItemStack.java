@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -110,8 +110,8 @@ public class LocalItemStack extends LocalItem {
 	}
 	
 	@Override
-	public void renderIcon(MatrixStack matrices, int x, int y, float tickDelta) {
-		MVDrawableHelper.renderItem(matrices, 200.0F, true, item, x, y);
+	public void renderIcon(DrawContext context, int x, int y, float tickDelta) {
+		MVDrawableHelper.renderItem(context, 200.0F, true, item, x, y);
 	}
 	
 	@Override

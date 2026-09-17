@@ -9,7 +9,6 @@ public class MVGlStateManager {
 	
 	private static final boolean OPEN_GL = Version.<Boolean>newSwitch()
 			.range("1.21.5", null, true)
-			.range(null, "1.21.4", false)
 			.get();
 	
 	private static final Supplier<Class<?>> platform_GlStateManager =

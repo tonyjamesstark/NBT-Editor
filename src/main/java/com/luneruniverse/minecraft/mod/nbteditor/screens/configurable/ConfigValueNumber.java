@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
+import net.minecraft.client.gui.Click;
 
 public class ConfigValueNumber<T extends Number> extends NamedTextFieldWidget implements ConfigValue<T, ConfigValueNumber<T>> {
 	
@@ -61,8 +62,9 @@ public class ConfigValueNumber<T extends Number> extends NamedTextFieldWidget im
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		boolean output = super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		boolean output = super.mouseClicked(click, doubled);
 		setMultiFocused(output);
 		return output;
 	}

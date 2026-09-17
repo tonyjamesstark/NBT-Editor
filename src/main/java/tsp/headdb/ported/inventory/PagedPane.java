@@ -19,6 +19,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -143,16 +144,18 @@ public class PagedPane extends ClientHandledScreen {
     
     private boolean shiftKey;
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyInput input) {
+    	int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
     	if (keyCode == GLFW.GLFW_KEY_LEFT_SHIFT || keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT)
     		shiftKey = true;
-    	return super.keyPressed(keyCode, scanCode, modifiers);
+    	return super.keyPressed(input);
     }
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    public boolean keyReleased(KeyInput input) {
+    	int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
     	if (keyCode == GLFW.GLFW_KEY_LEFT_SHIFT || keyCode == GLFW.GLFW_KEY_RIGHT_SHIFT)
     		shiftKey = false;
-    	return super.keyReleased(keyCode, scanCode, modifiers);
+    	return super.keyReleased(input);
     }
     
     @Override

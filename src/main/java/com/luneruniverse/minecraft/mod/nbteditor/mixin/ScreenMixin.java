@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
@@ -23,8 +24,8 @@ import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Style;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.ClickEvent;
 
 @Mixin(Screen.class)
 public class ScreenMixin {
@@ -36,7 +37,6 @@ public class ScreenMixin {
 	private void init(MinecraftClient client, int width, int height, CallbackInfo info) {
 		Version.newSwitch()
 				.range("1.19.4", null, () -> CreativeTabWidget.addCreativeTabs((Screen) (Object) this))
-				.range(null, "1.19.3", () -> {})
 				.run();
 	}
 	
@@ -47,21 +47,20 @@ public class ScreenMixin {
 			ImportScreen.importFiles(paths, Optional.empty());
 	}
 	
-	@Inject(method = "handleTextClick", at = @At("HEAD"), cancellable = true)
-	private void handleTextClick(Style style, CallbackInfoReturnable<Boolean> info) {
-		if (style != null && !Screen.hasShiftDown() && style.getClickEvent() != null) {
-			MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(style.getClickEvent());
-			if (clickAction == MVTextEvents.ClickAction.OPEN_FILE &&
-					MixinLink.tryRunClickEvent(clickAction.getStringifiedValue(style.getClickEvent()))) {
-				info.setReturnValue(true);
-			}
-		}
+	@Inject(method = "handleClickEvent", at = @At("HEAD"), cancellable = true)
+	private static void handleClickEvent(ClickEvent event, MinecraftClient client, Screen screen, CallbackInfo info) {
+		if (event == null || MVMisc.hasShiftDown())
+			return;
+		MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(event);
+		if (clickAction == MVTextEvents.ClickAction.OPEN_FILE &&
+				MixinLink.tryRunClickEvent(clickAction.getStringifiedValue(event)))
+			info.cancel();
 	}
 	
 	// See toggled.ScreenMixin#renderTooltipFromComponents, toggled.DrawContextMixin#drawTooltip
 	@Inject(method = "method_32633(Lnet/minecraft/class_4587;Ljava/util/List;II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/class_4587;method_22903()V", shift = At.Shift.AFTER), remap = false, require = 0)
 	@SuppressWarnings("target")
-	private void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> tooltip, int x, int y, CallbackInfo info) {
+	private void renderTooltipFromComponents(DrawContext context, List<TooltipComponent> tooltip, int x, int y, CallbackInfo info) {
 		if (!ConfigScreen.isTooltipOverflowFix())
 			return;
 		
@@ -78,6 +77,6 @@ public class ScreenMixin {
 		if (y + height + 6 > screenHeight)
 			y = screenHeight - height - 6;
 		
-		MixinLink.renderTooltipFromComponents(matrices, x, y, width, height, screenWidth, screenHeight);
+		MixinLink.renderTooltipFromComponents(context, x, y, width, height, screenWidth, screenHeight);
 	}
 }

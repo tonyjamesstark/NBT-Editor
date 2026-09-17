@@ -27,12 +27,14 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -114,7 +116,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			
 			public EventEditorWidget(ClickEvent clickEvent, HoverEvent hoverEvent, EventPairCallback onDone) {
 				MVTextEvents.ClickAction<?> clickAction = (clickEvent == null ? null : MVTextEvents.ClickAction.getAction(clickEvent));
-				String clickValue = (clickEvent == null ? "" : clickAction.getStringifiedValue(clickEvent));
+				String clickValue = (clickAction == null ? "" : clickAction.getStringifiedValue(clickEvent));
 				MVTextEvents.HoverAction<?> hoverAction = (hoverEvent == null ? null : MVTextEvents.HoverAction.getAction(hoverEvent));
 				String hoverValue = (hoverEvent == null ? "" : hoverAction.getStringifiedValue(hoverEvent));
 				
@@ -184,27 +186,28 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			}
 			
 			@Override
-			public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-				MainUtil.client.currentScreen.renderBackground(matrices);
-				MVDrawableHelper.drawCenteredTextWithShadow(matrices, MainUtil.client.textRenderer,
+			public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+				MVDrawableHelper.renderBackground(MainUtil.client.currentScreen, context);
+				MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.textRenderer,
 						TextInst.translatable("nbteditor.formatted_text.events"),
 						x, y - 38 - MainUtil.client.textRenderer.fontHeight, -1);
-				super.render(matrices, mouseX, mouseY, delta);
+				super.render(context, mouseX, mouseY, delta);
 			}
 			
 			@Override
-			public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+			public boolean keyPressed(KeyInput input) {
+				int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 				if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 					OverlaySupportingScreen.setOverlayStatic(null);
 					return true;
 				}
 				if (keyCode == GLFW.GLFW_KEY_ENTER) {
 					if (ok.active)
-						ok.onPress();
+						ok.onPress(input);
 					return true;
 				}
 				
-				return super.keyPressed(keyCode, scanCode, modifiers);
+				return super.keyPressed(input);
 			}
 		}
 		
@@ -438,7 +441,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 			InputOverlay.show(
 					TextInst.translatable("nbteditor.formatted_text.font"),
 					StringInput.builder()
-							.withDefault(initialStyle.font == null ? "" : initialStyle.font.toString())
+							.withDefault(initialStyle.getFont() instanceof StyleSpriteSource.Font f ? f.id().toString() : "")
 							.withValidator(font -> font.isEmpty() || IdentifierInst.isValid(font))
 							.withSuggestions((str, cursor) -> {
 								SuggestionsBuilder builder = new SuggestionsBuilder(str, 0);
@@ -450,11 +453,11 @@ public class FormattedTextFieldWidget extends GroupWidget {
 								return builder.buildFuture();
 							})
 							.build(),
-					font -> applyStyleChange(style -> style.withFont(font.isEmpty() ? null : IdentifierInst.of(font)), true));
+					font -> applyStyleChange(style -> style.withFont(font.isEmpty() ? null : new StyleSpriteSource.Font(IdentifierInst.of(font))), true));
 		}
 		
 		@Override
-		protected void renderHighlightsBelow(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		protected void renderHighlightsBelow(DrawContext context, int mouseX, int mouseY, float delta) {
 			Style initialStyle = getStyle(0);
 			int start = (initialStyle.getClickEvent() != null || initialStyle.getHoverEvent() != null || initialStyle.getInsertion() != null ? 0 : -1);
 			for (int i = 0; i < styles.size(); i++) {
@@ -465,20 +468,21 @@ public class FormattedTextFieldWidget extends GroupWidget {
 					if (start == -1)
 						start = i;
 				} else if (start != -1) {
-					renderHighlight(matrices, start, i, 0x55FFAA00);
+					renderHighlight(context, start, i, 0x55FFAA00);
 					start = -1;
 				}
 			}
 			if (start != -1)
-				renderHighlight(matrices, start, getText().length(), 0x55FFAA00);
+				renderHighlight(context, start, getText().length(), 0x55FFAA00);
 		}
 		
 		@Override
-		public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-			if (super.keyPressed(keyCode, scanCode, modifiers))
+		public boolean keyPressed(KeyInput input) {
+			int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+			if (super.keyPressed(input))
 				return true;
 			
-			if (Screen.hasControlDown() && !Screen.hasShiftDown()) {
+			if (MVMisc.hasControlDown() && !MVMisc.hasShiftDown()) {
 				Formatting formatting = switch (keyCode) {
 					case GLFW.GLFW_KEY_B -> Formatting.BOLD;
 					case GLFW.GLFW_KEY_I -> Formatting.ITALIC;
@@ -494,7 +498,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				}
 			}
 			
-			if (Screen.hasControlDown() && Screen.hasShiftDown()) {
+			if (MVMisc.hasControlDown() && MVMisc.hasShiftDown()) {
 				switch (keyCode) {
 					case GLFW.GLFW_KEY_C -> showCustomColor(hasShadowKeyDown());
 					case GLFW.GLFW_KEY_E -> showEvents();
@@ -685,7 +689,7 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	
 	private static boolean hasShadowKeyDown() {
-		return StyleUtil.SHADOW_COLOR_EXISTS && Screen.hasAltDown();
+		return StyleUtil.SHADOW_COLOR_EXISTS && MVMisc.hasAltDown();
 	}
 	
 	private int x;
@@ -856,15 +860,15 @@ public class FormattedTextFieldWidget extends GroupWidget {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		setFocused(isMultiFocused() ? field : null);
-		field.render(matrices, mouseX, mouseY, delta);
+		field.render(context, mouseX, mouseY, delta);
 		
 		if (colors != null) {
-			matrices.push();
-			matrices.translate(0.0, 0.0, 1.0);
-			colors.render(matrices, mouseX, mouseY, delta);
-			matrices.pop();
+			context.getMatrices().pushMatrix();
+			context.getMatrices().translate((float) (0.0), (float) (0.0));
+			colors.render(context, mouseX, mouseY, delta);
+			context.getMatrices().popMatrix();
 		}
 		
 		if (font != null) {
@@ -873,11 +877,11 @@ public class FormattedTextFieldWidget extends GroupWidget {
 				lastFontChange = time;
 				lastFont += Math.floor(Math.random() * 2) + 1;
 				font.setMessage(TextInst.literal(lastFont % 3 + "")
-						.styled(style -> style.withFont(IdentifierInst.of("nbteditor", "fancy_f"))));
+						.styled(style -> style.withFont(new StyleSpriteSource.Font(IdentifierInst.of("nbteditor", "fancy_f")))));
 			}
 		}
 		
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 	
 	@Override

@@ -24,8 +24,6 @@ public record ItemEntityContainerIO(ContainerIO<ItemStack> item, ContainerIO<Loc
 							new ContainerComponentContainerIO(numSlots),
 							ContainerIO.forLocalNBT(new SlotKeyNbtListContainerIO(numSlots).forNbtCompoundItems()));
 				})
-				.range(null, "1.20.4", () -> forEntityTagIO(
-						new SlotKeyNbtListContainerIO(numSlots).forNbtCompoundItems(), ""))
 				.get();
 	}
 	

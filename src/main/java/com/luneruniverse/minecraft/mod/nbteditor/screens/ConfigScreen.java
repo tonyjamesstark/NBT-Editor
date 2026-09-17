@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens;
 
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
@@ -42,7 +43,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidg
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.text.Text;
 
@@ -613,9 +614,9 @@ public class ConfigScreen extends TickableSupportingScreen {
 		this.addDrawableChild(MVMisc.newButton(this.width - 134, this.height - 36, 100, 20, ScreenTexts.DONE, btn -> close()));
 	}
 	
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(this, context);
+		super.render(context, mouseX, mouseY, delta);
 	}
 	
 	public void close() {

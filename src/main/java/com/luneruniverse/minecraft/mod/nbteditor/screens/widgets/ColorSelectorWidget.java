@@ -5,9 +5,7 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.misc.Shaders;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVMisc;
@@ -15,8 +13,11 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVSliderWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -60,20 +61,29 @@ public class ColorSelectorWidget extends GroupWidget {
 	
 	private static final Identifier HUES = IdentifierInst.of("nbteditor", "textures/hues.png");
 	
-	private class ColorArea implements MVDrawable, MVElement {
+	private class ColorArea implements Drawable, MVElement {
 		@Override
-		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			MainUtil.fillShader(matrices, Shaders.POSITION_HSV, vertex -> MVMisc.setVertexLight(vertex, hueValue), x, y, areaSize, areaSize);
+		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+			// For a fixed hue, HSV is separable: each column is a straight fade from
+			// full value down to black, so vanilla's gradient fill draws it exactly.
+			// ponytail: one fill per column (128); a custom GUI render pipeline would
+			// be one quad, at the cost of the shader stack this replaced.
+			for (int i = 0; i < areaSize; i++) {
+				int top = 0xFF000000 | Color.HSBtoRGB(hueValue / 360.0f, (float) i / areaSize, 1);
+				context.fillGradient(x + i, y, x + i + 1, y + areaSize, top, 0xFF000000);
+			}
 		}
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(Click click, boolean doubled) {
+			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 			if (button != GLFW.GLFW_MOUSE_BUTTON_1 || !isMouseOver(mouseX, mouseY))
 				return false;
-			mouseDragged(mouseX, mouseY, button, 0, 0);
+			mouseDragged(click, 0, 0);
 			return true;
 		}
 		@Override
-		public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+		public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+			double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 			if (button != GLFW.GLFW_MOUSE_BUTTON_1)
 				return false;
 			mouseX = MathHelper.clamp(mouseX, x, x + areaSize);
@@ -108,12 +118,13 @@ public class ColorSelectorWidget extends GroupWidget {
 		addWidget(new MVSliderWidget(x, y + areaSize + 4, areaSize, 20, hueValue / 359.0,
 				() -> TextInst.translatable("nbteditor.color_selector.hue", hueValue), value -> hueValue = (int) (value * 359)) {
 			@Override
-			protected boolean renderSlider(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-				MVDrawableHelper.drawTexture(matrices, HUES, x + 4, y, 0, 0, width - 8, 20, width - 8, 20);
+			protected boolean renderSlider(DrawContext context, int mouseX, int mouseY, float delta) {
+				MVDrawableHelper.drawTexture(context, HUES, x + 4, y, 0, 0, width - 8, 20, width - 8, 20);
 				return true;
 			}
 			@Override
-			public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+			public boolean keyPressed(KeyInput input) {
+				int keyCode = input.key();
 				if (keyCode == GLFW.GLFW_KEY_RIGHT) {
 					setValue(getValue() + 1 / 359.0);
 					return true;
@@ -139,9 +150,9 @@ public class ColorSelectorWidget extends GroupWidget {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.render(matrices, mouseX, mouseY, delta);
-		MVDrawableHelper.fill(matrices, x + areaSize + 4, y, x + areaSize + 4 + areaSize / 2, y + areaSize, color | 0xFF000000);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
+		MVDrawableHelper.fill(context, x + areaSize + 4, y, x + areaSize + 4 + areaSize / 2, y + areaSize, color | 0xFF000000);
 	}
 	
 }

@@ -7,7 +7,8 @@ import java.util.List;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical<K, T>> extends ConfigGrouping<K, T> {
@@ -21,13 +22,13 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.fill(matrices, 0, 0, PADDING, getSpacingHeight(), isValueValid() ? 0xFFAAAAAA : 0xFFDF4949);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.fill(context, 0, 0, PADDING, getSpacingHeight(), isValueValid() ? 0xFFAAAAAA : 0xFFDF4949);
 		
 		int yOffset = 0;
 		Text fullName = getFullName();
 		if (fullName != null) {
-			MVDrawableHelper.drawTextWithShadow(matrices, MainUtil.client.textRenderer, fullName, PADDING * 2, 0, 0xFFFFFFFF);
+			MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, fullName, PADDING * 2, 0, 0xFFFFFFFF);
 			yOffset += getNameHeight();
 		}
 		
@@ -40,10 +41,10 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 		for (ConfigPath path : paths) {
 			yOffset -= path.getSpacingHeight() + PADDING;
 			
-			matrices.push();
-			matrices.translate(PADDING * 2, yOffset, 0.0);
-			path.render(matrices, mouseX - PADDING * 2, mouseY - yOffset, delta);
-			matrices.pop();
+			context.getMatrices().pushMatrix();
+			context.getMatrices().translate((float) (PADDING * 2), (float) (yOffset));
+			path.render(context, mouseX - PADDING * 2, mouseY - yOffset, delta);
+			context.getMatrices().popMatrix();
 		}
 	}
 	
@@ -88,22 +89,24 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
-			if (path.mouseClicked(mouseX - PADDING * 2, mouseY - yOffset, button))
+			if (path.mouseClicked(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo()), doubled))
 				return true;
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
 		return false;
 	}
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(Click click) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
-			if (path.mouseReleased(mouseX - PADDING * 2, mouseY - yOffset, button))
+			if (path.mouseReleased(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo())))
 				return true;
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
@@ -119,12 +122,13 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 		}
 	}
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		int yOffset = getNameHeight();
 		
 		for (ConfigPath path : new ArrayList<>(paths.values())) {
 			// Buttons return true by default, causing problems with returning early
-			path.mouseDragged(mouseX - PADDING * 2, mouseY - yOffset, button, deltaX, deltaY);
+			path.mouseDragged(new Click(mouseX - PADDING * 2, mouseY - yOffset, click.buttonInfo()), deltaX, deltaY);
 			yOffset += path.getSpacingHeight() + PADDING;
 		}
 		return false;

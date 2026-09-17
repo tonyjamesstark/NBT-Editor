@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
@@ -28,7 +29,7 @@ public class CreativeInventoryScreenMixin {
 	}
 	
 	@Inject(method = "keyPressed", at = @At(value = "HEAD"), cancellable = true)
-	private void keyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> info) {
-		MixinLink.keyPressed((CreativeInventoryScreen) (Object) this, keyCode, scanCode, modifiers, info);
+	private void keyPressed(KeyInput input, CallbackInfoReturnable<Boolean> info) {
+		MixinLink.keyPressed((CreativeInventoryScreen) (Object) this, input, info);
 	}
 }

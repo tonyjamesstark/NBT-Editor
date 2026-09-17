@@ -43,7 +43,9 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
@@ -198,7 +200,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		addDrawableChild(path);
 		
 		value = new SuggestingTextFieldWidget(this, 16, 16 + 8 + 32 + (16 + 8) * 2, 288, 16).name(TextInst.translatable("nbteditor.nbt.value"));
-		value.setRenderTextProvider((str, index) -> {
+		value.addFormatter((str, index) -> {
 			return TextUtil.substring(NbtFormatter.FORMATTER.formatSafely(value.getText()).text(), index, index + str.length()).asOrderedText();
 		});
 		value.setMaxLength(Integer.MAX_VALUE);
@@ -264,7 +266,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 		editor = new List2D(16, editorY, width - 16 * 2, height - editorY - 16 * 2 - 8, 4, 32, 32, 8)
 				.setFinalEventHandler(new MVElement() {
 					@Override
-					public boolean mouseClicked(double mouseX, double mouseY, int button) {
+					public boolean mouseClicked(Click click, boolean doubled) {
 						selectedValue = null;
 						value.setText("");
 						value.setEditable(false);
@@ -358,15 +360,15 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	protected void preRenderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void preRenderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
 		MVTooltip.setOneTooltip(true, false);
-		editor.render(matrices, mouseX, mouseY, delta); // So the tab completion renders on top correctly
-		MVTooltip.renderOneTooltip(matrices, mouseX, mouseY);
+		editor.render(context, mouseX, mouseY, delta); // So the tab completion renders on top correctly
+		MVTooltip.renderOneTooltip(context, mouseX, mouseY);
 	}
 	@Override
-	protected void renderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void renderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (NBTAutocompleteIntegration.INSTANCE.isEmpty())
-			renderTip(matrices, "nbteditor.nbt_ac.tip");
+			renderTip(context, "nbteditor.nbt_ac.tip");
 	}
 	
 	@Override
@@ -408,22 +410,24 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (getOverlay() != null)
-			return super.keyPressed(keyCode, scanCode, modifiers);
+			return super.keyPressed(input);
 		
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			close();
 			return true;
 		}
 		
-		return !type.keyPressed(keyCode, scanCode, modifiers) && !type.isActive() &&
-				!count.keyPressed(keyCode, scanCode, modifiers) && !count.isActive() &&
-				!path.keyPressed(keyCode, scanCode, modifiers) && !path.isActive() &&
-				!value.keyPressed(keyCode, scanCode, modifiers) && !value.isActive()
-				? keyPressed2(keyCode, scanCode, modifiers) : true;
+		return !type.keyPressed(input) && !type.isActive() &&
+				!count.keyPressed(input) && !count.isActive() &&
+				!path.keyPressed(input) && !path.isActive() &&
+				!value.keyPressed(input) && !value.isActive()
+				? keyPressed2(input) : true;
 	}
-	private boolean keyPressed2(int keyCode, int scanCode, int modifiers) {
+	private boolean keyPressed2(KeyInput input) {
+		int keyCode = input.key(); int modifiers = input.modifiers();
 		if (keyCode == GLFW.GLFW_KEY_DELETE || keyCode == GLFW.GLFW_KEY_BACKSPACE)
 			remove();
 		else if (keyCode == GLFW.GLFW_KEY_ENTER) {
@@ -443,7 +447,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 				add();
 		}
 		
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 	
 	@Override

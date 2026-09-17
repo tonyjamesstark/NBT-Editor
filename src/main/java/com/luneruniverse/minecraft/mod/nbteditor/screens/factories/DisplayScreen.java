@@ -21,7 +21,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
@@ -91,11 +91,11 @@ public class DisplayScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	@Override
-	protected void renderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		matrices.push();
-		matrices.translate(0.0, 0.0, 1.0);
-		nameFormatted.render(matrices, mouseX, mouseY, delta);
-		matrices.pop();
+	protected void renderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
+		context.getMatrices().pushMatrix();
+		context.getMatrices().translate((float) (0.0), (float) (0.0));
+		nameFormatted.render(context, mouseX, mouseY, delta);
+		context.getMatrices().popMatrix();
 	}
 	
 	@Override

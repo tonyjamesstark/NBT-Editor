@@ -134,16 +134,6 @@ public final class ClientCommandManager {
 				.range("1.20.5", null, () -> CommandRegistryAccess.of(
 						ClientPlayNetworkHandler_getRegistryManager_Immutable.get().invoke(MainUtil.client.getNetworkHandler()),
 						MainUtil.client.getNetworkHandler().getEnabledFeatures()))
-				.range("1.20.2", "1.20.4", () -> CommandRegistryAccess.of(
-						ClientCommonNetworkHandler_getRegistryManager.get().invoke(MainUtil.client.getNetworkHandler()),
-						MainUtil.client.getNetworkHandler().getEnabledFeatures()))
-				.range("1.19.3", "1.20.1", () -> CommandRegistryAccess.of(
-						ClientPlayNetworkHandler_getRegistryManager_DynamicRegistryManager.get().invoke(MainUtil.client.getNetworkHandler()),
-						MainUtil.client.getNetworkHandler().getEnabledFeatures()))
-				.range("1.19.0", "1.19.2", () -> Reflection.newInstance("net.minecraft.class_7157",
-						new Class[] {Reflection.getClass("net.minecraft.class_5455")}, // DynamicRegistryManager.class
-						(DynamicRegistryManager) GameJoinS2CPacket_registryManager.get().invoke(lastGamePacket)))
-				.range(null, "1.18.2", () -> null)
 				.get();
 		ClientCommandRegistrationCallback.EVENT.invoker().register(dispatcher, registryAccess);
 		ClientCommandInternals.finalizeInit();

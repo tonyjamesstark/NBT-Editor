@@ -18,7 +18,7 @@ import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.component.type.JukeboxPlayableComponent;
-import net.minecraft.item.BlockPredicatesChecker;
+import net.minecraft.component.type.BlockPredicatesComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.equipment.trim.ArmorTrim;
 import net.minecraft.text.Text;
@@ -70,9 +70,9 @@ public class ComponentsHideFlag extends HideFlag {
 	public static final HideFlag UNBREAKABLE = registerMethodGetter("unbreakable",
 			DataComponentTypes.UNBREAKABLE, Reflection.getClass("net.minecraft.class_9300"), "comp_2417", "method_58435");
 	public static final HideFlag CAN_BREAK = registerMethodGetter("can_break",
-			DataComponentTypes.CAN_BREAK, BlockPredicatesChecker.class, "method_57324", "method_58402");
+			DataComponentTypes.CAN_BREAK, BlockPredicatesComponent.class, "method_57324", "method_58402");
 	public static final HideFlag CAN_PLACE_ON = registerMethodGetter("can_place_on",
-			DataComponentTypes.CAN_PLACE_ON, BlockPredicatesChecker.class, "method_57324", "method_58402");
+			DataComponentTypes.CAN_PLACE_ON, BlockPredicatesComponent.class, "method_57324", "method_58402");
 	public static final HideFlag MISC = register("misc",
 			(ComponentType<?>) MVComponentType.HIDE_ADDITIONAL_TOOLTIP_1_20_5_1_21_4.getInternalValue(),
 			item -> item.contains(MVComponentType.HIDE_ADDITIONAL_TOOLTIP_1_20_5_1_21_4),
@@ -91,14 +91,6 @@ public class ComponentsHideFlag extends HideFlag {
 	public static final HideFlag TRIM = Version.<HideFlag>newSwitch()
 			.range("1.21.0", null, () -> registerMethodGetter("trim",
 					DataComponentTypes.TRIM, ArmorTrim.class, "comp_3181", "method_58421"))
-			.range("1.20.5", "1.20.6", () -> registerFieldGetter("trim",
-					DataComponentTypes.TRIM, ArmorTrim.class, "field_49279", "method_58421"))
-			.get();
-	
-	public static final HideFlag JUKEBOX_PLAYABLE = Version.<HideFlag>newSwitch()
-			.range("1.21.0", "1.21.4", () -> registerMethodGetter("jukebox_playable",
-					DataComponentTypes.JUKEBOX_PLAYABLE, JukeboxPlayableComponent.class, "comp_2834", "method_60749"))
-			.range("1.20.5", "1.20.6", () -> null)
 			.get();
 	
 	private final Text name;

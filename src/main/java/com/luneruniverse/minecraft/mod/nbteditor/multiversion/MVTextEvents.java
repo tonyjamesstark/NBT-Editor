@@ -64,10 +64,10 @@ public class MVTextEvents {
 		
 		private static final Supplier<Reflection.MethodInvoker> ClickEvent_getAction =
 				Reflection.getOptionalMethod(ClickEvent.class, "method_10845", MethodType.methodType(ClickEvent.Action.class));
+		/** Null for an action the fancy-text format cannot express (SHOW_DIALOG, CUSTOM). */
 		public static ClickAction<?> getAction(ClickEvent event) {
 			return switch (Version.<ClickEvent.Action>newSwitch()
 					.range("1.21.5", null, () -> event.getAction())
-					.range(null, "1.21.4", () -> ClickEvent_getAction.get().invoke(event))
 					.get()) {
 				case OPEN_URL -> OPEN_URL;
 				case OPEN_FILE -> OPEN_FILE;
@@ -75,6 +75,7 @@ public class MVTextEvents {
 				case SUGGEST_COMMAND -> SUGGEST_COMMAND;
 				case CHANGE_PAGE -> CHANGE_PAGE;
 				case COPY_TO_CLIPBOARD -> COPY_TO_CLIPBOARD;
+				default -> null;
 			};
 		}
 		
@@ -106,7 +107,6 @@ public class MVTextEvents {
 		public String getStringifiedValue(ClickEvent event) {
 			return Version.<String>newSwitch()
 					.range("1.21.5", null, () -> getter.apply(event).toString())
-					.range(null, "1.21.4", () -> ClickEvent_getValue.get().invoke(event))
 					.get();
 		}
 		public Optional<T> getValue(ClickEvent event) {
@@ -116,8 +116,6 @@ public class MVTextEvents {
 		public ClickEvent newEvent(T value) {
 			return Version.<ClickEvent>newSwitch()
 					.range("1.21.5", null, () -> constructor.apply(value))
-					.range(null, "1.21.4", () -> Reflection.newInstance(ClickEvent.class,
-							new Class<?>[] {ClickEvent.Action.class, String.class}, action, value.toString()))
 					.get();
 		}
 		public Optional<ClickEvent> newEventParse(String valueStr) {
@@ -144,7 +142,6 @@ public class MVTextEvents {
 		public static HoverAction<?> getAction(HoverEvent event) {
 			return switch (Version.<HoverEvent.Action>newSwitch()
 					.range("1.21.5", null, () -> event.getAction())
-					.range(null, "1.21.4", () -> HoverEvent_getAction.get().invoke(event))
 					.get()) {
 				case SHOW_TEXT -> SHOW_TEXT;
 				case SHOW_ITEM -> SHOW_ITEM;
@@ -184,12 +181,6 @@ public class MVTextEvents {
 		public T getValue(HoverEvent event) {
 			return Version.<T>newSwitch()
 					.range("1.21.5", null, () -> getter.apply(event))
-					.range(null, "1.21.4", () -> {
-						Object value = HoverEvent_getValue.get().invoke(event);
-						if (this == SHOW_ITEM)
-							return HoverEvent$ItemStackContent_asStack.get().invoke(value);
-						return (T) value;
-					})
 					.get();
 		}
 		private static final Supplier<Reflection.MethodInvoker> HoverEvent$Action_contentsToJson =
@@ -203,17 +194,12 @@ public class MVTextEvents {
 						nbt.remove("action");
 						return nbt.toString();
 					})
-					.range("1.20.3", "1.21.4", () -> MVMisc.result(HoverEvent.CODEC.encodeStart(JsonOps.INSTANCE, event)).orElseThrow().getAsJsonObject().get("contents").toString())
-					.range(null, "1.20.2", () -> HoverEvent$Action_contentsToJson.get().invoke(action, getValue(event)).toString())
 					.get();
 		}
 		
 		public HoverEvent newEvent(T value) {
 			return Version.<HoverEvent>newSwitch()
 					.range("1.21.5", null, () -> constructor.apply(value))
-					.range(null, "1.21.4", () -> Reflection.newInstance(HoverEvent.class,
-							new Class<?>[] {HoverEvent.Action.class, Object.class}, action,
-							this == SHOW_ITEM ? Reflection.newInstance(HoverEvent$ItemStackContent.get(), new Class<?>[] {ItemStack.class}, value) : value))
 					.get();
 		}
 		private static final Supplier<Reflection.MethodInvoker> HoverEvent_fromJson =
@@ -238,23 +224,6 @@ public class MVTextEvents {
 							return Optional.empty();
 						
 						return MVMisc.result(HoverEvent.CODEC.parse(NbtOps.INSTANCE, nbt));
-					})
-					.range(null, "1.21.4", () -> {
-						JsonElement valueJson;
-						try {
-							valueJson = new Gson().fromJson(valueStr, JsonElement.class);
-						} catch (JsonSyntaxException e) {
-							return Optional.empty();
-						}
-						
-						JsonObject json = new JsonObject();
-						json.addProperty("action", name);
-						json.add("contents", valueJson);
-						
-						return Version.<Optional<HoverEvent>>newSwitch()
-								.range("1.20.3", null, () -> MVMisc.result(HoverEvent.CODEC.parse(JsonOps.INSTANCE, json)))
-								.range(null, "1.20.2", () -> Optional.ofNullable(HoverEvent_fromJson.get().invoke(null, json)))
-								.get();
 					})
 					.get();
 		}

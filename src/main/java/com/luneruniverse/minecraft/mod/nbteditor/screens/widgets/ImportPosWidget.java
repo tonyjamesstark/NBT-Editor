@@ -13,9 +13,10 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.math.BlockPos;
 
 public class ImportPosWidget extends GroupWidget implements InitializableOverlay<Screen> {
@@ -75,16 +76,17 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MainUtil.client.currentScreen.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(matrices, textRenderer, TextInst.translatable("nbteditor.nbt.import.pos"),
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(MainUtil.client.currentScreen, context);
+		super.render(context, mouseX, mouseY, delta);
+		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.nbt.import.pos"),
 				width / 2, height / 2 - textRenderer.fontHeight - 22, -1);
-		MainUtil.renderLogo(matrices);
+		MainUtil.renderLogo(context);
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			OverlaySupportingScreen.setOverlayStatic(null);
 			return true;
@@ -94,7 +96,7 @@ public class ImportPosWidget extends GroupWidget implements InitializableOverlay
 			return true;
 		}
 		
-		return super.keyPressed(keyCode, scanCode, modifiers);
+		return super.keyPressed(input);
 	}
 	
 	private void done() {

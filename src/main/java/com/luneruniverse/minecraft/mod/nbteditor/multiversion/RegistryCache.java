@@ -42,7 +42,6 @@ public class RegistryCache {
 		
 		return Version.<Optional<RegistryEntry.Reference<T>>>newSwitch()
 				.range("1.21.2", null, () -> registry.getEntry(ref.registryKey().getValue()))
-				.range(null, "1.21.1", () -> Registry_getEntry.get().invoke(registry, ref.registryKey().getValue()))
 				.get()
 				.orElse(null);
 	}
@@ -53,7 +52,6 @@ public class RegistryCache {
 			CacheLoader.from(registry -> {
 				return Version.<Boolean>newSwitch()
 						.range("1.21.2", null, () -> Registries.REGISTRIES.get(registry.getKey().getValue()) != null)
-						.range(null, "1.21.1", () -> MVRegistry.REGISTRIES.get(((RegistryKey<?>) Registry_getKey.get().invoke(registry)).getValue()) != null)
 						.get();
 			}));
 	public static boolean isRegistryStatic(Registry<?> registry) {
@@ -83,7 +81,6 @@ public class RegistryCache {
 				return Optional.empty();
 			return Version.<Optional<? extends Registry<?>>>newSwitch()
 					.range("1.21.2", null, () -> registryManager.getOptional(RegistryKey.ofRegistry(id)))
-					.range(null, "1.21.1", () -> DynamicRegistryManager_getOptional.get().invoke(registryManager, RegistryKey.ofRegistry(id)))
 					.get();
 		});
 	}

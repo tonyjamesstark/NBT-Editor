@@ -67,7 +67,6 @@ public class DynamicRegistryManagerHolder {
 						
 						return RegistryLoader.loadFromResource(resourceManager, loadedRegistries, entries);
 					})
-					.range("1.20.5", "1.21.1", () -> RegistryLoader_loadFromResource.get().invoke(null, resourceManager, combinedRegistries.getCombinedRegistryManager(), entries))
 					.get();
 			
 			future.complete(combinedRegistries.with(ServerDynamicRegistryType.RELOADABLE, dynamicRegistries).getCombinedRegistryManager());
@@ -141,7 +140,6 @@ public class DynamicRegistryManagerHolder {
 	
 	private static final boolean getReadOnlyWrapperExists = Version.<Boolean>newSwitch()
 			.range("1.21.2", null, false)
-			.range(null, "1.21.1", true)
 			.get();
 	private static final Supplier<Reflection.MethodInvoker> Registry_getReadOnlyWrapper =
 			Reflection.getOptionalMethod(Registry.class, "method_46771", MethodType.methodType(RegistryWrapper.Impl.class));

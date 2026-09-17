@@ -13,6 +13,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.StringReader;
 
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
@@ -21,6 +22,10 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class FancyText {
+	
+	private static Identifier fontId(Style style) {
+		return style.getFont() instanceof StyleSpriteSource.Font font ? font.id() : null;
+	}
 	
 	public static Text parse(String str, Style base) {
 		List<FancyTextToken> tokens = FancyTextToken.parse(new StringReader(str));
@@ -51,6 +56,11 @@ public class FancyText {
 		return output;
 	}
 	
+	/** SHOW_DIALOG and CUSTOM click events have no fancy-text form, so they are dropped. */
+	private static boolean isWritable(ClickEvent event) {
+		return event != null && MVTextEvents.ClickAction.getAction(event) != null;
+	}
+	
 	public static Map.Entry<String, Boolean> stringify(Text text, Style base) {
 		base = base.withParent(StyleUtil.RESET_STYLE);
 		StringBuilder output = new StringBuilder();
@@ -66,8 +76,8 @@ public class FancyText {
 			if (!Objects.equals(partStyle.getClickEvent(), clickEvent.getPlain()) ||
 					!Objects.equals(partStyle.getHoverEvent(), hoverEvent.getPlain()) ||
 					!Objects.equals(partStyle.getInsertion(), insertion.getPlain()) ||
-					!Objects.equals(partStyle.font, font.getPlain())) {
-				if (clickEvent.getPlain() != null)
+					!Objects.equals(fontId(partStyle), font.getPlain())) {
+				if (isWritable(clickEvent.getPlain()))
 					output.append(')');
 				if (hoverEvent.getPlain() != null)
 					output.append(')');
@@ -79,8 +89,10 @@ public class FancyText {
 				clickEvent.setPlain(partStyle.getClickEvent());
 				hoverEvent.setPlain(partStyle.getHoverEvent());
 				insertion.setPlain(partStyle.getInsertion());
-				font.setPlain(partStyle.font);
-				if (partStyle.getClickEvent() != null) {
+				font.setPlain(fontId(partStyle));
+				if (partStyle.getClickEvent() != null && !isWritable(partStyle.getClickEvent()))
+					errors.setPlain(true);
+				if (isWritable(partStyle.getClickEvent())) {
 					MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(partStyle.getClickEvent());
 					output.append('[');
 					output.append(clickAction.getName());
@@ -117,15 +129,15 @@ public class FancyText {
 					output.append(partStyle.getInsertion().replace("\\", "\\\\").replace("{", "\\{").replace("}", "\\}"));
 					output.append("}(");
 				}
-				if (partStyle.font != null) {
+				if (fontId(partStyle) != null) {
 					output.append("[font]{");
-					output.append(partStyle.font.toString());
+					output.append(fontId(partStyle).toString());
 					output.append("}(");
 				}
 			}
 			
 			AtomicReference<Style> currentStyle =
-					(clickEvent.getPlain() != null || hoverEvent.getPlain() != null ? eventContentsStyle : style);
+					(isWritable(clickEvent.getPlain()) || hoverEvent.getPlain() != null ? eventContentsStyle : style);
 			Style changes = StyleUtil.minus(partStyle, currentStyle.getPlain());
 			currentStyle.setPlain(partStyle);
 			
@@ -171,7 +183,7 @@ public class FancyText {
 			return Optional.empty();
 		}, base);
 		
-		if (clickEvent.getPlain() != null)
+		if (isWritable(clickEvent.getPlain()))
 			output.append(')');
 		if (hoverEvent.getPlain() != null)
 			output.append(')');

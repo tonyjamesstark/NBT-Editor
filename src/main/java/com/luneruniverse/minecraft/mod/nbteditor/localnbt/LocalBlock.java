@@ -24,9 +24,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -158,32 +156,22 @@ public class LocalBlock implements LocalNBT {
 		this.nbt = nbt;
 	}
 	
+	private ItemStack cachedItem;
+	private BlockStateProperties cachedItemState;
+	private NbtCompound cachedItemNbt;
+	
 	@Override
-	public void renderIcon(MatrixStack matrices, int x, int y, float tickDelta) {
-		MVGlStateManager._disableCull();
-		
-		matrices.push();
-		MatrixStack renderMatrices = Version.<MatrixStack>newSwitch()
-				.range("1.19.4", null, matrices)
-				.range(null, "1.19.3", MatrixStack::new)
-				.get();
-		MVMatrix4f.ofScale(1, 1, -1).applyToPositionMatrix(renderMatrices);
-		LocalNBT.makeRotatingIcon(renderMatrices, x, y, 1, true);
-		renderMatrices.translate(-0.5, -0.5, -0.5);
-		
-		VertexConsumerProvider.Immediate provider = MVDrawableHelper.getVertexConsumerProvider();
-		MVMisc.renderBlock(MainUtil.client.getBlockRenderManager(), state.applyTo(block.getDefaultState()),
-				new BlockPos(0, 1000, 0), MainUtil.client.world, renderMatrices,
-				provider.getBuffer(RenderLayer.getCutout()), false);
-		if (isBlockEntity()) {
-			MVMisc.renderBlockEntity(MainUtil.client.getBlockEntityRenderDispatcher(),
-					getCachedBlockEntity(), tickDelta, renderMatrices, provider);
+	public void renderIcon(DrawContext context, int x, int y, float tickDelta) {
+		// The GUI lost its world-space rendering path in 1.21.9. Drawing the block's
+		// item form keeps block entity detail (shulker colour, banner patterns) without
+		// a hand-rolled render pipeline.
+		// ponytail: a block with no BlockItem draws nothing; the editor still works.
+		if (cachedItem == null || !Objects.equals(cachedItemState, state) || !Objects.equals(cachedItemNbt, nbt)) {
+			cachedItem = toItem(false).orElse(ItemStack.EMPTY);
+			cachedItemState = state.copy();
+			cachedItemNbt = nbt == null ? null : nbt.copy();
 		}
-		provider.draw();
-		
-		matrices.pop();
-		
-		MVGlStateManager._enableCull();
+		context.drawItem(cachedItem, x, y);
 	}
 	
 	@Override

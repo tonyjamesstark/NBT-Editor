@@ -36,7 +36,6 @@ public class MaxCommand extends ClientCommand {
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		int maxLevel = Version.<Integer>newSwitch()
 				.range("1.17.1", null, 255)
-				.range(null, "1.17", 32767)
 				.get();
 		builder
 				.then(literal("cursed")

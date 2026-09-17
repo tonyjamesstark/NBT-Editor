@@ -6,19 +6,20 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-public class CreativeTabWidget implements MVDrawable, MVElement {
+public class CreativeTabWidget implements Drawable, MVElement {
 	
 	public static record CreativeTabData(ItemStack item, Runnable onClick, Predicate<Screen> whenToShow) {}
 	public static final List<CreativeTabData> TABS = new ArrayList<>();
@@ -28,10 +29,10 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 		if (!tabs.isEmpty()) {
 			GroupWidget group = new GroupWidget() {
 				@Override
-				public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+				public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 					MVTooltip.setOneTooltip(true, false);
-					super.render(matrices, mouseX, mouseY, delta);
-					MVTooltip.renderOneTooltip(matrices, mouseX, mouseY);
+					super.render(context, mouseX, mouseY, delta);
+					MVTooltip.renderOneTooltip(context, mouseX, mouseY);
 				}
 			};
 			for (int i = 0; i < tabs.size(); i++) {
@@ -45,7 +46,6 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 	
 	public static final int WIDTH = Version.<Integer>newSwitch()
 			.range("1.19.3", null, 26)
-			.range(null, "1.19.2", 28)
 			.get();
 	public static final int HEIGHT = 32;
 	
@@ -56,7 +56,6 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 	static {
 		if (Version.<Boolean>newSwitch()
 				.range("1.20.2", null, true)
-				.range(null, "1.20.1", false)
 				.get()) {
 			TEXTURE_TOP = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_top_unselected.png");
 			TEXTURE_BOTTOM = IdentifierInst.of("nbteditor", "textures/gui/sprites/container/creative_inventory/tab_bottom_unselected.png");
@@ -87,17 +86,16 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTexture(matrices, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.drawTexture(context, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
 		
 		int xOffset = Version.<Integer>newSwitch()
 				.range("1.19.3", null, 5)
-				.range(null, "1.19.2", 6)
 				.get();
-		MVDrawableHelper.renderItem(matrices, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
+		MVDrawableHelper.renderItem(context, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
 		
 		if (isMouseOver(mouseX, mouseY))
-			tooltip.render(matrices, mouseX, mouseY);
+			tooltip.render(context, mouseX, mouseY);
 	}
 	
 	@Override
@@ -105,7 +103,8 @@ public class CreativeTabWidget implements MVDrawable, MVElement {
 		return x <= mouseX && mouseX < x + WIDTH && y <= mouseY && mouseY < y + HEIGHT;
 	}
 	
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y();
 		if (isMouseOver(mouseX, mouseY)) {
 			onClick.run();
 			return true;

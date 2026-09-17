@@ -40,7 +40,7 @@ public class Head {
         item.nbte$setCustomName(TextInst.of(Utils.colorize(category != null ? category.getColor() + name : "&8" + name)));
         // set skull owner
         GameProfile profile = new GameProfile(uuid, NBTManagers.COMPONENTS_EXIST ? "HDB_Head" : name);
-        profile.getProperties().put("textures", new Property("textures", value));
+        profile.properties().put("textures", new Property("textures", value));
         ItemTagReferences.PROFILE.set(item, Optional.of(profile));
         
         ItemTagReferences.LORE.set(item, Arrays.asList(

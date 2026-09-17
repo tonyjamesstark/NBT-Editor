@@ -25,9 +25,6 @@ public interface MVElement extends Element {
 	}
 	public default void onMultiFocusedSet(boolean focused, boolean prevFocused) {}
 	
-	public default boolean method_25401(double mouseX, double mouseY, double amount) {
-		return mouseScrolled(mouseX, mouseY, 0, amount);
-	}
 	public default boolean mouseScrolled(double mouseX, double mouseY, double xAmount, double yAmount) {
 		return false;
 	}

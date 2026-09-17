@@ -121,7 +121,6 @@ public class CursorManager {
 				if (currentRootHasServerCursor) {
 					if (Version.<Boolean>newSwitch()
 							.range("1.17.1", null, true)
-							.range(null, "1.17", false)
 							.get()) {
 						MainUtil.get(cursor, true);
 					} else {

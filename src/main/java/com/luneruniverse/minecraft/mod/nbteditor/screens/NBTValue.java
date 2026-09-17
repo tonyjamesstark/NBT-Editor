@@ -17,7 +17,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.StringJsonWriterQuoted;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -60,7 +61,7 @@ public class NBTValue extends List2D.List2DValue {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		Identifier icon;
 		if (key == null) {
 			icon = BACK;
@@ -83,7 +84,7 @@ public class NBTValue extends List2D.List2DValue {
 			};
 		}
 		if (icon != null)
-			MVDrawableHelper.drawTexture(matrices, icon, 0, 0, 0, 0, 32, 32, 32, 32);
+			MVDrawableHelper.drawTexture(context, icon, 0, 0, 0, 0, 32, 32, 32, 32);
 		
 		int color = -1;
 		String tooltip = null;
@@ -99,26 +100,27 @@ public class NBTValue extends List2D.List2DValue {
 		else if (isHovering(mouseX, mouseY))
 			color = 0xFF257789;
 		if (color != -1) {
-			MVDrawableHelper.fill(matrices, -4, -4, 36, 0, color);
-			MVDrawableHelper.fill(matrices, -4, -4, 0, 36, color);
-			MVDrawableHelper.fill(matrices, -4, 32, 36, 36, color);
-			MVDrawableHelper.fill(matrices, 32, -4, 36, 36, color);
+			MVDrawableHelper.fill(context, -4, -4, 36, 0, color);
+			MVDrawableHelper.fill(context, -4, -4, 0, 36, color);
+			MVDrawableHelper.fill(context, -4, 32, 36, 36, color);
+			MVDrawableHelper.fill(context, 32, -4, 36, 36, color);
 		}
 		if (tooltip != null && isHovering(mouseX, mouseY))
-			new MVTooltip(tooltip).render(matrices, mouseX, mouseY);
+			new MVTooltip(tooltip).render(context, mouseX, mouseY);
 		
 		if (key == null)
 			return;
 		
-		matrices.push();
-		matrices.scale((float) ConfigScreen.getKeyTextSize(), (float) ConfigScreen.getKeyTextSize(), 0);
+		context.getMatrices().pushMatrix();
+		context.getMatrices().scale((float) ConfigScreen.getKeyTextSize(), (float) ConfigScreen.getKeyTextSize());
 		double scale = 1 / ConfigScreen.getKeyTextSize();
-		MainUtil.drawWrappingString(matrices, textRenderer, key, (int) (16 * scale), (int) (24 * scale), (int) (32 * scale), -1, true, true);
-		matrices.pop();
+		MainUtil.drawWrappingString(context, textRenderer, key, (int) (16 * scale), (int) (24 * scale), (int) (32 * scale), -1, true, true);
+		context.getMatrices().popMatrix();
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y();
 		if (isHovering((int) mouseX, (int) mouseY)) {
 			if (key == null) {
 				screen.selectNbt(null, true);

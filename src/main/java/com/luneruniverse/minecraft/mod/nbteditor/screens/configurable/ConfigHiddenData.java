@@ -2,7 +2,10 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 
 import java.util.function.BiFunction;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.gui.DrawContext;
 
 public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	
@@ -28,8 +31,8 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		visible.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		visible.render(context, mouseX, mouseY, delta);
 	}
 	
 	@Override
@@ -71,20 +74,23 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		return visible.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return visible.mouseClicked(click, doubled);
 	}
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		return visible.mouseReleased(mouseX, mouseY, button);
+	public boolean mouseReleased(Click click) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return visible.mouseReleased(click);
 	}
 	@Override
 	public void mouseMoved(double mouseX, double mouseY) {
 		visible.mouseMoved(mouseX, mouseY);
 	}
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		return visible.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return visible.mouseDragged(click, deltaX, deltaY);
 	}
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double xAmount, double yAmount) {
@@ -96,16 +102,19 @@ public class ConfigHiddenData<S extends ConfigPath, D> implements ConfigPath {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return visible.keyPressed(keyCode, scanCode, modifiers);
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+		return visible.keyPressed(input);
 	}
 	@Override
-	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-		return visible.keyReleased(keyCode, scanCode, modifiers);
+	public boolean keyReleased(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+		return visible.keyReleased(input);
 	}
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
-		return visible.charTyped(chr, modifiers);
+	public boolean charTyped(CharInput input) {
+		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
+		return visible.charTyped(input);
 	}
 	
 	@Override

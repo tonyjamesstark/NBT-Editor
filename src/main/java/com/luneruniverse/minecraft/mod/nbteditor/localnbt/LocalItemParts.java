@@ -12,7 +12,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -60,7 +60,6 @@ public class LocalItemParts extends LocalItem {
 	private void setCachedItemCount() {
 		Version.newSwitch()
 				.range("1.21.0", null, () -> cachedItem.setCount(Math.min(count, cachedItem.getMaxCount())))
-				.range(null, "1.20.6", () -> cachedItem.setCount(count))
 				.run();
 	}
 	private ItemStack getCachedItem() {
@@ -174,8 +173,8 @@ public class LocalItemParts extends LocalItem {
 	}
 	
 	@Override
-	public void renderIcon(MatrixStack matrices, int x, int y, float tickDelta) {
-		MVDrawableHelper.renderItem(matrices, 200.0F, true, getCachedItem(), x, y);
+	public void renderIcon(DrawContext context, int x, int y, float tickDelta) {
+		MVDrawableHelper.renderItem(context, 200.0F, true, getCachedItem(), x, y);
 	}
 	
 	@Override

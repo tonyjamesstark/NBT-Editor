@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawable;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
@@ -19,9 +18,9 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 
-public class GroupWidget extends AbstractParentElement implements MVDrawable, MVElement, Tickable, Selectable, OldEventBehavior {
+public class GroupWidget extends AbstractParentElement implements Drawable, MVElement, Tickable, Selectable, OldEventBehavior {
 	
 	private final List<Drawable> drawables;
 	private final List<Element> elements;
@@ -125,9 +124,9 @@ public class GroupWidget extends AbstractParentElement implements MVDrawable, MV
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		for (Drawable drawable : drawables)
-			drawable.render(matrices, mouseX, mouseY, delta);
+			drawable.render(context, mouseX, mouseY, delta);
 	}
 	
 	@Override
@@ -160,25 +159,9 @@ public class GroupWidget extends AbstractParentElement implements MVDrawable, MV
 	public boolean isFocused() {
 		return MVElement.super.isFocused();
 	}
-	public boolean method_25401(double mouseX, double mouseY, double amount) {
-		return Version.<Boolean>newSwitch()
-				.range("1.20.2", null, () -> MVElement.super.method_25401(mouseX, mouseY, amount))
-				.range(null, "1.20.1", () -> super_mouseScrolled(mouseX, mouseY, amount))
-				.get();
-	}
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double xAmount, double yAmount) {
 		return super.mouseScrolled(mouseX, mouseY, xAmount, yAmount);
-	}
-	private boolean super_mouseScrolled(double mouseX, double mouseY, double amount) {
-		try {
-			return (boolean) MethodHandles.privateLookupIn(GroupWidget.class, MethodHandles.lookup())
-					.findSpecial(AbstractParentElement.class, "method_25401",
-					MethodType.methodType(boolean.class, double.class, double.class, double.class),
-					GroupWidget.class).invoke(this, mouseX, mouseY, amount);
-		} catch (Throwable e) {
-			throw new RuntimeException("Error calling super.mouseScrolled", e);
-		}
 	}
 	
 	

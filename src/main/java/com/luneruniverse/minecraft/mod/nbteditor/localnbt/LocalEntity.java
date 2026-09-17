@@ -6,6 +6,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IdentifierInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
@@ -24,10 +27,8 @@ import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -133,37 +134,20 @@ public class LocalEntity implements LocalNBT {
 	}
 	
 	@Override
-	public void renderIcon(MatrixStack matrices, int x, int y, float tickDelta) {
-		matrices.push();
-		matrices.translate(0.0, 8.0, 0.0);
+	public void renderIcon(DrawContext context, int x, int y, float tickDelta) {
+		// 1.21.9 turned GUI entity rendering into a queued render state; there is no
+		// longer a matrix stack to push the entity onto.
+		Entity entity = getCachedEntity();
+		EntityRenderState state = MainUtil.client.getEntityRenderDispatcher()
+				.getRenderer(entity).getAndUpdateRenderState(entity, tickDelta);
+		state.light = 0xF000F0;
+		state.shadowPieces.clear();
+		state.outlineColor = 0;
 		
-		MatrixStack renderMatrices = Version.<MatrixStack>newSwitch()
-				.range("1.19.4", null, matrices)
-				.range(null, "1.19.3", MatrixStack::new)
-				.get();
-		
-		MVMatrix4f.ofScale(1, 1, -1).applyToPositionMatrix(matrices);
-		MVQuaternionf rotation = LocalNBT.makeRotatingIcon(renderMatrices, x, y, 0.75f, true);
-		rotation.conjugate();
-		if (Version.<Boolean>newSwitch()
-				.range("1.21.0", null, true)
-				.range(null, "1.20.6", false)
-				.get()) {
-			rotation.rotateY((float) Math.PI);
-		}
-		MVDrawableHelper.applyModelViewMatrix();
-		
-		DiffuseLighting.enableGuiShaderLighting();
-		VertexConsumerProvider.Immediate provider = MVDrawableHelper.getVertexConsumerProvider();
-		EntityRenderDispatcher dispatcher = MainUtil.client.getEntityRenderDispatcher();
-		dispatcher.setRenderShadows(false);
-		rotation.applyToEntityRenderDispatcher(dispatcher);
-		MVMisc.renderEntity(dispatcher, getCachedEntity(), 0, 0, 0, 0, tickDelta, renderMatrices, provider, 0xF000F0);
-		dispatcher.setRenderShadows(true);
-		provider.draw();
-		
-		matrices.pop();
-		MVDrawableHelper.applyModelViewMatrix();
+		float scale = 16 / Math.max(Math.max(state.width, state.height), 1.0E-4F);
+		context.addEntity(state, scale, new Vector3f(0, state.height / 2, 0),
+				new Quaternionf().rotateZ((float) Math.PI), LocalNBT.iconSpin(),
+				x, y, x + 16, y + 16);
 	}
 	
 	@Override
@@ -201,7 +185,6 @@ public class LocalEntity implements LocalNBT {
 								return new ItemStack(MVMisc.getBoatItem(entityType, nbt));
 							return new ItemStack(Items.PIG_SPAWN_EGG);
 						})
-						.range(null, "1.20.2", () -> new ItemStack(Items.PIG_SPAWN_EGG))
 						.get();
 			}
 		}
@@ -218,11 +201,6 @@ public class LocalEntity implements LocalNBT {
 				nbt.remove("Rotation");
 				Version.newSwitch()
 						.range("1.21.5", null, () -> nbt.remove("block_pos"))
-						.range(null, "1.21.4", () -> {
-							nbt.remove("TileX");
-							nbt.remove("TileY");
-							nbt.remove("TileZ");
-						})
 						.run();
 				if (entityType == EntityType.PAINTING)
 					nbt.remove("facing");

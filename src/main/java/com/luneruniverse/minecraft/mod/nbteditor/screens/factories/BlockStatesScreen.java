@@ -20,7 +20,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValu
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.BlockItem;
 
 public class BlockStatesScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
@@ -87,9 +87,9 @@ public class BlockStatesScreen<L extends LocalNBT> extends LocalEditorScreen<L> 
 	}
 	
 	@Override
-	public void renderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void renderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!hasBlockStates)
-			MVDrawableHelper.drawTextWithShadow(matrices, textRenderer, TextInst.translatable("nbteditor.block_states.none"), 16, 64, -1);
+			MVDrawableHelper.drawTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.block_states.none"), 16, 64, -1);
 	}
 	
 }

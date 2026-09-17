@@ -22,7 +22,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValu
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 
@@ -71,7 +71,6 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 				ConfigValueNumber.forInt(1, 1, 1,
 						Version.<Integer>newSwitch()
 								.range("1.17.1", null, 255)
-								.range(null, "1.17", 32767)
 								.get())));
 		config = new ConfigList(TextInst.translatable("nbteditor.enchantments"), false, entry);
 		
@@ -104,8 +103,8 @@ public class EnchantmentsScreen extends LocalEditorScreen<LocalItem> {
 	}
 	
 	@Override
-	protected void renderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		renderTip(matrices, "nbteditor.enchantments.tip");
+	protected void renderEditor(DrawContext context, int mouseX, int mouseY, float delta) {
+		renderTip(context, "nbteditor.enchantments.tip");
 	}
 	
 }

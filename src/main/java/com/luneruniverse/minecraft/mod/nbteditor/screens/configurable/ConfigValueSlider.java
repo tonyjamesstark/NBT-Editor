@@ -6,8 +6,9 @@ import java.util.function.Function;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class ConfigValueSlider<T extends Number> extends SliderWidget implements ConfigValue<T, ConfigValueSlider<T>> {
@@ -45,8 +46,8 @@ public class ConfigValueSlider<T extends Number> extends SliderWidget implements
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 	}
 	
 	// There is no element focusing in configs, so onDrag is called for everything
@@ -56,8 +57,9 @@ public class ConfigValueSlider<T extends Number> extends SliderWidget implements
 	private double mouseClickX = -1;
 	private double mouseClickY = -1;
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		boolean output = super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		boolean output = super.mouseClicked(click, doubled);
 		if (output) {
 			mouseClickX = mouseX;
 			mouseClickY = mouseY;
@@ -65,11 +67,12 @@ public class ConfigValueSlider<T extends Number> extends SliderWidget implements
 		return clicked = output;
 	}
 	@Override
-	protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
+	protected void onDrag(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y();
 		if (clicked && MainUtil.equals(mouseX, mouseClickX + deltaX) && MainUtil.equals(mouseY, mouseClickY + deltaY)) {
 			mouseClickX += deltaX;
 			mouseClickY += deltaY;
-			super.onDrag(mouseX, mouseY, deltaX, deltaY);
+			super.onDrag(click, deltaX, deltaY);
 		}
 	}
 	

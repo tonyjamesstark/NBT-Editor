@@ -56,14 +56,6 @@ public abstract class TextFieldWidgetMixin implements Tickable {
 		return color;
 	}
 	
-	@Redirect(method = "method_1886(IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/class_287;method_22912(DDD)Lnet/minecraft/class_4588;"), remap = false, require = 0)
-	@SuppressWarnings("target")
-	private VertexConsumer vertex(BufferBuilder buffer, double x, double y, double z) {
-		if (NamedTextFieldWidget.matrix == null)
-			return MVMisc.startVertex(buffer, x, y, z);
-		return NamedTextFieldWidget.matrix.applyToVertex(buffer, (float) x, (float) y, (float) z);
-	}
-	
 	private static final Supplier<Reflection.FieldReference> TextFieldWidget_focusedTicks =
 			Reflection.getOptionalField(TextFieldWidget.class, "field_2107", "I");
 	@Override
@@ -71,7 +63,6 @@ public abstract class TextFieldWidgetMixin implements Tickable {
 		TextFieldWidget source = (TextFieldWidget) (Object) this;
 		Version.newSwitch()
 				.range("1.20.2", null, () -> {})
-				.range(null, "1.20.1", () -> TextFieldWidget_focusedTicks.get().set(source, (int) TextFieldWidget_focusedTicks.get().get(source) + 1))
 				.run();
 	}
 }

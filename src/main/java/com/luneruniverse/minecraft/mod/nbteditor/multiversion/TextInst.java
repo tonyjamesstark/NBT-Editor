@@ -5,8 +5,12 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.DynamicOps;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
+import com.google.gson.JsonParser;
+import com.mojang.serialization.JsonOps;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.nbt.InvalidNbtException;
@@ -25,14 +29,13 @@ public class TextInst {
 	public static EditableText literal(String msg) {
 		return new EditableText(Version.<MutableText>newSwitch()
 				.range("1.19.0", null, () -> Text.literal(msg))
-				.range(null, "1.18.2", () -> Reflection.newInstance("net.minecraft.class_2585", new Class[] {String.class}, msg)) // new LiteralText(msg)
+ // new LiteralText(msg)
 				.get());
 	}
 	public static EditableText translatable(String key, Object... args) {
 		return new EditableText(Version.<MutableText>newSwitch()
 				.range("1.20.3", null, () -> Text.stringifiedTranslatable(key, args))
-				.range("1.19.0", "1.20.2", () -> Text.translatable(key, args))
-				.range(null, "1.18.2", () -> Reflection.newInstance("net.minecraft.class_2588", new Class[] {String.class, Object[].class}, key, args)) // new TranslatableText(key, args)
+ // new TranslatableText(key, args)
 				.get());
 	}
 	
@@ -71,31 +74,12 @@ public class TextInst {
 						throw wrapper;
 					}
 				})
-				.range(null, "1.21.4", () -> {
-					IllegalArgumentException wrapper;
-					try {
-						return fromJson(str);
-					} catch (JsonParseException e) {
-						wrapper = new IllegalArgumentException("Failed to parse text");
-						wrapper.addSuppressed(e);
-						if (!eitherFormat)
-							throw wrapper;
-					}
-					
-					try {
-						return fromSNbt(str);
-					} catch (CommandSyntaxException | InvalidNbtException e) {
-						wrapper.addSuppressed(e);
-						throw wrapper;
-					}
-				})
 				.get();
 	}
 	public static String toString(Text text) throws IllegalArgumentException {
 		try {
 			return Version.<String>newSwitch()
 					.range("1.21.5", null, () -> toSNbt(text))
-					.range(null, "1.21.4", () -> toJson(text))
 					.get();
 		} catch (InvalidNbtException | JsonParseException e) {
 			throw new IllegalArgumentException("Failed to stringify text", e);
@@ -106,11 +90,6 @@ public class TextInst {
 		try {
 			return Version.<Text>newSwitch()
 					.range("1.21.5", null, () -> fromNbt(mc))
-					.range(null, "1.21.4", () -> {
-						if (!(mc instanceof NbtString mcStr))
-							throw new IllegalArgumentException("Failed to parse text: not a string");
-						return fromJson(MVMisc.value(mcStr));
-					})
 					.get();
 		} catch (InvalidNbtException | JsonParseException e) {
 			throw new IllegalArgumentException("Failed to parse text", e);
@@ -120,7 +99,6 @@ public class TextInst {
 		try {
 			return Version.<NbtElement>newSwitch()
 					.range("1.21.5", null, () -> toNbt(text))
-					.range(null, "1.21.4", () -> NbtString.of(toJson(text)))
 					.get();
 		} catch (InvalidNbtException | JsonParseException e) {
 			throw new IllegalArgumentException("Failed to stringify text", e);
@@ -137,24 +115,19 @@ public class TextInst {
 		return toNbt(text).toString();
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> Text$Serialization_fromJson =
-			Reflection.getOptionalMethod(Text.Serialization.class, "method_10877", MethodType.methodType(MutableText.class, String.class));
 	/**
 	 * <strong>CONSIDER USING {@link TextUtil#fromJsonSafely(String)}</strong>
 	 */
-	public static @Nullable Text fromJson(String json) throws JsonParseException {
-		return Version.<Text>newSwitch()
-				.range("1.20.5", null, () -> Text.Serialization.fromJson(json, DynamicRegistryManagerHolder.get()))
-				.range(null, "1.20.4", () -> Text$Serialization_fromJson.get().invokeThrowable(JsonParseException.class, null, json))
-				.get();
+	private static DynamicOps<JsonElement> jsonOps() {
+		return DynamicRegistryManagerHolder.get().getOps(JsonOps.INSTANCE);
 	}
-	private static final Supplier<Reflection.MethodInvoker> Text$Serialization_toJsonString =
-			Reflection.getOptionalMethod(Text.Serialization.class, "method_10867", MethodType.methodType(String.class, Text.class));
+	public static @Nullable Text fromJson(String json) throws JsonParseException {
+		return Attempt.ofResult(TextCodecs.CODEC.parse(jsonOps(), JsonParser.parseString(json)))
+				.getSuccessOrThrow(JsonParseException::new);
+	}
 	public static String toJson(Text text) throws JsonParseException {
-		return Version.<String>newSwitch()
-				.range("1.20.5", null, () -> Text.Serialization.toJsonString(text, DynamicRegistryManagerHolder.get()))
-				.range(null, "1.20.4", () -> Text$Serialization_toJsonString.get().invoke(null, text))
-				.get();
+		return Attempt.ofResult(TextCodecs.CODEC.encodeStart(jsonOps(), text))
+				.getSuccessOrThrow(JsonParseException::new).toString();
 	}
 	
 	public static Text fromNbt(NbtElement nbt) throws InvalidNbtException {

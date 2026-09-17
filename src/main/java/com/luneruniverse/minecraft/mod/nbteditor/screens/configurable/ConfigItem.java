@@ -8,7 +8,10 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
@@ -51,16 +54,16 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	}
 	
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTextWithShadow(matrices, MainUtil.client.textRenderer, name, 0, (getSpacingHeight() - MainUtil.client.textRenderer.fontHeight) / 2, 0xFFFFFFFF);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.textRenderer, name, 0, (getSpacingHeight() - MainUtil.client.textRenderer.fontHeight) / 2, 0xFFFFFFFF);
 		
-		matrices.push();
-		matrices.translate(valueOffsetX, valueOffsetY, 0.0);
-		value.render(matrices, mouseX - valueOffsetX, mouseY - valueOffsetY, delta);
-		matrices.pop();
+		context.getMatrices().pushMatrix();
+		context.getMatrices().translate((float) (valueOffsetX), (float) (valueOffsetY));
+		value.render(context, mouseX - valueOffsetX, mouseY - valueOffsetY, delta);
+		context.getMatrices().popMatrix();
 		
 		if (tooltip != null && mouseX >= 0 && mouseX <= valueOffsetX && isMouseOver(mouseX, mouseY))
-			tooltip.render(matrices, mouseX, mouseY);
+			tooltip.render(context, mouseX, mouseY);
 	}
 	
 	@Override
@@ -102,20 +105,23 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		return value.mouseClicked(mouseX - valueOffsetX, mouseY - valueOffsetY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return value.mouseClicked(new Click(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()), doubled);
 	}
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		return value.mouseReleased(mouseX - valueOffsetX, mouseY - valueOffsetY, button);
+	public boolean mouseReleased(Click click) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return value.mouseReleased(new Click(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()));
 	}
 	@Override
 	public void mouseMoved(double mouseX, double mouseY) {
 		value.mouseMoved(mouseX - valueOffsetX, mouseY - valueOffsetY);
 	}
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		return value.mouseDragged(mouseX - valueOffsetX, mouseY - valueOffsetY, button, deltaX, deltaY);
+	public boolean mouseDragged(Click click, double deltaX, double deltaY) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return value.mouseDragged(new Click(mouseX - valueOffsetX, mouseY - valueOffsetY, click.buttonInfo()), deltaX, deltaY);
 	}
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double xAmount, double yAmount) {
@@ -123,16 +129,19 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		return value.keyPressed(keyCode, scanCode, modifiers);
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+		return value.keyPressed(input);
 	}
 	@Override
-	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-		return value.keyReleased(keyCode, scanCode, modifiers);
+	public boolean keyReleased(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
+		return value.keyReleased(input);
 	}
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
-		return value.charTyped(chr, modifiers);
+	public boolean charTyped(CharInput input) {
+		char chr = (char) input.codepoint(); int modifiers = input.modifiers();
+		return value.charTyped(input);
 	}
 	
 	@Override

@@ -26,7 +26,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
@@ -64,10 +63,10 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 			return false;
 		
 		boolean notAir = item != null && !item.isEmpty();
-		if (hasControlDown()) {
+		if (MVMisc.hasControlDown()) {
 			if (notAir && ContainerIOs.isSupported(item))
 				ContainerScreen.show(ref);
-		} else if (hasShiftDown()) {
+		} else if (MVMisc.hasShiftDown()) {
 			if (notAir)
 				MainUtil.client.setScreen(new LocalFactoryScreen<>(ref));
 		} else
@@ -98,36 +97,24 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 		serverInv = new ServerInventoryManager();
 	}
 	
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		MVDrawableHelper.drawTexture(matrices, TEXTURE, x, y, 0, 0, backgroundWidth, handler.getRows() * 18 + 17);
-		MVDrawableHelper.drawTexture(matrices, TEXTURE, x, y + handler.getRows() * 18 + 17, 0, 126, backgroundWidth, 96);
+	@Override
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+		MVDrawableHelper.drawTexture(context, TEXTURE, x, y, 0, 0, backgroundWidth, handler.getRows() * 18 + 17);
+		MVDrawableHelper.drawTexture(context, TEXTURE, x, y + handler.getRows() * 18 + 17, 0, 126, backgroundWidth, 96);
 		
 		if (showLogo())
-			MainUtil.renderLogo(matrices);
-	}
-	@Override
-	protected final void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-		drawBackground(MVDrawableHelper.getMatrices(context), delta, mouseX, mouseY);
-	}
-	protected final void method_2389(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		drawBackground(matrices, delta, mouseX, mouseY);
+			MainUtil.renderLogo(context);
 	}
 	protected boolean showLogo() {
 		return true;
 	}
 	
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		getLockedSlotsInfo().renderLockedHighlights(matrices, handler, true, false, true);
-		
-		MVDrawableHelper.drawTextWithoutShadow(matrices, textRenderer, getRenderedTitle(), titleX, titleY, 4210752);
-		MVDrawableHelper.drawTextWithoutShadow(matrices, textRenderer, playerInventoryTitle, playerInventoryTitleX, playerInventoryTitleY, 4210752);
-	}
 	@Override
-	protected final void drawForeground(DrawContext context, int mouseX, int mouseY) {
-		drawForeground(MVDrawableHelper.getMatrices(context), mouseX, mouseY);
-	}
-	protected final void method_2388(MatrixStack matrices, int mouseX, int mouseY) {
-		drawForeground(matrices, mouseX, mouseY);
+	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+		getLockedSlotsInfo().renderLockedHighlights(context, handler, true, false, true);
+		
+		MVDrawableHelper.drawTextWithoutShadow(context, textRenderer, getRenderedTitle(), titleX, titleY, 4210752);
+		MVDrawableHelper.drawTextWithoutShadow(context, textRenderer, playerInventoryTitle, playerInventoryTitleX, playerInventoryTitleY, 4210752);
 	}
 	protected Text getRenderedTitle() {
 		return title;
@@ -148,10 +135,6 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 		super.tick();
 		Version.newSwitch()
 				.range("1.17.1", null, () -> {})
-				.range(null, "1.17", () -> {
-					if (client.player.isAlive() && !client.player.isRemoved())
-						handledScreenTick();
-				})
 				.run();
 	}
 	@Override
@@ -227,7 +210,7 @@ public class ClientHandledScreen extends GenericContainerScreen implements OldEv
 		if (!(this instanceof CursorHistoryScreen))
 			GetLostItemCommand.addToHistory(handler.getCursorStack());
 		
-		if (!(slot != null && allowEnchantmentCombine() && Screen.hasControlDown() && tryCombineEnchantments(slot, actionType)))
+		if (!(slot != null && allowEnchantmentCombine() && MVMisc.hasControlDown() && tryCombineEnchantments(slot, actionType)))
 			handler.onSlotClick(slot == null ? slotId : slot.id, button, actionType, MainUtil.client.player);
 		
 		if (!(this instanceof CursorHistoryScreen))

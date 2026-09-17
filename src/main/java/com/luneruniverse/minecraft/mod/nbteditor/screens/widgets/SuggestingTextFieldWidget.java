@@ -15,10 +15,12 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -84,19 +86,11 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 		return this;
 	}
 	
-	private static final Supplier<Reflection.MethodInvoker> ChatInputSuggestor_render =
-			Reflection.getOptionalMethod(ChatInputSuggestor.class, "method_23923", MethodType.methodType(void.class, MatrixStack.class, int.class, int.class));
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!isDropdownOnly())
-			super.render(matrices, mouseX, mouseY, delta);
-		matrices.push();
-		matrices.translate(0, 0, 1.0);
-		Version.newSwitch()
-				.range("1.20.0", null, () -> suggestor.render(MVDrawableHelper.getDrawContext(matrices), mouseX, mouseY))
-				.range(null, "1.19.4", () -> ChatInputSuggestor_render.get().invoke(suggestor, matrices, mouseX, mouseY))
-				.run();
-		matrices.pop();
+			super.render(context, mouseX, mouseY, delta);
+		suggestor.render(context, mouseX, mouseY);
 	}
 	@Override
 	protected boolean shouldShowName() {
@@ -110,8 +104,9 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		return suggestor.mouseClicked(mouseX, mouseY, button) || !isDropdownOnly() && super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(Click click, boolean doubled) {
+		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
+		return suggestor.mouseClicked(click) || !isDropdownOnly() && super.mouseClicked(click, doubled);
 	}
 	
 	@Override
@@ -120,10 +115,11 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (!isMultiFocused())
 			return false;
-		return suggestor.keyPressed(keyCode, scanCode, modifiers) || !isDropdownOnly() && super.keyPressed(keyCode, scanCode, modifiers);
+		return suggestor.keyPressed(input) || !isDropdownOnly() && super.keyPressed(input);
 	}
 	
 	@Override

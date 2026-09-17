@@ -35,8 +35,6 @@ public class WrittenBookTagReferences {
 					null,
 					content -> content == null ? "" : content.title().raw(),
 					(content, value) -> getComponent(content, () -> value, null, null, null)))
-			.range(null, "1.20.4", () -> TagReference.forItems(() -> "", TagReference.alsoRemove("filtered_title",
-					new NBTTagReference<>(String.class, "title"))))
 			.get();
 	
 	public static final TagReference<String, ItemStack> AUTHOR = Version.<TagReference<String, ItemStack>>newSwitch()
@@ -44,7 +42,6 @@ public class WrittenBookTagReferences {
 					null,
 					content -> content == null ? "" : content.author(),
 					(content, value) -> getComponent(content, null, () -> value, null, null)))
-			.range(null, "1.20.4", () -> TagReference.forItems(() -> "", new NBTTagReference<>(String.class, "author")))
 			.get();
 	
 	public static final TagReference<Integer, ItemStack> GENERATION = Version.<TagReference<Integer, ItemStack>>newSwitch()
@@ -52,7 +49,6 @@ public class WrittenBookTagReferences {
 					null,
 					content -> content == null ? 0 : content.generation(),
 					(content, value) -> getComponent(content, null, null, () -> value, null)))
-			.range(null, "1.20.4", () -> TagReference.forItems(() -> 0, new NBTTagReference<>(Integer.class, "generation")))
 			.get();
 	
 	public static final TagReference<List<Text>, ItemStack> PAGES = Version.<TagReference<List<Text>, ItemStack>>newSwitch()
@@ -60,8 +56,6 @@ public class WrittenBookTagReferences {
 					null,
 					content -> content == null ? new ArrayList<>() : content.pages().stream().map(RawFilteredPair::raw).collect(Collectors.toList()),
 					(content, value) -> getComponent(content, null, null, null, () -> value)))
-			.range(null, "1.20.4", () -> TagReference.forItems(ArrayList::new, TagReference.alsoRemove("filtered_pages",
-					TagReference.forLists(Text.class, new NBTTagReference<>(Text[].class, "pages")))))
 			.get();
 	
 }

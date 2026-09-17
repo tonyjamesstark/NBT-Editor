@@ -17,7 +17,6 @@ public class SplashOverlayMixin {
 	private static ResourceReload init_monitor(ResourceReload monitor) {
 		return Version.<ResourceReload>newSwitch()
 				.range("1.20.5", null, () -> new ParallelResourceReload(monitor, DynamicRegistryManagerHolder.loadDefaultManager()))
-				.range(null, "1.20.4", monitor)
 				.get();
 	}
 }

@@ -6,7 +6,9 @@ import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVQuaternionf;
 
-import net.minecraft.client.util.math.MatrixStack;
+import org.joml.Quaternionf;
+
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
@@ -27,25 +29,10 @@ public interface LocalNBT {
 		return (T) localNBT.copy();
 	}
 	
-	public static MVQuaternionf makeRotatingIcon(MatrixStack matrices, int x, int y, float scale, boolean inverse) {
-		matrices.translate(x + 8, y + 8, 8.0);
-		matrices.scale(scale, scale, scale);
-		matrices.scale(12, 12, 12);
-		
-		MVQuaternionf quatX = MVQuaternionf.ofXRotation((float) (-Math.PI / 6));
-		MVQuaternionf quatY = MVQuaternionf.ofYRotation((float) (System.currentTimeMillis() % 2000 / 2000.0f * Math.PI * 2));
-		MVQuaternionf quatZ = MVQuaternionf.ofZRotation((float) Math.PI);
-		
-		if (inverse) {
-			quatX.conjugate().applyToMatrixStack(matrices);
-			quatY.copy().conjugate().applyToMatrixStack(matrices);
-		} else {
-			quatX.applyToMatrixStack(matrices);
-			quatY.applyToMatrixStack(matrices);
-		}
-		quatZ.applyToMatrixStack(matrices);
-		
-		return quatY;
+	/** The spin every 3D preview icon shares, as a rotation the GUI can queue. */
+	public static Quaternionf iconSpin() {
+		float yaw = (float) (System.currentTimeMillis() % 2000 / 2000.0f * Math.PI * 2);
+		return new Quaternionf().rotateX((float) (-Math.PI / 6)).rotateY(yaw);
 	}
 	
 	public default boolean isEmpty() {
@@ -79,7 +66,7 @@ public interface LocalNBT {
 		setNBT(nbt);
 	}
 	
-	public void renderIcon(MatrixStack matrices, int x, int y, float tickDelta);
+	public void renderIcon(DrawContext context, int x, int y, float tickDelta);
 	
 	public Optional<ItemStack> toItem(boolean cleanup);
 	public NbtCompound serialize();

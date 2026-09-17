@@ -123,7 +123,6 @@ public record AttributeData(EntityAttribute attribute, double value, Optional<At
 			
 			public static final boolean ID_IS_IDENTIFIER = Version.<Boolean>newSwitch()
 					.range("1.21.0", null, true)
-					.range(null, "1.20.6", false)
 					.get();
 			
 			public static AttributeModifierId randomUUID() {

@@ -31,7 +31,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.TextInst;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.shaders.MVShader;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
 
@@ -41,7 +40,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -139,14 +138,14 @@ public class MainUtil {
 	
 	private static final Identifier LOGO = IdentifierInst.of("nbteditor", "textures/logo.png");
 	private static final Identifier LOGO_UPDATE_AVAILABLE = IdentifierInst.of("nbteditor", "textures/logo_update_available.png");
-	public static void renderLogo(MatrixStack matrices) {
-		MVDrawableHelper.drawTexture(matrices,
+	public static void renderLogo(DrawContext context) {
+		MVDrawableHelper.drawTexture(context,
 				UpdateCheckerThread.UPDATE_AVAILABLE ? LOGO_UPDATE_AVAILABLE : LOGO, 16, 16, 0, 0, 32, 32, 32, 32);
 	}
 	
 	
 	
-	public static void drawWrappingString(MatrixStack matrices, TextRenderer renderer, String text, int x, int y, int maxWidth, int color, boolean centerHorizontal, boolean centerVertical) {
+	public static void drawWrappingString(DrawContext context, TextRenderer renderer, String text, int x, int y, int maxWidth, int color, boolean centerHorizontal, boolean centerVertical) {
 		maxWidth = Math.max(maxWidth, renderer.getWidth("ww"));
 		
 		// Split into breaking spots
@@ -219,9 +218,9 @@ public class MainUtil {
 			line = lines.get(i);
 			int offsetY = i * renderer.fontHeight + (centerVertical ? -renderer.fontHeight * lines.size() / 2 : 0);
 			if (centerHorizontal)
-				MVDrawableHelper.drawCenteredTextWithShadow(matrices, renderer, TextInst.of(line), x, y + offsetY, color);
+				MVDrawableHelper.drawCenteredTextWithShadow(context, renderer, TextInst.of(line), x, y + offsetY, color);
 			else
-				MVDrawableHelper.drawTextWithShadow(matrices, renderer, TextInst.of(line), x, y + offsetY, color);
+				MVDrawableHelper.drawTextWithShadow(context, renderer, TextInst.of(line), x, y + offsetY, color);
 		}
 	}
 	
@@ -410,12 +409,12 @@ public class MainUtil {
 	}
 	
 	
-	public static void mapMatrices(MatrixStack matrices,
+	public static void mapMatrices(DrawContext context,
 			int fromX, int fromY, int fromWidth, int fromHeight,
 			int toX, int toY, int toWidth, int toHeight) {
-		matrices.translate(toX, toY, 0.0);
-		matrices.scale((float) toWidth / fromWidth, (float) toHeight / fromHeight, 1);
-		matrices.translate(-fromX, -fromY, 0.0);
+		context.getMatrices().translate((float) (toX), (float) (toY));
+		context.getMatrices().scale((float) toWidth / fromWidth, (float) toHeight / fromHeight);
+		context.getMatrices().translate((float) (-fromX), (float) (-fromY));
 	}
 	
 	
@@ -454,37 +453,6 @@ public class MainUtil {
 		if (output == null)
 			return defaultValue;
 		return output;
-	}
-	
-	
-	public static void fillShader(MatrixStack matrices, MVShader shader, Consumer<VertexConsumer> data, int x, int y, int width, int height) {
-		int x1 = x;
-		int y1 = y;
-		int x2 = x + width;
-		int y2 = y + height;
-		
-		MVMatrix4f matrix = MVMatrix4f.getPositionMatrix(matrices.peek());
-		VertexConsumer vertexConsumer = MVMisc.beginDrawingShader(matrices, shader);
-		
-		matrix.applyToVertex(vertexConsumer, x1, y1, 0).texture(0, 0);
-		data.accept(vertexConsumer);
-		MVMisc.nextVertex(vertexConsumer);
-		
-		matrix.applyToVertex(vertexConsumer, x1, y2, 0).texture(0, 1);
-		data.accept(vertexConsumer);
-		MVMisc.nextVertex(vertexConsumer);
-		
-		matrix.applyToVertex(vertexConsumer, x2, y2, 0).texture(1, 1);
-		data.accept(vertexConsumer);
-		MVMisc.nextVertex(vertexConsumer);
-		
-		matrix.applyToVertex(vertexConsumer, x2, y1, 0).texture(1, 0);
-		data.accept(vertexConsumer);
-		MVMisc.nextVertex(vertexConsumer);
-		
-		MVGlStateManager._disableDepthTest();
-		MVMisc.endDrawingShader(matrices, vertexConsumer);
-		MVGlStateManager._enableDepthTest();
 	}
 	
 	

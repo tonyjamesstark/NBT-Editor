@@ -23,9 +23,11 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldW
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySupportingScreen {
@@ -72,9 +74,10 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 		
 		name = new NamedTextFieldWidget(16 + (32 + 8) * 2, 16 + 8, 100, 16) {
 			@Override
-			public boolean mouseClicked(double mouseX, double mouseY, int button) {
+			public boolean mouseClicked(Click click, boolean doubled) {
+				double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 				if (isNameEditable())
-					return super.mouseClicked(mouseX, mouseY, button);
+					return super.mouseClicked(click, doubled);
 				else
 					return false;
 			}
@@ -104,68 +107,50 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 	protected void initEditor() {}
 	
 	@Override
-	public final void renderMain(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.renderBackground(matrices);
-		preRenderEditor(matrices, mouseX, mouseY, delta);
-		super.renderMain(matrices, mouseX, mouseY, delta);
-		renderEditor(matrices, mouseX, mouseY, delta);
-		MainUtil.renderLogo(matrices);
-		renderPreview(matrices, delta);
+	public final void renderMain(DrawContext context, int mouseX, int mouseY, float delta) {
+		MVDrawableHelper.renderBackground(this, context);
+		preRenderEditor(context, mouseX, mouseY, delta);
+		super.renderMain(context, mouseX, mouseY, delta);
+		renderEditor(context, mouseX, mouseY, delta);
+		MainUtil.renderLogo(context);
+		renderPreview(context, delta);
 	}
-	private static final Supplier<Reflection.MethodInvoker> RenderSystem_getModelViewStack =
-			Reflection.getOptionalMethod(RenderSystem.class, "getModelViewStack", MethodType.methodType(MatrixStack.class));
-	private void renderPreview(MatrixStack matrices, float tickDelta) {
-		int x = 16 + 32 + 8;
-		int y = 16;
+	private void renderPreview(DrawContext context, float tickDelta) {
 		int scaleX = 2;
 		int scaleY = 2;
+		int x = (16 + 32 + 8) / scaleX;
+		int y = 16 / scaleY;
 		
-		x /= scaleX;
-		y /= scaleY;
-		
-		boolean oldMatrix = Version.<Boolean>newSwitch()
-				.range("1.19.4", null, false)
-				.range(null, "1.19.3", true)
-				.get();
-		if (oldMatrix)
-			matrices = RenderSystem_getModelViewStack.get().invoke(null);
-		
-		matrices.push();
-		matrices.translate(0.0D, 0.0D, 32.0D);
-		matrices.scale(scaleX, scaleY, 1);
-		if (oldMatrix)
-			MVDrawableHelper.applyModelViewMatrix();
-		
-		localNBT.renderIcon(matrices, x, y, tickDelta);
-		
-		matrices.pop();
-		if (oldMatrix)
-			MVDrawableHelper.applyModelViewMatrix();
+		context.getMatrices().pushMatrix();
+		context.getMatrices().scale((float) (scaleX), (float) (scaleY));
+		localNBT.renderIcon(context, x, y, tickDelta);
+		context.getMatrices().popMatrix();
 	}
-	protected void preRenderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {}
-	protected void renderEditor(MatrixStack matrices, int mouseX, int mouseY, float delta) {}
+	protected void preRenderEditor(DrawContext context, int mouseX, int mouseY, float delta) {}
+	protected void renderEditor(DrawContext context, int mouseX, int mouseY, float delta) {}
 	
-	protected void renderTip(MatrixStack matrices, String langHint) {
+	protected void renderTip(DrawContext context, String langHint) {
 		if (!ConfigScreen.isKeybindsHidden()) {
 			int x = 16 + (32 + 8) * 2 + (100 + 8) * 2;
-			MainUtil.drawWrappingString(matrices, textRenderer, TextInst.translatable(langHint).getString(),
+			MainUtil.drawWrappingString(context, textRenderer, TextInst.translatable(langHint).getString(),
 					16 + (32 + 8) * 2 + (100 + 8) * 2, 16 + 6 + 10, width - x - 8 - 20 - 8, -1, false, true);
 		}
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (getOverlay() != null)
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		if (super.keyPressed(keyCode, scanCode, modifiers))
+			return super.keyPressed(input);
+		if (super.keyPressed(input))
 			return true;
 		
-		if (hasControlDown() && !hasShiftDown() && !hasAltDown() && keyCode == GLFW.GLFW_KEY_S) {
+		if (MVMisc.hasControlDown() && !MVMisc.hasShiftDown() && !MVMisc.hasAltDown() && keyCode == GLFW.GLFW_KEY_S) {
 			save();
 			return true;
 		}
 		
-		return name.keyPressed(keyCode, scanCode, modifiers);
+		return name.keyPressed(input);
 	}
 	
 	protected void setSaved(boolean saved) {

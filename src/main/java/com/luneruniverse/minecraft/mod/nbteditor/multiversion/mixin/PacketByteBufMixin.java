@@ -71,7 +71,6 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 	public PacketByteBuf writeNbtCompound(NbtCompound element) {
 		return Version.<PacketByteBuf>newSwitch()
 				.range("1.20.2", null, () -> ((PacketByteBuf) (Object) this).writeNbt(element))
-				.range(null, "1.20.1", () -> PacketByteBuf_writeNbt.get().invoke(this, (NbtCompound) element))
 				.get();
 	}
 	
@@ -92,7 +91,6 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 	public ItemStack readItemStack() {
 		return Version.<ItemStack>newSwitch()
 				.range("1.20.5", null, () -> ServerMVMisc.packetCodecDecode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf()))
-				.range(null, "1.20.4", () -> PacketByteBuf_readItemStack.get().invoke(this))
 				.get();
 	}
 	private static final Supplier<Reflection.MethodInvoker> PacketByteBuf_writeItemStack =
@@ -101,7 +99,6 @@ public abstract class PacketByteBufMixin implements MVPacketByteBufParent {
 	public PacketByteBuf writeItemStack(ItemStack item) {
 		Version.newSwitch()
 				.range("1.20.5", null, () -> ServerMVMisc.packetCodecEncode(ItemStack.OPTIONAL_PACKET_CODEC, createRegistryByteBuf(), item))
-				.range(null, "1.20.4", () -> PacketByteBuf_writeItemStack.get().invoke(this, item))
 				.run();
 		return (PacketByteBuf) (Object) this;
 	}

@@ -11,6 +11,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.It
 import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
+import net.minecraft.text.StyleSpriteSource;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.HoverEvent;
@@ -63,11 +64,11 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 			case INSERTION -> style.withInsertion(value);
 			case FONT -> {
 				if (value == null)
-					yield style.withFont(Style.DEFAULT_FONT_ID);
+					yield style.withFont(StyleSpriteSource.DEFAULT);
 				try {
-					yield style.withFont(IdentifierInst.of(value));
+					yield style.withFont(new StyleSpriteSource.Font(IdentifierInst.of(value)));
 				} catch (InvalidIdentifierException e) {
-					yield style.withFont(Style.DEFAULT_FONT_ID);
+					yield style.withFont(StyleSpriteSource.DEFAULT);
 				}
 			}
 		};

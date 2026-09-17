@@ -26,8 +26,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldW
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.TranslatedGroupWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.WrittenBookTagReferences;
 
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.screen.ingame.BookScreen.Contents;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -157,7 +158,7 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		return output;
 	}
 	private Style makePreviewStyle(Style style) {
-		if (style.getClickEvent() == null)
+		if (style.getClickEvent() == null || MVTextEvents.ClickAction.getAction(style.getClickEvent()) == null)
 			return style;
 		return MixinLink.withRunClickEvent(style, () -> {
 			MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(style.getClickEvent());
@@ -206,12 +207,13 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 					net.minecraft.client.gui.screen.ingame.BookScreen preview =
 							new net.minecraft.client.gui.screen.ingame.BookScreen(getPreviewItem()) {
 						@Override
-						public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+						public boolean keyPressed(KeyInput input) {
+							int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 							if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 								setOverlay(null);
 								return true;
 							}
-							return super.keyPressed(keyCode, scanCode, modifiers);
+							return super.keyPressed(input);
 						}
 					};
 					setOverlayScreen(preview, 200);
@@ -248,16 +250,17 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 	}
 	
 	@Override
-	protected void renderEditor(MatrixStack matrices, int fdf8eb, int mouseY, float delta) {
-		MVDrawableHelper.drawTextWithShadow(matrices, textRenderer, TextInst.translatable("nbteditor.book.page", page + 1, getPageCount()),
+	protected void renderEditor(DrawContext context, int fdf8eb, int mouseY, float delta) {
+		MVDrawableHelper.drawTextWithShadow(context, textRenderer, TextInst.translatable("nbteditor.book.page", page + 1, getPageCount()),
 				16 + 108 * 3 - 4 + 24 * 3, 64 + 10 - textRenderer.fontHeight / 2, -1);
 	}
 	
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyInput input) {
+		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (getOverlay() != null)
-			return super.keyPressed(keyCode, scanCode, modifiers);
-		if (super.keyPressed(keyCode, scanCode, modifiers))
+			return super.keyPressed(input);
+		if (super.keyPressed(input))
 			return true;
 		
 		if (keyCode == GLFW.GLFW_KEY_PAGE_UP || keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
