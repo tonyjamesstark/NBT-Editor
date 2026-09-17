@@ -5,17 +5,13 @@ import java.awt.Point;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.SuggestingTextFieldWidget;
 
 import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.ChatFormatting;
 
 @Mixin(CommandSuggestions.class)
 public class ChatInputSuggestorMixin {
@@ -33,13 +29,5 @@ public class ChatInputSuggestorMixin {
 			args.set(2, pos.y);
 		} else
 			args.set(2, input.y + input.getHeight() + 2);
-	}
-	
-	@Inject(method = "fillNodeUsage", at = @At("HEAD"), cancellable = true)
-	private void fillNodeUsage(ChatFormatting formatting, CallbackInfoReturnable<Boolean> info) {
-		if (!(input instanceof SuggestingTextFieldWidget))
-			return;
-		
-		info.setReturnValue(true);
 	}
 }
