@@ -17,7 +17,7 @@
   "license": "MIT",
   "icon": "assets/nbteditor/textures/logo.png",
 
-  "environment": "*",
+  "environment": "client",
   "entrypoints": {
     "main": [
       "com.luneruniverse.minecraft.mod.nbteditor.NBTEditor"

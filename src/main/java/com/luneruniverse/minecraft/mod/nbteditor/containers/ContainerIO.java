@@ -80,16 +80,23 @@ public interface ContainerIO<T> {
 	public Identifier[] getTextures(T container);
 	/**
 	 * @param container
-	 * @return Will not contain null, can be modified without affecting container
+	 * @return May contain null for an unset slot, can be modified without affecting container
 	 */
 	public ItemStack[] read(T container);
 	/**
+	 * <code>contents</code> may be longer than {@link #getMaxSlots}; the caller sizes it to the
+	 * screen, not to the container. Ignore the excess. Writing it produces NBT that
+	 * {@link #isSupported} rejects on the next read, which makes the container silently uneditable.
 	 * @param container
 	 * @param contents Can contain null, can be modified later without affecting container
-	 * @return The number of items in <code>contents</code> that were written, including empty items
+	 * @return The same value {@link #getNumWritten} returns for these arguments
 	 */
 	public int write(T container, ItemStack[] contents);
 	/**
+	 * Equals {@link #getMaxSlots} unless this io compacts, meaning
+	 * {@link #getWrittenSlotIndex} is not the identity. {@link ConcatContainerIO} uses this as both
+	 * the contents-space stride and the slot-space offset of the next io, so the two only agree when
+	 * this equals the number of slots occupied. A compacting io must therefore be last in a concat.
 	 * @param container
 	 * @param contents
 	 * @return The number of items in <code>contents</code> that will be written, including empty items

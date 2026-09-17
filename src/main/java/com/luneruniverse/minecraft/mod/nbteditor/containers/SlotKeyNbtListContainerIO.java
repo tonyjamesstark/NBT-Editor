@@ -65,7 +65,7 @@ public class SlotKeyNbtListContainerIO implements ContainerIO<NbtList> {
 	@Override
 	public int write(NbtList container, ItemStack[] contents) {
 		container.clear();
-		for (int i = 0; i < contents.length; i++) {
+		for (int i = 0; i < Math.min(contents.length, numSlots); i++) {
 			ItemStack item = contents[i];
 			if (item == null || item.isEmpty())
 				continue;

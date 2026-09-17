@@ -10,8 +10,9 @@ mod's multi-version layer assumes a leading `1.`, so it cannot load on 26.x at a
 
 Separately, a three-model adversarial review of the 64 commits on `dev` surfaced a set of
 client-side defects that are independent of game version. Those are cheap, provable, and land
-first. The version migration is a much larger piece of work that is gated on Fabric shipping
-26.2 support, so it is scoped here rather than started.
+first. The version migration is a much larger piece of work, re-scoped in Phase 4 after
+establishing that 26.2 ships deobfuscated in Mojang names, so it is planned there rather than
+started.
 
 ## Scope
 
@@ -38,8 +39,8 @@ mod.
   compilation plus in-game exercise on the affected screen, not unit tests.
 - **JDK comes from SDKMAN** (`25.0.4-tem`). Not on the default `PATH`.
 - **Builds run in tmux** via `claude-term`, never in an unsupervised shell.
-- **Fabric gates Phase 4.** Loader, Yarn mappings, and Fabric API must ship 26.2 support before
-  any migration work can start. That is someone else's timeline.
+- **Phase 4 is not gated externally.** Fabric shipped 26.2 and is on 26.3-rc. The blocker is
+  internal: this codebase is written in Yarn names and Yarn stops at 1.21.11.
 
 ---
 
@@ -106,39 +107,135 @@ Three models independently flagged this subsystem and each found a *different* d
 finding is individually decisive, but the convergence is the signal, and the refactor is new
 enough on `dev` that nothing is built on it yet.
 
-- [ ] **3.1 Contents-space versus slot-space conflation** in `ConcatContainerIO`.
-- [ ] **3.2 `SlotKeyNbtListContainerIO.write` iterates `contents.length`, not `numSlots`.**
-  Currently masked by `ClientScreenHandlerSlot` locking, so it is latent rather than live.
-- [ ] **3.3 The tri-method invariant** across `getNumWritten`, `getWrittenSlotIndex`, and
-  `write` is unenforced and undocumented. Decide whether to encode it or document it.
+Shared premise, verified first. `ContainerScreen` extends `ClientHandledScreen` with
+`super(3, ...)`, so its inventory is always 27 slots, and `save()` passes all 27 to
+`ContainerIOs.write` no matter what `getMaxSlots` reports. Every write implementation therefore
+receives a longer array than it owns. `ContainerScreen.removed()` returns items sitting in slots
+at or past `numSlots` to the player, which is the author's own acknowledgement that items do reach
+those slots.
+
+- [x] **3.1 Contents-space versus slot-space conflation** in `ConcatContainerIO`. Real, and
+  unreachable. `getWrittenSlotIndex` adds the accumulated `getNumWritten` (contents space) to a
+  result that is a slot index. Those two agree only when each io consumes exactly as many contents
+  as it occupies slots. Every io satisfies that except the two compacting ones,
+  `OrderNbtListContainerIO` and `BundleContentsComponentContainerIO`, and both are last in every
+  concat that uses them. Checked all four in-scope concats: `DONKEY_IO`, `LLAMA_IO`, `VILLAGER_IO`,
+  `ALLAY_IO`. Each leads with `EquipmentContainerIO`, a fixed 8 slots for 8 contents. No
+  restructuring. Stating the invariant in 3.3 is what makes the conflation safe to leave.
+
+- [x] **3.2 `SlotKeyNbtListContainerIO.write` iterates `contents.length`, not `numSlots`.** Fixed
+  by bounding the loop. The unbounded version stamps `Slot` tags at or past `numSlots`, which its
+  own `isSupported` then rejects, so the next open silently refuses and the container becomes
+  uneditable. `OrderNbtListContainerIO.write` had the same shape, appending past `maxSlots` and
+  failing its own `isSupported` size check, so it is bounded too and its `getNumWritten` now
+  reports `min(contents.length, maxSlots)`. Both were masked by `ClientScreenHandlerSlot` locking,
+  a GUI-level guard protecting a data-level function in another package.
+
+- [x] **3.3 The tri-method invariant** across `getNumWritten`, `getWrittenSlotIndex`, and `write`
+  is now documented on `ContainerIO` rather than encoded. `getNumWritten` equals `getMaxSlots`
+  unless the io compacts, and a compacting io must be last in a concat. Encoding it would mean a
+  separate slot-offset concept threaded through `ConcatContainerIO` to buy nothing today. The same
+  pass corrected `read`'s javadoc, which promised "Will not contain null" while
+  `EquipmentContainerIO` and `SlotKeyNbtListContainerIO` both leave nulls in unset slots and
+  `ContainerScreen` line 57 defends against them.
 
 A fourth reported defect, a slicing bug in `ConcatContainerIO.getWrittenSlotIndex`, was checked
 and dismissed. `slot` is rebased by `- numWritten` and the result by `+ numWritten`, so the
-slicing is consistent.
+slicing is consistent. That is a separate claim from 3.1 and does not rescue it.
 
-## Phase 4: the 26.2 migration (scoped, not started)
+**Verification.** `sh gradlew compileJava` under `25.0.4-tem`, BUILD SUCCESSFUL, the same 5
+pre-existing mixin warnings and no new ones. Both bounds confirmed in the bytecode with `javap`
+rather than read off the build log. Not exercised in-game.
 
-Gated on Fabric. Do not start until loader, Yarn mappings, and Fabric API support 26.2.
+## Phase 4: the 26.2 migration (re-scoped 2026-09-13, not started)
 
-Under the 1.21.11 floor this is predominantly a **deletion**, not a port. Sizing it:
+The earlier version of this section said Phase 4 was gated on Fabric shipping 26.2 support, and
+that the work was predominantly a deletion. Both were wrong. Fabric shipped 26.2 and is already
+on 26.3-rc. The dominant cost is a **mappings rename**.
 
-- `multiversion/Version.java:152` rejects any version whose first component is not `1`. This is
-  the hard blocker. It runs inside `NBTEditorMixinPlugin.getMixins()` during Mixin config prep
-  with `"required": true`, so the mod cannot load at all on 26.2.
-- Relaxing that guard is not sufficient, and the failure mode afterwards is *mixed*.
-  Open-ended `range("1.21.x", null, ...)` branches keep matching correctly. Switches closed on
-  both ends match nothing and throw `IllegalStateException("Missing version!")` at the point of
-  use, far from `Version.java`. Some paths therefore fail loudly and others silently run
-  1.21.5-shaped code against moved APIs.
-- Surface area: 270 `newSwitch()` sites, 568 `range()` calls, 214 reflective lookups, and the
-  whole `nbteditor_1.17` module.
-- ~75 hardcoded intermediary identifiers (`method_10877`, `field_38096`, and similar) live
-  outside `Reflection.java`, plus 8 `loom:injected_interfaces` entries keyed by raw `class_NNNN`
-  names. All resolve against the mapping set for the exact built version.
+### What changed in Minecraft
 
-Sequence when it starts: raise the floor and delete the pre-1.21.11 arms *first*, then port what
-survives. Porting before subtracting means paying migration cost on code that is about to be
-deleted.
+26.2 ships **deobfuscated**. Its client jar carries 10,372 readable `net/minecraft/...` classes,
+and Mojang publishes no mappings for it: the 26.2 version manifest lists only `client` and
+`server` downloads, where 1.21.5 and 1.21.11 also list `client_mappings` and `server_mappings`.
+Fabric API's `26.2` branch declares no `mappings` line at all, where its `1.21.11` branch still
+needs `mappings loom.officialMojangMappings()`. Absence of mappings means they are unnecessary,
+not missing.
+
+The names shipped are **Mojang names**, not Yarn. `net.minecraft.item.ItemStack` becomes
+`net.minecraft.world.item.ItemStack`, and `net.minecraft.nbt.NbtCompound` becomes
+`net.minecraft.nbt.CompoundTag`. Yarn never crossed the boundary: the newest Yarn on Fabric's
+maven is `1.21.11+build.6` and there is nothing for any 26.x.
+
+Intermediary is retired in practice too. `net.fabricmc:intermediary` resolves to a real `1.21.11`
+artifact but to a placeholder `0.0.0` for 26.2, because intermediary is the identity mapping once
+the game is already deobfuscated. That kills the mod's intermediary layer: the 8
+`loom:injected_interfaces` entries keyed to `class_4068`, `class_437` and similar, plus the ~75
+hardcoded `method_NNNNN`/`field_NNNNN` lookups in and around `Reflection.java`. None have a
+target on 26.2.
+
+### Toolchain coordinates
+
+| | 1.21.5 (now) | 1.21.11 | 26.2 |
+| --- | --- | --- | --- |
+| yarn | 1.21.5+build.1 | 1.21.11+build.6 | none |
+| mojmap | published | published | not needed |
+| intermediary | 1.21.5 | 1.21.11 | 0.0.0 placeholder |
+| fabric-api | 0.128.1+1.21.5 | 0.141.6+1.21.11 | 0.160.0+26.2 |
+| loom | 1.10-SNAPSHOT | 1.13.3 | 1.16.2 |
+| java | 21 | 21 | 25 |
+
+### Why 1.21.11 is the pivot
+
+1.21.11 is the only version carrying **both** mapping sets, Yarn `1.21.11+build.6` and Mojang
+`client_mappings`. It is therefore the one place the rename can be verified in isolation, on a
+fixed game version, with no API drift mixed in. Going straight from 1.21.5/Yarn to 26.2/Mojang
+blends rename errors, API-change errors, and a six-minor-version loom upgrade into one failure
+surface with no way to attribute any single break.
+
+### Sequence
+
+Each step ends in a build. Do not start the next until the previous compiles.
+
+- [ ] **4.1 Bump 1.21.5 to 1.21.11, staying on Yarn.** Names do not move. `minecraft_version`,
+  `yarn_mappings`, `fabric_version`, `loader_version`, and a `1.21.11` entry in
+  `data_versions.json`, which currently tops out at 1.21.5 across 54 entries. This step proves
+  the open-ended `range("1.21.x", null, ...)` arms actually work.
+- [ ] **4.2 Raise the floor and subtract.** Delete the pre-1.21.11 arms across all 270
+  `newSwitch()` sites and 568 `range()` calls, the `nbteditor_1.17` module, and
+  `MVShader1`/`MVShader2`. Do this *before* the rename so 4.3 does not pay migration cost on code
+  about to be deleted. Largest diff of the phase, and it shrinks every later step.
+- [ ] **4.3 Yarn to Mojang names at 1.21.11.** Swap `mappings` to `loom.officialMojangMappings()`
+  and rename whatever survives 4.2. Same game version throughout, so every break is a rename
+  break. This is the bulk of the ~1357 `net.minecraft.*` imports, 998 of them outside
+  `multiversion/`.
+- [ ] **4.4 Retire the intermediary layer.** Replace the 8 `loom:injected_interfaces` keys and
+  the ~75 `method_NNNNN`/`field_NNNNN` lookups with real names. Kept separate from 4.3 because it
+  is a different kind of edit: 4.3 is mechanical renaming, this is deciding whether each
+  reflective lookup still needs to be reflective once the name is stable and readable.
+- [ ] **4.5 Bump 1.21.11 to 26.2.** Loom 1.10-SNAPSHOT to 1.16.x, fabric-api 0.160.0+26.2, loader
+  0.19.5, and *remove* the `mappings` line rather than repointing it. Relax
+  `Version.parseVersion`, which rejects any version whose first component is not `1` and runs
+  inside `NBTEditorMixinPlugin.getMixins()` with `"required": true`. Add 26.x entries to
+  `data_versions.json`. Raise `fabric.mod.json`'s `"java": ">=16"` to `>=25`.
+
+### The version-guard failure mode, unchanged
+
+Relaxing `Version.parseVersion` alone is not sufficient, and the failure afterwards is *mixed*.
+Open-ended `range("1.21.x", null, ...)` branches keep matching. Switches closed on both ends match
+nothing and throw `IllegalStateException("Missing version!")` at the point of use, far from
+`Version.java`. Some paths fail loudly, others silently run 1.21.5-shaped code against moved
+APIs. Step 4.2 removes most of that surface before it can bite.
+
+### Unresolved
+
+- Whether `multiversion/` earns its place at all once the floor is 1.21.11 and the game ships
+  deobfuscated. Its reason for existing was spanning obfuscated versions with drifting names.
+- Whether ModMenu and nbt-autocomplete publish 26.2 builds. `nbt-autocomplete` is pinned to
+  `1.3.12-fabric-1.21.5` and is the harder of the two.
+- `depends.minecraft` in `fabric.mod.json` is `">=1.17-"` with no upper bound, so the current jar
+  is accepted and then hard-crashes on 26.2 rather than being refused. Worth fixing independently
+  of this phase.
 
 ## Deletion candidates (scoped, deferred)
 
@@ -146,6 +243,11 @@ Recorded so the next pass does not rediscover them. Nothing here is removed yet.
 
 - The pre-1.21.11 arms of every `Version.newSwitch()` and `range()` site.
 - The `nbteditor_1.17` module, and `MVShader1` / `MVShader2`.
+- `ClientScreenHandlerSlot.unlockDuring` has no callers. It is the only bypass of slot locking,
+  and it mishandles nesting: an inner call's `finally` unlocks the thread while the outer call is
+  still running.
+- `ContainerIOs.getNumWritten` has no callers. `getWrittenSlotIndex` has exactly one, from
+  `ContainerScreen` line 151.
 - `util/lock/PartitionedLockImpl` is live, reached through `PartitionedReadWriteLock` from
   `ClientChest`, so it is **not** a deletion candidate. It does carry real defects worth a
   separate audit: `lock(int)` blocks on the partition lock while still holding `globalLock`,

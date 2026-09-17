@@ -52,14 +52,15 @@ public class OrderNbtListContainerIO implements ContainerIO<NbtList> {
 	@Override
 	public int write(NbtList container, ItemStack[] contents) {
 		container.clear();
-		Arrays.stream(contents).filter(item -> item != null && !item.isEmpty())
+		int numWritten = getNumWritten(container, contents);
+		Arrays.stream(contents).limit(numWritten).filter(item -> item != null && !item.isEmpty())
 				.map(item -> item.nbte$serialize(true)).forEach(container::add);
-		return contents.length;
+		return numWritten;
 	}
 	
 	@Override
 	public int getNumWritten(NbtList container, ItemStack[] contents) {
-		return contents.length;
+		return Math.min(contents.length, maxSlots);
 	}
 	
 	@Override
