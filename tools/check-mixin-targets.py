@@ -12,14 +12,20 @@ This resolves the same four things mixin resolves, before launch:
   - the `@At` target member exists, with that descriptor
   - the selected method's bytecode actually contains that call or field access
 
-Runs as part of `./gradlew check`, which passes the jar path. Standalone, it finds
-the jar from `minecraft_version`:
+Runs as part of `./gradlew check`, which passes the whole compile classpath, so
+library owners like `com.mojang.serialization.DynamicOps` resolve too. Standalone
+it falls back to the mapped jar alone, found from `minecraft_version`, and reports
+the library owners as unchecked:
 
-    python3 tools/check-mixin-targets.py [path/to/minecraft-merged-deobf.jar]
+    python3 tools/check-mixin-targets.py [classpath]
 
-Names that cannot be resolved against a Mojang-mapped jar are reported as unchecked
-rather than as failures: owners outside `net.minecraft`, and the handful of
-deliberate `method_*` intermediary names that remapJar resolves at build time.
+An owner that is on the classpath and still missing the member is a failure. An
+owner that is not on the classpath at all is unchecked.
+
+Intermediary names are failures, not exemptions. The jar ships no refMap, so mixin
+never translates one and the injection dies at apply time. Reflection through
+`Reflection.java` is the opposite case and stays intermediary, because Fabric's
+MappingResolver does translate at runtime.
 """
 import collections
 import os
@@ -35,7 +41,7 @@ INTERMEDIARY = re.compile(r'^(method|field|comp)_\d+$')
 Member = collections.namedtuple("Member", "name desc bridge refs")
 
 
-def find_jar():
+def find_classpath():
     if len(sys.argv) > 1:
         return sys.argv[1]
     base = os.path.expanduser("~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft")
@@ -47,7 +53,7 @@ def find_jar():
     return jar
 
 
-JAR = find_jar()
+CLASSPATH = find_classpath()
 _classes = {}
 
 
@@ -55,7 +61,7 @@ def load(name):
     """Parse one class out of the jar. Returns None when it is not there."""
     if name in _classes:
         return _classes[name]
-    p = subprocess.run([JAVAP, "-p", "-v", "-classpath", JAR, name], capture_output=True, text=True)
+    p = subprocess.run([JAVAP, "-p", "-v", "-classpath", CLASSPATH, name], capture_output=True, text=True)
     if p.returncode != 0 or "Error:" in p.stderr:
         _classes[name] = None
         return None
@@ -169,7 +175,7 @@ def check(path):
     targets += re.findall(r'"([\w.$]+)"', mx.group(1))
     for t in targets:
         if load(t) is None:
-            report(where, f"@Mixin target not in jar: {t}", t.startswith("net.minecraft"))
+            report(where, f"@Mixin target not on the classpath: {t}", False)
     targets = [t for t in targets if load(t)]
 
     for ann in re.findall(INJECTOR, text, re.S):
@@ -185,7 +191,8 @@ def check(path):
         for selector in selectors:
             name = selector.split("(")[0]
             if INTERMEDIARY.match(name):
-                report(where, f'method = "{selector}" is an intermediary name', False)
+                report(where, f'method = "{selector}" is an intermediary name, and the jar '
+                              f'ships no refMap for mixin to resolve it with')
                 continue
             for t in targets:
                 owner, found = lookup(t, name, "methods")
@@ -212,8 +219,7 @@ def check(path):
                         continue
                     at_owner, at_name, at_desc, kind = at
                     if load(at_owner) is None:
-                        report(where, f"@At owner not in jar: {at_owner}",
-                               at_owner.startswith("net.minecraft"))
+                        report(where, f"@At owner not on the classpath: {at_owner}", False)
                         continue
                     _, have = lookup(at_owner, at_name, kind)
                     if not have:
@@ -255,6 +261,9 @@ for directory, _, files in os.walk(SRC):
     for f in sorted(files):
         if f.endswith(".java"):
             check(os.path.join(directory, f))
+
+if not any(_classes.values()):
+    sys.exit("nothing on the classpath resolved; every check would pass vacuously")
 
 for p in sorted(problems):
     print(p)

@@ -161,14 +161,13 @@ tasks.register("checkMixinTargets") {
 		false
 	}
 	doLast {
-		def jar = classpath.find { it.name.startsWith("minecraft-merged") }
-		if (jar == null)
+		if (!classpath.any { it.name.startsWith("minecraft-merged") })
 			throw new GradleException("no mapped Minecraft jar on the compile classpath")
-		def proc = new ProcessBuilder("python3", script.absolutePath, jar.absolutePath)
+		def proc = new ProcessBuilder("python3", script.absolutePath, classpath.asPath)
 				.directory(projectDir).redirectErrorStream(true).start()
 		proc.inputStream.eachLine { logger.lifecycle(it) }
 		if (proc.waitFor() != 0)
-			throw new GradleException("mixin targets do not resolve against ${jar.name}")
+			throw new GradleException("mixin targets do not resolve against the compile classpath")
 	}
 }
 check.dependsOn checkMixinTargets
