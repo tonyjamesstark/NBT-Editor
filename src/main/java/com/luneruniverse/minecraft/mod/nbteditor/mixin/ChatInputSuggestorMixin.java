@@ -22,7 +22,7 @@ public class ChatInputSuggestorMixin {
 	@Shadow
 	EditBox input;
 	
-	@ModifyArgs(method = "showSuggestions", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/CommandSuggestions$SuggestionWindow;<init>(Lnet/minecraft/client/gui/screen/CommandSuggestions;IIILjava/util/List;Z)V"))
+	@ModifyArgs(method = "showSuggestions", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions$SuggestionsList;<init>(Lnet/minecraft/client/gui/components/CommandSuggestions;IIILjava/util/List;Z)V"))
 	private void SuggestionWindow(Args args) {
 		if (!(input instanceof SuggestingTextFieldWidget suggestor))
 			return;

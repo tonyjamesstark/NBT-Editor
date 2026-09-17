@@ -39,7 +39,7 @@ public abstract class CommandManagerMixin {
 	private CommandDispatcher<CommandSourceStack> dispatcher;
 
 	// 1.18
-	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/server/command/Commands;dispatcher:Lcom/mojang/brigadier/CommandDispatcher;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER), target = @Desc(value = "<init>", args = CommandSelection.class), require = 0)
+	@Inject(at = @At(value = "FIELD", target = "Lnet/minecraft/commands/Commands;dispatcher:Lcom/mojang/brigadier/CommandDispatcher;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER), target = @Desc(value = "<init>", args = CommandSelection.class), require = 0)
 	@SuppressWarnings("target")
 	private void fabric_addCommands(Commands.CommandSelection environment, CallbackInfo ci) {
 		CommandRegistrationCallback.EVENT.invoker().register(this.dispatcher, null, environment);
