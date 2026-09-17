@@ -27,6 +27,7 @@ import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -70,6 +71,14 @@ public class LocalEntity implements LocalNBT {
 		
 		cachedEntity = ServerMVMisc.createEntity(entityType, Minecraft.getInstance().level);
 		NBTManagers.ENTITY.setNbt(cachedEntity, nbt);
+		
+		// Entity.load sets the head and body yaw but not their previous-tick counterparts, which
+		// only baseTick syncs. This entity is never ticked, so the renderer would interpolate
+		// the preview out of zero every frame.
+		if (cachedEntity instanceof LivingEntity living) {
+			living.yHeadRotO = living.yHeadRot;
+			living.yBodyRotO = living.yBodyRot;
+		}
 		
 		cachedNbt = nbt.copy();
 		

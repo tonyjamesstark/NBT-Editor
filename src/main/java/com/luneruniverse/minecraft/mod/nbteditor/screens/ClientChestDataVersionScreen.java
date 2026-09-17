@@ -50,8 +50,8 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	
 	@Override
 	protected void init() {
-		MutableComponent prevKeybind = Component.translatableEscape("nbteditor.keybind.page.down");
-		MutableComponent nextKeybind = Component.translatableEscape("nbteditor.keybind.page.up");
+		MutableComponent prevKeybind = Component.translatableEscape("nbteditor.keybind.page.up");
+		MutableComponent nextKeybind = Component.translatableEscape("nbteditor.keybind.page.down");
 		if (ConfigScreen.isInvertedPageKeybinds()) {
 			MutableComponent temp = prevKeybind;
 			prevKeybind = nextKeybind;
@@ -167,7 +167,7 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
 		if (keyCode == GLFW.GLFW_KEY_PAGE_UP || keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
-			boolean prev = (keyCode == GLFW.GLFW_KEY_PAGE_DOWN);
+			boolean prev = (keyCode == GLFW.GLFW_KEY_PAGE_UP);
 			if (ConfigScreen.isInvertedPageKeybinds())
 				prev = !prev;
 			if (prev)

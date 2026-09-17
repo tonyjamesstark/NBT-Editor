@@ -112,7 +112,9 @@ public class ListNBTFolder implements NBTFolder<CollectionTag> {
 	}
 	
 	private Tag getDefaultValue(CollectionTag nbt) {
-		return switch (nbt.nbte$getHeldType().orElse((byte) 0)) {
+		// An empty list reports type 0 and lands on the int case below; the fallback is only for
+		// a list holding more than one type, where the last entry is the better guess.
+		return switch (nbt.nbte$getHeldType().orElseGet(() -> nbt.nbte$get(nbt.nbte$size() - 1).getId())) {
 			case Tag.TAG_BYTE -> ByteTag.ZERO;
 			case Tag.TAG_SHORT -> ShortTag.valueOf((short) 0);
 			case 0, Tag.TAG_INT -> IntTag.valueOf(0);

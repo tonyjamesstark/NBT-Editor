@@ -3,6 +3,7 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.factories;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
@@ -170,8 +171,17 @@ public class SignboardScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	
 	private void setLines(List<Component> lines) {
-		modifySideNbt(nbt -> SignSideTagReferences.TEXT.set(nbt, lines.stream()
-				.map(this::fixClickEvent).map(line -> NEW_FEATURES ? fixEditable(line) : line).toList()));
+		// SignText's codec is Util.fixedSize(4), so a sign edited down to fewer lines decodes to
+		// nothing and silently keeps its old text. Pad back out to four.
+		Stream<Component> stream = lines.stream();
+		if (NEW_FEATURES)
+			stream = Stream.concat(stream, Stream.generate(() -> Component.nullToEmpty(""))).limit(4);
+		stream = stream.map(this::fixClickEvent);
+		if (NEW_FEATURES)
+			stream = stream.map(this::fixEditable);
+		List<Component> cleanedLines = stream.toList();
+		
+		modifySideNbt(nbt -> SignSideTagReferences.TEXT.set(nbt, cleanedLines));
 		checkSave();
 	}
 	private List<Component> getLines() {

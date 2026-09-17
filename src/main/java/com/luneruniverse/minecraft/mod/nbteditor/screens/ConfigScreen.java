@@ -278,7 +278,9 @@ public class ConfigScreen extends TickableSupportingScreen {
 					.map(alias -> new Alias(alias.getAsJsonObject().get("original").getAsString(),
 							alias.getAsJsonObject().get("alias").getAsString())).collect(Collectors.toList());
 			itemSizeFormat = ItemSizeFormat.valueOf(settings.get("itemSize").getAsString());
-			invertedPageKeybinds = settings.get("invertedPageKeybinds").getAsBoolean();
+			// Negated on both sides: the saved key predates the swap of what "normal" means, so an
+			// existing config keeps the behaviour its owner chose.
+			invertedPageKeybinds = !settings.get("invertedPageKeybinds").getAsBoolean();
 			triggerBlockUpdates = settings.get("triggerBlockUpdates").getAsBoolean();
 			warnIncompatibleProtocol = settings.get("warnIncompatibleProtocol").getAsBoolean();
 			recreateBlocksAndEntities = settings.get("recreateBlocksAndEntities").getAsBoolean();
@@ -317,7 +319,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 			return obj;
 		}).collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
 		settings.addProperty("itemSize", itemSizeFormat.name());
-		settings.addProperty("invertedPageKeybinds", invertedPageKeybinds);
+		settings.addProperty("invertedPageKeybinds", !invertedPageKeybinds);
 		settings.addProperty("triggerBlockUpdates", triggerBlockUpdates);
 		settings.addProperty("warnIncompatibleProtocol", warnIncompatibleProtocol);
 		settings.addProperty("recreateBlocksAndEntities", recreateBlocksAndEntities);

@@ -33,7 +33,8 @@
     "ChatInputSuggestorMixin",
     "ClientPlayerEntityMixin",
     "SplashOverlayMixin",
-    "ScreenHandlerMixin"
+    "ScreenHandlerMixin",
+    "MouseHandlerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

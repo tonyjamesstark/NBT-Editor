@@ -49,7 +49,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 					ClientChestPage pageData = optional.get();
 					
 					if (!pageData.isInThisVersion()) {
-						NBTEditorClient.CURSOR_MANAGER.closeRoot();
+						NBTEditorClient.CURSOR_MANAGER.closeRootToNewScreen();
 						Minecraft.getInstance().setScreenAndShow(new ClientChestDataVersionScreen(pageData.dataVersion()));
 						return;
 					}
@@ -148,8 +148,8 @@ public class ClientChestScreen extends ClientHandledScreen {
 		pageField.nbte$setFilter(IntFields.intPredicate(() -> 0, NBTEditorClient.CLIENT_CHEST::getPageCount, true));
 		this.addRenderableWidget(pageField);
 		
-		MutableComponent prevKeybind = Component.translatableEscape("nbteditor.keybind.page.down");
-		MutableComponent nextKeybind = Component.translatableEscape("nbteditor.keybind.page.up");
+		MutableComponent prevKeybind = Component.translatableEscape("nbteditor.keybind.page.up");
+		MutableComponent nextKeybind = Component.translatableEscape("nbteditor.keybind.page.down");
 		if (ConfigScreen.isInvertedPageKeybinds()) {
 			MutableComponent temp = prevKeybind;
 			prevKeybind = nextKeybind;
@@ -241,7 +241,7 @@ public class ClientChestScreen extends ClientHandledScreen {
 			return true;
 		}
 		if (keyCode == GLFW.GLFW_KEY_PAGE_UP || keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
-			boolean prev = (keyCode == GLFW.GLFW_KEY_PAGE_DOWN);
+			boolean prev = (keyCode == GLFW.GLFW_KEY_PAGE_UP);
 			if (ConfigScreen.isInvertedPageKeybinds())
 				prev = !prev;
 			boolean jump = Keys.hasShiftDown();

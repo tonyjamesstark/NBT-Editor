@@ -15,6 +15,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -94,21 +95,31 @@ public class LocalItemParts extends LocalItem {
 		return MVRegistry.ITEM.get(id) == Items.AIR;
 	}
 	
+	private static final String[] CUSTOM_NAME_KEYS = {"minecraft:custom_name", ":custom_name", "custom_name"};
+	
 	@Override
 	public Component getName() {
 		return getCachedItem().getHoverName();
 	}
 	@Override
 	public void setName(Component name) {
+		// A component key has three spellings the game reads alike, and the one already in the
+		// item is the one to keep writing; putting another would leave two names behind.
 		if (name == null) {
 			if (nbt != null) {
-				nbt.remove("custom_name");
-				nbt.remove("minecraft:custom_name");
+				for (String key : CUSTOM_NAME_KEYS)
+					nbt.remove(key);
 			}
 		} else {
 			CompoundTag nbt = getOrCreateNBT();
-			nbt.put(nbt.contains("minecraft:custom_name") || !nbt.contains("custom_name") ?
-					"minecraft:custom_name" : "custom_name", TextUtil.toMinecraft(name));
+			Tag nameNbt = TextUtil.toMinecraft(name);
+			for (String key : CUSTOM_NAME_KEYS) {
+				if (nbt.contains(key)) {
+					nbt.put(key, nameNbt);
+					return;
+				}
+			}
+			nbt.put(CUSTOM_NAME_KEYS[0], nameNbt);
 		}
 	}
 	@Override

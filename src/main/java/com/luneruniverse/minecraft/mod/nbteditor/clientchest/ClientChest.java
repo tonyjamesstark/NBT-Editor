@@ -63,7 +63,6 @@ public class ClientChest {
 	private final LoadingCache<Integer, SaveQueue<ClientChestPage>> saveQueues;
 	private final PageTasks tasks;
 	
-	@SuppressWarnings("serial")
 	public ClientChest(ClientChestPageCache cache) {
 		this.cache = cache;
 		this.cachePageCounts = new ConcurrentLinkedQueue<>();
@@ -162,7 +161,6 @@ public class ClientChest {
 	public boolean isNameUsedByOther(String name, int page) {
 		return nameToPage.getOrDefault(name, page) != page;
 	}
-	@SuppressWarnings("serial")
 	public void setNameOfPage(int page, String name) throws Exception {
 		if (Objects.equals(pageToName.get(page), name != null && name.isEmpty() ? null : name))
 			return;

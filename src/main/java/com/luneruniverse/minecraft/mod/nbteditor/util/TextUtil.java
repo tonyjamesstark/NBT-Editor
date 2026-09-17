@@ -61,13 +61,21 @@ public class TextUtil {
 	/**
 	 * Qualifies an unqualified id with the <code>minecraft</code> namespace, keeping a leading
 	 * <code>!</code>, which the component syntax uses to mean "without this one".
+	 *
+	 * <p>A bare leading colon is the third spelling of the same thing: the game reads
+	 * {@code :custom_name} as {@code minecraft:custom_name}, so it gets the namespace too.
 	 */
 	public static String addNamespace(String id) {
-		if (id.contains(":"))
-			return id;
-		if (id.startsWith("!"))
-			return "!minecraft:" + id.substring(1);
-		return "minecraft:" + id;
+		boolean removing = id.startsWith("!");
+		if (removing)
+			id = id.substring(1);
+		
+		if (id.startsWith(":"))
+			id = "minecraft" + id;
+		else if (!id.contains(":"))
+			id = "minecraft:" + id;
+		
+		return removing ? "!" + id : id;
 	}
 	
 	/** The text's own literal content, without the content of its children. */
@@ -343,8 +351,15 @@ public class TextUtil {
 		return toNbt(text).toString();
 	}
 	
+	/**
+	 * Text carries registry entries -- a show_item hover with an enchantment holds one -- and a
+	 * codec refuses to write a holder through ops that cannot reach the registry that owns it.
+	 */
 	private static DynamicOps<JsonElement> jsonOps() {
 		return DynamicRegistryManagerHolder.get().createSerializationContext(JsonOps.INSTANCE);
+	}
+	private static DynamicOps<Tag> nbtOps() {
+		return DynamicRegistryManagerHolder.get().createSerializationContext(NbtOps.INSTANCE);
 	}
 	/** Throws when <code>json</code> is not valid text JSON; {@link #fromJsonSafely} yields the raw string instead. */
 	public static @Nullable Component fromJson(String json) throws JsonParseException {
@@ -353,10 +368,10 @@ public class TextUtil {
 	}
 	
 	public static Component fromNbt(Tag nbt) throws NbtFormatException {
-		return Attempt.ofResult(ComponentSerialization.CODEC.parse(NbtOps.INSTANCE, nbt)).getSuccessOrThrow(NbtFormatException::new);
+		return Attempt.ofResult(ComponentSerialization.CODEC.parse(nbtOps(), nbt)).getSuccessOrThrow(NbtFormatException::new);
 	}
 	public static Tag toNbt(Component text) throws NbtFormatException {
-		return Attempt.ofResult(ComponentSerialization.CODEC.encodeStart(NbtOps.INSTANCE, text)).getSuccessOrThrow(NbtFormatException::new);
+		return Attempt.ofResult(ComponentSerialization.CODEC.encodeStart(nbtOps(), text)).getSuccessOrThrow(NbtFormatException::new);
 	}
 	
 }

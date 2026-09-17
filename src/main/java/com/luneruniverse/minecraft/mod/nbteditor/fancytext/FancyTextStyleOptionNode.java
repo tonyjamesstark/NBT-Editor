@@ -39,6 +39,10 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 						item = ItemStack.EMPTY;
 					}
 				}
+				// ItemStackTemplate's constructor rejects air and a zero count outright, so an
+				// empty result here would throw rather than show an empty tooltip.
+				if (item.isEmpty())
+					yield style;
 				yield style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ITEM.newEvent(ItemStackTemplate.fromStack(item)));
 			}
 			case SHOW_ENTITY -> {

@@ -1,5 +1,7 @@
 package com.luneruniverse.minecraft.mod.nbteditor.containers;
 
+import java.util.Arrays;
+
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 
@@ -55,6 +57,7 @@ public class SlotKeyNbtListContainerIO implements ContainerIO<ListTag> {
 	@Override
 	public ItemStack[] read(ListTag container) {
 		ItemStack[] contents = new ItemStack[numSlots];
+		Arrays.fill(contents, ItemStack.EMPTY);
 		for (Tag itemNbtElement : container.nbte$iterable()) {
 			CompoundTag itemNbt = (CompoundTag) itemNbtElement;
 			contents[itemNbt.nbte$getIntOrDefault("Slot")] = NBTManagers.ITEM.deserializeOrElse(itemNbt, ItemStack.EMPTY);

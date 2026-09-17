@@ -9,8 +9,10 @@ import org.apache.commons.lang3.Validate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
+import com.google.common.collect.ImmutableMultimap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -38,9 +40,10 @@ public class Head {
 
         ItemStack item = new ItemStack(Items.PLAYER_HEAD);
         item.nbte$setCustomName(Component.nullToEmpty(Utils.colorize(category != null ? category.getColor() + name : "&8" + name)));
-        // set skull owner
-        GameProfile profile = new GameProfile(uuid, "HDB_Head");
-        profile.properties().put("textures", new Property("textures", value));
+        // The two-arg GameProfile gives PropertyMap.EMPTY, which is immutable; pass the
+        // textures in rather than putting them into the map afterwards.
+        GameProfile profile = new GameProfile(uuid, "HDB_Head",
+                new PropertyMap(ImmutableMultimap.of("textures", new Property("textures", value))));
         ItemTagReferences.PROFILE.set(item, Optional.of(profile));
         
         ItemTagReferences.LORE.set(item, Arrays.asList(

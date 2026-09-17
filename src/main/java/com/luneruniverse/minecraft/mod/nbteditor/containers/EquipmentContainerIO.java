@@ -22,8 +22,9 @@ import net.minecraft.resources.Identifier;
  */
 public class EquipmentContainerIO {
 	
+	/** The names {@link net.minecraft.world.entity.EquipmentSlot} serializes to, in texture order. */
 	private static final String[] KEYS = {
-			"head", "chest", "legs", "boots", "saddle", "body", "mainhand", "offhand"};
+			"head", "chest", "legs", "feet", "saddle", "body", "mainhand", "offhand"};
 	
 	private static final Identifier[] HORSE_ARMOR_TEXTURES = {
 			HELMET_TEXTURE, CHESTPLATE_TEXTURE, LEGGINGS_TEXTURE, BOOTS_TEXTURE,

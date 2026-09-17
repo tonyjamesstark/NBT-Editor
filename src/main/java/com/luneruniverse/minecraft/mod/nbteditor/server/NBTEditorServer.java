@@ -210,8 +210,16 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		
 		NBTManagers.BLOCK_ENTITY.setNbt(blockEntity, packet.getNbt());
 		
-		if (packet.isTriggerUpdate()) {
+		// Persisting the edit and resending it are not block updates, so they happen either way.
+		// Without the resend the client keeps rendering the old block entity, which is what made
+		// an edited sign hold its old text until the chunk reloaded.
+		if (packet.isTriggerUpdate())
 			blockEntity.setChanged();
+		else
+			world.blockEntityChanged(packet.getPos());
+		world.getChunkSource().blockChanged(packet.getPos());
+
+		if (packet.isTriggerUpdate()) {
 			// Flags arg seems to be unused, and I don't know what it's supposed to be for this
 			world.sendBlockUpdated(packet.getPos(), blockEntity.getBlockState(), blockEntity.getBlockState(), 0);
 		}

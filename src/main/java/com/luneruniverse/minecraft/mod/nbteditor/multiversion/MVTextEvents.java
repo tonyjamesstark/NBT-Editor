@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.DynamicOps;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStackTemplate;
 
 public class MVTextEvents {
@@ -23,7 +25,9 @@ public class MVTextEvents {
 	public static class ClickAction<T> {
 		private static final Function<String, Optional<URI>> parseUri = valueStr -> {
 			try {
-				return Optional.of(new URI(valueStr));
+				// Anything but http and https is refused here rather than at the codec, which
+				// would drop the whole click event when the edit was saved.
+				return Optional.of(Util.parseAndValidateUntrustedUri(valueStr));
 			} catch (URISyntaxException e) {
 				return Optional.empty();
 			}
@@ -120,6 +124,15 @@ public class MVTextEvents {
 			throw new IllegalArgumentException("Invalid HoverAction name: " + name);
 		}
 		
+		/**
+		 * A show_item hover holds an item, an item holds components, and an enchantment component
+		 * holds registry entries, which a codec refuses to write through ops that cannot reach the
+		 * registry that owns them.
+		 */
+		private static DynamicOps<Tag> nbtOps() {
+			return DynamicRegistryManagerHolder.get().createSerializationContext(NbtOps.INSTANCE);
+		}
+		
 		public static HoverAction<?> getAction(HoverEvent event) {
 			return switch (event.action()) {
 				case SHOW_TEXT -> SHOW_TEXT;
@@ -152,7 +165,7 @@ public class MVTextEvents {
 			return getter.apply(event);
 		}
 		public String getStringifiedValue(HoverEvent event) {
-			CompoundTag nbt = (CompoundTag) HoverEvent.CODEC.encodeStart(NbtOps.INSTANCE, event).result().orElseThrow();
+			CompoundTag nbt = (CompoundTag) HoverEvent.CODEC.encodeStart(nbtOps(), event).result().orElseThrow();
 			if (this == SHOW_TEXT)
 				return nbt.get("value").toString();
 			nbt.remove("action");
@@ -179,7 +192,7 @@ public class MVTextEvents {
 			else
 				return Optional.empty();
 
-			return HoverEvent.CODEC.parse(NbtOps.INSTANCE, nbt).result();
+			return HoverEvent.CODEC.parse(nbtOps(), nbt).result();
 		}
 	}
 	

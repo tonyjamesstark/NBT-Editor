@@ -68,4 +68,20 @@ class TextUtilTest {
 		assertEquals("", TextUtil.stripInvalidChars("", true));
 	}
 
+	/**
+	 * Identifier.tryParse reads all three of these as minecraft:custom_name, so all three have to
+	 * qualify to the same string -- the bare-colon one used to come back untouched, because it
+	 * already contained a colon.
+	 */
+	@Test
+	void everySpellingOfAComponentNameQualifiesTheSame() {
+		assertEquals("minecraft:custom_name", TextUtil.addNamespace("custom_name"));
+		assertEquals("minecraft:custom_name", TextUtil.addNamespace(":custom_name"));
+		assertEquals("minecraft:custom_name", TextUtil.addNamespace("minecraft:custom_name"));
+		assertEquals("!minecraft:custom_name", TextUtil.addNamespace("!custom_name"));
+		assertEquals("!minecraft:custom_name", TextUtil.addNamespace("!:custom_name"));
+		assertEquals("!minecraft:custom_name", TextUtil.addNamespace("!minecraft:custom_name"));
+		assertEquals("othermod:thing", TextUtil.addNamespace("othermod:thing"), "another namespace is left alone");
+	}
+
 }

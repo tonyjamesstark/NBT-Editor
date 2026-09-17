@@ -1,5 +1,7 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.containers;
 
+import org.joml.Vector2d;
+
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SetCursorC2SPacket;
 
@@ -9,6 +11,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHandler;
 import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
@@ -109,6 +112,34 @@ public class CursorManager {
 	}
 	public void showRoot() {
 		showBranch(currentRoot);
+	}
+	
+	/**
+	 * Handing the mouse back to the world warps the pointer to the middle of the window. When the
+	 * close is only there to make room for another screen, that warp reads as the cursor jumping
+	 * away mid-interaction, so remember where it was and let {@code MouseHandlerMixin} put it back.
+	 */
+	public void closeRootToNewScreen() {
+		MouseHandler mouse = Minecraft.getInstance().mouseHandler;
+		restoreMouseX = mouse.xpos();
+		restoreMouseY = mouse.ypos();
+		// The next release is the one this close causes. The deadline is only so an unrelated
+		// release much later, after the screen never arrived, is left alone.
+		restoreMouseUntil = System.currentTimeMillis() + RESTORE_MOUSE_WINDOW_MS;
+		closeRoot();
+	}
+	
+	private static final long RESTORE_MOUSE_WINDOW_MS = 500;
+	private static double restoreMouseX;
+	private static double restoreMouseY;
+	private static long restoreMouseUntil;
+	
+	/** The pointer position the next mouse release should keep, or null to let it centre. */
+	public static Vector2d takeMousePositionToRestore() {
+		if (System.currentTimeMillis() > restoreMouseUntil)
+			return null;
+		restoreMouseUntil = 0;
+		return new Vector2d(restoreMouseX, restoreMouseY);
 	}
 	
 	public void closeRoot() {

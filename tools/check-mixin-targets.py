@@ -93,12 +93,14 @@ def load(name):
             member["desc"] = m.group(1)
         elif (m := re.match(r'\s*flags:\s*(.*)', line)):
             member["flags"] = m.group(1)
-            name_match = re.match(r'.*?([\w$<>]+)\s*\(', member["sig"]) if "(" in member["sig"] \
-                else re.search(r'([\w$]+)\s*;\s*$', member["sig"])
+            # javap prints the static initializer as `static {};`, with no name to match.
+            name_match = "<clinit>" if member["sig"] == "static {};" else (
+                    re.match(r'.*?([\w$<>]+)\s*\(', member["sig"]) if "(" in member["sig"]
+                    else re.search(r'([\w$]+)\s*;\s*$', member["sig"]))
             if not name_match or "desc" not in member:
                 member = None
                 continue
-            nm = name_match.group(1)
+            nm = name_match if isinstance(name_match, str) else name_match.group(1)
             if nm.split(".")[-1] == simple:
                 nm = "<init>"
             member["name"] = nm
@@ -139,7 +141,7 @@ def lookup(cls, member, kind):
             continue
         if (hit := info[kind].get(member)):
             return c, hit
-        if member == "<init>":
+        if member in ("<init>", "<clinit>"):
             return None, None
         if info["super"]:
             queue.append(info["super"])

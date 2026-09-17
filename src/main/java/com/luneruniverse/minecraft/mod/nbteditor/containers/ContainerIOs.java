@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.containers;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,13 +69,15 @@ public class ContainerIOs {
 	
 	private static final ItemBlockContainerIO CHEST_IO = ItemBlockContainerIO.forSlotKeyItems(27);
 	private static final ItemBlockContainerIO FURNACE_IO = ItemBlockContainerIO.forSlotKeyItems(3);
-	private static final ItemBlockContainerIO BREWING_STAND_IO = ItemBlockContainerIO.forSlotKeyItems(5)
+	private static final ItemBlockContainerIO BREWING_STAND_IO = BlockStateUpdatingContainerIO.forItemBlock(
+			ItemBlockContainerIO.forSlotKeyItems(5), "has_bottle_0", "has_bottle_1", "has_bottle_2")
 			.withTextures(ContainerIO.POTION_TEXTURE, ContainerIO.POTION_TEXTURE, ContainerIO.POTION_TEXTURE,
 					null, ContainerIO.BREWING_FUEL_TEXTURE);
 	private static final ItemBlockContainerIO CAMPFIRE_IO = ItemBlockContainerIO.forSlotKeyItems(4);
 	private static final ItemBlockContainerIO DISPENSER_IO = ItemBlockContainerIO.forSlotKeyItems(9);
 	private static final ItemBlockContainerIO HOPPER_IO = ItemBlockContainerIO.forSlotKeyItems(5);
-	private static final ItemBlockContainerIO JUKEBOX_IO = ItemBlockContainerIO.forKeys(BlockEntityTypes.JUKEBOX, "RecordItem");
+	private static final ItemBlockContainerIO JUKEBOX_IO = BlockStateUpdatingContainerIO.forItemBlock(
+			ItemBlockContainerIO.forKeys(BlockEntityTypes.JUKEBOX, "RecordItem"), "has_record");
 	private static final ItemBlockContainerIO LECTERN_IO = BlockStateUpdatingContainerIO.forItemBlock(
 			ItemBlockContainerIO.forKeys(BlockEntityTypes.LECTERN, "Book"), "has_book");
 	private static final Function<EntityType<?>, ItemEntityContainerIO> ITEM_FRAME_IO =
@@ -283,8 +286,11 @@ public class ContainerIOs {
 			return;
 		}
 		
+		// The loop below stops at the last section it needs, so the tail has to start empty
+		// rather than null. ItemContainerContents.fromItems calls isEmpty on every element.
 		ItemStack[] sections = new ItemStack[maxSlots];
-		
+		Arrays.fill(sections, ItemStack.EMPTY);
+
 		int sectionSize = maxSlots;
 		while (contents.size() / sectionSize > maxSlots)
 			sectionSize *= maxSlots;

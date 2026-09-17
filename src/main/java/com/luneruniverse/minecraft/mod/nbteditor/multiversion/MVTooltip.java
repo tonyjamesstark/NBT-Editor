@@ -5,11 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.joml.Matrix3x2fStack;
-import org.lwjgl.opengl.GL20;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.mixin.TooltipAccessor;
-import com.mojang.blaze3d.opengl.GlStateManager;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import net.minecraft.network.chat.MutableComponent;
@@ -121,16 +119,7 @@ public class MVTooltip {
 		float dy = matrices.m21();
 		matrices.pushMatrix();
 		matrices.translate(-dx, -dy);
-		// ponytail: reads and pokes raw GL scissor state. 1.21.9 defers GUI draws through
-		// GuiRenderState, so this needs an in-game check before it can be trusted.
-		boolean scissor = GlStateManager.SCISSOR.mode.enabled;
-		if (scissor)
-			GL20.glDisable(GL20.GL_SCISSOR_TEST);
-		
 		Drawing.renderTooltip(context, lines, mouseX + (int) dx, mouseY + (int) dy);
-		
-		if (scissor)
-			GL20.glEnable(GL20.GL_SCISSOR_TEST);
 		matrices.popMatrix();
 	}
 	

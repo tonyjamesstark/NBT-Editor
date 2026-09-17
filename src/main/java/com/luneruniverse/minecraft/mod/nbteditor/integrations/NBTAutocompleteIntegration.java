@@ -35,9 +35,13 @@ public class NBTAutocompleteIntegration extends Integration {
 		return new StringRange(range.getStart() + shift, range.getEnd() + shift);
 	}
 	private static Suggestion shiftSuggestion(Suggestion suggestion, int shift) {
-		Suggestion shiftedSuggestion = new Suggestion(shiftRange(suggestion.getRange(), shift), suggestion.getText(), suggestion.getTooltip());
-		NbtSuggestionManager.subtextMap.put(shiftedSuggestion, NbtSuggestionManager.subtextMap.remove(suggestion));
-		return shiftedSuggestion;
+		return replaceSuggestion(suggestion,
+				new Suggestion(shiftRange(suggestion.getRange(), shift), suggestion.getText(), suggestion.getTooltip()));
+	}
+	/** A Suggestion is the key its subtext is filed under, so a rewritten one has to carry it over. */
+	private static Suggestion replaceSuggestion(Suggestion oldSuggestion, Suggestion newSuggestion) {
+		NbtSuggestionManager.subtextMap.put(newSuggestion, NbtSuggestionManager.subtextMap.remove(oldSuggestion));
+		return newSuggestion;
 	}
 	
 	private NBTAutocompleteIntegration() {}
@@ -60,8 +64,11 @@ public class NBTAutocompleteIntegration extends Integration {
 			key = key.substring(0, cursor);
 			nextTagAllowed = false;
 		} else {
-			nextTagAllowed = (cursor < value.length());
 			value = value.substring(0, cursor);
+			// A suggestion that starts a sibling tag is only usable while something is still open
+			// to the left of the cursor. Counting depth rather than comparing against the length
+			// of the whole value keeps a bracket inside a string from opening anything.
+			nextTagAllowed = nestLevel(value) > 0;
 		}
 		
 		if (key != null && (key.contains("{") || key.contains("[")))
@@ -108,7 +115,13 @@ public class NBTAutocompleteIntegration extends Integration {
 					pathBuilder.append(key);
 				else {
 					String escapedKey = escapeKey(key);
-					pathBuilder.append(key.equals(escapedKey) ? key : escapedKey.substring(0, escapedKey.length() - 1));
+					// The closing quote is only left off while the key itself is still being typed.
+					if (key.equals(escapedKey))
+						pathBuilder.append(key);
+					else if (value == null)
+						pathBuilder.append(escapedKey.substring(0, escapedKey.length() - 1));
+					else
+						pathBuilder.append(escapedKey);
 				}
 			}
 			
@@ -141,16 +154,21 @@ public class NBTAutocompleteIntegration extends Integration {
 							!(suggestion.getText().isEmpty()) &&
 							!(valueFinal == null && suggestion.getText().contains(":")) &&
 							!(valueFinal == null && firstKeyFinal && components && suggestion.getText().contains("{")) &&
-							!(!nextTagAllowed && (suggestion.getText().contains(",") || suggestion.getText().contains("}"))) &&
+							!(!nextTagAllowed && (suggestion.getText().contains(",") ||
+									suggestion.getText().contains("}") || suggestion.getText().contains("]"))) &&
 							!(otherTags != null && otherTags.contains(suggestion.getText())))
 					.map(suggestion -> {
 						suggestion = shiftSuggestion(suggestion, -fieldStartFinal);
 						if (firstKeyFinal && components) {
-							if (suggestion.getText().endsWith("=")) {
-								String newText = suggestion.getText().substring(0, suggestion.getText().length() - 1);
-								if (otherTags.contains(newText) || otherTags.contains(TextUtil.addNamespace(newText)))
-									return null;
-								suggestion = new Suggestion(suggestion.getRange(), newText, suggestion.getTooltip());
+							String component = suggestion.getText();
+							boolean extraEquals = component.endsWith("=");
+							if (extraEquals)
+								component = component.substring(0, component.length() - 1);
+							if (alreadyPresent(otherTags, component))
+								return null;
+							if (extraEquals) {
+								suggestion = replaceSuggestion(suggestion,
+										new Suggestion(suggestion.getRange(), component, suggestion.getTooltip()));
 							}
 						}
 						return suggestion;
@@ -159,6 +177,43 @@ public class NBTAutocompleteIntegration extends Integration {
 					.collect(Collectors.toList());
 			return new Suggestions(shiftRange(suggestions.getRange(), -fieldStartFinal), shiftedSuggestions);
 		});
+	}
+	/**
+	 * Whether the item already carries {@code component}, under any of its spellings.
+	 *
+	 * <p>A component name has a namespace that may be left off or left bare, and a leading
+	 * {@code !} for one being removed, so the tag already there and the suggestion for it rarely
+	 * look alike. Comparing both qualified, and without the {@code !}, is what makes them.
+	 */
+	private static boolean alreadyPresent(Collection<String> otherTags, String component) {
+		if (otherTags == null)
+			return false;
+		String qualified = TextUtil.addNamespace(component);
+		return otherTags.stream()
+				.map(tag -> TextUtil.addNamespace(tag.startsWith("!") ? tag.substring(1) : tag))
+				.anyMatch(qualified::equals);
+	}
+	
+	/** How many brackets {@code snbt} leaves open, ignoring any that fall inside a string. */
+	private static int nestLevel(String snbt) {
+		int nestLevel = 0;
+		Character quote = null;
+		boolean escaped = false;
+		for (char c : snbt.toCharArray()) {
+			if (escaped)
+				escaped = false;
+			else if (quote != null && c == '\\')
+				escaped = true;
+			else if (quote != null)
+				quote = (c == quote ? null : quote);
+			else if (c == '"' || c == '\'')
+				quote = c;
+			else if (c == '[' || c == '{')
+				nestLevel++;
+			else if (c == ']' || c == '}')
+				nestLevel--;
+		}
+		return nestLevel;
 	}
 	private String escapeKey(String key) {
 		if (key.isEmpty() || AccessWidenedApi.isSimpleName(key))

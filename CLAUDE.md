@@ -11,8 +11,8 @@ Gradle + fabric-loom, `release = 25` on JDK 25 (`sourceCompatibility`/`targetCom
 `minecraft_version` in `gradle.properties` — currently **26.2**. `settings.gradle` declares no
 subprojects; the old `nbteditor_1.17` module and the `mergeRefmapJson` task are gone.
 
-`./gradlew build`. JUnit 5 runs over the pure-JVM slice only: nine test classes under
-`src/test/java/`, 80 tests. Anything that touches registries, `Minecraft.getInstance()` or the run
+`./gradlew build`. JUnit 5 runs over the pure-JVM slice only: ten test classes under
+`src/test/java/`, 90 tests. Anything that touches registries, `Minecraft.getInstance()` or the run
 directory cannot run without a Fabric launch, so CI (`.github/workflows/build.yml`) proves that
 slice plus compile-and-remap, and nothing about the mod's behaviour. Verify that by running the
 mod in a dev client. See `docs/adr/0004-jvm-only-tests.md`.

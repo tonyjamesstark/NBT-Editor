@@ -35,7 +35,11 @@ public class ContainerComponentContainerIO implements ContainerIO<ItemStack> {
 	
 	@Override
 	public ItemStack[] read(ItemStack container) {
-		return container.get(DataComponents.CONTAINER).allItemsCopyStream().toArray(ItemStack[]::new);
+		// isSupported admits a container with the component removed, so read has to as well.
+		ItemContainerContents component = container.get(DataComponents.CONTAINER);
+		if (component == null)
+			return new ItemStack[0];
+		return component.allItemsCopyStream().toArray(ItemStack[]::new);
 	}
 	
 	@Override
