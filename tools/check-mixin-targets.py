@@ -11,6 +11,12 @@ This resolves the same four things mixin resolves, before launch:
   - the `method` selector matches exactly one non-bridge method on it
   - the `@At` target member exists, with that descriptor
   - the selected method's bytecode actually contains that call or field access
+  - an `@Inject` handler takes `CallbackInfo` for a void target, `CallbackInfoReturnable`
+    otherwise
+
+`require = 0` does not exempt any of these. Mixin rejects a mismatched handler
+signature before it ever consults the require count, so a `require = 0` injector
+with the wrong callback type is a hard crash, not a silent no-op.
 
 Runs as part of `./gradlew check`, which passes the whole compile classpath, so
 library owners like `com.mojang.serialization.DynamicOps` resolve too. Standalone
@@ -149,9 +155,10 @@ def parse_at(target):
     return None
 
 
-INJECTOR = (r'@(?:Inject|Redirect|ModifyArg|ModifyArgs|ModifyVariable|ModifyConstant|ModifyReturnValue'
-            r'|ModifyExpressionValue|WrapOperation|WrapWithCondition)\s*\((.*?)\)\s*\n\s*'
-            r'(?:private|public|protected|static)')
+INJECTOR = (r'@(?P<kind>Inject|Redirect|ModifyArg|ModifyArgs|ModifyVariable|ModifyConstant'
+            r'|ModifyReturnValue|ModifyExpressionValue|WrapOperation|WrapWithCondition)'
+            r'\s*\((?P<ann>.*?)\)\s*\n\s*'
+            r'(?P<decl>(?:private|public|protected|static)[^{;]*)')
 
 problems, unchecked = set(), set()
 
@@ -178,7 +185,8 @@ def check(path):
             report(where, f"@Mixin target not on the classpath: {t}", False)
     targets = [t for t in targets if load(t)]
 
-    for ann in re.findall(INJECTOR, text, re.S):
+    for inj in re.finditer(INJECTOR, text, re.S):
+        kind, ann, decl = inj.group("kind"), inj.group("ann"), inj.group("decl")
         selectors = []
         for braced, single in re.findall(r'method\s*=\s*(?:\{([^}]*)\}|"([^"]*)")', ann):
             selectors += re.findall(r'"([^"]*)"', braced) if braced else [single]
@@ -210,6 +218,15 @@ def check(path):
                     report(where, f'method = "{selector}" -- {owner}.{name} has no such descriptor, '
                                   f'jar has {sorted(m.desc for m in real)}')
                     continue
+                if kind == "Inject":
+                    returnable = "CallbackInfoReturnable" in decl
+                    for m in picked:
+                        if m.desc.endswith(")V") and returnable:
+                            report(where, f'method = "{selector}" -- {owner}.{name}{m.desc} returns '
+                                          f'void, so the handler needs CallbackInfo')
+                        elif not m.desc.endswith(")V") and not returnable and "CallbackInfo" in decl:
+                            report(where, f'method = "{selector}" -- {owner}.{name}{m.desc} returns a '
+                                          f'value, so the handler needs CallbackInfoReturnable')
                 for value, target in ats:
                     if not target or (value and value.group(1) not in ("INVOKE", "FIELD", "NEW",
                                                                       "INVOKE_ASSIGN")):
