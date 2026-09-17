@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.Co
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.input.KeyEvent;
@@ -20,6 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 	
@@ -133,7 +134,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 	
 	public boolean keyPressed(KeyEvent input) {
 		int keyCode = input.key(); int scanCode = input.scancode(); int modifiers = input.modifiers();
-		if (MainUtil.client.options.keyInventory.matches(input)) {
+		if (Minecraft.getInstance().options.keyInventory.matches(input)) {
 			ref.showParent();
 			return true;
 		}
@@ -178,7 +179,7 @@ public class ContainerScreen<L extends LocalNBT> extends ClientHandledScreen {
 		for (int i = numSlots; i < 27; i++) { // Items that will get deleted
 			ItemStack item = this.menu.getContainer().getItem(i);
 			if (item != null && !item.isEmpty())
-				MainUtil.get(item, true);
+				PlayerItems.get(item, true);
 		}
 	}
 	

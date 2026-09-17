@@ -9,11 +9,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.Minecraft;
 
 @Mixin(ChatScreen.class)
 public class ChatScreenMixin {
@@ -30,7 +30,7 @@ public class ChatScreenMixin {
 	
 	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"), cancellable = true)
 	private void keyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> info) {
-		if (!(MainUtil.client.gui.screen() instanceof ChatScreen)) {
+		if (!(Minecraft.getInstance().gui.screen() instanceof ChatScreen)) {
 			info.setReturnValue(true);
 			info.cancel();
 		}

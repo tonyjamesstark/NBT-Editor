@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTMan
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.NbtViews;
 import net.minecraft.world.level.storage.TagValueOutput;
@@ -31,25 +30,27 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.DataFixes;
 
 public class LocalBlock implements LocalNBT {
 	
 	public static LocalBlock deserialize(CompoundTag nbt, int defaultDataVersion) {
 		Tag dataVersion = nbt.get("DataVersion");
 		
-		String id = MainUtil.updateDynamic(References.BLOCK_NAME,
+		String id = DataFixes.updateDynamic(References.BLOCK_NAME,
 				StringTag.valueOf(nbt.nbte$getStringOrDefault("id")), dataVersion, defaultDataVersion).value();
 		Block block = MVRegistry.BLOCK.get(Identifier.parse(id));
 		
 		BlockStateProperties state = new BlockStateProperties(block.defaultBlockState());
-		state.setValues(MainUtil.updateDynamic(References.BLOCK_STATE,
+		state.setValues(DataFixes.updateDynamic(References.BLOCK_STATE,
 				nbt.nbte$getCompoundOrDefault("state"), dataVersion, defaultDataVersion));
 		
 		CompoundTag tag = null;
 		if (nbt.nbte$contains("tag", Tag.TAG_COMPOUND)) {
 			tag = nbt.nbte$getCompoundOrDefault("tag");
 			tag.putString("id", nbt.nbte$getStringOrDefault("id"));
-			tag = MainUtil.updateDynamic(References.BLOCK_ENTITY, tag, dataVersion, defaultDataVersion);
+			tag = DataFixes.updateDynamic(References.BLOCK_ENTITY, tag, dataVersion, defaultDataVersion);
 			tag.remove("id");
 		}
 		
@@ -80,7 +81,7 @@ public class LocalBlock implements LocalNBT {
 		}
 		
 		cachedBlockEntity = entityProvider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
-		cachedBlockEntity.setLevel(MainUtil.client.level);
+		cachedBlockEntity.setLevel(Minecraft.getInstance().level);
 		if (nbt != null)
 			NBTManagers.BLOCK_ENTITY.setNbt(cachedBlockEntity, nbt);
 		
@@ -101,7 +102,7 @@ public class LocalBlock implements LocalNBT {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
+		return TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
 	}
 	@Override
 	public void setName(Component name) {
@@ -177,7 +178,7 @@ public class LocalBlock implements LocalNBT {
 				ItemStack output = new ItemStack(blockItem);
 				if (nbt != null && block instanceof EntityBlock provider) {
 					BlockEntity entity = provider.newBlockEntity(new BlockPos(0, 1000, 0), state.applyTo(block.defaultBlockState()));
-					entity.setLevel(MainUtil.client.level);
+					entity.setLevel(Minecraft.getInstance().level);
 					NBTManagers.BLOCK_ENTITY.setNbt(entity, nbt);
 					addBlockEntityNbtWithoutXYZ(output, entity);
 				}
@@ -202,7 +203,7 @@ public class LocalBlock implements LocalNBT {
 		MutableComponent tooltip = Component.translatableEscape("gui.entity_tooltip.type", block.getName());
 		if (!state.getProperties().isEmpty())
 			tooltip.append("\n" + state);
-		Component customName = MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null);
+		Component customName = TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> null);
 		if (customName != null)
 			tooltip = Component.literal("").append(customName).append("\n").append(tooltip);
 		final Component finalTooltip = tooltip;

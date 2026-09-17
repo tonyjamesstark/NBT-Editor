@@ -3,10 +3,10 @@ package com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SetSlotC2SPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.Minecraft;
 
 public class ServerItemReference implements ItemReference {
 	
@@ -18,7 +18,7 @@ public class ServerItemReference implements ItemReference {
 	 * @param slot Format: generic container
 	 */
 	public ServerItemReference(AbstractContainerScreen<?> screen, int slot) {
-		if (screen.getMenu().getSlot(slot).container == MainUtil.client.player.getInventory())
+		if (screen.getMenu().getSlot(slot).container == Minecraft.getInstance().player.getInventory())
 			throw new IllegalArgumentException("The slot cannot be in the player's inventory!");
 		
 		this.screen = screen;

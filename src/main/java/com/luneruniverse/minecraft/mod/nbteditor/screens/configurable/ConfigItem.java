@@ -3,16 +3,16 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	
@@ -28,7 +28,7 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	public ConfigItem(Component name, V value) {
 		this.name = name;
 		this.value = value;
-		this.valueOffsetX = MainUtil.client.font.width(name) + PADDING;
+		this.valueOffsetX = Minecraft.getInstance().font.width(name) + PADDING;
 		this.valueOffsetY = (getSpacingHeight() - value.getSpacingHeight()) / 2;
 		
 		this.onChanged = new ArrayList<>();
@@ -55,7 +55,7 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.drawTextWithShadow(context, MainUtil.client.font, name, 0, (getSpacingHeight() - MainUtil.client.font.lineHeight) / 2, 0xFFFFFFFF);
+		Drawing.drawTextWithShadow(context, Minecraft.getInstance().font, name, 0, (getSpacingHeight() - Minecraft.getInstance().font.lineHeight) / 2, 0xFFFFFFFF);
 		
 		context.pose().pushMatrix();
 		context.pose().translate((float) (valueOffsetX), (float) (valueOffsetY));

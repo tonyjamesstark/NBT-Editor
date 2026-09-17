@@ -16,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
@@ -36,6 +35,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 public class ContainerIOs {
 	
@@ -90,7 +90,7 @@ public class ContainerIOs {
 	private static final ContainerIO<ItemStack> SPAWN_EGG_IO = new DelegateContainerIO<>(
 			(item, entity) -> get(entity),
 			item -> new LocalEntity(((SpawnEggItem) item.getItem()).getType(item), ItemTagReferences.ENTITY_DATA.get(item)),
-			(item, entity) -> ItemTagReferences.ENTITY_DATA.set(item, MainUtil.fillId(entity.getNBT(), entity.getId().toString())));
+			(item, entity) -> ItemTagReferences.ENTITY_DATA.set(item, ContainerIO.fillId(entity.getNBT(), entity.getId().toString())));
 	private static final Function<EntityType<?>, ItemEntityContainerIO> EQUIPMENT_IO =
 			entityId -> ItemEntityContainerIO.forEntityTagIO(EquipmentContainerIO.forNbtCompoundEquipment(false),
 					entityId);
@@ -180,7 +180,7 @@ public class ContainerIOs {
 			for (EntityType<?> entityType : MVRegistry.ENTITY_TYPE) {
 				if (ENTITY_IO.containsKey(entityType))
 					continue;
-				Entity entity = ServerMVMisc.createEntity(entityType, MainUtil.client.level);
+				Entity entity = ServerMVMisc.createEntity(entityType, Minecraft.getInstance().level);
 				if (entity instanceof Mob)
 					registerEntityIO(entityType, EQUIPMENT_IO.apply(entityType).entity());
 				if (entity instanceof ChestBoat) {

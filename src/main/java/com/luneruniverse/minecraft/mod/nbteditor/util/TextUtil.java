@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.google.gson.JsonParseException;
@@ -25,6 +26,7 @@ import com.mojang.serialization.DynamicOps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -34,6 +36,7 @@ import net.minecraft.network.chat.FormattedText.StyledContentConsumer;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class TextUtil {
 	
@@ -53,6 +56,18 @@ public class TextUtil {
 			}
 		}
 		return output.toString();
+	}
+	
+	/**
+	 * Qualifies an unqualified id with the <code>minecraft</code> namespace, keeping a leading
+	 * <code>!</code>, which the component syntax uses to mean "without this one".
+	 */
+	public static String addNamespace(String id) {
+		if (id.contains(":"))
+			return id;
+		if (id.startsWith("!"))
+			return "!minecraft:" + id.substring(1);
+		return "minecraft:" + id;
 	}
 	
 	/** The text's own literal content, without the content of its children. */
@@ -188,21 +203,21 @@ public class TextUtil {
 				style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(
 						file.getAbsoluteFile().getParentFile().getAbsolutePath()))))
 				.append(" ").append(Component.translatableEscape("nbteditor.file_options.delete").withStyle(style ->
-				MixinLink.withRunClickEvent(style, () -> MainUtil.client.setScreenAndShow(
+				MixinLink.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(
 						new FancyConfirmScreen(confirmed -> {
 							if (confirmed) {
 								if (file.exists()) {
 									try {
 										Files.deleteIfExists(file.toPath());
-										MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.success", "§6" + file.getName()));
+										Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.success", "§6" + file.getName()));
 									} catch (IOException e) {
 										NBTEditor.LOGGER.error("Error deleting file", e);
-										MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.error", "§6" + file.getName()));
+										Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.error", "§6" + file.getName()));
 									}
 								} else
-									MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.missing", "§6" + file.getName()));
+									Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.file_options.delete.missing", "§6" + file.getName()));
 							}
-							MainUtil.client.setScreenAndShow(null);
+							Minecraft.getInstance().setScreenAndShow(null);
 						}, Component.translatableEscape("nbteditor.file_options.delete.title", file.getName()),
 								Component.translatableEscape("nbteditor.file_options.delete.desc", file.getName()))))));
 	}
@@ -293,6 +308,25 @@ public class TextUtil {
 			throw new IllegalArgumentException("Failed to parse text", e);
 		}
 	}
+	/**
+	 * Reads the text at <code>key</code>, falling back when the key is missing or holds
+	 * something that is not text. An entity whose CustomName was hand-edited into nonsense still
+	 * has to render a name.
+	 */
+	public static Component fromMinecraftSafely(@Nullable CompoundTag nbt, String key, Supplier<Component> fallback) {
+		if (nbt != null) {
+			Tag textNbt = nbt.get(key);
+			if (textNbt != null) {
+				try {
+					Component text = fromMinecraft(textNbt);
+					if (text != null)
+						return text;
+				} catch (IllegalArgumentException e) {}
+			}
+		}
+		return fallback.get();
+	}
+	
 	public static Tag toMinecraft(Component text) throws IllegalArgumentException {
 		try {
 			return toNbt(text);

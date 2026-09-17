@@ -3,9 +3,9 @@ package com.luneruniverse.minecraft.mod.nbteditor.commands.nbt;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.client.Minecraft;
 
 public class NBTConfigCommand extends ClientCommand {
 	
@@ -22,7 +22,7 @@ public class NBTConfigCommand extends ClientCommand {
 	@Override
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		builder.executes(context -> {
-			MainUtil.client.setScreenAndShow(new ConfigScreen(null));
+			Minecraft.getInstance().setScreenAndShow(new ConfigScreen(null));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

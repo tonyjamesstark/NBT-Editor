@@ -9,7 +9,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.StyleOption;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -22,6 +21,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandRegistration;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 
 public class FancyTextArgumentType implements ArgumentType<Component> {
 	
@@ -58,7 +58,7 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 		
 		Map.Entry<String, Boolean> output = FancyText.stringify(text, base);
 		if (output.getValue() && printErrors)
-			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.fancy_text_arg_type.stringify_unsupported"));
+			Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.fancy_text_arg_type.stringify_unsupported"));
 		return output.getKey();
 	}
 	

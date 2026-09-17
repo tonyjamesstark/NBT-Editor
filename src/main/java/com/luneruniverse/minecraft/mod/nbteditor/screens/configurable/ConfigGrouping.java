@@ -3,10 +3,9 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.luneruniverse.minecraft.mod.nbteditor.util.OrderedMap;
 
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -20,7 +19,7 @@ public abstract class ConfigGrouping<K, T extends ConfigGrouping<K, T>> implemen
 	}
 	
 	protected final Component name;
-	protected final OrderedMap<K, ConfigPath> paths;
+	protected final LinkedHashMap<K, ConfigPath> paths;
 	private final Constructor<K, T> cloneImpl;
 	
 	protected Component namePrefix;
@@ -28,7 +27,7 @@ public abstract class ConfigGrouping<K, T extends ConfigGrouping<K, T>> implemen
 	
 	protected ConfigGrouping(Component name, Constructor<K, T> cloneImpl) {
 		this.name = name;
-		this.paths = new OrderedMap<>();
+		this.paths = new LinkedHashMap<>();
 		this.cloneImpl = cloneImpl;
 		this.onChanged = new ArrayList<>();
 	}
@@ -60,13 +59,17 @@ public abstract class ConfigGrouping<K, T extends ConfigGrouping<K, T>> implemen
 	}
 	@SuppressWarnings("unchecked")
 	public T sort(Comparator<K> sorter) {
-		paths.sort(sorter);
+		if (sorter != null) {
+			List<K> keys = new ArrayList<>(paths.keySet());
+			keys.sort(sorter);
+			for (K key : keys)
+				paths.put(key, paths.remove(key));
+		}
 		return (T) this;
 	}
-	@SuppressWarnings("unchecked")
+	/** Sorts once. Entries added afterwards land at the end, sorter or no sorter. */
 	public T setSorter(Comparator<K> sorter) {
-		paths.setSorter(sorter);
-		return (T) this;
+		return sort(sorter);
 	}
 	
 	@Override

@@ -4,7 +4,10 @@ import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.Cl
 import static com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.ClientCommandManager.literal;
 
 import java.io.File;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.nio.file.Files;
+import java.util.Locale;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
@@ -21,7 +24,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTMan
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -35,8 +37,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.ChatFormatting;
 import net.minecraft.util.FileUtil;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIO;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class NBTExportCommand extends ClientCommand {
+	
+	private static final DateTimeFormatter FILE_NAME_TIME =
+			DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss", Locale.ROOT);
 	
 	public static final NBTReferenceFilter EXPORT_FILTER = NBTReferenceFilter.create(
 			ref -> true,
@@ -94,8 +102,8 @@ public class NBTExportCommand extends ClientCommand {
 	}
 	
 	private static void exportToClipboard(String str) {
-		MainUtil.client.keyboardHandler.setClipboard(str);
-		MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.copied"));
+		Minecraft.getInstance().keyboardHandler.setClipboard(str);
+		Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.copied"));
 	}
 	
 	private static void exportToFile(CompoundTag nbt, String name) {
@@ -105,12 +113,12 @@ public class NBTExportCommand extends ClientCommand {
 			File output = new File(exportDir, FileUtil.findAvailableName(exportDir.toPath(), name, ".nbt"));
 			nbt.putInt("DataVersion", Version.getDataVersion());
 			NbtIO.writeCompressed(nbt, output);
-			MainUtil.client.player.sendSystemMessage(TextUtil.attachFileTextOptions(Component.translatableEscape("nbteditor.nbt.export.file.success",
+			Minecraft.getInstance().player.sendSystemMessage(TextUtil.attachFileTextOptions(Component.translatableEscape("nbteditor.nbt.export.file.success",
 					Component.literal(output.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(style ->
 					style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output));
 		} catch (Exception e) {
 			NBTEditor.LOGGER.error("Error while exporting item", e);
-			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.file.error", e.getMessage()));
+			Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.file.error", e.getMessage()));
 		}
 	}
 	
@@ -134,10 +142,10 @@ public class NBTExportCommand extends ClientCommand {
 				NBTReference.getReference(EXPORT_FILTER, false, ref -> {
 					ItemStack cmdBlock = new ItemStack(Items.COMMAND_BLOCK);
 					CompoundTag blockEntityTag = new CompoundTag();
-					MainUtil.fillId(blockEntityTag, "minecraft:command_block");
+					ContainerIO.fillId(blockEntityTag, "minecraft:command_block");
 					blockEntityTag.putString("Command", getVanillaCommand(ref));
 					ItemTagReferences.BLOCK_ENTITY_DATA.set(cmdBlock, blockEntityTag);
-					MainUtil.getWithMessage(cmdBlock);
+					PlayerItems.getWithMessage(cmdBlock);
 				});
 				return Command.SINGLE_SUCCESS;
 			})).then(literal("get").executes(context -> {
@@ -145,8 +153,8 @@ public class NBTExportCommand extends ClientCommand {
 				return Command.SINGLE_SUCCESS;
 			})).then(literal("item").executes(context -> {
 				NBTReference.getReference(EXPORT_ITEM_FILTER, false, ref -> {
-					ref.getLocalNBT().toItem(true).ifPresentOrElse(MainUtil::getWithMessage,
-							() -> MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
+					ref.getLocalNBT().toItem(true).ifPresentOrElse(PlayerItems::getWithMessage,
+							() -> Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
 				});
 				return Command.SINGLE_SUCCESS;
 			})).then(literal("file").then(argument("name", StringArgumentType.greedyString()).executes(context -> {
@@ -155,7 +163,7 @@ public class NBTExportCommand extends ClientCommand {
 				return Command.SINGLE_SUCCESS;
 			})).executes(context -> {
 				NBTReference.getReference(EXPORT_FILTER, false, ref -> exportToFile(ref.getLocalNBT().serialize(),
-						ref.getLocalNBT().getName().getString() + "_" + MainUtil.getFormattedCurrentTime()));
+						ref.getLocalNBT().getName().getString() + "_" + FILE_NAME_TIME.format(ZonedDateTime.now())));
 				return Command.SINGLE_SUCCESS;
 			}));
 	}

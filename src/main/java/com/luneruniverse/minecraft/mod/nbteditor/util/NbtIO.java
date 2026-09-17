@@ -1,5 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -8,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.zip.ZipException;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -37,6 +39,21 @@ public class NbtIO {
 	
 	public static CompoundTag readCompressed(InputStream stream) throws IOException {
 		return NbtIo.readCompressed(stream, NbtAccounter.unlimitedHeap());
+	}
+	
+	/**
+	 * Reads a stream that may or may not be gzipped, for the files a user hands the editor.
+	 *
+	 * <p>The stream is buffered in full because deciding takes a read: gzip is detected by
+	 * {@link #readCompressed} failing, and by then the stream has already been consumed.
+	 */
+	public static CompoundTag readCompressedOrPlain(InputStream stream) throws IOException {
+		byte[] data = stream.readAllBytes();
+		try {
+			return readCompressed(new ByteArrayInputStream(data));
+		} catch (ZipException e) {
+			return read(new ByteArrayInputStream(data));
+		}
 	}
 	
 	public static void write(CompoundTag nbt, OutputStream stream) throws IOException {

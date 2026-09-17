@@ -16,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandle
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.InputOverlay;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.StringInput;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
@@ -28,6 +27,8 @@ import net.minecraft.world.inventory.ContainerInput;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.Utils;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 /**
  * A paged pane. Credits @ I Al Ianstaan
@@ -46,7 +47,7 @@ public class PagedPane extends ClientHandledScreen {
      * @param pageSize The page size. inventory rows - 2
      */
     public PagedPane(int pageSize, int rows, String title) {
-    	super(rows, Component.nullToEmpty(MainUtil.colorize(title)));
+    	super(rows, Component.nullToEmpty(Utils.translateColorCodes(title)));
         this.pageSize = pageSize;
         pages.put(0, new Page(pageSize));
     }
@@ -193,7 +194,7 @@ public class PagedPane extends ClientHandledScreen {
     
     @Override
     public void close() {
-    	MainUtil.client.player.closeContainer();
+    	Minecraft.getInstance().player.closeContainer();
     }
 
     /**
@@ -266,7 +267,7 @@ public class PagedPane extends ClientHandledScreen {
                 			Component.nullToEmpty("Go to a Specific Page"),
                 			StringInput.builder()
                 					.withPlaceholder(Component.nullToEmpty("Page #"))
-                					.withValidator(MainUtil.intPredicate(1, getPageAmount(), false))
+                					.withValidator(IntFields.intPredicate(1, getPageAmount(), false))
                 					.build(),
                 			page -> selectPage(Integer.parseInt(page) - 1));
                 } else {
@@ -287,7 +288,7 @@ public class PagedPane extends ClientHandledScreen {
 
     protected ItemStack setMeta(ItemStack itemStack, String name, String... lore) {
         itemStack.nbte$setCustomName(Component.nullToEmpty(Utils.colorize(name)));
-        ItemTagReferences.LORE.set(itemStack, Arrays.stream(lore).map(MainUtil::colorize).map(Component::nullToEmpty).collect(Collectors.toList()));
+        ItemTagReferences.LORE.set(itemStack, Arrays.stream(lore).map(Utils::translateColorCodes).map(Component::nullToEmpty).collect(Collectors.toList()));
         return itemStack;
     }
 
@@ -296,7 +297,7 @@ public class PagedPane extends ClientHandledScreen {
      */
     public void open() {
         reRender();
-        MainUtil.client.setScreenAndShow(this);
+        Minecraft.getInstance().setScreenAndShow(this);
     }
 
     private static class Page {

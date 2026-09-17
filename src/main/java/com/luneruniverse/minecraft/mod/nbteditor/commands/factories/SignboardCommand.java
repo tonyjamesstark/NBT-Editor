@@ -10,7 +10,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.SignboardScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -19,6 +18,7 @@ import net.minecraft.world.item.SignItem;
 import net.minecraft.world.level.block.SignBlock;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.Minecraft;
 
 public class SignboardCommand extends ClientCommand {
 	
@@ -44,10 +44,10 @@ public class SignboardCommand extends ClientCommand {
 		builder.then(literal("new").then(argument("sign", SignboardArgumentType.signboard()).executes(context -> {
 			ItemReference ref = ItemReference.getHeldAir();
 			ref.saveItem(new ItemStack(context.getArgument("sign", Item.class)));
-			MainUtil.client.setScreenAndShow(new SignboardScreen<>(ref));
+			Minecraft.getInstance().setScreenAndShow(new SignboardScreen<>(ref));
 			return Command.SINGLE_SUCCESS;
 		}))).executes(context -> {
-			NBTReference.getReference(SIGNBOARD_FILTER, false, ref -> MainUtil.client.setScreenAndShow(new SignboardScreen<>(ref)));
+			NBTReference.getReference(SIGNBOARD_FILTER, false, ref -> Minecraft.getInstance().setScreenAndShow(new SignboardScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

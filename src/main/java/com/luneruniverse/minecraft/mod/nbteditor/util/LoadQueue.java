@@ -91,7 +91,7 @@ public class LoadQueue<T> {
 							List<CompletableFuture<T>> currentOnFinished = new ArrayList<>();
 							while (!onFinished.isEmpty())
 								currentOnFinished.add(onFinished.remove());
-							onFinished.add(MainUtil.mergeFutures(currentOnFinished));
+							onFinished.add(Futures.mergeFutures(currentOnFinished));
 						}
 						
 						if (levels.size() > 1) {

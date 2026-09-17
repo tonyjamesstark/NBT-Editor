@@ -8,7 +8,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.IgnoreCloseScreenPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.OldEventBehavior;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.InventoryItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -17,7 +17,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.NBTEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -28,6 +27,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class ClientHandledScreen extends net.minecraft.client.gui.screens.inventory.ContainerScreen implements OldEventBehavior, IgnoreCloseScreenPacket {
 	
@@ -37,7 +38,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 		if (hoveredSlot != null &&
 				(ConfigScreen.isAirEditable() || hoveredSlot.getItem() != null && !hoveredSlot.getItem().isEmpty())) {
 			ItemReference ref;
-			if (hoveredSlot.container == MainUtil.client.player.getInventory()) {
+			if (hoveredSlot.container == Minecraft.getInstance().player.getInventory()) {
 				ref = new InventoryItemReference(hoveredSlot.getContainerSlot());
 				if (parent != null)
 					((InventoryItemReference) ref).setParent(parent);
@@ -64,9 +65,9 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 				ContainerScreen.show(ref);
 		} else if (Keys.hasShiftDown()) {
 			if (notAir)
-				MainUtil.client.setScreenAndShow(new LocalFactoryScreen<>(ref));
+				Minecraft.getInstance().setScreenAndShow(new LocalFactoryScreen<>(ref));
 		} else
-			MainUtil.client.setScreenAndShow(new NBTEditorScreen<>(ref));
+			Minecraft.getInstance().setScreenAndShow(new NBTEditorScreen<>(ref));
 		
 		return true;
 	}
@@ -74,7 +75,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	private ServerInventoryManager serverInv;
 	
 	protected ClientHandledScreen(int rows, Component title) {
-		super(new ClientScreenHandler(rows), MainUtil.client.player.getInventory(), title);
+		super(new ClientScreenHandler(rows), Minecraft.getInstance().player.getInventory(), title);
 		((ClientScreenHandler) menu).setScreen(this);
 		menu.suppressRemoteUpdates();
 	}
@@ -96,11 +97,11 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	@Override
 	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		super.extractBackground(context, mouseX, mouseY, delta);
-		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos, 0, 0, imageWidth, menu.getRowCount() * 18 + 17);
-		MVDrawableHelper.drawTexture(context, TEXTURE, leftPos, topPos + menu.getRowCount() * 18 + 17, 0, 126, imageWidth, 96);
+		Drawing.drawTexture(context, TEXTURE, leftPos, topPos, 0, 0, imageWidth, menu.getRowCount() * 18 + 17);
+		Drawing.drawTexture(context, TEXTURE, leftPos, topPos + menu.getRowCount() * 18 + 17, 0, 126, imageWidth, 96);
 		
 		if (showLogo())
-			MainUtil.renderLogo(context);
+			Drawing.renderLogo(context);
 	}
 	protected boolean showLogo() {
 		return true;
@@ -110,8 +111,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	protected void extractLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
 		getLockedSlotsInfo().renderLockedHighlights(context, menu, true, false, true);
 		
-		MVDrawableHelper.drawTextWithoutShadow(context, font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752);
-		MVDrawableHelper.drawTextWithoutShadow(context, font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752);
+		Drawing.drawTextWithoutShadow(context, font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752);
+		Drawing.drawTextWithoutShadow(context, font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752);
 	}
 	protected Component getRenderedTitle() {
 		return title;
@@ -182,7 +183,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 						}
 						case QUICK_MOVE -> {
 							ItemStack prevItem = slot.getItem().copy();
-							ClientScreenHandlerSlot.unlockDuring(() -> menu.clicked(slot.index, button, actionType, MainUtil.client.player));
+							ClientScreenHandlerSlot.unlockDuring(() -> menu.clicked(slot.index, button, actionType, Minecraft.getInstance().player));
 							slot.set(prevItem);
 							serverInv.updateServer();
 						}
@@ -192,7 +193,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 								item = item.copy();
 								item.setCount(1);
 							}
-							MainUtil.dropCreativeStack(item);
+							PlayerItems.dropCreativeStack(item);
 						}
 						case SWAP -> {}
 						case QUICK_CRAFT -> throw new IllegalArgumentException("Invalid ContainerInput: " + actionType);
@@ -206,7 +207,7 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 			GetLostItemCommand.addToHistory(menu.getCarried());
 		
 		if (!(slot != null && allowEnchantmentCombine() && Keys.hasControlDown() && tryCombineEnchantments(slot, actionType)))
-			menu.clicked(slot == null ? slotId : slot.index, button, actionType, MainUtil.client.player);
+			menu.clicked(slot == null ? slotId : slot.index, button, actionType, Minecraft.getInstance().player);
 		
 		if (!(this instanceof CursorHistoryScreen))
 			GetLostItemCommand.addToHistory(menu.getCarried());

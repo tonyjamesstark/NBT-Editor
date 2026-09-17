@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
 import com.luneruniverse.minecraft.mod.nbteditor.util.ItemSizeText;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TooltipPlacement;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TooltipPlacement.Rect;
 
@@ -23,6 +22,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 /**
  * The lines the mod adds to an item tooltip, and where an oversized tooltip is drawn.
@@ -36,7 +37,7 @@ public class ItemTooltips {
 	public static void modifyTooltip(ItemStack source, List<Component> tooltip) {
 		// Tooltips are requested for all items when GameJoinS2CPacket is received to setup the creative inventory's search
 		// The world doesn't exist yet, so this causes the game to freeze when an exception from this mixin breaks everything
-		if (MainUtil.client.level == null)
+		if (Minecraft.getInstance().level == null)
 			return;
 
 		if (HideFlag.TOOLTIP != null && ItemTagReferences.HIDE_FLAGS.get(source).get(HideFlag.TOOLTIP))
@@ -63,10 +64,10 @@ public class ItemTooltips {
 
 		if (!ConfigScreen.isKeybindsHidden()) {
 			// Checking slots in your hotbar vs item selection is difficult, so the lore is just disabled in non-inventory tabs
-			boolean creativeInv = MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen creative
+			boolean creativeInv = Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen creative
 					&& creative.isInventoryOpen();
 
-			if (creativeInv || (!(MainUtil.client.gui.screen() instanceof CreativeModeInventoryScreen) &&
+			if (creativeInv || (!(Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen) &&
 					NBTEditorClient.SERVER_CONN.isScreenEditable())) {
 				tooltip.add(Component.translatableEscape("nbteditor.keybind.edit"));
 				tooltip.add(Component.translatableEscape("nbteditor.keybind.factory"));
@@ -84,21 +85,30 @@ public class ItemTooltips {
 		int width = 0;
 		int height = (tooltip.size() == 1 ? -2 : 0);
 		for (ClientTooltipComponent line : tooltip) {
-			width = Math.max(width, line.getWidth(MainUtil.client.font));
-			height += line.getHeight(MainUtil.client.font);
+			width = Math.max(width, line.getWidth(Minecraft.getInstance().font));
+			height += line.getHeight(Minecraft.getInstance().font);
 		}
 		return new int[] {width, height};
 	}
 
 	/** Maps the tooltip onto the screen, scaling and repositioning it if it does not fit. */
 	public static void renderTooltipFromComponents(GuiGraphicsExtractor context, int x, int y, int width, int height, int screenWidth, int screenHeight) {
-		int[] mousePos = MainUtil.getMousePos();
+		int[] mousePos = Drawing.getMousePos();
 		TooltipPlacement placement = TooltipPlacement.fit(x, y, width, height, screenWidth, screenHeight,
 				mousePos[0], mousePos[1]);
 		Rect source = placement.source();
 		Rect target = placement.target();
-		MainUtil.mapMatrices(context, source.x(), source.y(), source.width(), source.height(),
+		mapMatrices(context, source.x(), source.y(), source.width(), source.height(),
 				target.x(), target.y(), target.width(), target.height());
+	}
+	
+	/** Remaps the <code>from</code> rect onto the <code>to</code> rect for everything drawn next. */
+	private static void mapMatrices(GuiGraphicsExtractor context,
+			int fromX, int fromY, int fromWidth, int fromHeight,
+			int toX, int toY, int toWidth, int toHeight) {
+		context.pose().translate((float) (toX), (float) (toY));
+		context.pose().scale((float) toWidth / fromWidth, (float) toHeight / fromHeight);
+		context.pose().translate((float) (-fromX), (float) (-fromY));
 	}
 
 }

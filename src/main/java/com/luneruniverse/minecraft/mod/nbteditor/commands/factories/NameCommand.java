@@ -10,13 +10,13 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricCli
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReferenceFilter;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.DisplayScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class NameCommand extends ClientCommand {
 	
@@ -39,7 +39,7 @@ public class NameCommand extends ClientCommand {
 			return Command.SINGLE_SUCCESS;
 		})).executes(context -> {
 			NBTReference.getReference(NBTReferenceFilter.ANY_NBT, false,
-					ref -> MainUtil.client.setScreenAndShow(new DisplayScreen<>(ref)));
+					ref -> Minecraft.getInstance().setScreenAndShow(new DisplayScreen<>(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

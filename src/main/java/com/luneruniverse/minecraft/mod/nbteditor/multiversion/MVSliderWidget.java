@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.Minecraft;
@@ -14,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 public class MVSliderWidget extends MVButtonWidget {
 	
@@ -49,10 +49,10 @@ public class MVSliderWidget extends MVButtonWidget {
 	@Override
 	public void renderButton(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (renderSlider(context, mouseX, mouseY, delta)) {
-			MVDrawableHelper.drawTexture(context, this.isHovered || this.isFocused() ? HANDLE_HIGHLIGHTED : HANDLE,
+			Drawing.drawTexture(context, this.isHovered || this.isFocused() ? HANDLE_HIGHLIGHTED : HANDLE,
 					x + (int) (value * (width - 8)), y, 0, 0, 8, 20, 8, 20);
-			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, getMessage(),
-					x + width / 2, y + height / 2 - MainUtil.client.font.lineHeight / 2, -1);
+			Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, getMessage(),
+					x + width / 2, y + height / 2 - Minecraft.getInstance().font.lineHeight / 2, -1);
 		} else {
 			new AbstractSliderButton(x, y, width, height, getMessage(), value) {
 				@Override

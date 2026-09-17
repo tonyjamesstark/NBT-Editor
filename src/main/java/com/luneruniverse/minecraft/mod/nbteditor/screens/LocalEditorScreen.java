@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -14,7 +14,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryS
 import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.AlertWidget;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
@@ -103,11 +102,11 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 	
 	@Override
 	public final void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(this, context);
+		Drawing.renderBackground(this, context);
 		preRenderEditor(context, mouseX, mouseY, delta);
 		super.renderMain(context, mouseX, mouseY, delta);
 		renderEditor(context, mouseX, mouseY, delta);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 		renderPreview(context, delta);
 	}
 	private void renderPreview(GuiGraphicsExtractor context, float tickDelta) {
@@ -127,7 +126,7 @@ public abstract class LocalEditorScreen<L extends LocalNBT> extends OverlaySuppo
 	protected void renderTip(GuiGraphicsExtractor context, String langHint) {
 		if (!ConfigScreen.isKeybindsHidden()) {
 			int x = 16 + (32 + 8) * 2 + (100 + 8) * 2;
-			MainUtil.drawWrappingString(context, font, Component.translatableEscape(langHint).getString(),
+			Drawing.drawWrappingString(context, font, Component.translatableEscape(langHint).getString(),
 					16 + (32 + 8) * 2 + (100 + 8) * 2, 16 + 6 + 10, width - x - 8 - 20 - 8, -1, false, true);
 		}
 	}

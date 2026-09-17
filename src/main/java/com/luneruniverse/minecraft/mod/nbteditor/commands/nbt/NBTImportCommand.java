@@ -3,9 +3,9 @@ package com.luneruniverse.minecraft.mod.nbteditor.commands.nbt;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ImportScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import net.minecraft.client.Minecraft;
 
 public class NBTImportCommand extends ClientCommand {
 	
@@ -22,7 +22,7 @@ public class NBTImportCommand extends ClientCommand {
 	@Override
 	public void register(LiteralArgumentBuilder<FabricClientCommandSource> builder, String path) {
 		builder.executes(context -> {
-			MainUtil.client.setScreenAndShow(new ImportScreen());
+			Minecraft.getInstance().setScreenAndShow(new ImportScreen());
 			return Command.SINGLE_SUCCESS;
 		});
 	}

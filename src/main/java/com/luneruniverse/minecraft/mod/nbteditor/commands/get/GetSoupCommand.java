@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVComponentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.StatusEffectArgumentType;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -18,6 +17,7 @@ import net.minecraft.world.item.component.SuspiciousStewEffects;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class GetSoupCommand extends ClientCommand {
 	
@@ -41,7 +41,7 @@ public class GetSoupCommand extends ClientCommand {
 					effects -> effects.withEffectAdded(new SuspiciousStewEffects.Entry(
 							BuiltInRegistries.MOB_EFFECT.wrapAsHolder(context.getArgument("effect", MobEffect.class)),
 							duration * 20)));
-			MainUtil.getWithMessage(item);
+			PlayerItems.getWithMessage(item);
 			return Command.SINGLE_SUCCESS;
 		};
 		

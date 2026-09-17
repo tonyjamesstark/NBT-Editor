@@ -1,11 +1,10 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
 import org.lwjgl.glfw.GLFW;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueDropdown;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
@@ -14,6 +13,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.client.Minecraft;
 
 /**
  * The overlay for editing the click and hover events of a run of formatted text, opened from the
@@ -168,10 +168,10 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
-		MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font,
+		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
+		Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font,
 				Component.translatableEscape("nbteditor.formatted_text.events"),
-				x, y - 38 - MainUtil.client.font.lineHeight, -1);
+				x, y - 38 - Minecraft.getInstance().font.lineHeight, -1);
 		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	

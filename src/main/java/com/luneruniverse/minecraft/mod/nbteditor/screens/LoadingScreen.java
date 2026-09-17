@@ -9,13 +9,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.Minecraft;
 
 public class LoadingScreen extends MVScreen {
 	
@@ -39,7 +39,7 @@ public class LoadingScreen extends MVScreen {
 		}
 		
 		onLoading.run();
-		MainUtil.client.setScreenAndShow(new LoadingScreen(future, value -> onFinish.accept(true, value), e -> onException.accept(true, e)));
+		Minecraft.getInstance().setScreenAndShow(new LoadingScreen(future, value -> onFinish.accept(true, value), e -> onException.accept(true, e)));
 	}
 	public static <T> void show(CompletableFuture<T> future, Runnable onLoading, BiConsumer<Boolean, T> onFinish) {
 		show(future, onLoading, onFinish, (loaded, e) -> NBTEditor.LOGGER.error("Error processing something", e));
@@ -87,11 +87,11 @@ public class LoadingScreen extends MVScreen {
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(this, context);
+		Drawing.renderBackground(this, context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 		
-		MVDrawableHelper.drawCenteredTextWithShadow(context, font, Component.translatableEscape("nbteditor.loading"),
+		Drawing.drawCenteredTextWithShadow(context, font, Component.translatableEscape("nbteditor.loading"),
 				width / 2, height / 2 - font.lineHeight / 2 - 10, -1);
 	}
 	

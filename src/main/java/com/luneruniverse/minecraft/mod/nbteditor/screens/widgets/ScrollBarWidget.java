@@ -3,7 +3,7 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
@@ -40,8 +40,8 @@ public class ScrollBarWidget implements Renderable, MVElement {
 		double scrollArea = height / maxScroll;
 		if (scrollArea < 1) {
 			double barY = y - scroll / (maxScroll + scrollArea) * height;
-			MVDrawableHelper.fill(context, x, y, x + 8, y + height, 0xFFAAAAAA);
-			MVDrawableHelper.fill(context, x, (int) barY, x + 8, (int) (barY + scrollArea * height + 1), 0xFF000000);
+			Drawing.fill(context, x, y, x + 8, y + height, 0xFFAAAAAA);
+			Drawing.fill(context, x, (int) barY, x + 8, (int) (barY + scrollArea * height + 1), 0xFF000000);
 		}
 	}
 	

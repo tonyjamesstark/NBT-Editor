@@ -2,13 +2,15 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.containers;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SetCursorC2SPacket;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class CursorManager {
 	
@@ -44,7 +46,7 @@ public class CursorManager {
 			return;
 		
 		currentRoot = screen;
-		currentRootIsInventory = (currentRoot.getMenu() == MainUtil.client.player.inventoryMenu ||
+		currentRootIsInventory = (currentRoot.getMenu() == Minecraft.getInstance().player.inventoryMenu ||
 				currentRoot instanceof CreativeModeInventoryScreen);
 		currentRootHasServerCursor = !(screen instanceof CreativeModeInventoryScreen);
 		currentRootClosed = false;
@@ -65,8 +67,8 @@ public class CursorManager {
 		AbstractContainerMenu handler = branch.getMenu();
 		AbstractContainerMenu currentHandler = currentBranch.getMenu();
 		
-		MainUtil.setCursorStackSilently(handler, currentHandler.getCarried());
-		MainUtil.setCursorStackSilently(currentHandler, ItemStack.EMPTY);
+		AccessWidenedApi.setCursorStackSilently(handler, currentHandler.getCarried());
+		AccessWidenedApi.setCursorStackSilently(currentHandler, ItemStack.EMPTY);
 		
 		if (currentRootHasServerCursor) {
 			if (branch == currentRoot)
@@ -78,13 +80,13 @@ public class CursorManager {
 	
 	public void showBranch(AbstractContainerScreen<?> branch) {
 		if (currentRoot == null) {
-			if (MainUtil.client.player.hasInfiniteMaterials()) {
-				currentRoot = new CreativeModeInventoryScreen(MainUtil.client.player,
-						MainUtil.client.player.connection.enabledFeatures(),
-						MainUtil.client.options.operatorItemsTab().get());
+			if (Minecraft.getInstance().player.hasInfiniteMaterials()) {
+				currentRoot = new CreativeModeInventoryScreen(Minecraft.getInstance().player,
+						Minecraft.getInstance().player.connection.enabledFeatures(),
+						Minecraft.getInstance().options.operatorItemsTab().get());
 				currentRootHasServerCursor = false;
 			} else {
-				currentRoot = new InventoryScreen(MainUtil.client.player);
+				currentRoot = new InventoryScreen(Minecraft.getInstance().player);
 				currentRootHasServerCursor = true;
 			}
 			currentRootIsInventory = true;
@@ -101,9 +103,9 @@ public class CursorManager {
 		
 		transferCursorTo(branch);
 		currentBranch = branch;
-		MainUtil.client.player.containerMenu = branch.getMenu();
+		Minecraft.getInstance().player.containerMenu = branch.getMenu();
 		branch.skipNextRelease = true;
-		MainUtil.client.setScreenAndShow(branch);
+		Minecraft.getInstance().setScreenAndShow(branch);
 	}
 	public void showRoot() {
 		showBranch(currentRoot);
@@ -111,7 +113,7 @@ public class CursorManager {
 	
 	public void closeRoot() {
 		if (currentRoot == null) {
-			MainUtil.client.setScreenAndShow(null);
+			Minecraft.getInstance().setScreenAndShow(null);
 			return;
 		}
 		
@@ -119,24 +121,24 @@ public class CursorManager {
 			if (currentBranch != currentRoot) {
 				ItemStack cursor = currentBranch.getMenu().getCarried();
 				if (currentRootHasServerCursor) {
-					MainUtil.get(cursor, true);
+					PlayerItems.get(cursor, true);
 					cursor = ItemStack.EMPTY;
 				}
-				MainUtil.setCursorStackSilently(currentRoot.getMenu(), cursor);
+				AccessWidenedApi.setCursorStackSilently(currentRoot.getMenu(), cursor);
 			}
-			MainUtil.client.player.clientSideCloseContainer(); // will trigger #onNoScreenSet()
+			Minecraft.getInstance().player.clientSideCloseContainer(); // will trigger #onNoScreenSet()
 			return;
 		}
 		
 		transferCursorTo(currentRoot);
-		MainUtil.client.player.closeContainer(); // will trigger #onNoScreenSet()
+		Minecraft.getInstance().player.closeContainer(); // will trigger #onNoScreenSet()
 	}
 	
 	public void setCursor(ItemStack item) {
 		if (currentRoot == null)
 			throw new IllegalStateException("There is no root to set the cursor of");
 		
-		MainUtil.setCursorStackSilently(currentBranch.getMenu(), item);
+		AccessWidenedApi.setCursorStackSilently(currentBranch.getMenu(), item);
 		
 		if (currentRootHasServerCursor && currentBranch == currentRoot)
 			MVClientNetworking.send(new SetCursorC2SPacket(item.copy()));

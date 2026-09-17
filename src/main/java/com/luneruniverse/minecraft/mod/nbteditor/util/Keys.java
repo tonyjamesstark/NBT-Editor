@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 
 import net.minecraft.client.input.InputQuirks;
+import net.minecraft.client.Minecraft;
 
 /**
  * Which modifier keys are held right now, and whether a key code is one of the editing shortcuts.
@@ -17,7 +18,7 @@ import net.minecraft.client.input.InputQuirks;
 public class Keys {
 	
 	private static boolean isEitherPressed(int left, int right) {
-		Window window = MainUtil.client.getWindow();
+		Window window = Minecraft.getInstance().getWindow();
 		return InputConstants.isKeyDown(window, left) || InputConstants.isKeyDown(window, right);
 	}
 	

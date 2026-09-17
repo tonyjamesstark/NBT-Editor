@@ -2,12 +2,12 @@ package com.luneruniverse.minecraft.mod.nbteditor.containers;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.core.registries.BuiltInRegistries;
 
@@ -38,7 +38,7 @@ public interface ContainerIO<T> {
 		return DelegateContainerIO.map(io,
 				ItemTagReferences.BLOCK_ENTITY_DATA::get,
 				(item, blockEntityNbt) -> ItemTagReferences.BLOCK_ENTITY_DATA.set(
-						item, MainUtil.fillId(blockEntityNbt, entityId)));
+						item, fillId(blockEntityNbt, entityId)));
 	}
 	public static ContainerIO<ItemStack> forItemStackBlockEntityTag(ContainerIO<CompoundTag> io, BlockEntityType<?> entityId) {
 		return forItemStackBlockEntityTag(io, BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(entityId).toString());
@@ -48,10 +48,22 @@ public interface ContainerIO<T> {
 		return DelegateContainerIO.map(io,
 				ItemTagReferences.ENTITY_DATA::get,
 				(item, entityNbt) -> ItemTagReferences.ENTITY_DATA.set(
-						item, MainUtil.fillId(entityNbt, entityId)));
+						item, fillId(entityNbt, entityId)));
 	}
 	public static ContainerIO<ItemStack> forItemStackEntityTag(ContainerIO<CompoundTag> io, EntityType<?> entityId) {
 		return forItemStackEntityTag(io, EntityType.getKey(entityId).toString());
+	}
+	
+	/**
+	 * Names the block entity or entity a container's nbt belongs to, unless it already says.
+	 *
+	 * <p>The editor writes a bare contents compound; the game will not read one back without an
+	 * <code>id</code>.
+	 */
+	public static CompoundTag fillId(CompoundTag nbt, String id) {
+		if (!nbt.nbte$contains("id", Tag.TAG_STRING))
+			nbt.putString("id", id);
+		return nbt;
 	}
 	
 	/**

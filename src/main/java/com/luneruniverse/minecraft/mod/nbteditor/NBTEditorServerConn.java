@@ -19,7 +19,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestS
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ContainerScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Toasts;
 import net.minecraft.network.chat.Component;
@@ -28,6 +27,7 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.world.level.GameType;
+import net.minecraft.client.Minecraft;
 
 public class NBTEditorServerConn implements MVClientNetworking.PlayNetworkStateEvents.Start, MVClientNetworking.PlayNetworkStateEvents.Stop {
 	
@@ -64,15 +64,15 @@ public class NBTEditorServerConn implements MVClientNetworking.PlayNetworkStateE
 	public boolean isEditingExpanded() {
 		if (status != Status.BOTH)
 			return false;
-		GameType gameMode = MainUtil.client.gameMode.getPlayerMode();
-		return (gameMode.isCreative() || gameMode.isSurvival()) && ServerMVMisc.hasPermissionLevel(MainUtil.client.player, 2);
+		GameType gameMode = Minecraft.getInstance().gameMode.getPlayerMode();
+		return (gameMode.isCreative() || gameMode.isSurvival()) && ServerMVMisc.hasPermissionLevel(Minecraft.getInstance().player, 2);
 	}
 	public boolean isEditingAllowed() {
-		return MainUtil.client.gameMode.getPlayerMode().isCreative() || isEditingExpanded();
+		return Minecraft.getInstance().gameMode.getPlayerMode().isCreative() || isEditingExpanded();
 	}
 	
 	public boolean isScreenEditable() {
-		Screen screen = MainUtil.client.gui.screen();
+		Screen screen = Minecraft.getInstance().gui.screen();
 		return screen instanceof CreativeModeInventoryScreen ||
 				screen instanceof ClientChestScreen ||
 				screen instanceof ContainerScreen ||

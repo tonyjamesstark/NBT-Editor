@@ -26,7 +26,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPath
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.nbtfolder.NBTFolder;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 import com.luneruniverse.minecraft.mod.nbteditor.util.NbtFormatter;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -42,6 +42,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.DataFixes;
 
 /**
  * The main API<br>
@@ -66,10 +68,10 @@ public class NBTEditorAPI {
 	 * <code>
 	 * NBTEditorAPI.registerAdvancedFactory("myfactory", builder -> {
 	 * 	builder.executes(context -> {
-	 * 		ItemReference ref = MainUtil.getHeldItem();
+	 * 		ItemReference ref = ItemReference.getHeldItem();
 	 * 		ItemStack item = ref.getItem();
 	 * 		// Manipulate item
-	 * 		ref.saveItem(item, () -> MainUtil.client.player.sendMessage(Component.literal("Myfactory complete!")));
+	 * 		ref.saveItem(item, () -> Minecraft.getInstance().player.sendMessage(Component.literal("Myfactory complete!")));
 	 * 		return Command.SINGLE_SUCCESS;
 	 * 	});
 	 * });
@@ -132,8 +134,8 @@ public class NBTEditorAPI {
 		registerFactory(name, extremeAlias, ref -> {
 			if (supported.test(ref))
 				factory.accept(ref);
-			else if (MainUtil.client.player != null)
-				MainUtil.client.player.sendSystemMessage(unsupportedMsg);
+			else if (Minecraft.getInstance().player != null)
+				Minecraft.getInstance().player.sendSystemMessage(unsupportedMsg);
 		});
 		LocalFactoryScreen.BASIC_FACTORIES.add(new LocalFactoryScreen.LocalFactoryReference(buttonMsg, supported, factory));
 	}
@@ -146,7 +148,7 @@ public class NBTEditorAPI {
 	 * @param extremeAlias The extreme alias
 	 * @param onRegister A consumer for the {@code /get <name>} argument builder
 	 * @see #registerAdvancedFactory(String, Consumer) An example of using onRegister
-	 * @see MainUtil#getWithMessage(ItemStack)
+	 * @see PlayerItems#getWithMessage(ItemStack)
 	 */
 	public static void registerGetCommand(String name, String extremeAlias, Consumer<LiteralArgumentBuilder<FabricClientCommandSource>> onRegister) {
 		GetCommand.INSTANCE.getChildren().add(new ClientCommand() {
@@ -345,7 +347,7 @@ public class NBTEditorAPI {
 	 * @see #updateNBTDynamic(TypeReference, Tag, Tag, int)
 	 */
 	public static <T extends Tag> T updateNBT(TypeReference typeRef, T nbt, int oldVersion) {
-		return MainUtil.update(typeRef, nbt, oldVersion);
+		return DataFixes.update(typeRef, nbt, oldVersion);
 	}
 	/**
 	 * Updates old NBT structures into the current Minecraft version<br>
@@ -355,7 +357,7 @@ public class NBTEditorAPI {
 	 * @see #updateNBTDynamic(TypeReference, CompoundTag, int)
 	 */
 	public static <T extends Tag> T updateNBTDynamic(TypeReference typeRef, T nbt, Tag dataVersionTag, int defaultOldVersion) {
-		return MainUtil.updateDynamic(typeRef, nbt, dataVersionTag, defaultOldVersion);
+		return DataFixes.updateDynamic(typeRef, nbt, dataVersionTag, defaultOldVersion);
 	}
 	/**
 	 * Updates old NBT structures into the current Minecraft version<br>
@@ -365,7 +367,7 @@ public class NBTEditorAPI {
 	 * @see #updateNBTDynamic(TypeReference, Tag, Tag, int)
 	 */
 	public static CompoundTag updateNBTDynamic(TypeReference typeRef, CompoundTag nbt, int defaultOldVersion) {
-		return MainUtil.updateDynamic(typeRef, nbt, defaultOldVersion);
+		return DataFixes.updateDynamic(typeRef, nbt, defaultOldVersion);
 	}
 	/**
 	 * Updates old NBT structures into the current Minecraft version<br>
@@ -375,7 +377,7 @@ public class NBTEditorAPI {
 	 * @see #updateNBTDynamic(TypeReference, Tag, Tag, int)
 	 */
 	public static CompoundTag updateNBTDynamic(TypeReference typeRef, CompoundTag nbt) {
-		return MainUtil.updateDynamic(typeRef, nbt);
+		return DataFixes.updateDynamic(typeRef, nbt);
 	}
 	
 }

@@ -11,7 +11,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.hideflags.HideFlag;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -27,6 +26,8 @@ import tsp.headdb.ported.Head;
 import tsp.headdb.ported.HeadAPI;
 import tsp.headdb.ported.inventory.InventoryUtils;
 import net.minecraft.world.item.DyeColor;
+import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class GetHdbCommand extends ClientCommand {
 	
@@ -77,11 +78,11 @@ public class GetHdbCommand extends ClientCommand {
 					if (!HeadAPI.checkUpdated())
 						return Command.SINGLE_SUCCESS;
 					Category category = context.getArgument("category", Category.class);
-					ItemStack shulker = new ItemStack(Items.DYED_SHULKER_BOX.pick(MainUtil.getDyeColor(category.getColor())));
+					ItemStack shulker = new ItemStack(Items.DYED_SHULKER_BOX.pick(StyleUtil.getDyeColor(category.getColor())));
 					shulker.nbte$setCustomName(Component.nullToEmpty(ChatFormatting.RESET.toString() + category.getColor() + ChatFormatting.BOLD + category.getTranslatedName().toUpperCase()));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeads(category).stream().map(Head::getItemStack).toList());
-					MainUtil.getWithMessage(shulker);
+					PlayerItems.getWithMessage(shulker);
 					return Command.SINGLE_SUCCESS;
 				})).then(literal("search").then(argument("query", StringArgumentType.greedyString()).executes(context -> {
 					if (!HeadAPI.checkUpdated())
@@ -91,7 +92,7 @@ public class GetHdbCommand extends ClientCommand {
 					shulker.nbte$setCustomName(Component.nullToEmpty(ChatFormatting.RESET.toString() + ChatFormatting.GOLD + ChatFormatting.BOLD + Component.translatableEscape("nbteditor.hdb.search").getString() + ": " + query));
 					ItemTagReferences.HIDE_FLAGS.set(shulker, Map.of(HideFlag.CONTAINER, true));
 					ContainerIOs.writeRecursively(shulker, HeadAPI.getHeadsByName(query).stream().map(Head::getItemStack).toList());
-					MainUtil.getWithMessage(shulker);
+					PlayerItems.getWithMessage(shulker);
 					return Command.SINGLE_SUCCESS;
 				}))))
 				.then(literal("update").executes(context -> {

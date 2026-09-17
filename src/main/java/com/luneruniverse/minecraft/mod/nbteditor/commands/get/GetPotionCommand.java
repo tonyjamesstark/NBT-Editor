@@ -15,7 +15,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.CustomPotionContents;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
@@ -24,6 +23,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class GetPotionCommand extends ClientCommand {
 	
@@ -65,7 +65,7 @@ public class GetPotionCommand extends ClientCommand {
 					color = Optional.of(potion.getEffects().get(0).getEffect().value().getColor());
 			}
 			ItemTagReferences.CUSTOM_POTION_CONTENTS.set(item, new CustomPotionContents(color, effects));
-			MainUtil.getWithMessage(item);
+			PlayerItems.getWithMessage(item);
 			return Command.SINGLE_SUCCESS;
 		})));
 	}

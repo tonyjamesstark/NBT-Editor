@@ -6,6 +6,7 @@ import java.io.UncheckedIOException;
 import java.util.Optional;
 
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 /** Reads a file bundled in the mod's own resources. */
 public class ModResources {
@@ -19,7 +20,7 @@ public class ModResources {
 	 */
 	public static Optional<InputStream> open(Identifier id) throws IOException {
 		try {
-			return MainUtil.client.getResourceManager().getResource(id).map(resource -> {
+			return Minecraft.getInstance().getResourceManager().getResource(id).map(resource -> {
 						try {
 							return resource.open();
 						} catch (IOException e) {

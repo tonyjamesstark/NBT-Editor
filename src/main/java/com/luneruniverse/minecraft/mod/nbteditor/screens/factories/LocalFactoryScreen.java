@@ -19,12 +19,12 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigButt
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigCategory;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigPanel;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ContainerScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 public class LocalFactoryScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	
@@ -34,7 +34,7 @@ public class LocalFactoryScreen<L extends LocalNBT> extends LocalEditorScreen<L>
 	public static final List<LocalFactoryReference> BASIC_FACTORIES = new ArrayList<>();
 	private static void addFactory(String key, Predicate<NBTReference<?>> supported, Function<NBTReference<?>, Screen> screen) {
 		BASIC_FACTORIES.add(new LocalFactoryReference(Component.translatableEscape(key), supported,
-				ref -> MainUtil.client.setScreenAndShow(screen.apply(ref))));
+				ref -> Minecraft.getInstance().setScreenAndShow(screen.apply(ref))));
 	}
 	private static <T extends NBTReference<?>> void addFactory(String key, Predicate<T> supported, Function<T, Screen> screen, Class<T> clazz) {
 		addFactory(key, ref -> clazz.isInstance(ref) && supported.test(clazz.cast(ref)), ref -> screen.apply(clazz.cast(ref)));

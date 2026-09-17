@@ -3,10 +3,9 @@ package com.luneruniverse.minecraft.mod.nbteditor.localnbt;
 import java.util.Optional;
 import java.util.Set;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.datafix.fixes.References;
@@ -16,12 +15,13 @@ import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import com.luneruniverse.minecraft.mod.nbteditor.util.DataFixes;
 
 public class LocalItemStack extends LocalItem {
 	
 	public static LocalItemStack deserialize(CompoundTag nbt, int defaultDataVersion) {
 		return new LocalItemStack(NBTManagers.ITEM.deserialize(
-				MainUtil.updateDynamic(References.ITEM_STACK, nbt, defaultDataVersion), true));
+				DataFixes.updateDynamic(References.ITEM_STACK, nbt, defaultDataVersion), true));
 	}
 	
 	private ItemStack item;
@@ -59,7 +59,7 @@ public class LocalItemStack extends LocalItem {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getCustomItemNameSafely(item);
+		return item.getHoverName();
 	}
 	@Override
 	public void setName(Component name) {
@@ -67,7 +67,7 @@ public class LocalItemStack extends LocalItem {
 	}
 	@Override
 	public String getDefaultName() {
-		return MainUtil.getBaseItemNameSafely(item).getString();
+		return LocalItem.defaultNameOf(item).getString();
 	}
 	
 	@Override
@@ -80,7 +80,7 @@ public class LocalItemStack extends LocalItem {
 	}
 	@Override
 	public void setId(Identifier id) {
-		item = MainUtil.setType(MVRegistry.ITEM.get(id), item);
+		item = item.transmuteCopy(MVRegistry.ITEM.get(id), item.getCount());
 	}
 	@Override
 	public Set<Identifier> getIdOptions() {
@@ -93,7 +93,7 @@ public class LocalItemStack extends LocalItem {
 	}
 	@Override
 	public void setCount(int count) {
-		item = MainUtil.setType(item.getItem(), item, count);
+		item = item.transmuteCopy(item.getItem(), count);
 	}
 	
 	@Override
@@ -111,7 +111,7 @@ public class LocalItemStack extends LocalItem {
 	
 	@Override
 	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta) {
-		MVDrawableHelper.renderItem(context, 200.0F, true, item, x, y);
+		Drawing.renderItem(context, 200.0F, true, item, x, y);
 	}
 	
 	@Override
@@ -131,7 +131,7 @@ public class LocalItemStack extends LocalItem {
 	
 	@Override
 	public LocalItemStack copy() {
-		return new LocalItemStack(MainUtil.copyAirable(item));
+		return new LocalItemStack(LocalItem.copyAirable(item));
 	}
 	
 }

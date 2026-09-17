@@ -5,10 +5,10 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageLoadLevel;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SaveQueue;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.Minecraft;
 
 public class ClientChestItemReference implements ItemReference {
 	
@@ -22,7 +22,7 @@ public class ClientChestItemReference implements ItemReference {
 		
 		this.save = new SaveQueue<>("ClientChest/" + (page + 1) + "/" + slot, toSave -> {
 			ClientChestHelper.getPage(page, PageLoadLevel.DYNAMIC_ITEMS).join().ifPresent(pageData -> {
-				if (MainUtil.client.gui.screen() instanceof ClientChestScreen screen && ClientChestScreen.PAGE == page)
+				if (Minecraft.getInstance().gui.screen() instanceof ClientChestScreen screen && ClientChestScreen.PAGE == page)
 					screen.getMenu().getSlot(slot).set(toSave);
 				
 				pageData.getItemsOrThrow()[slot] = toSave;
@@ -51,8 +51,8 @@ public class ClientChestItemReference implements ItemReference {
 	
 	@Override
 	public void saveItem(ItemStack toSave, Runnable onFinished) {
-		if (MainUtil.client.gui.screen() instanceof ClientChestScreen && ClientChestScreen.PAGE == page)
-			((ClientChestScreen) MainUtil.client.gui.screen()).getMenu().getSlot(slot).set(toSave);
+		if (Minecraft.getInstance().gui.screen() instanceof ClientChestScreen && ClientChestScreen.PAGE == page)
+			((ClientChestScreen) Minecraft.getInstance().gui.screen()).getMenu().getSlot(slot).set(toSave);
 		save.save(onFinished, toSave.copy());
 	}
 	

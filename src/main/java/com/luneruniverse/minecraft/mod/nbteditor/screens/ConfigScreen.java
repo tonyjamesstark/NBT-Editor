@@ -1,6 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +37,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValu
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueSlider;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientChestScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.MutableComponent;
@@ -45,6 +44,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class ConfigScreen extends TickableSupportingScreen {
 	
@@ -354,7 +354,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 		return lockSlots || isLockSlotsRequired();
 	}
 	public static boolean isLockSlotsRequired() {
-		return MainUtil.client.gameMode != null && !NBTEditorClient.SERVER_CONN.isEditingAllowed();
+		return Minecraft.getInstance().gameMode != null && !NBTEditorClient.SERVER_CONN.isEditingAllowed();
 	}
 	public static boolean isChatLimitExtended() {
 		return chatLimitExtended;
@@ -602,7 +602,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 	}
 	
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(this, context);
+		Drawing.renderBackground(this, context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
 	}
 	

@@ -12,7 +12,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -26,6 +25,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.Identifier;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 public class NBTAutocompleteIntegration extends Integration {
 	
@@ -148,7 +148,7 @@ public class NBTAutocompleteIntegration extends Integration {
 						if (firstKeyFinal && components) {
 							if (suggestion.getText().endsWith("=")) {
 								String newText = suggestion.getText().substring(0, suggestion.getText().length() - 1);
-								if (otherTags.contains(newText) || otherTags.contains(MainUtil.addNamespace(newText)))
+								if (otherTags.contains(newText) || otherTags.contains(TextUtil.addNamespace(newText)))
 									return null;
 								suggestion = new Suggestion(suggestion.getRange(), newText, suggestion.getTooltip());
 							}

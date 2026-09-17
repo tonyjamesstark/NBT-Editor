@@ -1,9 +1,9 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.components.toasts.SystemToast;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 /** The corner pop-up the mod uses to tell the user something outside a screen. */
 public class Toasts {
@@ -15,7 +15,7 @@ public class Toasts {
 	 * new one replaces, and the mod has no reason to queue two of its own.
 	 */
 	public static void show(Component title, Component description) {
-		MainUtil.client.gui.toastManager().addToast(
+		Minecraft.getInstance().gui.toastManager().addToast(
 				new SystemToast(SystemToast.SystemToastId.PACK_LOAD_FAILURE, title, description));
 	}
 	

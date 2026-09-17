@@ -1,6 +1,5 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -8,14 +7,15 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class OverlayScreen extends OverlaySupportingScreen {
 	
 	public static <T extends Renderable & GuiEventListener & NarratableEntry> T setOverlayOrScreen(T overlay, double z, boolean restoreParent) {
-		if (MainUtil.client.gui.screen() instanceof OverlaySupportingScreen screen)
+		if (Minecraft.getInstance().gui.screen() instanceof OverlaySupportingScreen screen)
 			screen.setOverlay(overlay, z);
 		else
-			MainUtil.client.setScreenAndShow(new OverlayScreen(Component.nullToEmpty(overlay.getClass().getName()), overlay, z, restoreParent));
+			Minecraft.getInstance().setScreenAndShow(new OverlayScreen(Component.nullToEmpty(overlay.getClass().getName()), overlay, z, restoreParent));
 		return overlay;
 	}
 	public static <T extends Renderable & GuiEventListener & NarratableEntry> T setOverlayOrScreen(T overlay, boolean restoreParent) {
@@ -28,13 +28,13 @@ public class OverlayScreen extends OverlaySupportingScreen {
 		super(title);
 		setOverlay(widget, z);
 		if (restoreParent)
-			parent = MainUtil.client.gui.screen();
+			parent = Minecraft.getInstance().gui.screen();
 	}
 	
 	@Override
 	public <T extends Renderable & GuiEventListener> T setOverlay(T overlay, double z) {
 		if (overlay == null)
-			MainUtil.client.setScreenAndShow(parent);
+			Minecraft.getInstance().setScreenAndShow(parent);
 		else
 			parent = null;
 		return super.setOverlay(overlay, z);
@@ -42,7 +42,7 @@ public class OverlayScreen extends OverlaySupportingScreen {
 	@Override
 	public <T extends Screen> T setOverlayScreen(T overlay, double z) {
 		if (overlay == null)
-			MainUtil.client.setScreenAndShow(parent);
+			Minecraft.getInstance().setScreenAndShow(parent);
 		else
 			parent = null;
 		return super.setOverlayScreen(overlay, z);

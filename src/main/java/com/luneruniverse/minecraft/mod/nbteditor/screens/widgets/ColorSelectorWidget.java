@@ -5,10 +5,9 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVSliderWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
@@ -18,6 +17,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.client.Minecraft;
 
 public class ColorSelectorWidget extends GroupWidget {
 	
@@ -117,7 +117,7 @@ public class ColorSelectorWidget extends GroupWidget {
 				() -> Component.translatableEscape("nbteditor.color_selector.hue", hueValue), value -> hueValue = (int) (value * 359)) {
 			@Override
 			protected boolean renderSlider(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-				MVDrawableHelper.drawTexture(context, HUES, x + 4, y, 0, 0, width - 8, 20, width - 8, 20);
+				Drawing.drawTexture(context, HUES, x + 4, y, 0, 0, width - 8, 20, width - 8, 20);
 				return true;
 			}
 			@Override
@@ -135,7 +135,7 @@ public class ColorSelectorWidget extends GroupWidget {
 			}
 		});
 		
-		field = new EditBox(MainUtil.client.font, x + areaSize + 4, y + areaSize + 4, areaSize / 2, 20, Component.nullToEmpty(""));
+		field = new EditBox(Minecraft.getInstance().font, x + areaSize + 4, y + areaSize + 4, areaSize / 2, 20, Component.nullToEmpty(""));
 		field.setMaxLength(7);
 		field.setValue("#" + String.format("%08X", color).substring(2, 8));
 		field.setResponder(str -> {
@@ -150,7 +150,7 @@ public class ColorSelectorWidget extends GroupWidget {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MVDrawableHelper.fill(context, x + areaSize + 4, y, x + areaSize + 4 + areaSize / 2, y + areaSize, color | 0xFF000000);
+		Drawing.fill(context, x + areaSize + 4, y, x + areaSize + 4 + areaSize / 2, y + areaSize, color | 0xFF000000);
 	}
 	
 }

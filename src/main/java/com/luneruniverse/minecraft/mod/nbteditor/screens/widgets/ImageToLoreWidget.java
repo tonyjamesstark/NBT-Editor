@@ -1,5 +1,7 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,11 +18,10 @@ import javax.imageio.ImageIO;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ScreenTexts;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.network.chat.MutableComponent;
@@ -29,11 +30,22 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 public class ImageToLoreWidget extends GroupWidget implements InitializableOverlay<Screen> {
 	
+	private static BufferedImage scaleImage(BufferedImage img, int width, int height) {
+		Image temp = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		BufferedImage output = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g = output.createGraphics();
+		g.drawImage(temp, 0, 0, null);
+		g.dispose();
+		return output;
+	}
+	
 	public static List<Component> imageToLore(BufferedImage img, int width, int height) {
-		img = MainUtil.scaleImage(img, width, height);
+		img = scaleImage(img, width, height);
 		List<Component> output = new ArrayList<>();
 		for (int line = 0; line < height; line++) {
 			MutableComponent lineText = Component.literal("").withStyle(style -> style.withItalic(false));
@@ -100,7 +112,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	
 	public ImageToLoreWidget(Consumer<Optional<ImageToLoreOptions>> optionsConsumer) {
 		this.optionsConsumer = optionsConsumer;
-		this.textRenderer = MainUtil.client.font;
+		this.textRenderer = Minecraft.getInstance().font;
 	}
 	
 	@Override
@@ -118,8 +130,8 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		imgHeight = addWidget(new NamedTextFieldWidget(width / 2 + 2, height / 2 - 18, 100, 16)
 				.name(Component.translatableEscape("nbteditor.img_to_lore.height")));
 		
-		imgWidth.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
-		imgHeight.nbte$setFilter(MainUtil.intPredicate(1, Integer.MAX_VALUE, true));
+		imgWidth.nbte$setFilter(IntFields.intPredicate(1, Integer.MAX_VALUE, true));
+		imgHeight.nbte$setFilter(IntFields.intPredicate(1, Integer.MAX_VALUE, true));
 		
 		if (prevImgWidth != null)
 			imgWidth.setValue(prevImgWidth);
@@ -128,7 +140,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		
 		addWidget(Buttons.of(width / 2 - 102, height / 2 + 2, 100, 20, ScreenTexts.DONE, btn -> {
 			optionsConsumer.accept(Optional.of(new ImageToLoreOptions(
-					MainUtil.parseOptionalInt(imgWidth.getValue()), MainUtil.parseOptionalInt(imgHeight.getValue()))));
+					IntFields.parseOptionalInt(imgWidth.getValue()), IntFields.parseOptionalInt(imgHeight.getValue()))));
 		}));
 		addWidget(Buttons.of(width / 2 + 2, height / 2 + 2, 100, 20, ScreenTexts.CANCEL, btn -> {
 			optionsConsumer.accept(Optional.empty());
@@ -137,11 +149,11 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
+		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MVDrawableHelper.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.img_to_lore"),
+		Drawing.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 	}
 	
 	@Override
@@ -153,7 +165,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 		}
 		if (keyCode == GLFW.GLFW_KEY_ENTER) {
 			optionsConsumer.accept(Optional.of(new ImageToLoreOptions(
-					MainUtil.parseOptionalInt(imgWidth.getValue()), MainUtil.parseOptionalInt(imgHeight.getValue()))));
+					IntFields.parseOptionalInt(imgWidth.getValue()), IntFields.parseOptionalInt(imgHeight.getValue()))));
 			return true;
 		}
 		

@@ -4,8 +4,7 @@ import java.util.Arrays;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
@@ -13,6 +12,7 @@ import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class AlertWidget extends GroupWidget implements InitializableOverlay<Screen> {
 	
@@ -31,7 +31,7 @@ public class AlertWidget extends GroupWidget implements InitializableOverlay<Scr
 		clearWidgets();
 		
 		x = width / 2;
-		y = height / 2 - lines.length * MainUtil.client.font.lineHeight / 2;
+		y = height / 2 - lines.length * Minecraft.getInstance().font.lineHeight / 2;
 		
 		addWidget(Buttons.of(width / 2 - 50, height - 28, 100, 20, Component.translatableEscape("nbteditor.ok"), btn -> {
 			onClose.run();
@@ -40,13 +40,13 @@ public class AlertWidget extends GroupWidget implements InitializableOverlay<Scr
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
+		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		for (int i = 0; i < lines.length; i++) {
-			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, lines[i],
-					x, y + i * MainUtil.client.font.lineHeight, -1);
+			Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, lines[i],
+					x, y + i * Minecraft.getInstance().font.lineHeight, -1);
 		}
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 	}
 	
 	@Override

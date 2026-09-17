@@ -9,12 +9,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
+import net.minecraft.client.Minecraft;
 
 @Mixin(Connection.class)
 public abstract class ClientConnectionMixin {
@@ -27,7 +27,7 @@ public abstract class ClientConnectionMixin {
 		if (getReceiving() != PacketFlow.CLIENTBOUND)
 			return;
 		
-		if (MainUtil.client.gui.screen() instanceof ClientHandledScreen) {
+		if (Minecraft.getInstance().gui.screen() instanceof ClientHandledScreen) {
 			if (packet instanceof ServerboundContainerClickPacket slotPacket) {
 				info.cancel();
 				NBTEditor.LOGGER.warn("Tried to send a slot click packet while on a ClientHandledScreen: slot=" +

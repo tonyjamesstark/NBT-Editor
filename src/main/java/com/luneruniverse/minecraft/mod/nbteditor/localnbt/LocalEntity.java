@@ -19,7 +19,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.packets.SummonEntityC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.ViewEntityS2CPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -40,13 +39,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.DataFixes;
 
 public class LocalEntity implements LocalNBT {
 	
 	public static LocalEntity deserialize(CompoundTag nbt, int defaultDataVersion) {
 		CompoundTag tag = nbt.nbte$getCompoundOrDefault("tag");
 		tag.putString("id", nbt.nbte$getStringOrDefault("id"));
-		tag = MainUtil.updateDynamic(References.ENTITY, tag, nbt.get("DataVersion"), defaultDataVersion);
+		tag = DataFixes.updateDynamic(References.ENTITY, tag, nbt.get("DataVersion"), defaultDataVersion);
 		String id = tag.nbte$getStringOrDefault("id");
 		tag.remove("id");
 		return new LocalEntity(MVRegistry.ENTITY_TYPE.get(Identifier.parse(id)), tag);
@@ -67,7 +68,7 @@ public class LocalEntity implements LocalNBT {
 		if (cachedEntity != null && cachedEntity.getType() == entityType && Objects.equals(cachedNbt, nbt))
 			return cachedEntity;
 		
-		cachedEntity = ServerMVMisc.createEntity(entityType, MainUtil.client.level);
+		cachedEntity = ServerMVMisc.createEntity(entityType, Minecraft.getInstance().level);
 		NBTManagers.ENTITY.setNbt(cachedEntity, nbt);
 		
 		cachedNbt = nbt.copy();
@@ -82,7 +83,7 @@ public class LocalEntity implements LocalNBT {
 	
 	@Override
 	public Component getName() {
-		return MainUtil.getNbtNameSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
+		return TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> Component.nullToEmpty(getDefaultName()));
 	}
 	@Override
 	public void setName(Component name) {
@@ -134,7 +135,7 @@ public class LocalEntity implements LocalNBT {
 		// 1.21.9 turned GUI entity rendering into a queued render state; there is no
 		// longer a matrix stack to push the entity onto.
 		Entity entity = getCachedEntity();
-		EntityRenderState state = MainUtil.client.getEntityRenderDispatcher()
+		EntityRenderState state = Minecraft.getInstance().getEntityRenderDispatcher()
 				.getRenderer(entity).createRenderState(entity, tickDelta);
 		state.lightCoords = 0xF000F0;
 		state.shadowPieces.clear();
@@ -215,7 +216,7 @@ public class LocalEntity implements LocalNBT {
 		UUID uuid = nbt.nbte$getUuid("UUID").orElseGet(() -> new UUID(0, 0));
 		return Component.translatableEscape("chat.square_brackets", getName()).withStyle(
 				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ENTITY.newEvent(new HoverEvent.EntityTooltipInfo(
-						entityType, uuid, MainUtil.getNbtNameSafely(nbt, "CustomName", () -> null)))));
+						entityType, uuid, TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> null)))));
 	}
 	
 	public CompletableFuture<Optional<EntityReference>> summon(ResourceKey<Level> world, Vec3 pos) {
@@ -225,7 +226,7 @@ public class LocalEntity implements LocalNBT {
 						.map(packet -> {
 							EntityReference ref = new EntityReference(packet.getWorld(), packet.getUUID(),
 									MVRegistry.ENTITY_TYPE.get(packet.getId()), packet.getNbt());
-							MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.get.entity")
+							Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.get.entity")
 									.append(ref.getLocalNBT().toHoverableText()));
 							return ref;
 						}));

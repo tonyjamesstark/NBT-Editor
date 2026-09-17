@@ -17,6 +17,7 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.network.chat.Component;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 public class MVTooltip {
 	
@@ -126,7 +127,7 @@ public class MVTooltip {
 		if (scissor)
 			GL20.glDisable(GL20.GL_SCISSOR_TEST);
 		
-		MVDrawableHelper.renderTooltip(context, lines, mouseX + (int) dx, mouseY + (int) dy);
+		Drawing.renderTooltip(context, lines, mouseX + (int) dx, mouseY + (int) dy);
 		
 		if (scissor)
 			GL20.glEnable(GL20.GL_SCISSOR_TEST);

@@ -20,7 +20,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.It
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.BookScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.WrittenBookTagReferences;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.mojang.brigadier.Command;
@@ -30,6 +29,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class BookCommand extends ClientCommand {
 	
@@ -49,7 +50,7 @@ public class BookCommand extends ClientCommand {
 			Component.translatableEscape("nbteditor.no_hand.no_item.book"));
 	
 	public static boolean convertBookToWritable(ItemReference ref) {
-		ItemStack item = MainUtil.setType(Items.WRITABLE_BOOK, ref.getItem(), 1);
+		ItemStack item = ref.getItem().transmuteCopy(Items.WRITABLE_BOOK, 1);
 		boolean formatted = false;
 		List<Component> pages = WrittenBookTagReferences.PAGES.get(item);
 		List<String> convertedPages = new ArrayList<>();
@@ -61,8 +62,8 @@ public class BookCommand extends ClientCommand {
 		ItemTagReferences.WRITABLE_BOOK_PAGES.set(item, convertedPages);
 		item.remove(MVComponentType.WRITTEN_BOOK_CONTENT);
 		if (formatted) {
-			MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.book.convert.formatting_saved"));
-			MainUtil.get(item, true);
+			Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.book.convert.formatting_saved"));
+			PlayerItems.get(item, true);
 		} else
 			ref.saveItem(item, Component.translatableEscape("nbteditor.book.convert.success"));
 		return !formatted;
@@ -91,10 +92,10 @@ public class BookCommand extends ClientCommand {
 			WrittenBookTagReferences.GENERATION.set(book, 0);
 			WrittenBookTagReferences.PAGES.set(book, new ArrayList<>());
 			ref.saveItem(book);
-			MainUtil.client.setScreenAndShow(new BookScreen(ref));
+			Minecraft.getInstance().setScreenAndShow(new BookScreen(ref));
 			return Command.SINGLE_SUCCESS;
 		})).executes(context -> {
-			getReference(ref -> MainUtil.client.setScreenAndShow(new BookScreen(ref)));
+			getReference(ref -> Minecraft.getInstance().setScreenAndShow(new BookScreen(ref)));
 			return Command.SINGLE_SUCCESS;
 		});
 	}

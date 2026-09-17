@@ -1,6 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.screens.util;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -73,7 +73,7 @@ public class TextAreaScreen extends OverlaySupportingScreen {
 	
 	@Override
 	public void renderMain(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		MVDrawableHelper.renderBackground(this, context);
+		Drawing.renderBackground(this, context);
 		super.renderMain(context, mouseX, mouseY, delta);
 	}
 	

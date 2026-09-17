@@ -1,11 +1,6 @@
 package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.ExecutionException;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.MappingResolver;
@@ -16,14 +11,12 @@ import net.fabricmc.loader.api.MappingResolver;
  */
 public class Reflection {
 	
-	public static final MappingResolver mappings = FabricLoader.getInstance().getMappingResolver();
+	private static final MappingResolver mappings = FabricLoader.getInstance().getMappingResolver();
 	
-	
-	private static final Cache<String, Class<?>> classCache = CacheBuilder.newBuilder().build();
 	public static Class<?> getClass(String name) {
 		try {
-			return classCache.get(name, () -> Class.forName(mappings.mapClassName("intermediary", name)));
-		} catch (ExecutionException | UncheckedExecutionException e) {
+			return Class.forName(mappings.mapClassName("intermediary", name));
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException("Error getting class", e);
 		}
 	}

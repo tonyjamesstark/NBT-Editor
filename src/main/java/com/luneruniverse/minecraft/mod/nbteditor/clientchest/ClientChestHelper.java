@@ -5,16 +5,16 @@ import java.util.concurrent.CompletableFuture;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.Minecraft;
 
 public class ClientChestHelper {
 	
 	private static void trySend(String key) {
-		if (MainUtil.client.player != null)
-			MainUtil.client.player.sendSystemMessage(Component.translatableEscape(key));
+		if (Minecraft.getInstance().player != null)
+			Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape(key));
 	}
 	
 	public static boolean setNameOfPage(int page, String name) {

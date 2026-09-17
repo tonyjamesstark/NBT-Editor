@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ItemTooltips;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 @Mixin(GuiGraphicsExtractor.class)
 public abstract class DrawContextMixin {
@@ -37,8 +37,8 @@ public abstract class DrawContextMixin {
 			return;
 		
 		int[] size = ItemTooltips.getTooltipSize(tooltip);
-		int screenWidth = MainUtil.client.getWindow().getGuiScaledWidth();
-		int screenHeight = MainUtil.client.getWindow().getGuiScaledHeight();
+		int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+		int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 		Vector2ic pos = positioner.positionTooltip(screenWidth, screenHeight, x, y, size[0], size[1]);
 		
 		ItemTooltips.renderTooltipFromComponents((GuiGraphicsExtractor) (Object) this,

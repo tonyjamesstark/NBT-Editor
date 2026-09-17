@@ -7,32 +7,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.ClientHandledScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetCursorItemPacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerInventoryPacket;
+import net.minecraft.client.Minecraft;
 
 @Mixin(ClientPacketListener.class)
 public class ClientPlayNetworkHandlerMixin {
 	
 	@Inject(method = "handleSetCursorItem", at = @At("HEAD"), cancellable = true)
 	private void handleSetCursorItem(ClientboundSetCursorItemPacket packet, CallbackInfo info) {
-		if (!MainUtil.client.isSameThread())
+		if (!Minecraft.getInstance().isSameThread())
 			return;
 		
 		if (NBTEditorClient.CURSOR_MANAGER.isBranched()) {
 			info.cancel();
 			
 			if (!(NBTEditorClient.CURSOR_MANAGER.getCurrentRoot() instanceof CreativeModeInventoryScreen))
-				MainUtil.client.player.containerMenu.setCarried(packet.contents());
+				Minecraft.getInstance().player.containerMenu.setCarried(packet.contents());
 		}
 	}
 	
 	@Inject(method = "handleSetPlayerInventory", at = @At("RETURN"), cancellable = true)
 	private void onSetPlayerInventory_return(ClientboundSetPlayerInventoryPacket packet, CallbackInfo info) {
-		if (MainUtil.client.gui.screen() instanceof ClientHandledScreen clientHandledScreen)
+		if (Minecraft.getInstance().gui.screen() instanceof ClientHandledScreen clientHandledScreen)
 			clientHandledScreen.getServerInventoryManager().onSetPlayerInventoryPacket(packet);
 	}
 	

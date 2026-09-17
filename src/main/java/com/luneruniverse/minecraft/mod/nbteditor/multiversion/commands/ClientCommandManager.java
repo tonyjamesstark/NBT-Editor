@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Reflection;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -36,6 +35,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 import net.minecraft.network.protocol.game.ClientboundLoginPacket;
+import net.minecraft.client.Minecraft;
 
 /**
  * Manages client-sided commands and provides some related helper methods.
@@ -119,15 +119,15 @@ public final class ClientCommandManager {
 		final CommandDispatcher<FabricClientCommandSource> dispatcher = new CommandDispatcher<>();
 		ClientCommandInternals.setActiveDispatcher(dispatcher);
 		Object registryAccess = CommandBuildContext.simple(
-						MainUtil.client.getConnection().registryAccess(),
-						MainUtil.client.getConnection().enabledFeatures());
+						Minecraft.getInstance().getConnection().registryAccess(),
+						Minecraft.getInstance().getConnection().enabledFeatures());
 		ClientCommandRegistrationCallback.EVENT.invoker().register(dispatcher, registryAccess);
 		ClientCommandInternals.finalizeInit();
 	}
 	public static void reregisterClientCommands() {
-		if (MainUtil.client.getConnection() == null)
+		if (Minecraft.getInstance().getConnection() == null)
 			return;
 		createDispatcher();
-		MainUtil.client.getConnection().handleCommands(lastCommandPacket);
+		Minecraft.getInstance().getConnection().handleCommands(lastCommandPacket);
 	}
 }

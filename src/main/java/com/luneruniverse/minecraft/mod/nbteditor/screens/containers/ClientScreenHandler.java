@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
@@ -13,6 +12,7 @@ import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
 
 public class ClientScreenHandler extends ChestMenu {
 	
@@ -27,7 +27,7 @@ public class ClientScreenHandler extends ChestMenu {
 			case 5 -> MenuType.GENERIC_9x5;
 			case 6 -> MenuType.GENERIC_9x6;
 			default -> throw new IllegalArgumentException("Invalid row count: " + rows);
-		}, SYNC_ID, MainUtil.client.player.getInventory(), new SimpleContainer(rows * 9), rows);
+		}, SYNC_ID, Minecraft.getInstance().player.getInventory(), new SimpleContainer(rows * 9), rows);
 		
 		slots.replaceAll(ClientScreenHandlerSlot::new);
 	}

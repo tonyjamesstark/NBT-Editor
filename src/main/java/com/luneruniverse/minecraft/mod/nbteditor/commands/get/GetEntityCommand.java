@@ -8,7 +8,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.SummonableEn
 import com.luneruniverse.minecraft.mod.nbteditor.integrations.NBTAutocompleteIntegration;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -22,6 +21,8 @@ import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.Minecraft;
+import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 public class GetEntityCommand extends ClientCommand {
 	
@@ -48,12 +49,12 @@ public class GetEntityCommand extends ClientCommand {
 			LocalEntity entity = new LocalEntity(entityType, nbtArg);
 			
 			if (pos == null) {
-				entity.toItem(false).ifPresentOrElse(MainUtil::getWithMessage,
-						() -> MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
+				entity.toItem(false).ifPresentOrElse(PlayerItems::getWithMessage,
+						() -> Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.item.error")));
 			} else if (NBTEditorClient.SERVER_CONN.isEditingExpanded())
-				entity.summon(MainUtil.client.level.dimension(), pos);
+				entity.summon(Minecraft.getInstance().level.dimension(), pos);
 			else
-				MainUtil.client.player.sendSystemMessage(Component.translatableEscape("nbteditor.requires_server"));
+				Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.requires_server"));
 			
 			return Command.SINGLE_SUCCESS;
 		};

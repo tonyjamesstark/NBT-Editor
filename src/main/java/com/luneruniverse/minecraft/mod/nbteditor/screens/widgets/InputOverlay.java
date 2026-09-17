@@ -4,11 +4,10 @@ import java.util.function.Consumer;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVDrawableHelper;
+import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlayScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
-import com.luneruniverse.minecraft.mod.nbteditor.util.MainUtil;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
 import net.minecraft.client.input.KeyEvent;
@@ -17,6 +16,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
+import net.minecraft.client.Minecraft;
 
 public class InputOverlay<T> extends GroupWidget implements InitializableOverlay<Screen> {
 	
@@ -75,13 +75,13 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 		
 		context.pose().pushMatrix();
 		context.pose().translate((float) (0.0), (float) (0.0));
-		MVDrawableHelper.renderBackground(MainUtil.client.gui.screen(), context);
+		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		if (title != null) {
-			MVDrawableHelper.drawCenteredTextWithShadow(context, MainUtil.client.font, title,
-					x + input.getWidth() / 2, y - 4 - MainUtil.client.font.lineHeight, -1);
+			Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, title,
+					x + input.getWidth() / 2, y - 4 - Minecraft.getInstance().font.lineHeight, -1);
 		}
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		MainUtil.renderLogo(context);
+		Drawing.renderLogo(context);
 		context.pose().popMatrix();
 	}
 	
