@@ -13,6 +13,7 @@ This resolves the same four things mixin resolves, before launch:
   - the selected method's bytecode actually contains that call or field access
   - an `@Inject` handler takes `CallbackInfo` for a void target, `CallbackInfoReturnable`
     otherwise
+  - an `@Inject` handler's leading parameters match the target's, or are absent
 
 `require = 0` does not exempt any of these. Mixin rejects a mismatched handler
 signature before it ever consults the require count, so a `require = 0` injector
@@ -155,6 +156,60 @@ def parse_at(target):
     return None
 
 
+PRIMITIVES = {"V": "void", "Z": "boolean", "B": "byte", "C": "char", "S": "short",
+              "I": "int", "J": "long", "F": "float", "D": "double"}
+
+
+def desc_params(desc):
+    """"(La/b/C;I[J)V" -> ["C", "int", "long[]"]."""
+    out, body, i = [], desc[1:desc.rindex(")")], 0
+    while i < len(body):
+        arr = 0
+        while body[i] == "[":
+            arr, i = arr + 1, i + 1
+        if body[i] == "L":
+            end = body.index(";", i)
+            simple, i = re.split(r'[/$]', body[i + 1:end])[-1], end + 1
+        else:
+            simple, i = PRIMITIVES[body[i]], i + 1
+        out.append(simple + "[]" * arr)
+    return out
+
+
+def split_params(text):
+    """Split a parameter list on the commas that are not inside <> or ()."""
+    out, cur, depth = [], "", 0
+    for ch in text:
+        depth += (ch in "<(") - (ch in ">)")
+        if ch == "," and depth == 0:
+            out.append(cur)
+            cur = ""
+        else:
+            cur += ch
+    return out + ([cur] if cur.strip() else [])
+
+
+def decl_params(decl):
+    """Declared parameter types of a handler, by simple name, up to the CallbackInfo.
+
+    Simple names, not descriptors: two classes sharing a simple name across packages
+    would compare equal here, which is the one mismatch this does not catch.
+    """
+    out = []
+    for param in split_params(decl[decl.index("(") + 1:decl.rindex(")")]):
+        param = re.sub(r'@\w+(?:\([^)]*\))?|\bfinal\b', '', param).strip()
+        if not param:
+            continue
+        words = param.split()
+        ty = re.sub(r'<.*>', '', " ".join(words[:-1]) if len(words) > 1 else words[0]).strip()
+        if ty.endswith("..."):
+            ty = ty[:-3] + "[]"
+        out.append(ty.split(".")[-1])
+        if out[-1].startswith("CallbackInfo"):
+            return out[:-1]
+    return out
+
+
 INJECTOR = (r'@(?P<kind>Inject|Redirect|ModifyArg|ModifyArgs|ModifyVariable|ModifyConstant'
             r'|ModifyReturnValue|ModifyExpressionValue|WrapOperation|WrapWithCondition)'
             r'\s*\((?P<ann>.*?)\)\s*\n\s*'
@@ -220,6 +275,7 @@ def check(path):
                     continue
                 if kind == "Inject":
                     returnable = "CallbackInfoReturnable" in decl
+                    have = decl_params(decl)
                     for m in picked:
                         if m.desc.endswith(")V") and returnable:
                             report(where, f'method = "{selector}" -- {owner}.{name}{m.desc} returns '
@@ -227,6 +283,10 @@ def check(path):
                         elif not m.desc.endswith(")V") and not returnable and "CallbackInfo" in decl:
                             report(where, f'method = "{selector}" -- {owner}.{name}{m.desc} returns a '
                                           f'value, so the handler needs CallbackInfoReturnable')
+                        want = desc_params(m.desc)
+                        if have and have != want:
+                            report(where, f'method = "{selector}" -- handler takes {have}, but '
+                                          f'{owner}.{name} takes {want}')
                 for value, target in ats:
                     if not target or (value and value.group(1) not in ("INVOKE", "FIELD", "NEW",
                                                                       "INVOKE_ASSIGN")):
@@ -234,15 +294,15 @@ def check(path):
                     at = parse_at(target.group(1))
                     if not at:
                         continue
-                    at_owner, at_name, at_desc, kind = at
+                    at_owner, at_name, at_desc, at_kind = at
                     if load(at_owner) is None:
                         report(where, f"@At owner not on the classpath: {at_owner}", False)
                         continue
-                    _, have = lookup(at_owner, at_name, kind)
-                    if not have:
-                        report(where, f"@At {at_owner}.{at_name} -- no such {kind[:-1]}")
+                    _, at_have = lookup(at_owner, at_name, at_kind)
+                    if not at_have:
+                        report(where, f"@At {at_owner}.{at_name} -- no such {at_kind[:-1]}")
                         continue
-                    descs = [m.desc for m in have] if kind == "methods" else sorted(have)
+                    descs = [m.desc for m in at_have] if at_kind == "methods" else sorted(at_have)
                     if at_desc not in descs:
                         report(where, f"@At {at_owner}.{at_name}{at_desc} -- descriptor mismatch, "
                                       f"jar has {sorted(descs)}")
