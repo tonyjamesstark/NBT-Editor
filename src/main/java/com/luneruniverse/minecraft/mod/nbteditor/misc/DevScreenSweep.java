@@ -16,6 +16,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -35,8 +36,13 @@ import net.minecraft.world.item.Items;
  */
 public class DevScreenSweep {
 
-	private static final String DEFAULT_LORE =
-			"§bPre-existing §dunicode: Ünïcödé ✦ 测试|Second line ✔";
+	private static final String DEFAULT_LORE = String.join("|",
+			"\u00a7bSection \u00a7dcodes",
+			"Latin-1 \u00dcn\u00efc\u00f6d\u00e9, CJK \u6d4b\u8bd5, symbols \u2726\u2714",
+			"Astral \ud83d\udde1\ufe0f\ud83c\udf89 and combining a\u0301",
+			"Quote \" backslash \\ brace } bracket ] colon :",
+			"Literal escape \\u00a7 and \\n",
+			"RTL \u05e9\u05dc\u05d5\u05dd zero-width \u200b nbsp \u00a0");
 	private static final int TICKS_PER_ROW = 20;
 
 	/** Where LocalFactoryScreen puts its ConfigPanel, and what ConfigGroupingVertical then adds. */
@@ -54,7 +60,8 @@ public class DevScreenSweep {
 	}
 
 	private final String lore;
-	private final String nbt;
+	private final List<String> items;
+	private int item;
 	private int next;
 	private int ticks;
 	private boolean done;
@@ -62,7 +69,7 @@ public class DevScreenSweep {
 
 	private DevScreenSweep(String lore, String nbt, int from) {
 		this.lore = lore;
-		this.nbt = nbt;
+		this.items = nbt == null ? null : List.of(nbt.split(";;"));
 		this.next = from;
 	}
 
@@ -70,9 +77,13 @@ public class DevScreenSweep {
 		if (client.player == null || done)
 			return;
 		if (rows != null && next >= rows.size()) {
-			done = true;
-			NBTEditor.LOGGER.info("SWEEP done");
-			return;
+			if (items == null || ++item >= items.size()) {
+				done = true;
+				NBTEditor.LOGGER.info("SWEEP done");
+				return;
+			}
+			rows = null;
+			next = 0;
 		}
 		if (ticks++ % TICKS_PER_ROW != 0)
 			return;
@@ -85,13 +96,13 @@ public class DevScreenSweep {
 				if (factory.supported().test(ref))
 					rows.add(factory);
 			}
-			NBTEditor.LOGGER.info("SWEEP item {} nbt={}", client.player.getMainHandItem(),
-					client.player.getMainHandItem().nbte$getNbt());
+			NBTEditor.LOGGER.info("SWEEP item {} of {} nbt={}", item,
+					items == null ? 1 : items.size(), client.player.getMainHandItem().nbte$getNbt());
 			return;
 		}
 
 		int row = next++;
-		String name = row + " " + rows.get(row).buttonText().getString();
+		String name = "item " + item + " row " + row + " " + rows.get(row).buttonText().getString();
 		LocalFactoryScreen<?> menu = new LocalFactoryScreen<>(new HandItemReference(InteractionHand.MAIN_HAND));
 		client.setScreenAndShow(menu);
 		NBTEditor.LOGGER.info("SWEEP click {}", name);
@@ -111,20 +122,21 @@ public class DevScreenSweep {
 	}
 
 	private ItemStack buildItem() {
-		ItemStack item = new ItemStack(Items.DIAMOND_SWORD);
-		if (nbt != null) {
+		ItemStack stack = new ItemStack(Items.DIAMOND_SWORD);
+		if (items != null) {
+			String snbt = items.get(item);
 			try {
-				item.nbte$setNbt((net.minecraft.nbt.CompoundTag) NbtIO.parseSnbt(nbt));
-				return item;
+				stack.nbte$setNbt((CompoundTag) NbtIO.parseSnbt(snbt));
+				return stack;
 			} catch (Exception e) {
-				throw new IllegalArgumentException("-Dnbte.devscreens.nbt is not SNBT: " + nbt, e);
+				throw new IllegalArgumentException("-Dnbte.devscreens.nbt is not SNBT: " + snbt, e);
 			}
 		}
 		List<Component> lines = new ArrayList<>();
 		for (String line : lore.split("\\|", -1))
 			lines.add(Component.literal(line));
-		ItemTagReferences.LORE.set(item, lines);
-		return item;
+		ItemTagReferences.LORE.set(stack, lines);
+		return stack;
 	}
 
 }

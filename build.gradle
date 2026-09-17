@@ -53,6 +53,9 @@ loom {
 			if (project.hasProperty("devscreensFrom")) {
 				vmArgs "-Dnbte.devscreens.from=" + project.property("devscreensFrom")
 			}
+			if (project.hasProperty("devscreensNbt")) {
+				vmArgs "-Dnbte.devscreens.nbt=" + project.property("devscreensNbt")
+			}
 		}
 		server {
 			runDir = "run/server"

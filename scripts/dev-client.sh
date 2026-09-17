@@ -14,6 +14,8 @@
 # With --screens it implies --join and then runs misc/DevScreenSweep, which opens every
 # factory screen in turn against an item carrying the lore given (default: non-ASCII).
 # Success is the sweep reaching its last screen; any screen that threw is reported.
+# NBTE_SCREENS_NBT gives the item a component patch as SNBT instead, ';;' separating
+# patches to sweep in turn; NBTE_SCREENS_FROM resumes at a row.
 #
 # Usage: scripts/dev-client.sh [--join [host:port]] [--screens [lore]] [timeout-seconds]
 set -uo pipefail
@@ -103,7 +105,7 @@ if [ -n "$JOIN" ]; then
 		echo "dev server up in $((SECONDS - waited))s"
 	fi
 	joined=$(grep -c 'joined the game' "$SERVER_LOG")
-	./gradlew runClient --console=plain "-Pjoin=$JOIN" ${SCREENS:+"-Pdevscreens=$SCREENS_LORE"} ${NBTE_SCREENS_FROM:+"-PdevscreensFrom=$NBTE_SCREENS_FROM"} >"$LOG" 2>&1 &
+	./gradlew runClient --console=plain "-Pjoin=$JOIN" ${SCREENS:+"-Pdevscreens=$SCREENS_LORE"} ${NBTE_SCREENS_FROM:+"-PdevscreensFrom=$NBTE_SCREENS_FROM"} ${NBTE_SCREENS_NBT:+"-PdevscreensNbt=$NBTE_SCREENS_NBT"} >"$LOG" 2>&1 &
 else
 	./gradlew runClient --console=plain >"$LOG" 2>&1 &
 fi
