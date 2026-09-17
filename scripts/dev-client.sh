@@ -6,9 +6,10 @@
 # Exits 0 when the client gets there, 1 on a crash or a timeout, with the decisive log
 # lines either way.
 #
-# With --join it goes further and connects to the dev server, which is where item
-# components get bound and the join-time half of startup runs. That needs
-# scripts/dev-server.sh up first; success is the server logging the player in.
+# With --join it goes further and connects to a server, which is where item components
+# get bound and the join-time half of startup runs. Success is the server logging the
+# player in. A local dev server is started if one is not already up, and stopped again on
+# the way out; pass a host:port to use one that is already running elsewhere.
 #
 # Usage: scripts/dev-client.sh [--join [host:port]] [timeout-seconds]
 set -uo pipefail
@@ -42,8 +43,10 @@ Xvfb ":$display" -screen 0 1280x720x24 -nolisten tcp &
 xvfb=$!
 export DISPLAY=":$display"
 
+server_is_ours=
 cleanup() {
 	pkill -f 'nbte\.devrun=client' 2>/dev/null
+	[ -n "$server_is_ours" ] && pkill -f 'nbte\.devrun=server' 2>/dev/null
 	kill "$xvfb" 2>/dev/null
 }
 trap cleanup EXIT
@@ -63,7 +66,22 @@ for opt in onboardAccessibility:false pauseOnLostFocus:false; do
 	fi
 done
 if [ -n "$JOIN" ]; then
-	grep -q 'Done (' "$SERVER_LOG" 2>/dev/null || { echo "no dev server up; run scripts/dev-server.sh first"; exit 1; }
+	if ! pgrep -f 'nbte\.devrun=server' >/dev/null; then
+		echo "starting a dev server"
+		server_is_ours=1
+		# The old log has to go first. Both the readiness check below and the join
+		# baseline below that read this file, and a previous run's "Done (" and
+		# "joined the game" lines would satisfy each of them against a server that
+		# is not up yet.
+		rm -f "$SERVER_LOG"
+		scripts/dev-server.sh "$DEADLINE" >| run/dev-server-harness.log 2>&1 &
+		waited=$SECONDS
+		until grep -q 'Done (' "$SERVER_LOG" 2>/dev/null; do
+			(( SECONDS - waited < DEADLINE )) || { echo "the dev server never came up"; tail -25 "$SERVER_LOG"; exit 1; }
+			sleep 3
+		done
+		echo "dev server up in $((SECONDS - waited))s"
+	fi
 	joined=$(grep -c 'joined the game' "$SERVER_LOG")
 	./gradlew runClient --console=plain "-Pjoin=$JOIN" >"$LOG" 2>&1 &
 else
