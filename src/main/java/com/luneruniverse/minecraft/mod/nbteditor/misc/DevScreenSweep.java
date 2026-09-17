@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.HandItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.Configurable;
@@ -20,7 +21,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 /**
  * Clicks every button on the factory menu in turn, so a menu that only breaks once it is on
@@ -89,7 +92,13 @@ public class DevScreenSweep {
 			return;
 
 		if (rows == null) {
-			client.player.setItemInHand(InteractionHand.MAIN_HAND, buildItem());
+			// Without this the mod reads the default registry set, and every holder the server
+			// owns is foreign to it. It is why the factory menu went dead on enchanted items.
+			if (DynamicRegistryManagerHolder.hasClientManager())
+				NBTEditor.LOGGER.info("SWEEP registry client manager set");
+			else
+				NBTEditor.LOGGER.error("SWEEP fail the client registry manager was never set");
+			client.player.setItemInHand(InteractionHand.MAIN_HAND, buildItem(client));
 			ItemReference ref = new HandItemReference(InteractionHand.MAIN_HAND);
 			rows = new ArrayList<>();
 			for (LocalFactoryReference factory : LocalFactoryScreen.BASIC_FACTORIES) {
@@ -121,7 +130,7 @@ public class DevScreenSweep {
 		client.setScreenAndShow(null);
 	}
 
-	private ItemStack buildItem() {
+	private ItemStack buildItem(Minecraft client) {
 		ItemStack stack = new ItemStack(Items.DIAMOND_SWORD);
 		if (items != null) {
 			String snbt = items.get(item);
@@ -132,6 +141,8 @@ public class DevScreenSweep {
 				throw new IllegalArgumentException("-Dnbte.devscreens.nbt is not SNBT: " + snbt, e);
 			}
 		}
+		stack.enchant(client.level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+				.getOrThrow(Enchantments.UNBREAKING), 3);
 		List<Component> lines = new ArrayList<>();
 		for (String line : lore.split("\\|", -1))
 			lines.add(Component.literal(line));
