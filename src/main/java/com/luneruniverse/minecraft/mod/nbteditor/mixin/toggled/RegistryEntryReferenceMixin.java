@@ -34,7 +34,7 @@ public abstract class RegistryEntryReferenceMixin<T> {
 		}
 	}
 	
-	@Inject(method = "is", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("HEAD"), cancellable = true)
 	private void is(TagKey<T> tag, CallbackInfoReturnable<Boolean> info) {
 		@SuppressWarnings("unchecked")
 		Holder.Reference<T> source = (Holder.Reference<T>) (Object) this;

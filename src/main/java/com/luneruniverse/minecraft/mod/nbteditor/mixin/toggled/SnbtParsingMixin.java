@@ -13,10 +13,13 @@ import net.minecraft.nbt.SnbtGrammar;
 
 @Mixin(SnbtGrammar.class)
 public class SnbtParsingMixin {
-	// method_68722 is a synthetic SnbtGrammar method with no Mojang name, so the
-	// intermediary name is the only stable way to target it.
-	@Redirect(method = "method_68722", at = @At(value = "INVOKE", target = "Lcom/mojang/serialization/DynamicOps;createString(Ljava/lang/String;)Ljava/lang/Object;", remap = false))
-	private static Object createParser$method_68722_createString(DynamicOps<?> ops, String str) {
+	// The unquoted-string rule, where a bare token becomes a string value, beside
+	// vanilla's own true/false cases. It is a lambda, so the only name it has is the
+	// one javac assigned, and that index moves whenever createParser gains or loses a
+	// lambda above it. checkMixinTargets fails the build when it does. An intermediary
+	// name is not an option here: the jar ships no refMap, so mixin never resolves one.
+	@Redirect(method = "lambda$createParser$13", at = @At(value = "INVOKE", target = "Lcom/mojang/serialization/DynamicOps;createString(Ljava/lang/String;)Ljava/lang/Object;", remap = false))
+	private static Object unquotedString_createString(DynamicOps<?> ops, String str) {
 		if (ConfigScreen.isSpecialNumbers() && MixinLink.specialNumbers.contains(Thread.currentThread())) {
 			Number specialNum = NbtFormatter.SPECIAL_NUMS.get(str);
 			if (specialNum != null) {

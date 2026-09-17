@@ -14,7 +14,7 @@ import net.minecraft.client.Minecraft;
 
 @Mixin(KeyboardHandler.class)
 public class KeyboardMixin {
-	@Redirect(method = "keyPress", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/GameNarrator;isActive()Z"))
+	@Redirect(method = "keyPress", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/GameNarrator;isActive()Z"))
 	private boolean isActive(GameNarrator manager) {
 		if (Minecraft.getInstance().gui.screen() != null) {
 			GuiEventListener focused = Minecraft.getInstance().gui.screen().getFocused();

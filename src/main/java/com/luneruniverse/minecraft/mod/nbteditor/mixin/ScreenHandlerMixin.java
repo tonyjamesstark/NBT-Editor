@@ -15,7 +15,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.util.PlayerItems;
 
 @Mixin(AbstractContainerMenu.class)
 public class ScreenHandlerMixin {
-	@Redirect(method = "doClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/Player;dropItem(Lnet/minecraft/world/item/ItemStack;Z)Lnet/minecraft/world/entity/item/ItemEntity;"))
+	@Redirect(method = "doClick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;drop(Lnet/minecraft/world/item/ItemStack;Z)Lnet/minecraft/world/entity/item/ItemEntity;"))
 	private ItemEntity dropItem(Player player, ItemStack stack, boolean retainOwnership) {
 		if (!(Minecraft.getInstance().gui.screen() instanceof ClientHandledScreen))
 			return player.drop(stack, retainOwnership);

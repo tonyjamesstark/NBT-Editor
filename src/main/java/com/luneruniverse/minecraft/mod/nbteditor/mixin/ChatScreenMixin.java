@@ -23,12 +23,12 @@ public class ChatScreenMixin {
 			return Integer.MAX_VALUE;
 		return length;
 	}
-	@Inject(method = "render", at = @At("HEAD"))
+	@Inject(method = "extractRenderState", at = @At("HEAD"))
 	private void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo info) {
 		MixinLink.renderChatLimitWarning((ChatScreen) (Object) this, context);
 	}
 	
-	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"), cancellable = true)
+	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"), cancellable = true)
 	private void keyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> info) {
 		if (!(Minecraft.getInstance().gui.screen() instanceof ChatScreen)) {
 			info.setReturnValue(true);

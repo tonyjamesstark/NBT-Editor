@@ -14,14 +14,13 @@ import net.minecraft.network.protocol.game.ServerboundContainerClickPacket;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerPlayerGameMode;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public class ServerPlayNetworkHandlerMixin {
 	@Shadow
 	public ServerPlayer player;
 	
-	@Redirect(method = "handleSetCreativeModeSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayerGameMode;isCreative()Z"))
+	@Redirect(method = "handleSetCreativeModeSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;hasInfiniteMaterials()Z"))
 	private boolean onCreativeInventoryAction_isInCreativeMode(ServerPlayer player) {
 		return player.hasInfiniteMaterials() || ServerMVMisc.hasPermissionLevel(player, 2);
 	}

@@ -6,7 +6,6 @@
   "plugin": "com.luneruniverse.minecraft.mod.nbteditor.multiversion.mixin.toggled.MVMixinPlugin",
   "mixins": [
     "PacketByteBufMixin",
-    "BlockEntityMixin",
     "ItemStackMixin",
     "NbtCompoundMixin",
     "AbstractNbtListMixin",

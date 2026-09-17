@@ -122,7 +122,7 @@ public class BookScreenMixin extends Screen {
 		}
 	}
 	
-	@Inject(method = "render", at = @At("TAIL"))
+	@Inject(method = "extractRenderState", at = @At("TAIL"))
 	private void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo info) {
 		if (renderLogo)
 			Drawing.renderLogo(context);

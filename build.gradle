@@ -118,3 +118,56 @@ test {
 		events 'passed', 'skipped', 'failed'
 	}
 }
+// Mixin configs name their classes as plain strings, so a rename or deletion that misses the
+// JSON compiles clean and only surfaces as a crash at game launch. Fail the build instead.
+// ponytail: source-file existence only; the toggled names the mixin plugins add at runtime,
+// and the @Mixin targets = "..." strings, are still unchecked.
+tasks.register("validateMixinConfigs") {
+	def configs = fileTree("src/main/resources").matching { include "*.mixins.json" }
+	def sourceDir = file("src/main/java")
+	inputs.files(configs)
+	inputs.dir(sourceDir)
+	doLast {
+		def missing = []
+		configs.each { config ->
+			def json = new groovy.json.JsonSlurper().parse(config)
+			def pkg = json["package"]
+			["mixins", "client", "server"].each { side ->
+				(json[side] ?: []).each { name ->
+					if (!new File(sourceDir, "${pkg}.${name}".replace(".", "/") + ".java").exists())
+						missing << "${config.name} ${side}: ${pkg}.${name}"
+				}
+			}
+		}
+		if (!missing.isEmpty())
+			throw new GradleException("Mixin classes named in a config but absent:\n\t" + missing.join("\n\t"))
+	}
+}
+check.dependsOn validateMixinConfigs
+
+// The configs above only prove the mixin classes exist. tools/check-mixin-targets.py
+// resolves what each one points *at* against the mapped jar: the target class, the
+// `method` selector, the `@At` member, and whether the selected method's bytecode
+// really contains that call. A stale name there compiles and remaps clean and fails
+// at launch, and a mixin on a screen class does not fail until that screen opens.
+tasks.register("checkMixinTargets") {
+	def script = file("tools/check-mixin-targets.py")
+	def sources = fileTree("src/main/java") { include "**/mixin/**/*.java" }
+	def classpath = configurations.compileClasspath
+	inputs.files(script, sources)
+	onlyIf {
+		if ("which python3".execute().waitFor() == 0) return true
+		logger.warn("checkMixinTargets: no python3, skipping")
+		false
+	}
+	doLast {
+		if (!classpath.any { it.name.startsWith("minecraft-merged") })
+			throw new GradleException("no mapped Minecraft jar on the compile classpath")
+		def proc = new ProcessBuilder("python3", script.absolutePath, classpath.asPath)
+				.directory(projectDir).redirectErrorStream(true).start()
+		proc.inputStream.eachLine { logger.lifecycle(it) }
+		if (proc.waitFor() != 0)
+			throw new GradleException("mixin targets do not resolve against the compile classpath")
+	}
+}
+check.dependsOn checkMixinTargets

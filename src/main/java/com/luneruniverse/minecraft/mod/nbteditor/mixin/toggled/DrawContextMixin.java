@@ -29,7 +29,7 @@ public abstract class DrawContextMixin {
 	
 	// 1.21.9 split tooltip drawing out of drawTooltip into renderTooltip,
 	// and the matrix it pushes is the 2D GUI stack.
-	@Inject(method = "renderTooltip", at = @At(value = "INVOKE",
+	@Inject(method = "tooltip", at = @At(value = "INVOKE",
 			target = "Lorg/joml/Matrix3x2fStack;pushMatrix()Lorg/joml/Matrix3x2fStack;", shift = At.Shift.AFTER))
 	private void renderTooltip(Font textRenderer, List<ClientTooltipComponent> tooltip, int x, int y,
 			ClientTooltipPositioner positioner, Identifier texture, CallbackInfo info) {

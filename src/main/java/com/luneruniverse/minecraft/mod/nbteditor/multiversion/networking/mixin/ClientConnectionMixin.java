@@ -30,7 +30,7 @@ public abstract class ClientConnectionMixin {
 	@Shadow
 	public abstract boolean isConnected();
 	
-	@Inject(method = "disconnect", at = @At("HEAD"))
+	@Inject(method = "disconnect(Lnet/minecraft/network/chat/Component;)V", at = @At("HEAD"))
 	private void disconnect(Component reason, CallbackInfo info) {
 		if (isConnected()) {
 			if (!NBTEditorServer.IS_DEDICATED && ServerMixinLink.isInstanceOfClientPlayNetworkHandlerSafely(packetListener))
