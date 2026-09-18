@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.BlockReference;
@@ -208,7 +208,7 @@ public class LocalBlock implements LocalNBT {
 			tooltip = Component.literal("").append(customName).append("\n").append(tooltip);
 		final Component finalTooltip = tooltip;
 		return Component.translatableEscape("chat.square_brackets", getName()).withStyle(
-				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(finalTooltip)));
+				style -> style.withHoverEvent(TextEvents.HoverAction.SHOW_TEXT.newEvent(finalTooltip)));
 	}
 	
 	public BlockReference place(BlockPos pos) {

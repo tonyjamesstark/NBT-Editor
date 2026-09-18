@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.StringReader;
 
@@ -57,7 +57,7 @@ public class FancyText {
 	
 	/** SHOW_DIALOG and CUSTOM click events have no fancy-text form, so they are dropped. */
 	private static boolean isWritable(ClickEvent event) {
-		return event != null && MVTextEvents.ClickAction.getAction(event) != null;
+		return event != null && TextEvents.ClickAction.getAction(event) != null;
 	}
 	
 	public static Map.Entry<String, Boolean> stringify(Component text, Style base) {
@@ -92,7 +92,7 @@ public class FancyText {
 				if (partStyle.getClickEvent() != null && !isWritable(partStyle.getClickEvent()))
 					errors.setPlain(true);
 				if (isWritable(partStyle.getClickEvent())) {
-					MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(partStyle.getClickEvent());
+					TextEvents.ClickAction<?> clickAction = TextEvents.ClickAction.getAction(partStyle.getClickEvent());
 					output.append('[');
 					output.append(clickAction.getName());
 					output.append("]{");
@@ -101,23 +101,23 @@ public class FancyText {
 					output.append("}(");
 				}
 				if (partStyle.getHoverEvent() != null) {
-					MVTextEvents.HoverAction<?> hoverAction = MVTextEvents.HoverAction.getAction(partStyle.getHoverEvent());
+					TextEvents.HoverAction<?> hoverAction = TextEvents.HoverAction.getAction(partStyle.getHoverEvent());
 					output.append('[');
 					output.append(hoverAction.getName());
 					output.append(']');
-					if (hoverAction == MVTextEvents.HoverAction.SHOW_TEXT) {
+					if (hoverAction == TextEvents.HoverAction.SHOW_TEXT) {
 						Map.Entry<String, Boolean> showTextContents =
-								stringify(MVTextEvents.HoverAction.SHOW_TEXT.getValue(partStyle.getHoverEvent()));
+								stringify(TextEvents.HoverAction.SHOW_TEXT.getValue(partStyle.getHoverEvent()));
 						if (showTextContents.getValue())
 							errors.setPlain(true);
 						output.append('{');
 						output.append(showTextContents.getKey());
 						output.append('}');
-					} else if (hoverAction == MVTextEvents.HoverAction.SHOW_ITEM) {
+					} else if (hoverAction == TextEvents.HoverAction.SHOW_ITEM) {
 						errors.setPlain(true);
-					} else if (hoverAction == MVTextEvents.HoverAction.SHOW_ENTITY) {
+					} else if (hoverAction == TextEvents.HoverAction.SHOW_ENTITY) {
 						output.append('{');
-						output.append(MVTextEvents.HoverAction.SHOW_ENTITY.getValue(partStyle.getHoverEvent()).uuid.toString());
+						output.append(TextEvents.HoverAction.SHOW_ENTITY.getValue(partStyle.getHoverEvent()).uuid.toString());
 						output.append('}');
 						errors.setPlain(true);
 					}

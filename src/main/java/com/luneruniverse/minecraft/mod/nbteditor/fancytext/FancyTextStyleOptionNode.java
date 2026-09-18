@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -24,10 +24,10 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 	@Override
 	public Style modifyStyle(Style style) {
 		return switch (option) {
-			case OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND, CHANGE_PAGE, COPY_TO_CLIPBOARD -> MVTextEvents.ClickAction.fromName(
+			case OPEN_URL, RUN_COMMAND, SUGGEST_COMMAND, CHANGE_PAGE, COPY_TO_CLIPBOARD -> TextEvents.ClickAction.fromName(
 					option.name().toLowerCase()).newEventParse(value == null ? "" : value).map(style::withClickEvent).orElse(style);
 			case SHOW_TEXT -> style.withHoverEvent(
-					MVTextEvents.HoverAction.SHOW_TEXT.newEvent(value == null ? Component.nullToEmpty("") : FancyText.parse(value)));
+					TextEvents.HoverAction.SHOW_TEXT.newEvent(value == null ? Component.nullToEmpty("") : FancyText.parse(value)));
 			case SHOW_ITEM -> {
 				ItemStack item;
 				try {
@@ -43,7 +43,7 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 				// empty result here would throw rather than show an empty tooltip.
 				if (item.isEmpty())
 					yield style;
-				yield style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ITEM.newEvent(ItemStackTemplate.fromStack(item)));
+				yield style.withHoverEvent(TextEvents.HoverAction.SHOW_ITEM.newEvent(ItemStackTemplate.fromStack(item)));
 			}
 			case SHOW_ENTITY -> {
 				Entity entity;
@@ -63,7 +63,7 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 					else
 						entity = Minecraft.getInstance().player;
 				}
-				yield style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ENTITY.newEvent(
+				yield style.withHoverEvent(TextEvents.HoverAction.SHOW_ENTITY.newEvent(
 						new HoverEvent.EntityTooltipInfo(entity.getType(), entity.getUUID(), entity.getName())));
 			}
 			case INSERTION -> style.withInsertion(value);

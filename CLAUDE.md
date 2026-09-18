@@ -78,7 +78,8 @@ mostly no longer earns its keep:
 `MV*` member that is a one-line delegation, inlining it is welcome; the deep ones stay, and a deep
 one whose package is the only thing version-flavoured about it belongs in `util/` instead --
 `MVMisc` was emptied that way (NBT file IO to `util/NbtIO`, the widener reach-throughs to
-`util/AccessWidenedApi`), and `MVDrawableHelper` moved whole to `util/Drawing`.
+`util/AccessWidenedApi`), `MVDrawableHelper` moved whole to `util/Drawing`, and `MVTextEvents` to
+`util/TextEvents`.
 
 There is no `MainUtil`. Its 44 statics were partitioned across `util/PlayerItems`,
 `util/IntFields`, `util/DataFixes`, `util/Futures`, `util/TextWrapping`, `util/Drawing` and the

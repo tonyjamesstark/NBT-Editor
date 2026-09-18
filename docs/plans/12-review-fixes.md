@@ -47,7 +47,7 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 - [x] 5. `ConfigScreen` to a `Setting<T>` table
 - [x] 6. `Drawing` pass-throughs and the `renderItem` signature
 - [x] 7. `PartitionedLockImpl` to Guava `Striped` -- declined, and the counter race under it fixed
-- [ ] 8. `MVTextEvents` placement against ADR-0001
+- [x] 8. `MVTextEvents` placement against ADR-0001
 - [ ] 9. `MixinLink` members against its own docstring
 - [ ] 10. Documentation reconciliation: ROADMAP Unresolved, 4.4, 4.5, ADR-0003 counts
 - [ ] 11. Tests for `util/Futures` and `util/DataFixes`
@@ -71,6 +71,11 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 7. A standalone probe, `.scratch/review-2026-09-17/counter-race-probe.java`, which runs the
    `lockAll`/`unlockAll` body under both counter types and reports the drift each leaves behind.
    The unit suite cannot pin this one; see the log.
+8. A rename and a package move, so the compiler is most of the check: `./gradlew check`
+   resolves every call site, and `checkMixinTargets` and `validateReflectiveNames` rule out the
+   two kinds of reference that survive a move silently. Then `scripts/dev-client.sh --screens`,
+   because `EventEditorWidget` and `BookScreen` are the heaviest callers and nothing opens them
+   at compile time.
 
 ## Log
 
@@ -205,3 +210,26 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   deterministic, concurrent `lockAll`/`unlockAll` neither deadlocking nor leaving state behind, and
   its docstring says plainly that the counter race is not what it pins. The field's type is what
   rules that out. Suite is 100 tests, up from 99.
+- **Item 8 done.** `multiversion/MVTextEvents` is now `util/TextEvents`. Nothing in it spans game
+  versions: the two nested descriptor classes name vanilla `ClickEvent` and `HoverEvent` subtypes
+  directly and the only version-flavoured thing about the file was the package it sat in. ADR-0001
+  already names that case and sends it to `util/`, which is where `MVDrawableHelper` went as
+  `util/Drawing` and where `MVMisc`'s halves went. It lands beside `util/TextUtil`, which already
+  owns the rest of the text serialization and was importing it across the package boundary; that
+  import is now gone.
+- **The `MV` prefix went with the package.** Keeping the name would have left a class called `MV*`
+  outside `multiversion/`, which reads as a wrapper that is not one. ADR-0001's count moves 21 to
+  20 and `CLAUDE.md`'s placement paragraph now names this move alongside the other two, so the
+  rule and its worked examples stay together.
+- **A script did the move, not an editor.** `.scratch/review-2026-09-17/move-textevents.sh` git-mvs
+  the file, rewrites its package and class name, swaps the now-cross-package
+  `DynamicRegistryManagerHolder` import in for the now-same-package `TextUtil` one, and then walks
+  every referencing file: a file in `util/` loses the import outright, any other has it repointed,
+  and a reference with no import at all aborts the run rather than being guessed at. It ends by
+  failing if the old name survives anywhere. Thirteen files were repointed. One unused
+  `ItemStack` import that predated the move went with it.
+- **Verified.** `./gradlew check` green, 100 tests, with `validateMixinConfigs`,
+  `checkMixinTargets` and `validateReflectiveNames`. `scripts/dev-client.sh --screens` passes in
+  117s: both minecart entity-id checks, the config screen, and all four factory screens. The diff
+  is an identity transform outside the moved file's header, which is what the hunk-by-hunk read is
+  for, and `git` recorded it as a rename rather than an add and a delete.

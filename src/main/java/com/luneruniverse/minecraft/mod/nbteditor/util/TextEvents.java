@@ -1,4 +1,4 @@
-package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
+package com.luneruniverse.minecraft.mod.nbteditor.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,8 +8,7 @@ import java.util.function.Function;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
-import net.minecraft.world.item.ItemStack;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
@@ -20,7 +19,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStackTemplate;
 
-public class MVTextEvents {
+/**
+ * Click and hover events as a descriptor per action: its fancy-text name, how a typed value is
+ * parsed out of a string, and how one is read from and written back to a vanilla event.
+ *
+ * <p>This was <code>multiversion/MVTextEvents</code>. Nothing about it spans game versions -- the
+ * package was the only version-flavoured thing left, and ADR-0001 sends such a class to
+ * <code>util/</code> rather than keeping it in a layer being dismantled. It sits beside
+ * {@link TextUtil}, which is where the rest of the text serialization already lives.
+ */
+public class TextEvents {
 	
 	public static class ClickAction<T> {
 		private static final Function<String, Optional<URI>> parseUri = valueStr -> {

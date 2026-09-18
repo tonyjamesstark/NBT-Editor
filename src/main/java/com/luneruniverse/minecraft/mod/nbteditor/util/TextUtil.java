@@ -15,7 +15,6 @@ import com.google.gson.JsonParseException;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Attempt;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen;
@@ -105,7 +104,7 @@ public class TextUtil {
 					throw new IllegalArgumentException("Invalid link: " + url, e);
 				}
 				line = Component.literal(url)
-						.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.OPEN_URL.newEvent(uri))
+						.withStyle(style -> style.withClickEvent(TextEvents.ClickAction.OPEN_URL.newEvent(uri))
 						.withUnderlined(true).withItalic(true).withColor(ChatFormatting.GOLD));
 			}
 			if (str.startsWith("[FORMAT] ")) {
@@ -208,7 +207,7 @@ public class TextUtil {
 	
 	public static Component attachFileTextOptions(MutableComponent link, File file) {
 		return link.append(" ").append(Component.translatableEscape("nbteditor.file_options.show").withStyle(style ->
-				style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(
+				style.withClickEvent(TextEvents.ClickAction.OPEN_FILE.newEvent(
 						file.getAbsoluteFile().getParentFile().getAbsolutePath()))))
 				.append(" ").append(Component.translatableEscape("nbteditor.file_options.delete").withStyle(style ->
 				MixinLink.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(

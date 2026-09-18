@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import com.luneruniverse.minecraft.mod.nbteditor.addons.events.ItemLostCallback;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.ActionResult;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.containers.CursorHistoryScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.SingleDynamicItem;
@@ -30,8 +30,8 @@ public class GetLostItemCommand extends ClientCommand {
 		LOST_ITEM = new SingleDynamicItem(item);
 		addToHistory(item);
 		Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.get.lost_item").append(Component.literal("§6/get lostitem")
-				.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.RUN_COMMAND.newEvent("/get lostitem"))
-						.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.translatableEscape("nbteditor.get.lost_item.hover"))))));
+				.withStyle(style -> style.withClickEvent(TextEvents.ClickAction.RUN_COMMAND.newEvent("/get lostitem"))
+						.withHoverEvent(TextEvents.HoverAction.SHOW_TEXT.newEvent(Component.translatableEscape("nbteditor.get.lost_item.hover"))))));
 	}
 	
 	private static final LinkedList<SingleDynamicItem> history = new LinkedList<>();

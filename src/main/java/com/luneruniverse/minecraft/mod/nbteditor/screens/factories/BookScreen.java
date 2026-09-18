@@ -8,7 +8,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
@@ -156,10 +156,10 @@ public class BookScreen extends LocalEditorScreen<LocalItem> {
 		return output;
 	}
 	private Style makePreviewStyle(Style style) {
-		if (style.getClickEvent() == null || MVTextEvents.ClickAction.getAction(style.getClickEvent()) == null)
+		if (style.getClickEvent() == null || TextEvents.ClickAction.getAction(style.getClickEvent()) == null)
 			return style;
 		return MixinLink.withRunClickEvent(style, () -> {
-			MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(style.getClickEvent());
+			TextEvents.ClickAction<?> clickAction = TextEvents.ClickAction.getAction(style.getClickEvent());
 			net.minecraft.client.gui.screens.inventory.BookViewScreen preview = getOverlay();
 			setOverlay(new AlertWidget(
 					() -> setOverlayScreen(preview, 500),

@@ -12,7 +12,7 @@ import java.util.WeakHashMap;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.luneruniverse.minecraft.mod.nbteditor.mixin.ChatScreenAccessor;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -54,7 +54,7 @@ public class MixinLink {
 	public static Style withRunClickEvent(Style style, Runnable onClick) {
 		String id = "\0nbteditor_runnable@" + new Random().nextLong(); // \0 is not valid in file paths on most OSs
 		events.put(id, onClick);
-		return style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(id));
+		return style.withClickEvent(TextEvents.ClickAction.OPEN_FILE.newEvent(id));
 	}
 	public static boolean tryRunClickEvent(String id) {
 		Runnable onClick = events.get(id);

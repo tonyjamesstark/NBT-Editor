@@ -23,7 +23,7 @@ that are one-line delegations get inlined when touched; the genuinely deep ones 
 something replaces them, and a deep one whose only version flavour is its package moves to
 `util/` rather than being preserved in `multiversion/`.
 
-**Do not add new `MV*` wrappers.** 21 remain; the number should only go down.
+**Do not add new `MV*` wrappers.** 20 remain; the number should only go down.
 
 ## Consequences
 

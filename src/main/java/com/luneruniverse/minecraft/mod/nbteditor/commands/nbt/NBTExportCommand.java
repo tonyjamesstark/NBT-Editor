@@ -17,7 +17,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
@@ -115,7 +115,7 @@ public class NBTExportCommand extends ClientCommand {
 			NbtIO.writeCompressed(nbt, output);
 			Minecraft.getInstance().player.sendSystemMessage(TextUtil.attachFileTextOptions(Component.translatableEscape("nbteditor.nbt.export.file.success",
 					Component.literal(output.getName()).withStyle(ChatFormatting.UNDERLINE).withStyle(style ->
-					style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output));
+					style.withClickEvent(TextEvents.ClickAction.OPEN_FILE.newEvent(output.getAbsolutePath())))), output));
 		} catch (Exception e) {
 			NBTEditor.LOGGER.error("Error while exporting item", e);
 			Minecraft.getInstance().player.sendSystemMessage(Component.translatableEscape("nbteditor.nbt.export.file.error", e.getMessage()));
