@@ -16,7 +16,8 @@
 # checks the entity id the minecart container ios write. Success is the sweep reaching its
 # last screen with nothing reported failed.
 # NBTE_SCREENS_NBT gives the item a component patch as SNBT instead, ';;' separating
-# patches to sweep in turn; NBTE_SCREENS_FROM resumes at a row.
+# patches to sweep in turn; NBTE_SCREENS_FROM resumes at a row. NBTE_BENCH runs
+# dev/DevEntityScanBench alongside, its value the entity counts to time against.
 #
 # Usage: scripts/dev-client.sh [--join [host:port]] [--screens [lore]] [timeout-seconds]
 set -uo pipefail
@@ -106,7 +107,7 @@ if [ -n "$JOIN" ]; then
 		echo "dev server up in $((SECONDS - waited))s"
 	fi
 	joined=$(grep -c 'joined the game' "$SERVER_LOG")
-	./gradlew runClient --console=plain "-Pjoin=$JOIN" ${SCREENS:+"-Pdevscreens=$SCREENS_LORE"} ${NBTE_SCREENS_FROM:+"-PdevscreensFrom=$NBTE_SCREENS_FROM"} ${NBTE_SCREENS_NBT:+"-PdevscreensNbt=$NBTE_SCREENS_NBT"} >"$LOG" 2>&1 &
+	./gradlew runClient --console=plain "-Pjoin=$JOIN" ${SCREENS:+"-Pdevscreens=$SCREENS_LORE"} ${NBTE_SCREENS_FROM:+"-PdevscreensFrom=$NBTE_SCREENS_FROM"} ${NBTE_SCREENS_NBT:+"-PdevscreensNbt=$NBTE_SCREENS_NBT"} ${NBTE_BENCH+"-Pdevbench=$NBTE_BENCH"} >"$LOG" 2>&1 &
 else
 	./gradlew runClient --console=plain >"$LOG" 2>&1 &
 fi
@@ -119,7 +120,17 @@ while (( SECONDS - started < DEADLINE )); do
 		grep -nE -m1 -A22 -- "$CRASHED" "$LOG"
 		exit 1
 	fi
-	if [ -n "$SCREENS" ]; then
+	if [ -n "${NBTE_BENCH+set}" ]; then
+		if grep -q 'BENCH done' "$LOG"; then
+			grep -o 'BENCH .*' "$LOG"
+			if grep -q 'BENCH fail' "$LOG"; then
+				echo "FAILED, the bench did not finish after $((SECONDS - started))s"
+				exit 1
+			fi
+			echo "OK, benched in $((SECONDS - started))s"
+			exit 0
+		fi
+	elif [ -n "$SCREENS" ]; then
 		if grep -q 'SWEEP done' "$LOG"; then
 			grep -o 'SWEEP .*' "$LOG"
 			if grep -q 'SWEEP fail' "$LOG"; then
@@ -149,5 +160,6 @@ done
 
 echo "timed out after ${DEADLINE}s short of ${SCREENS:+sweeping the factory screens}${SCREENS:-${JOIN:+joining $JOIN}${JOIN:-the title screen}}"
 grep -o 'SWEEP .*' "$LOG" || true
+grep -o 'BENCH .*' "$LOG" || true
 tail -25 "$LOG"
 exit 1

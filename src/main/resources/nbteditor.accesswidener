@@ -44,6 +44,8 @@ accessible field net/minecraft/world/inventory/AbstractContainerMenu remoteCarri
 
 accessible field net/minecraft/world/item/BoatItem entityType Lnet/minecraft/world/entity/EntityType;
 
+accessible method net/minecraft/world/level/Level getEntities ()Lnet/minecraft/world/level/entity/LevelEntityGetter;
+
 # Private in older versions
 accessible method net/minecraft/network/chat/TextColor formatValue ()Ljava/lang/String;
 

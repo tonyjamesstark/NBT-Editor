@@ -5,6 +5,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import java.util.Set;
+import java.util.UUID;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -24,6 +25,7 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.LecternMenu;
@@ -33,6 +35,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.Level;
 
 /**
  * The calls that only compile because {@code nbteditor.accesswidener} opens a member Minecraft
@@ -201,6 +204,18 @@ public class AccessWidenedApi {
 	 */
 	public static Set<Identifier> getLoadedFontIds() {
 		return Minecraft.getInstance().fontManager.fontSets.keySet();
+	}
+	
+	/**
+	 * The entity in a level with a given UUID, or null when nothing loaded carries it.
+	 *
+	 * <p>Widens {@code Level.getEntities}. The public API reaches an entity by network id or by
+	 * bounding box, never by UUID; the index that answers one in a single step is behind this
+	 * protected getter. The alternative is walking every loaded entity, which fancy text did on a
+	 * path brigadier re-runs per keystroke, at roughly 86ns per loaded entity.
+	 */
+	public static Entity getEntityByUuid(Level level, UUID uuid) {
+		return level.getEntities().get(uuid);
 	}
 	
 	/**

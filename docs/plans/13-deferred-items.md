@@ -42,7 +42,7 @@ build and a dev client at once.
 
 - [x] 1. ADR-0003 completion and the dead widener lines
 - [x] 2. `ConcatContainerIO` array-walk deduplication
-- [ ] 3. Roadmap 2.1 per-keystroke entity scan, measured then fixed
+- [x] 3. Roadmap 2.1 per-keystroke entity scan, measured then fixed
 - [ ] 4. The `MAIN_THREAD` init-ordering check
 - [ ] 5. `.scratch/<slug>/issues/` housekeeping
 
@@ -127,3 +127,25 @@ out. `./gradlew check` and `scripts/dev-client.sh --screens` both pass.
 but has not compacted into range, which a villager reaches whenever a trade slot is filled with a
 gap before it. The interface javadoc already describes the mismatch that causes it. It is not
 this item, and it is filed under item 5.
+
+**Item 3.** The baseline came first, as the roadmap asked. `dev/DevEntityScanBench` spawns a
+chosen number of client-side entities and times `FancyText.parse` of a `[show_entity]` node
+against each count, since a flat dev world holds about fifty entities and says nothing. It reads
+14us at 152 entities, 33us at 552, 145us at 2052 and 698us at 8052: linear, about 86ns an entity,
+on a path brigadier re-runs per keystroke.
+
+The first version of the bench measured nothing, because `[show_entity]{uuid}hover` is not the
+syntax and parses to plain text. It now refuses to run unless the parse produces a hover event,
+which is why the mistake was visible rather than a flat line reported as good news.
+
+The fix is the index the level already keeps. `Level.getEntities().get(uuid)` answers in one step,
+and the getter is protected, so it went through a new widener line and
+`AccessWidenedApi.getEntityByUuid`, which is the seam item 1 just finished enforcing. The same
+measurement now reads 6.7us at 8065 entities and does not move with the count.
+
+**Verification.** The bench is now a check rather than a one-off: it fails when the busiest world
+is more than eight times slower than the fastest run of the set, taking the minimum of three
+repetitions per count because a software-rendered client is a noisy place to time anything. With
+the index it reports 1.0x; with the scan pasted back in it reports 16.1x and fails. `./gradlew
+check` passes, including `validateAccessWidener` and `checkWidenerConsumers` over the added line,
+and `scripts/dev-client.sh --screens` is green.

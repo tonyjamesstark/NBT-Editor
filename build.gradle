@@ -69,6 +69,11 @@ loom {
 			if (project.hasProperty("devscreensNbt")) {
 				vmArgs "-Dnbte.devscreens.nbt=" + project.property("devscreensNbt")
 			}
+			// -Pdevbench[=counts] times the show_entity UUID resolve against a loaded entity
+			// count it spawns itself. See dev/DevEntityScanBench.
+			if (project.hasProperty("devbench")) {
+				vmArgs "-Dnbte.devbench=" + project.property("devbench")
+			}
 		}
 		server {
 			runDir = "run/server"

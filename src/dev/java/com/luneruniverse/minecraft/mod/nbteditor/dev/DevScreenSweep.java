@@ -65,6 +65,9 @@ public class DevScreenSweep {
 	private static final int ROW_HEIGHT = 20;
 
 	public static void install() {
+		// The one name NBTEditorClient reaches by reflection, so the dev source set hangs off it
+		// rather than growing a second reflective seam.
+		DevEntityScanBench.install();
 		String lore = System.getProperty("nbte.devscreens");
 		if (lore == null)
 			return;
