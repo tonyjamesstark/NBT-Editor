@@ -46,7 +46,7 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 - [x] 4. `DevScreenSweep` out of `src/main`
 - [x] 5. `ConfigScreen` to a `Setting<T>` table
 - [x] 6. `Drawing` pass-throughs and the `renderItem` signature
-- [ ] 7. `PartitionedLockImpl` to Guava `Striped`
+- [x] 7. `PartitionedLockImpl` to Guava `Striped` -- declined, and the counter race under it fixed
 - [ ] 8. `MVTextEvents` placement against ADR-0001
 - [ ] 9. `MixinLink` members against its own docstring
 - [ ] 10. Documentation reconciliation: ROADMAP Unresolved, 4.4, 4.5, ADR-0003 counts
@@ -68,7 +68,9 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 6. The z-order question is settled from history rather than by rendering, see the log. Then
    compile plus a dev-client screen sweep, and a hunk-by-hunk read of the diff, since an
    identity transform is what makes the change safe and no test here looks at pixels.
-7. The existing `PartitionedReadWriteLockTest` stress case is the check.
+7. A standalone probe, `.scratch/review-2026-09-17/counter-race-probe.java`, which runs the
+   `lockAll`/`unlockAll` body under both counter types and reports the drift each leaves behind.
+   The unit suite cannot pin this one; see the log.
 
 ## Log
 
@@ -175,3 +177,31 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   `scripts/dev-client.sh --screens` passes in 243s with all three checks and four factory screens.
   The screens the sweep opens exercise the inlined text, fill and scissor calls; it would catch a
   throw, not a misplaced pixel, and the diff is what rules that out.
+
+- **Item 7 declined, and a defect under it fixed.** The review reads
+  `util/lock/PartitionedLockImpl.java` as hand-rolled striping and asks for Guava `Striped.lock(64)`.
+  It is not striping. It is a per-key registry that gives every partition its own lock, so it has no
+  hash collisions at all, and `Striped` is fixed-stripe by construction with no configuration that
+  changes that. `NBTEditorClient.java:76` builds `new SmallClientChestPageCache(100)`, so 100 pages
+  against 64 stripes collide by pigeonhole and pages that are unrelated today would start
+  serialising against each other. The locks here are also fair on purpose, `new ReentrantLock(true)`
+  on both the global lock and every partition lock, where `Striped.lock` vends unfair ones. And the
+  global lock the review would delete is load-bearing: it is what stops a new partition appearing
+  between `lockAll` and `unlockAll`, which the comment at `:62-64` already records. The trade is
+  roughly 13 lines against two concurrency properties, so the answer is no.
+- **The counter race the review missed.** `globallyLocked` was a `volatile int` raised with `++` at
+  `lockAll` and `stop`, lowered with `--` at `unlockAll`, all three outside the mutex, since the
+  point of raising it early is that a *pending* `lockAll` already reads as locked. Two callers can
+  therefore collide inside one read-modify-write and lose an update. The drift is permanent and
+  negative, so afterwards a `lockAll` that genuinely holds every partition reports
+  `isAllLocked() == false`, and `isLocked(anything)` with it. `.scratch/review-2026-09-17/counter-race-probe.java`
+  reproduces it: over five runs of 8 threads by 20000 iterations the `volatile` counter finished at
+  -3, 0, -1, 0, 0, and the `AtomicInteger` finished at 0 every time. The field is now an
+  `AtomicInteger`.
+- **Why there is no unit test for it.** The race needs two threads inside one `++`, which measured
+  at roughly one occurrence per 100k iterations, so a test that waited for it would pass on the
+  broken code most of the time. A test that reports green on the defect it names is worse than
+  none. `concurrentGlobalLocksDoNotDeadlockOrLeakState` was added for the coverage that *is*
+  deterministic, concurrent `lockAll`/`unlockAll` neither deadlocking nor leaving state behind, and
+  its docstring says plainly that the counter race is not what it pins. The field's type is what
+  rules that out. Suite is 100 tests, up from 99.

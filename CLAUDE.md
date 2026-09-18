@@ -18,7 +18,7 @@ classpath and is compiled by `check`, but never enters the jar, so `src/main` re
 `src/main`; it will not compile.
 
 `./gradlew build`. JUnit 5 runs over the pure-JVM slice only: eleven test classes under
-`src/test/java/`, 99 tests. Anything that touches registries, `Minecraft.getInstance()` or the run
+`src/test/java/`, 100 tests. Anything that touches registries, `Minecraft.getInstance()` or the run
 directory cannot run without a Fabric launch, so CI (`.github/workflows/build.yml`) proves that
 slice plus compile-and-remap, and nothing about the mod's behaviour. Verify that by running the
 mod in a dev client. See `docs/adr/0004-jvm-only-tests.md`.
