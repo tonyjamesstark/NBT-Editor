@@ -11,8 +11,14 @@ Gradle + fabric-loom, `release = 25` on JDK 25 (`sourceCompatibility`/`targetCom
 `minecraft_version` in `gradle.properties` — currently **26.2**. `settings.gradle` declares no
 subprojects; the old `nbteditor_1.17` module and the `mergeRefmapJson` task are gone.
 
-`./gradlew build`. JUnit 5 runs over the pure-JVM slice only: ten test classes under
-`src/test/java/`, 90 tests. Anything that touches registries, `Minecraft.getInstance()` or the run
+Three source sets inside that one module. `src/main` is the mod, `src/test` is the JUnit slice,
+and `src/dev` holds the screen sweep the harness drives. `src/dev` is on the client run's
+classpath and is compiled by `check`, but never enters the jar, so `src/main` reaches it by
+`Class.forName` and a production launch finds nothing. Do not import a `dev` class from
+`src/main`; it will not compile.
+
+`./gradlew build`. JUnit 5 runs over the pure-JVM slice only: eleven test classes under
+`src/test/java/`, 99 tests. Anything that touches registries, `Minecraft.getInstance()` or the run
 directory cannot run without a Fabric launch, so CI (`.github/workflows/build.yml`) proves that
 slice plus compile-and-remap, and nothing about the mod's behaviour. Verify that by running the
 mod in a dev client. See `docs/adr/0004-jvm-only-tests.md`.
@@ -20,7 +26,10 @@ mod in a dev client. See `docs/adr/0004-jvm-only-tests.md`.
 `scripts/dev-client.sh` does that here without a display, on Xvfb plus Mesa's llvmpipe. It
 exits non-zero on a launch crash and takes about 35 seconds. `scripts/dev-client.sh --join`
 goes further and connects to `scripts/dev-server.sh`, which is the only way to reach the
-path that binds item components. Run one or the other, not a Gradle build at the same time;
+path that binds item components. `--screens` implies the join and runs `dev/DevScreenSweep`,
+which opens every factory screen and the config screen and checks the entity ids the minecart
+container ios write; it is the only thing in the build that opens an editor screen at all, and it
+takes about two minutes. Run one of these, not a Gradle build at the same time;
 the host does not have the RAM. See `docs/adr/0005-headless-dev-client-harness.md`.
 
 `check` also runs two mixin validations, because nothing else in the build looks at a mixin's
@@ -30,6 +39,10 @@ that is not there. `checkMixinTargets` runs `tools/check-mixin-targets.py`, whic
 checks that the selected method's bytecode really contains that call. Both exist because a stale
 mixin name compiles and remaps clean and only fails at launch, and one on a screen class does not
 fail until that screen opens. Rerun the script after every `minecraft_version` bump.
+
+`check` runs `validateReflectiveNames` too, which resolves every `Class.forName` on one of the
+mod's own classes against `src/main/java` and `src/dev/java`. It exists because the screen sweep is
+reached by name, so moving or renaming it would compile clean and silently stop it installing.
 
 **The jar ships no refMap.** Runtime classes carry Mojang names, so a mixin annotation string is
 used verbatim and an intermediary name (`method_*`, `class_*`, `field_*`) never resolves.

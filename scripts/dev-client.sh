@@ -11,7 +11,7 @@
 # player in. A local dev server is started if one is not already up, and stopped again on
 # the way out; pass a host:port to use one that is already running elsewhere.
 #
-# With --screens it implies --join and then runs misc/DevScreenSweep, which opens every
+# With --screens it implies --join and then runs dev/DevScreenSweep, which opens every
 # factory screen in turn against an item carrying the lore given (default: non-ASCII) and
 # checks the entity id the minecart container ios write. Success is the sweep reaching its
 # last screen with nothing reported failed.

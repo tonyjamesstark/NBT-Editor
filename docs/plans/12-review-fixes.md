@@ -43,7 +43,7 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 - [x] 1. `fabric.mod.json` version placeholder, so the jar stops declaring 2.0.4.999
 - [x] 2. `HOPPER_MINECART_IO` entity type, via the single-source-of-truth registration form
 - [x] 3. `ConfigScreen.loadSettings` partial-write path, closed by item 5 rather than patched
-- [ ] 4. `DevScreenSweep` out of `src/main`
+- [x] 4. `DevScreenSweep` out of `src/main`
 - [x] 5. `ConfigScreen` to a `Setting<T>` table
 - [ ] 6. `Drawing` pass-throughs and the `renderItem` signature
 - [ ] 7. `PartitionedLockImpl` to Guava `Striped`
@@ -60,7 +60,8 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
    container io for a hopper minecart and reads the entity id back out of the item.
    `EntityType.getKey` is what reaches NBT, so only the runtime value settles it.
 3. Folded into item 5, which is where the test lives.
-4. `./gradlew build`, then confirm the class is absent from the jar.
+4. `./gradlew clean build`, then confirm the class is absent from the jar, and
+   `scripts/dev-client.sh --screens` to confirm it still installs from the dev source set.
 5. `src/test/java/.../screens/SettingsTest.java`, nine cases over the load contract. Then
    `.scratch/review-2026-09-17/partial-config-check.sh`, which boots the dev client against a
    settings.json missing one key and reports what the client wrote back.
@@ -122,3 +123,25 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   `DevScreenSweep.checkConfigScreen` opens the screen so the widget construction runs on the build
   host. `scripts/dev-client.sh --screens` passes in 139s with all three checks and four factory
   screens green; `./gradlew test` is 99 tests, 0 failures.
+- **Item 4 done.** `misc/DevScreenSweep` is now `src/dev/java/.../dev/DevScreenSweep`, in a `dev`
+  source set on the client run's classpath and compiled by `check`. The jar carries no class under
+  `dev/` at all, which was the review's blocker: a player's jar should not hold a 200-line screen
+  robot driven by system properties.
+- **Why a source set and not a `jar { exclude }`.** Excluding the file from the archive would have
+  been one line, and it would have left `src/main` able to call a class the jar does not have. The
+  source set makes that a compile error. `src/main` gets in by `Class.forName` from
+  `NBTEditorClient.installDevScreenSweep`, which catches `ClassNotFoundException` and does nothing,
+  because in a production launch there is nothing to do.
+- **The seam got a check rather than a warning.** A `Class.forName` string is exactly the kind of
+  reference a rename breaks silently, so `validateReflectiveNames` resolves every `Class.forName`
+  on one of the mod's own classes against both source trees and fails `check` on one that is not
+  there. Proved by renaming the string: the build fails naming the file and the class. It is
+  general, not a single hardcoded pair, so the next reflective reference is covered too.
+- **ADR-0005 now describes four layers.** The `--screens` sweep arrived in 25dd620 against an ADR
+  that named three, which the review recorded as scope creep. The ADR names the layer, what it
+  catches, and why the sweep lives outside `src/main`. That closes review finding 7; the rest of
+  the documentation reconciliation is still item 10.
+- **Verified.** `./gradlew clean build` green, 99 tests, `validateReflectiveNames` and both mixin
+  validations in `check`. The jar holds nothing under `dev/` and declares 3.0.0.
+  `scripts/dev-client.sh --screens` passes in 124s with all three checks and four factory screens
+  green, so the sweep still installs from its new home.

@@ -1,4 +1,4 @@
-package com.luneruniverse.minecraft.mod.nbteditor.misc;
+package com.luneruniverse.minecraft.mod.nbteditor.dev;
 
 import java.util.ArrayList;
 import java.util.List;

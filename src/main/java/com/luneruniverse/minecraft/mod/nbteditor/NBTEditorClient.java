@@ -16,7 +16,6 @@ import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageLoadLevel;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.SmallClientChestPageCache;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.CommandHandler;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
-import com.luneruniverse.minecraft.mod.nbteditor.misc.DevScreenSweep;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVEnchantments;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
@@ -107,7 +106,25 @@ public class NBTEditorClient implements ClientModInitializer {
 		}
 		addons.forEach((id, addon) -> addon.onInit());
 		
-		DevScreenSweep.install();
+		installDevScreenSweep();
+	}
+	
+	/**
+	 * Hands the build host's screen sweep its chance to install itself.
+	 *
+	 * <p>The sweep lives in the dev source set, so a production launch has no such class and this
+	 * is where it stops. Reaching it by name is the price of a jar that does not carry a test
+	 * robot. See scripts/dev-client.sh --screens.
+	 */
+	private static void installDevScreenSweep() {
+		try {
+			Class.forName("com.luneruniverse.minecraft.mod.nbteditor.dev.DevScreenSweep")
+					.getMethod("install").invoke(null);
+		} catch (ClassNotFoundException e) {
+			// A production jar. There is no sweep, which is the point.
+		} catch (ReflectiveOperationException e) {
+			NBTEditor.LOGGER.error("The dev screen sweep is on the classpath but would not install", e);
+		}
 	}
 	
 }

@@ -32,6 +32,18 @@ repositories {
 	mavenCentral()
 }
 
+// The screen sweep is a test robot for the build host, not something a player should be given.
+// Its own source set keeps it out of the jar, and keeps src/main from calling it: the only way in
+// is Class.forName from NBTEditorClient, which finds nothing in a production launch. It is on the
+// client run's classpath and compiled by check, so it cannot rot unnoticed.
+sourceSets {
+	dev {
+		compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+		runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+	}
+}
+check.dependsOn compileDevJava
+
 loom {
 	accessWidenerPath = file("src/main/resources/nbteditor.accesswidener")
 
@@ -39,13 +51,14 @@ loom {
 	// to take the JVM default of a quarter of RAM. See scripts/dev-client.sh.
 	runs {
 		client {
+			source sourceSets.dev
 			vmArgs "-Xms256m", "-Xmx1G", "-Dnbte.devrun=client"
 			// -Pjoin=host:port sends the client straight into a world, which is the only
 			// place item components are bound. See scripts/dev-client.sh --join.
 			if (project.hasProperty("join")) {
 				programArgs "--quickPlayMultiplayer", project.property("join")
 			}
-			// -Pdevscreens[=lore] runs misc/DevScreenSweep once joined, which is the only
+			// -Pdevscreens[=lore] runs dev/DevScreenSweep once joined, which is the only
 			// thing in the build that opens an editor screen at all.
 			if (project.hasProperty("devscreens")) {
 				vmArgs "-Dnbte.devscreens=" + project.property("devscreens")
@@ -172,6 +185,28 @@ tasks.register("validateMixinConfigs") {
 	}
 }
 check.dependsOn validateMixinConfigs
+
+// src/main reaches the dev source set by name, so a rename or a move there compiles clean and
+// silently stops the screen sweep installing. Fail the build instead. Every Class.forName on one
+// of the mod's own classes is checked, not just that one.
+tasks.register("validateReflectiveNames") {
+	def sources = fileTree("src/main/java") { include "**/*.java" }
+	def roots = [file("src/main/java"), file("src/dev/java")]
+	inputs.files(sources)
+	inputs.files(fileTree("src/dev/java"))
+	doLast {
+		def missing = []
+		sources.each { source ->
+			(source.text =~ /Class\.forName\("(com\.luneruniverse\.[\w.]+)"\)/).each { match, name ->
+				if (!roots.any { new File(it, name.replace(".", "/") + ".java").exists() })
+					missing << "${source.name}: ${name}"
+			}
+		}
+		if (!missing.isEmpty())
+			throw new GradleException("Class.forName names a class that is not there:\n\t" + missing.join("\n\t"))
+	}
+}
+check.dependsOn validateReflectiveNames
 
 // The configs above only prove the mixin classes exist. tools/check-mixin-targets.py
 // resolves what each one points *at* against the mapped jar: the target class, the
