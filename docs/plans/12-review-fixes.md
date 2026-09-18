@@ -42,7 +42,6 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 
 - [x] 1. `fabric.mod.json` version placeholder, so the jar stops declaring 2.0.4.999
 - [x] 2. `HOPPER_MINECART_IO` entity type, via the single-source-of-truth registration form
-      (code done, runtime check still open, see the log)
 - [ ] 3. `ConfigScreen.loadSettings` partial-write path
 - [ ] 4. `DevScreenSweep` out of `src/main`
 - [ ] 5. `ConfigScreen` to a `Setting<T>` table
@@ -57,8 +56,9 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 
 1. `./gradlew processResources`, then read `build/resources/main/fabric.mod.json`. The
    substituted value is the artifact, the source file is not.
-2. Compile, then `/open` a hopper minecart in the dev client and read the entity id written
-   into the item. `EntityType.getKey` is what reaches NBT, so only the runtime value settles it.
+2. `scripts/dev-client.sh --screens`, whose sweep now writes contents through the registered
+   container io for a hopper minecart and reads the entity id back out of the item.
+   `EntityType.getKey` is what reaches NBT, so only the runtime value settles it.
 3. A JVM test over the extracted settings codec, asserting a file missing one key leaves the
    remaining keys untouched. Then the dev client, editing a setting and restarting.
 4. `./gradlew build`, then confirm the class is absent from the jar.
@@ -78,12 +78,18 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   form that takes the type from the registration, so both minecarts were converted to it rather
   than having the wrong constant swapped. The entity type now has one source of truth per
   registration and cannot drift again.
-- **Item 2 verification is partial.** `./gradlew compileJava` is green and
-  `scripts/dev-client.sh --screens` passed, exit 0, sweeping all four factory screens in 64s with
-  the change in place. That is a regression check on startup and the registry path, not proof of
-  the fix. The value that reaches NBT comes from `EntityType.getKey` at registration, and the
-  decisive check is opening a hopper minecart in-game and reading the entity id written into the
-  item. The sweep cannot carry it: `DevScreenSweep.java:134` hardcodes `Items.DIAMOND_SWORD`, and
-  the sweep opens factory screens rather than the `/open` container path. Adding an item knob to
-  the sweep would still not reach that path, so it was not built. Closing this needs either a
-  manual `/open` in a dev client or a harness that drives the container path.
+- **Item 2 verified.** The value that reaches NBT comes from `EntityType.getKey` at registration,
+  so neither `compileJava` nor a screen sweep can settle it. `DevScreenSweep.checkEntityIds` now
+  takes the registered `ContainerIO` for a hopper minecart, writes contents through it the way the
+  container screen does, and reads the `id` back out of the item's `entity_data`. The chest minecart
+  is checked the same way as a control, since the same commit converted it. The probe rides the
+  existing `SWEEP` log contract, so `scripts/dev-client.sh` needed no new plumbing beyond a message
+  that no longer says every failure is a screen.
+- **The probe was made to fail before it was trusted.** `scripts/dev-client.sh --screens` passed in
+  160s reading `id=minecraft:hopper_minecart`. Reinstating the old `EntityTypes.FURNACE_MINECART`
+  registration made it print `SWEEP fail minecraft:hopper_minecart writes id=minecraft:furnace_minecart`
+  and the harness exit 1 in 133s.
+- **The earlier manual plan is dropped.** The previous note said this needed a hand-played `/open`,
+  because the sweep hardcodes `Items.DIAMOND_SWORD` and opens factory screens. That was true of the
+  sweep and false of the harness: the container path is reachable from a tick handler with no screen
+  at all, which is where the probe went.
