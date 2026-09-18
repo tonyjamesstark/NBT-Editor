@@ -17,7 +17,7 @@ the crash without fixing the shape would leave the next setting free to reintrod
 
 ## Scope
 
-In scope, in priority order: the merged priority list from the review, items 1 through 7.
+In scope, in priority order: the merged priority list from the review, items 1 through 11.
 
 Out of scope for this branch: the ADR-0003 completion sweep (roughly 35 widener entries, its
 own migration), the `ConcatContainerIO` array-walk deduplication, and the Roadmap 2.1
@@ -328,3 +328,15 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   not covered, so the file does not read as more assurance than it is.
 - **Verified.** `./gradlew check` green with 110 tests in 14 classes, up from 100 in 11 at the
   start of this session, and `CLAUDE.md`'s counts follow.
+- **The whole branch was verified once more at the end, not just each item as it landed.**
+  `./gradlew clean build` green, 110 tests. The jar
+  `build/libs/nbteditor-3.0.0-063c2af.jar` declares `3.0.0` and `">=26.2-"`, holds nothing under
+  `dev/`, and carries `util/TextEvents` with no `multiversion/MVTextEvents`, so items 1, 4 and 8
+  hold against the artifact a player would install rather than against a source read.
+  `scripts/dev-client.sh --screens` passes in 207s with all three checks and four factory screens,
+  and `.scratch/review-2026-09-17/check-doc-claims.sh` reports all fifteen reconciled claims
+  holding.
+- **All eleven items are closed.** Three of the review's findings were answered by declining them
+  with a reason rather than by a change: the Guava `Striped` swap (item 7), the `MAIN_THREAD` to
+  `isSameThread()` swap, and the claim that Phase 1's and Phase 3's in-game lines were stale. The
+  three deferred items named in Scope are untouched and still want their own branches.
