@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
+import com.luneruniverse.minecraft.mod.nbteditor.screens.ChatLimitWarning;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 
 import net.minecraft.client.input.KeyEvent;
@@ -25,7 +25,7 @@ public class ChatScreenMixin {
 	}
 	@Inject(method = "extractRenderState", at = @At("HEAD"))
 	private void render(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta, CallbackInfo info) {
-		MixinLink.renderChatLimitWarning((ChatScreen) (Object) this, context);
+		ChatLimitWarning.render((ChatScreen) (Object) this, context);
 	}
 	
 	@Inject(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;setScreen(Lnet/minecraft/client/gui/screens/Screen;)V"), cancellable = true)

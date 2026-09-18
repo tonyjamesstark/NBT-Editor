@@ -2,7 +2,11 @@ package com.luneruniverse.minecraft.mod.nbteditor.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.WeakHashMap;
 import java.util.function.Function;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -16,6 +20,7 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStackTemplate;
 
@@ -29,6 +34,30 @@ import net.minecraft.world.item.ItemStackTemplate;
  * {@link TextUtil}, which is where the rest of the text serialization already lives.
  */
 public class TextEvents {
+	
+	/**
+	 * Handlers for the mod's own clickable text, carried as an {@link ClickAction#OPEN_FILE}
+	 * event because a path is the only click value that is free-form enough to hide an id in.
+	 * {@code mixin.ScreenMixin} sees the click first and calls {@link #tryRunClickEvent}.
+	 *
+	 * <p>The keys are weak and the id string inside the event is the only strong reference to
+	 * one, so a handler lives exactly as long as the text that can still invoke it. A strong map
+	 * here pinned every screen a handler had captured for the rest of the session.
+	 */
+	private static final Map<String, Runnable> runClickEvents = Collections.synchronizedMap(new WeakHashMap<>());
+	
+	public static Style withRunClickEvent(Style style, Runnable onClick) {
+		String id = "\0nbteditor_runnable@" + new Random().nextLong(); // \0 is not valid in file paths on most OSs
+		runClickEvents.put(id, onClick);
+		return style.withClickEvent(ClickAction.OPEN_FILE.newEvent(id));
+	}
+	public static boolean tryRunClickEvent(String id) {
+		Runnable onClick = runClickEvents.get(id);
+		if (onClick == null)
+			return false;
+		onClick.run();
+		return true;
+	}
 	
 	public static class ClickAction<T> {
 		private static final Function<String, Optional<URI>> parseUri = valueStr -> {

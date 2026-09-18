@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.google.gson.JsonParseException;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
-import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Attempt;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen;
@@ -210,7 +209,7 @@ public class TextUtil {
 				style.withClickEvent(TextEvents.ClickAction.OPEN_FILE.newEvent(
 						file.getAbsoluteFile().getParentFile().getAbsolutePath()))))
 				.append(" ").append(Component.translatableEscape("nbteditor.file_options.delete").withStyle(style ->
-				MixinLink.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(
+				TextEvents.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(
 						new FancyConfirmScreen(confirmed -> {
 							if (confirmed) {
 								if (file.exists()) {

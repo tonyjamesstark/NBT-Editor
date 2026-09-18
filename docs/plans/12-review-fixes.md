@@ -48,7 +48,7 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 - [x] 6. `Drawing` pass-throughs and the `renderItem` signature
 - [x] 7. `PartitionedLockImpl` to Guava `Striped` -- declined, and the counter race under it fixed
 - [x] 8. `MVTextEvents` placement against ADR-0001
-- [ ] 9. `MixinLink` members against its own docstring
+- [x] 9. `MixinLink` members against its own docstring
 - [ ] 10. Documentation reconciliation: ROADMAP Unresolved, 4.4, 4.5, ADR-0003 counts
 - [ ] 11. Tests for `util/Futures` and `util/DataFixes`
 
@@ -76,6 +76,10 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
    two kinds of reference that survive a move silently. Then `scripts/dev-client.sh --screens`,
    because `EventEditorWidget` and `BookScreen` are the heaviest callers and nothing opens them
    at compile time.
+9. `src/test/java/.../util/TextEventsTest.java`, three cases, one of which is the handler
+   lifetime the old map got wrong. Then `./gradlew check`, which is what proves the two moved
+   members still resolve from the mixins, and `scripts/dev-client.sh --screens` as the smoke
+   test that the client still boots and every screen still opens.
 
 ## Log
 
@@ -233,3 +237,37 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   117s: both minecart entity-id checks, the config screen, and all four factory screens. The diff
   is an identity transform outside the moved file's header, which is what the hunk-by-hunk read is
   for, and `git` recorded it as a rename rather than an add and a delete.
+- **Item 9 done.** The docstring `e5965f1` added says what belongs in `MixinLink` is thread-keyed
+  state coupling one mixin to another, and that mod behaviour merely invoked from a mixin belongs
+  in the package that owns the concept. Two members contradicted it and both moved out.
+  `renderChatLimitWarning` was screen drawing, and is now `screens/ChatLimitWarning.render`,
+  beside `screens.ItemTooltips`, which the docstring already names as the precedent. The
+  `withRunClickEvent` / `tryRunClickEvent` pair and the map behind them are the mod's own clickable
+  text, and are now on `util/TextEvents`, which owns click events after item 8 and is where
+  `ScreenMixin` already looked to decide the click was an `OPEN_FILE` in the first place.
+- **The docstring was also wrong by omission.** It listed `specialNumbers`,
+  `hiddenExceptionHandlers` and `SET_CHANGES` as "all that shape" while `ITEM_BEING_RENDERED`, a
+  `Map<Thread, ItemStack>`, sat ten lines below it. It is named now. The file is 155 lines to 114.
+- **The unbounded map was a real leak, not a style complaint.** `events` was a plain `HashMap` that
+  nothing ever removed from, so every handler lived until the game closed, and with it everything
+  the handler captured. `BookScreen.makePreviewStyle` captures `this`, so each book preview pinned
+  a whole editor screen for the session. It is now a `WeakHashMap` behind
+  `Collections.synchronizedMap`. The id string inside the `ClickEvent` is the only strong reference
+  to the key, so a handler lives exactly as long as the text that can still invoke it and not one
+  frame longer.
+- **The lookup still works because the id instance is the one the event holds.**
+  `ClickEvent.OpenFile::path` hands back the same `String` the event was built with and
+  `String.toString()` returns `this`, so the click arrives holding the key itself. An equal-valued
+  copy resolves too, for as long as the original is alive, which is every case where the text is
+  still on screen to be clicked.
+- **The test was made to fail before it was trusted.** `TextEventsTest` attaches a handler inside a
+  helper, drops the style on return, and asserts the handler is released. Putting the old strong
+  `HashMap` back makes `aHandlerIsReleasedOnceItsTextIsGone` fail and leaves the other two green,
+  so it pins the leak and not the plumbing. Suite is 103 tests, up from 100.
+- **What the sweep does and does not settle here.** `scripts/dev-client.sh --screens` passes in
+  170s with all three checks and four factory screens, which is the smoke test that the client
+  boots and the mixins still bind. It does not open a chat screen or a book preview: the sweep
+  picks its rows from the item's type and `NBTE_SCREENS_NBT` only patches components, so reaching
+  `BookScreen` would need a new harness knob. The call-site changes there are `MixinLink.` to
+  `TextEvents.` with nothing else moved, which the compiler settles and the diff shows hunk by
+  hunk.

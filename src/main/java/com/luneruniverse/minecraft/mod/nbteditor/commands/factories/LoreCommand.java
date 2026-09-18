@@ -8,7 +8,6 @@ import java.util.List;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.FancyTextArgumentType;
-import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -127,7 +126,7 @@ public class LoreCommand extends ClientCommand {
 						.withStyle(style -> style.withClickEvent(TextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
 								.withHoverEvent(TextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore remove " + finalI))))
 						.append(Component.literal(" ").withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.ITALIC).append(line)
-						.withStyle(style -> MixinLink.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
+						.withStyle(style -> TextEvents.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
 								.withHoverEvent(TextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore set " + finalI))))));
 				i++;
 			}
