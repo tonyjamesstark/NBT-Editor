@@ -49,7 +49,7 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 - [x] 7. `PartitionedLockImpl` to Guava `Striped` -- declined, and the counter race under it fixed
 - [x] 8. `MVTextEvents` placement against ADR-0001
 - [x] 9. `MixinLink` members against its own docstring
-- [ ] 10. Documentation reconciliation: ROADMAP Unresolved, 4.4, 4.5, ADR-0003 counts
+- [x] 10. Documentation reconciliation: ROADMAP Unresolved, 4.4, 4.5, ADR-0003 counts
 - [ ] 11. Tests for `util/Futures` and `util/DataFixes`
 
 ## Verification per item
@@ -80,6 +80,9 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
    lifetime the old map got wrong. Then `./gradlew check`, which is what proves the two moved
    members still resolve from the mixins, and `scripts/dev-client.sh --screens` as the smoke
    test that the client still boots and every screen still opens.
+10. `.scratch/review-2026-09-17/check-doc-claims.sh`, which re-derives every reconciled count
+    and status from the tree and then checks the prose carries the same number. Prose has no
+    build check, so the lever is the check.
 
 ## Log
 
@@ -271,3 +274,34 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   `BookScreen` would need a new harness knob. The call-site changes there are `MixinLink.` to
   `TextEvents.` with nothing else moved, which the compiler settles and the diff shows hunk by
   hunk.
+- **Item 10 done, and every claim was re-derived rather than taken from the review.** ROADMAP's
+  Unresolved section held three questions that are all answered: ADR-0001 settled `multiversion/`,
+  `build.gradle:93-94` pins `modmenu:20.0.2` and `nbt-autocomplete:1.3.15-fabric-26.2`, and
+  `fabric.mod.json:39` reads `">=26.2-"`. They are kept with their answers rather than deleted, so
+  the next pass does not reopen them. ADR-0003 said reflection survives at two call sites in
+  `server/`; there is one, `NBTEditorServer.java:150`. Roadmap 4.4 said five intermediary names
+  survive; two do, `field_17391` and the `class_3722` descriptor beside it, both in that same call.
+- **Roadmap 4.5's in-game claim was the false one.** "Nothing in phases 1 through 4 has been run
+  in-game" sits forty lines above a section titled "What the first in-game run found". Two of its
+  three flagged runtime risks are closed: `MVTooltip`'s raw GL scissor code no longer exists, and
+  the `require = 0` background redirect is now covered by `checkMixinTargets`, which fails the
+  build rather than letting the redirect go missing in silence. The third, the cursor nudge in
+  `TextFieldWidgetMixin:37`, is unchanged and is recorded as still unexercised.
+- **The review is wrong that Phase 1's and Phase 3's in-game lines are "equally stale".** They are
+  narrower claims and they still hold. The sweep opens the factory screens on an item with
+  non-ASCII lore, so the fancy-text path 1.2 through 1.4 live on does run, but not one of the five
+  inputs that trigger those defects is driven, and the harness ends the client with `pkill`, so
+  1.5's non-daemon hang can never show. Phase 3 is the same: the sweep drives `ContainerIOs`, but
+  only the two minecart `ItemEntityContainerIO`s, and 3.2 bounded `SlotKeyNbtListContainerIO` and
+  `OrderNbtListContainerIO`. Both lines now say what the harness does reach and what it does not,
+  which is more useful than either the stale version or the flip the review implied.
+- **One more false line went, in the same file.** The deletion-candidates entry for
+  `PartitionedLockImpl` listed three defects. Item 7 fixed the counter and an earlier commit moved
+  the partition lock outside `globalLock`; the entry now records only `unlock(int)` throwing
+  `NullPointerException` without a matching `lock`, which is still true at `:93-95`.
+- **Prose has no build check, so the check is a script.**
+  `.scratch/review-2026-09-17/check-doc-claims.sh` re-derives each count from the tree and then
+  greps the prose for the matching number, fifteen claims in all. It was made to fail twice: once
+  for real, when a loose `field_[0-9]*` pattern counted `text_field_invalid` and reported four
+  intermediary names instead of two, and once on purpose, by adding an `MV*` file and putting
+  ADR-0001's old count back, which failed the tree claim and the prose claim separately.

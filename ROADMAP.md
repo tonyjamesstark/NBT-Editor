@@ -89,9 +89,13 @@ in `build/classes`). The build emits 5 pre-existing `Cannot find target method` 
 for the `mixin/toggled/*_1_21_1` classes, which target methods absent from the 1.21.5 artifact.
 None of the six files changed here are mixins, so those warnings are untouched by this work.
 
-Still outstanding: none of the five has been exercised in-game. That needs opening the
-formatted-text editor, driving the event editor with invalid click-event input, round-tripping a
-custom hex colour, and quitting the game with a client chest page mid-save.
+Still outstanding: none of the five has been exercised in-game, and the harness added since does
+not reach them. `scripts/dev-client.sh --screens` opens the factory screens on an item carrying
+non-ASCII lore, which runs the fancy-text stringify path that 1.2 through 1.4 live on, but it
+drives none of the inputs that trigger them. It also ends the client with `pkill`, so the JVM
+never shuts down and 1.5's hang cannot show. Driving them still needs a hand-played client: the
+event editor with invalid click-event input, a custom hex colour round trip, an unrecognised
+`[foo]` token, `[show_item]{99}`, and quitting with a client chest page mid-save.
 
 ## Phase 2: `SHOW_ENTITY` hover scan
 
@@ -145,7 +149,9 @@ slicing is consistent. That is a separate claim from 3.1 and does not rescue it.
 
 **Verification.** `sh gradlew compileJava` under `25.0.4-tem`, BUILD SUCCESSFUL, the same 5
 pre-existing mixin warnings and no new ones. Both bounds confirmed in the bytecode with `javap`
-rather than read off the build log. Not exercised in-game.
+rather than read off the build log. Still not exercised in-game: `scripts/dev-client.sh --screens`
+drives the `ContainerIOs` write path, but only for the two minecart `ItemEntityContainerIO`s, and
+3.2 bounded `SlotKeyNbtListContainerIO` and `OrderNbtListContainerIO`.
 
 ## Phase 4: the 26.2 migration (re-scoped 2026-09-13, compiling on 26.2 2026-09-14)
 
@@ -263,9 +269,11 @@ Each step ends in a build. Do not start the next until the previous compiles.
   lookups, not ~75. `remapJar` emitted 94 distinct `Cannot remap` warnings rather than the ~25
   guessed below, and each one was a mixin that would have failed at runtime.
 
-  Five intermediary names survive, each with a comment saying why: `SnbtGrammar.method_68722` and
-  `LecternBlockEntity$1.field_17391` are synthetic members with no Mojang name, and
-  `ServerMixinLink`'s `class_634` is a client class a dedicated server cannot link against.
+  Two intermediary names survive, both in one call at `server/NBTEditorServer.java:150`:
+  `field_17391` is a synthetic member of `LecternBlockEntity$1` with no Mojang name, and
+  `Lnet/minecraft/class_3722;` is the descriptor naming its owner. `SnbtGrammar.method_68722` went
+  when the SNBT parsing mixin was repointed at the members 26.2 has. `ServerMixinLink`'s
+  `class_634` is the defect the 2026-09-17 in-game run found; see below.
 
   Most of the layer turned out to be dead rather than in need of translation. Two version flags
   had been hardcoded true for several releases - `MVNbtCompoundParent.NBT_CODE_REFACTORED` and
@@ -287,10 +295,16 @@ Each step ends in a build. Do not start the next until the previous compiles.
   gating - so that part of the step was already satisfied. `data_versions.json` now carries
   `"26.2": 4903`, read out of the game's own `version.json`.
 
-  Still outstanding: **nothing in phases 1 through 4 has been run in-game.** The flagged runtime
-  risks are the raw GL scissor save/restore in `MVTooltip.render`, the `ScreenMixin` redirect on
-  `Screen.extractBackground` (declared `require = 0`, so it fails silently if the target moved
-  again), and the cursor nudge on a filtered keystroke in `TextFieldWidgetMixin`.
+  Phase 4 has been run in-game, and the run found a defect; see "What the first in-game run
+  found" below. There is a harness for it now: `scripts/dev-client.sh` boots a headless client per
+  ADR-0005, and `--screens` joins a server and opens every factory screen and the config screen.
+
+  Two of the three flagged runtime risks are closed. `MVTooltip.render`'s raw GL scissor
+  save/restore no longer exists; it went with the 1.21.9 GUI rewrite. The `require = 0` redirect on
+  `Screen.extractBackground` in `multiversion/mixin/ScreenMixin` is still declared that way, but
+  `checkMixinTargets` now fails the build when the target moves, so it can no longer go missing in
+  silence. The cursor nudge on a filtered keystroke in `TextFieldWidgetMixin:37` is unchanged and
+  still unexercised.
 
 ### What 26.2 actually changes (2026-09-14)
 
@@ -387,13 +401,16 @@ APIs. Step 4.2 removes most of that surface before it can bite.
 
 ### Unresolved
 
-- Whether `multiversion/` earns its place at all once the floor is 1.21.11 and the game ships
-  deobfuscated. Its reason for existing was spanning obfuscated versions with drifting names.
-- Whether ModMenu and nbt-autocomplete publish 26.2 builds. `nbt-autocomplete` is pinned to
-  `1.3.12-fabric-1.21.5` and is the harder of the two.
-- `depends.minecraft` in `fabric.mod.json` is `">=1.17-"` with no upper bound, so the current jar
-  is accepted and then hard-crashes on 26.2 rather than being refused. Worth fixing independently
-  of this phase.
+Nothing recorded here is still open. Each question is kept with what settled it, so the next pass
+does not reopen it.
+
+- Whether `multiversion/` earns its place: no, and ADR-0001 says so. The jar targets one game
+  version, the layer is being dismantled, and 20 `MV*` classes remain against a count that only
+  goes down.
+- Whether ModMenu and nbt-autocomplete publish 26.2 builds: both do. `build.gradle:93-94` pins
+  `modmenu:20.0.2` and `nbt-autocomplete:1.3.15-fabric-26.2`.
+- `depends.minecraft`: `src/main/resources/fabric.mod.json:39` reads `">=26.2-"`, so an older game
+  refuses the jar instead of accepting it and crashing.
 
 ## Deletion candidates (scoped, deferred)
 
@@ -407,11 +424,10 @@ Recorded so the next pass does not rediscover them. Nothing here is removed yet.
 - `ContainerIOs.getNumWritten` has no callers. `getWrittenSlotIndex` has exactly one, from
   `ContainerScreen` line 151.
 - `util/lock/PartitionedLockImpl` is live, reached through `PartitionedReadWriteLock` from
-  `ClientChest`, so it is **not** a deletion candidate. It does carry real defects worth a
-  separate audit: `lock(int)` blocks on the partition lock while still holding `globalLock`,
-  which serialises every partition and can deadlock against `lockAll()`; `globallyLocked++` is a
-  non-atomic read-modify-write on a `volatile int`; and `unlock(int)` throws
-  `NullPointerException` when called without a matching `lock`.
+  `ClientChest`, so it is **not** a deletion candidate. Two of the three defects recorded here are
+  fixed: `lock(int)` now takes the partition lock outside `globalLock`, and `globallyLocked` is an
+  `AtomicInteger` rather than a `volatile int` raised with `++`. What remains is `unlock(int)`
+  throwing `NullPointerException` when called without a matching `lock`.
 
 ## Merging `dev` into `local`
 
