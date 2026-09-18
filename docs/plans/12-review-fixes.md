@@ -50,7 +50,7 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 - [x] 8. `MVTextEvents` placement against ADR-0001
 - [x] 9. `MixinLink` members against its own docstring
 - [x] 10. Documentation reconciliation: ROADMAP Unresolved, 4.4, 4.5, ADR-0003 counts
-- [ ] 11. Tests for `util/Futures` and `util/DataFixes`
+- [x] 11. Tests for `util/Futures` and `util/DataFixes`
 
 ## Verification per item
 
@@ -83,6 +83,8 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 10. `.scratch/review-2026-09-17/check-doc-claims.sh`, which re-derives every reconciled count
     and status from the tree and then checks the prose carries the same number. Prose has no
     build check, so the lever is the check.
+11. `src/test/java/.../util/FuturesTest.java` and `.../util/DataFixesTest.java`, seven cases.
+    Each file was checked against a mutation of the code it covers, named in the log.
 
 ## Log
 
@@ -305,3 +307,24 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   for real, when a loose `field_[0-9]*` pattern counted `text_field_invalid` and reported four
   intermediary names instead of two, and once on purpose, by adding an `MV*` file and putting
   ADR-0001's old count back, which failed the tree claim and the prose claim separately.
+- **Item 11 done.** `util/Futures` has four cases over `mergeFutures`: the value reaches every
+  member, a failure reaches every member with the original throwable as its cause, a member that
+  already answered keeps its own value, and an empty list is not an error. The middle two are the
+  ones worth having. A waiter the merge forgets is a client chest caller that never returns, and
+  the exception path is a separate `exceptionally` callback that a reader can miss.
+- **The Futures tests were checked against a mutation.** Dropping the `exceptionally` block and
+  narrowing the `forEach` to the first member fails three of the four and leaves the empty-list
+  case green, which is the right split: that one is about not throwing, not about fan-out.
+- **`util/DataFixes` can only be half-tested here, and the half that runs is the half that
+  matters.** Every path that reaches a fixer goes through `Minecraft.getInstance().getFixerUpper()`
+  and cannot run in the JUnit slice (ADR-0004). What can run is the guard in front of it: nbt with
+  no `DataVersion` and no default version is handed straight back, and so is nbt whose
+  `DataVersion` is present but not a number. Three cases, each asserting the *same instance* comes
+  back, since running a player's data through fixes it has already had is the failure being
+  guarded against.
+- **The DataFixes tests were checked against a mutation too.** Deleting the
+  `else if (dataVersion == -1) return nbt;` guard fails all three, because the call then falls
+  through to a fixer that has no game behind it. The class docstring says plainly which half is
+  not covered, so the file does not read as more assurance than it is.
+- **Verified.** `./gradlew check` green with 110 tests in 14 classes, up from 100 in 11 at the
+  start of this session, and `CLAUDE.md`'s counts follow.
