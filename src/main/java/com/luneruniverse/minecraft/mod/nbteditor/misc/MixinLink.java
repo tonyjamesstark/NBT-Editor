@@ -91,7 +91,20 @@ public class MixinLink {
 	public static final WeakHashMap<Tooltip, Boolean> NEW_TOOLTIPS = new WeakHashMap<>();
 	
 	
-	// MinecraftClient#thread is set after the ClientModInitializers are run
+	/**
+	 * The client's main thread, recorded early enough to be usable during mod init.
+	 *
+	 * <p>{@code Minecraft.isSameThread()} is not a substitute. {@code Minecraft.gameThread} is
+	 * assigned partway through {@code Minecraft.<init>}, after Fabric has dispatched the mod
+	 * initialisers, so {@code isSameThread()} returns false on the real main thread for the whole
+	 * of {@code onInitialize} and {@code onInitializeClient}. Measured on 26.2 by printing both
+	 * from every entrypoint in a dev client: the mixin sets this immediately after
+	 * {@code ReentrantBlockableEventLoop.<init>}, where {@code Minecraft.getInstance()} is still
+	 * null, and {@code isSameThread()} first reads true at registry load. Swapping it out would
+	 * silently disable the guard in {@link
+	 * com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder}, which
+	 * is the one caller and runs during init.
+	 */
 	public static volatile Thread MAIN_THREAD;
 	public static boolean isOnMainThread() {
 		return Thread.currentThread() == MAIN_THREAD;

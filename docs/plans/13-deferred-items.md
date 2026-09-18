@@ -43,7 +43,7 @@ build and a dev client at once.
 - [x] 1. ADR-0003 completion and the dead widener lines
 - [x] 2. `ConcatContainerIO` array-walk deduplication
 - [x] 3. Roadmap 2.1 per-keystroke entity scan, measured then fixed
-- [ ] 4. The `MAIN_THREAD` init-ordering check
+- [x] 4. The `MAIN_THREAD` init-ordering check
 - [ ] 5. `.scratch/<slug>/issues/` housekeeping
 
 ## Verification per item
@@ -123,10 +123,15 @@ not trimming, `getWrittenSlotIndex` losing its offset, `write` no longer agreein
 a one-slot shift in `remaining`, which it reports as every trade-inventory slot landing one index
 out. `./gradlew check` and `scripts/dev-client.sh --screens` both pass.
 
-`ConcatContainerIO.getWrittenSlotIndex` throws for a slot that a trailing compacting io does hold
-but has not compacted into range, which a villager reaches whenever a trade slot is filled with a
-gap before it. The interface javadoc already describes the mismatch that causes it. It is not
-this item, and it is filed under item 5.
+I claimed here that `ConcatContainerIO.getWrittenSlotIndex` throws for a slot a trailing
+compacting io holds but has not compacted into range, and that a villager reaches it whenever a
+trade slot is filled with a gap before it. That is wrong, and probing it is what showed so: a
+villager with only its last trade slot filled resolves slot 15 to index 8 and throws nothing.
+`OrderNbtListContainerIO.getNumWritten` returns `Math.min(contents.length, maxSlots)`, the full
+stride rather than a compacted count, so the walk's offset and the io's own compaction agree.
+Roadmap 3.1's verdict on that throw, "real, and unreachable", stands, and there is nothing to
+file. The test stub that does reach it, `CompactingIO`, claims half of what it holds, which no io
+in the mod does.
 
 **Item 3.** The baseline came first, as the roadmap asked. `dev/DevEntityScanBench` spawns a
 chosen number of client-side entities and times `FancyText.parse` of a `[show_entity]` node
@@ -149,3 +154,26 @@ repetitions per count because a software-rendered client is a noisy place to tim
 the index it reports 1.0x; with the scan pasted back in it reports 16.1x and fails. `./gradlew
 check` passes, including `validateAccessWidener` and `checkWidenerConsumers` over the added line,
 and `scripts/dev-client.sh --screens` is green.
+
+**Item 4.** The refusal stands, and now on a measurement rather than on a comment nobody had
+checked. A dev client printed `Thread.currentThread()`, `MixinLink.MAIN_THREAD` and
+`Minecraft.isSameThread()` from four points: the mixin's own injection, `onInitialize`,
+`onInitializeClient`, and the first registry load. The mixin fires immediately after
+`ReentrantBlockableEventLoop.<init>`, where `Minecraft.getInstance()` is still null, so
+`isSameThread()` cannot even be called there. Through both entrypoints it is reachable and returns
+**false** on the real main thread. It first reads true at registry load, long after init.
+
+`javap -c` on `Minecraft.<init>` says why: offset 5 is the super call, offset 135 assigns the
+`instance` static, and `gameThread` is not written until offset 566, which is past the point
+Fabric dispatches the mod initialisers. `isSameThread()` reads `gameThread`, so it is false for the
+whole of init by construction, not by accident of this version.
+
+The one caller, `DynamicRegistryManagerHolder.getManager()`, runs during init, so the swap would
+have turned the guard off exactly where it does its work, silently, with no test failing. The
+comment that said so was one line and unverifiable; it is now a javadoc on the field that records
+the measurement and names the caller, so the next person to propose the swap reads the answer
+instead of re-deriving it.
+
+**Verification.** The instrumentation was the check, and it is the kind that has to be removed
+again: it lived in `MinecraftClientMixin`, `NBTEditor` and `NBTEditorClient` for the run and is
+reverted. What ships is the javadoc. `./gradlew check` passes.
