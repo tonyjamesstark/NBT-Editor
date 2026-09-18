@@ -98,10 +98,10 @@ public class NBTValue extends List2D.List2DValue {
 		else if (isHovering(mouseX, mouseY))
 			color = 0xFF257789;
 		if (color != -1) {
-			Drawing.fill(context, -4, -4, 36, 0, color);
-			Drawing.fill(context, -4, -4, 0, 36, color);
-			Drawing.fill(context, -4, 32, 36, 36, color);
-			Drawing.fill(context, 32, -4, 36, 36, color);
+			context.fill(-4, -4, 36, 0, color);
+			context.fill(-4, -4, 0, 36, color);
+			context.fill(-4, 32, 36, 36, color);
+			context.fill(32, -4, 36, 36, color);
 		}
 		if (tooltip != null && isHovering(mouseX, mouseY))
 			new MVTooltip(tooltip).render(context, mouseX, mouseY);

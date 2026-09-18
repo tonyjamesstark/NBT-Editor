@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -23,12 +22,12 @@ public abstract class ConfigGroupingVertical<K, T extends ConfigGroupingVertical
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		Drawing.fill(context, 0, 0, PADDING, getSpacingHeight(), isValueValid() ? 0xFFAAAAAA : 0xFFDF4949);
+		context.fill(0, 0, PADDING, getSpacingHeight(), isValueValid() ? 0xFFAAAAAA : 0xFFDF4949);
 		
 		int yOffset = 0;
 		Component fullName = getFullName();
 		if (fullName != null) {
-			Drawing.drawTextWithShadow(context, Minecraft.getInstance().font, fullName, PADDING * 2, 0, 0xFFFFFFFF);
+			context.text(Minecraft.getInstance().font, fullName, PADDING * 2, 0, 0xFFFFFFFF);
 			yOffset += getNameHeight();
 		}
 		

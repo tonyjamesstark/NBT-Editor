@@ -149,12 +149,12 @@ public class ClientChestDataVersionScreen extends TickableSupportingScreen {
 		
 		Drawing.renderBackground(this, context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		Drawing.drawCenteredTextWithShadow(context, font,
+		context.centeredText(font,
 				msg, width / 2, height / 2 - 44 - font.lineHeight / 2, -1);
 		if (fullButtons) {
-			Drawing.fill(context, width / 2 - 55, height / 2 - 34, width / 2 - 53, height / 2 + 34, 0xFFAAAAAA);
-			Drawing.fill(context, width / 2 + 53, height / 2 - 34, width / 2 + 55, height / 2 + 34, 0xFFAAAAAA);
-			Drawing.drawCenteredTextWithShadow(context, font,
+			context.fill(width / 2 - 55, height / 2 - 34, width / 2 - 53, height / 2 + 34, 0xFFAAAAAA);
+			context.fill(width / 2 + 53, height / 2 - 34, width / 2 + 55, height / 2 + 34, 0xFFAAAAAA);
+			context.centeredText(font,
 					Component.translatableEscape("nbteditor.client_chest.data_version.import", Version.getReleaseTarget()),
 					width / 2 - 108, height / 2 - 24 - font.lineHeight / 2, -1);
 		}

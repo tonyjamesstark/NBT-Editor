@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVButtonWidget;
-import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.input.KeyEvent;
@@ -85,7 +84,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 		
 		super.renderButton(context, mouseX, mouseY, delta);
 		if (open) {
-			Drawing.fill(context, this.x, this.height, this.x + this.width, allValues.size() * this.height, 0xFF000000);
+			context.fill(this.x, this.height, this.x + this.width, allValues.size() * this.height, 0xFF000000);
 			boolean xHover = this.active && mouseX >= this.x && mouseX < this.x + this.width;
 			int i = 0;
 			for (T option : allValues) {
@@ -97,7 +96,7 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 					color = 0xFF257789;
 				else if (importantValues.contains(option))
 					color = 0xFFFFAA00;
-				Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, Component.nullToEmpty(option.toString()),
+				context.centeredText(Minecraft.getInstance().font, Component.nullToEmpty(option.toString()),
 						this.x + this.width / 2, y + (this.height - Minecraft.getInstance().font.lineHeight) / 2, color);
 				if (color != -1 && option instanceof ConfigTooltipSupplier) // Hovering
 					((ConfigTooltipSupplier) option).getTooltip().render(context, mouseX, mouseY);

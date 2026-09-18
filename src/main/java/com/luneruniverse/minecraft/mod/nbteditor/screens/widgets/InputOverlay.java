@@ -77,7 +77,7 @@ public class InputOverlay<T> extends GroupWidget implements InitializableOverlay
 		context.pose().translate((float) (0.0), (float) (0.0));
 		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		if (title != null) {
-			Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, title,
+			context.centeredText(Minecraft.getInstance().font, title,
 					x + input.getWidth() / 2, y - 4 - Minecraft.getInstance().font.lineHeight, -1);
 		}
 		super.extractRenderState(context, mouseX, mouseY, delta);

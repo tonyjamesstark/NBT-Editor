@@ -22,8 +22,10 @@ import net.minecraft.client.Minecraft;
  * mod's, so callers did not have to move with them.
  *
  * <p>This was <code>multiversion/MVDrawableHelper</code>. Nothing about it spans game versions --
- * the package was the only version-flavoured thing left -- and most of what remains is a
- * one-line forward that A1 of the audit wants inlined.
+ * the package was the only version-flavoured thing left. Audit A1's rule has since been applied
+ * to it: a method whose body was one vanilla call under another name was inlined to that call and
+ * deleted. What is left either composes two calls or supplies an argument the caller should not
+ * have to know, such as the render pipeline, the font, or a slot's 16 by 16 box.
  */
 public class Drawing {
 	
@@ -52,30 +54,10 @@ public class Drawing {
 			String line = lines.get(i);
 			int offsetY = i * renderer.lineHeight + (centerVertical ? -renderer.lineHeight * lines.size() / 2 : 0);
 			if (centerHorizontal)
-				drawCenteredTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
+				context.centeredText(renderer, Component.nullToEmpty(line), x, y + offsetY, color);
 			else
-				drawTextWithShadow(context, renderer, Component.nullToEmpty(line), x, y + offsetY, color);
+				context.text(renderer, Component.nullToEmpty(line), x, y + offsetY, color);
 		}
-	}
-	
-	public static void fill(GuiGraphicsExtractor context, int x1, int y1, int x2, int y2, int color) {
-		context.fill(x1, y1, x2, y2, color);
-	}
-	
-	public static void drawText(GuiGraphicsExtractor context, Font textRenderer, Component text, int x, int y, int color, boolean shadow) {
-		context.text(textRenderer, text, x, y, color, shadow);
-	}
-	
-	public static void drawTextWithoutShadow(GuiGraphicsExtractor context, Font textRenderer, Component text, int x, int y, int color) {
-		context.text(textRenderer, text, x, y, color, false);
-	}
-	
-	public static void drawTextWithShadow(GuiGraphicsExtractor context, Font textRenderer, Component text, int x, int y, int color) {
-		context.text(textRenderer, text, x, y, color);
-	}
-	
-	public static void drawCenteredTextWithShadow(GuiGraphicsExtractor context, Font textRenderer, Component text, int x, int y, int color) {
-		context.centeredText(textRenderer, text, x, y, color);
 	}
 	
 	public static void drawTexture(GuiGraphicsExtractor context, Identifier texture, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
@@ -93,7 +75,14 @@ public class Drawing {
 		context.setTooltipForNextFrame(Minecraft.getInstance().font, lines, x, y);
 	}
 	
-	public static void renderItem(GuiGraphicsExtractor context, float zOffset, boolean setScreenZOffset, ItemStack item, int x, int y) {
+	/**
+	 * Draws an item with its count and damage bar.
+	 *
+	 * <p>It took a z offset and a screen-z flag until this fork dropped support below 1.20. Only
+	 * the 1.19.3-and-below branch ever read them; every branch above it already drew straight to
+	 * the draw context, so the 1.21.9 render-state rewrite did not stop honouring anything.
+	 */
+	public static void renderItem(GuiGraphicsExtractor context, ItemStack item, int x, int y) {
 		context.item(item, x, y);
 		context.itemDecorations(Minecraft.getInstance().font, item, x, y);
 	}
@@ -108,13 +97,6 @@ public class Drawing {
 	
 	public static void drawSlotHighlight(GuiGraphicsExtractor context, int x, int y, int color) {
 		context.fill(RenderPipelines.GUI, x, y, x + 16, y + 16, color);
-	}
-	
-	public static void enableScissor(GuiGraphicsExtractor context, int x, int y, int width, int height) {
-		context.enableScissor(x, y, x + width, y + height);
-	}
-	public static void disableScissor(GuiGraphicsExtractor context) {
-		context.disableScissor();
 	}
 	
 }

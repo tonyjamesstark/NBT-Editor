@@ -170,7 +170,7 @@ public class LocalItemParts extends LocalItem {
 	
 	@Override
 	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta) {
-		Drawing.renderItem(context, 200.0F, true, getCachedItem(), x, y);
+		Drawing.renderItem(context, getCachedItem(), x, y);
 	}
 	
 	@Override

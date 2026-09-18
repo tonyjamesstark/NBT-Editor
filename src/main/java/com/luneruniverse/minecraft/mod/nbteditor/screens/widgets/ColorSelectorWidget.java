@@ -150,7 +150,7 @@ public class ColorSelectorWidget extends GroupWidget {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		Drawing.fill(context, x + areaSize + 4, y, x + areaSize + 4 + areaSize / 2, y + areaSize, color | 0xFF000000);
+		context.fill(x + areaSize + 4, y, x + areaSize + 4 + areaSize / 2, y + areaSize, color | 0xFF000000);
 	}
 	
 }

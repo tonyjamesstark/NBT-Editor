@@ -82,7 +82,7 @@ public class CreativeTabWidget implements Renderable, MVElement {
 		Drawing.drawTexture(context, bottom ? TEXTURE_BOTTOM : TEXTURE_TOP, x, y + (bottom ? 0 : 2), 0, bottom ? V_BOTTOM : V_TOP, WIDTH, 32);
 		
 		int xOffset = 5;
-		Drawing.renderItem(context, 100.0F, false, item, x + xOffset, y + (bottom ? 5 : 11));
+		Drawing.renderItem(context, item, x + xOffset, y + (bottom ? 5 : 11));
 		
 		if (isMouseOver(mouseX, mouseY))
 			tooltip.render(context, mouseX, mouseY);

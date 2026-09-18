@@ -169,7 +169,7 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
-		Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font,
+		context.centeredText(Minecraft.getInstance().font,
 				Component.translatableEscape("nbteditor.formatted_text.events"),
 				x, y - 38 - Minecraft.getInstance().font.lineHeight, -1);
 		super.extractRenderState(context, mouseX, mouseY, delta);

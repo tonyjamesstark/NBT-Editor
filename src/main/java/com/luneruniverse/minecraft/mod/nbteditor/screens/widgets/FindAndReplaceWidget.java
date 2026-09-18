@@ -2,7 +2,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
 import org.lwjgl.glfw.GLFW;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
@@ -72,7 +71,7 @@ class FindAndReplaceWidget extends TranslatedGroupWidget {
 	
 	@Override
 	public void renderPre(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		Drawing.fill(context, -16, -16, 216, 76, 0xC8101010);
+		context.fill(-16, -16, 216, 76, 0xC8101010);
 	}
 	
 	@Override

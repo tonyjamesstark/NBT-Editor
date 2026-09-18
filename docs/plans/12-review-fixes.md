@@ -45,7 +45,7 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 - [x] 3. `ConfigScreen.loadSettings` partial-write path, closed by item 5 rather than patched
 - [x] 4. `DevScreenSweep` out of `src/main`
 - [x] 5. `ConfigScreen` to a `Setting<T>` table
-- [ ] 6. `Drawing` pass-throughs and the `renderItem` signature
+- [x] 6. `Drawing` pass-throughs and the `renderItem` signature
 - [ ] 7. `PartitionedLockImpl` to Guava `Striped`
 - [ ] 8. `MVTextEvents` placement against ADR-0001
 - [ ] 9. `MixinLink` members against its own docstring
@@ -65,7 +65,9 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 5. `src/test/java/.../screens/SettingsTest.java`, nine cases over the load contract. Then
    `.scratch/review-2026-09-17/partial-config-check.sh`, which boots the dev client against a
    settings.json missing one key and reports what the client wrote back.
-6. Compile plus a dev-client screen sweep, since the z-order question is a render behaviour.
+6. The z-order question is settled from history rather than by rendering, see the log. Then
+   compile plus a dev-client screen sweep, and a hunk-by-hunk read of the diff, since an
+   identity transform is what makes the change safe and no test here looks at pixels.
 7. The existing `PartitionedReadWriteLockTest` stress case is the check.
 
 ## Log
@@ -145,3 +147,31 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   validations in `check`. The jar holds nothing under `dev/` and declares 3.0.0.
   `scripts/dev-client.sh --screens` passes in 124s with all three checks and four factory screens
   green, so the sweep still installs from its new home.
+- **Item 6 done, and the review's caveat does not hold.** The review warned that `renderItem`'s
+  `200.0F` and `100.0F` might be z-layering the render-state rewrite stopped honouring, and said to
+  check before deleting. `git show v2.0.3:.../MVDrawableHelper.java` settles it: the parameters were
+  read only on the `null..1.19.3` branch of a `Version.newSwitch`, and the `1.20.0..` branch above
+  it already drew straight to the draw context and ignored both. They died with 1.19.3 support,
+  several releases before this fork existed, so there is nothing to regress and nothing to restore.
+  The method keeps its name and loses the two parameters; its javadoc now records why.
+- **Six pure delegations inlined, five kept.** Audit A1's rule is that a method whose body is one
+  vanilla call under another name gives a reader nothing per unit of interface. `fill`, `drawText`,
+  `drawTextWithoutShadow`, `drawTextWithShadow`, `drawCenteredTextWithShadow` and `disableScissor`
+  were exactly that, 48 call sites, now calling the `GuiGraphicsExtractor` method directly.
+  `drawTexture`, `renderTooltip`, `renderItem`, `drawSlotHighlight` and `renderLogo` supply an
+  argument a caller should not have to know, the render pipeline, the font, a slot's 16 by 16 box,
+  or compose two calls, so they stay. `Drawing` went 120 lines to 101.
+- **`enableScissor` went too, for a reason the ponytail pass did not raise.** It converted width and
+  height to x2 and y2, so it was not a pure delegation, but `disableScissor` was, and once that went
+  both call sites read `Drawing.enableScissor(...)` against `context.disableScissor()`. A pair split
+  across two receivers is worse than either wrapper, so both sides now sit on the context.
+- **The rewrite was a script, not an afternoon of hand edits.**
+  `.scratch/review-2026-09-17/inline-drawing.py` matches parentheses rather than guessing at commas,
+  refuses any call whose first argument is not a plain context, and reports what it skipped. It
+  skipped nothing. It missed two calls inside `Drawing` itself, which were unqualified and so had no
+  `Drawing.` prefix to match; the compiler caught both.
+- **Verified.** Every hunk read as an identity transform, which is the real check here since nothing
+  in the build looks at pixels. `./gradlew compileJava compileDevJava` green.
+  `scripts/dev-client.sh --screens` passes in 243s with all three checks and four factory screens.
+  The screens the sweep opens exercise the inlined text, fill and scissor calls; it would catch a
+  throw, not a misplaced pixel, and the diff is what rules that out.

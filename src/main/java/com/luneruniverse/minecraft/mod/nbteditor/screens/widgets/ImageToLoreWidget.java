@@ -151,7 +151,7 @@ public class ImageToLoreWidget extends GroupWidget implements InitializableOverl
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		super.extractRenderState(context, mouseX, mouseY, delta);
-		Drawing.drawCenteredTextWithShadow(context, textRenderer, Component.translatableEscape("nbteditor.img_to_lore"),
+		context.centeredText(textRenderer, Component.translatableEscape("nbteditor.img_to_lore"),
 				width / 2, height / 2 - textRenderer.lineHeight - 22, -1);
 		Drawing.renderLogo(context);
 	}

@@ -3,7 +3,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.Tickable;
 
@@ -55,7 +54,7 @@ public class ConfigItem<V extends ConfigValue<?, V>> implements ConfigPath {
 	
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
-		Drawing.drawTextWithShadow(context, Minecraft.getInstance().font, name, 0, (getSpacingHeight() - Minecraft.getInstance().font.lineHeight) / 2, 0xFFFFFFFF);
+		context.text(Minecraft.getInstance().font, name, 0, (getSpacingHeight() - Minecraft.getInstance().font.lineHeight) / 2, 0xFFFFFFFF);
 		
 		context.pose().pushMatrix();
 		context.pose().translate((float) (valueOffsetX), (float) (valueOffsetY));
