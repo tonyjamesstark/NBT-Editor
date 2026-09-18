@@ -9,6 +9,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.HandItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
+import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.Configurable;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.LocalFactoryScreen.LocalFactoryReference;
@@ -33,9 +34,10 @@ import net.minecraft.world.item.enchantment.Enchantments;
  * screen breaks on the build host instead of in someone's game. The dev client harness cannot
  * click, and nothing else in the build opens an editor screen at all.
  *
- * <p>It also checks, once, the entity id each minecart's container io writes, because that value
- * is fixed at registration and a wrong one compiles, remaps and sweeps clean. Only the NBT of an
- * edited item shows it, which is how hopper minecarts shipped carrying a furnace_minecart id.
+ * <p>It also checks two things once, both of which compile, remap and sweep clean while wrong.
+ * The entity id a minecart's container io writes is fixed at registration and only an edited
+ * item's NBT shows it, which is how hopper minecarts shipped under a furnace_minecart id. The
+ * config screen builds a widget per setting and nothing else in the build opens it.
  *
  * <p>Off unless {@code -Dnbte.devscreens} is set. The value is the lore to give the item,
  * {@code |} separating lines; the default carries the non-ASCII text a report on 2026-09-16
@@ -105,8 +107,10 @@ public class DevScreenSweep {
 				NBTEditor.LOGGER.info("SWEEP registry client manager set");
 			else
 				NBTEditor.LOGGER.error("SWEEP fail the client registry manager was never set");
-			if (item == 0)
+			if (item == 0) {
 				checkEntityIds();
+				checkConfigScreen(client);
+			}
 			client.player.setItemInHand(InteractionHand.MAIN_HAND, buildItem(client));
 			ItemReference ref = new HandItemReference(InteractionHand.MAIN_HAND);
 			rows = new ArrayList<>();
@@ -135,6 +139,20 @@ public class DevScreenSweep {
 				NBTEditor.LOGGER.error("SWEEP fail {} the click opened nothing", name);
 		} catch (Throwable e) {
 			NBTEditor.LOGGER.error("SWEEP fail " + name, e);
+		}
+		client.setScreenAndShow(null);
+	}
+
+	/**
+	 * The config screen builds a widget per setting, so a setting wired to the wrong row compiles
+	 * and only shows up when someone opens the screen. Nothing else in the build opens it.
+	 */
+	private static void checkConfigScreen(Minecraft client) {
+		try {
+			client.setScreenAndShow(new ConfigScreen(null));
+			NBTEditor.LOGGER.info("SWEEP check config screen opened");
+		} catch (Throwable e) {
+			NBTEditor.LOGGER.error("SWEEP fail the config screen would not open", e);
 		}
 		client.setScreenAndShow(null);
 	}

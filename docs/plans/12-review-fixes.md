@@ -42,9 +42,9 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 
 - [x] 1. `fabric.mod.json` version placeholder, so the jar stops declaring 2.0.4.999
 - [x] 2. `HOPPER_MINECART_IO` entity type, via the single-source-of-truth registration form
-- [ ] 3. `ConfigScreen.loadSettings` partial-write path
+- [x] 3. `ConfigScreen.loadSettings` partial-write path, closed by item 5 rather than patched
 - [ ] 4. `DevScreenSweep` out of `src/main`
-- [ ] 5. `ConfigScreen` to a `Setting<T>` table
+- [x] 5. `ConfigScreen` to a `Setting<T>` table
 - [ ] 6. `Drawing` pass-throughs and the `renderItem` signature
 - [ ] 7. `PartitionedLockImpl` to Guava `Striped`
 - [ ] 8. `MVTextEvents` placement against ADR-0001
@@ -59,10 +59,11 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
 2. `scripts/dev-client.sh --screens`, whose sweep now writes contents through the registered
    container io for a hopper minecart and reads the entity id back out of the item.
    `EntityType.getKey` is what reaches NBT, so only the runtime value settles it.
-3. A JVM test over the extracted settings codec, asserting a file missing one key leaves the
-   remaining keys untouched. Then the dev client, editing a setting and restarting.
+3. Folded into item 5, which is where the test lives.
 4. `./gradlew build`, then confirm the class is absent from the jar.
-5. Same test as item 3, extended per setting.
+5. `src/test/java/.../screens/SettingsTest.java`, nine cases over the load contract. Then
+   `.scratch/review-2026-09-17/partial-config-check.sh`, which boots the dev client against a
+   settings.json missing one key and reports what the client wrote back.
 6. Compile plus a dev-client screen sweep, since the z-order question is a render behaviour.
 7. The existing `PartitionedReadWriteLockTest` stress case is the check.
 
@@ -93,3 +94,31 @@ scripts do. Do not run a Gradle build and a dev client at once, the host has 7 G
   because the sweep hardcodes `Items.DIAMOND_SWORD` and opens factory screens. That was true of the
   sweep and false of the harness: the container path is reachable from a tick handler with no screen
   at all, which is where the probe went.
+- **Items 3 and 5 done, as one change.** They were the same defect seen from two sides, and the
+  test item 3 asked for needed the table item 5 asked for, so the cheap per-field `try` would have
+  been written and then deleted. `screens/Settings.java` holds 25 rows, one per setting, each
+  carrying its key, its default and how it is read and written. A row that finds nothing usable
+  takes its own default and reports it; `Settings.load` returns whether the file was complete, and
+  `ConfigScreen.loadSettings` writes back only then. One bad key can no longer reach another
+  setting, so the data-loss path is gone by construction rather than caught.
+- **Where the lines went.** `ConfigScreen` 625 to 503, plus 197 lines of table and 143 of test. The
+  review's "about 300 lines" counted the widget block, which this change leaves alone beyond
+  repointing each widget at its row. The saving is in kind, not in volume: five restatements per
+  setting became one, and the seven legacy key mappings and the two negations now sit in the row
+  that owns them instead of being paired up across two lists by eye.
+- **It stayed in `screens/`.** A `config/` package would have imported `ConfigScreen.Alias` and the
+  four config enums straight back, and moving those means touching every external
+  `ConfigScreen.ItemSizeFormat`. Beside `ConfigScreen`, with no package cycle, is where it earns
+  its place. It loads under JUnit without a game, which is what ADR-0004 needs of it.
+- **The defect was reproduced first and the test was made to fail.**
+  `.scratch/review-2026-09-17/partial-config-check.sh` boots the dev client against a config missing
+  `jsonText` and carrying a hand-typed shortcut and alias. Before: `LOST shortcuts`, `LOST aliases`,
+  `LOST checkUpdates`, `LOST creativeTabsPos`, all four overwritten in the user's own file. After:
+  nothing lost, all 25 keys written back, `jsonText` alone at its default. Separately, restoring the
+  old abort-and-save loop inside `Settings.load` fails three of the nine tests, so they are checks
+  and not decoration.
+- **The config screen is now opened by the sweep.** 25 settings each wire a widget to a row, and a
+  row wired to the wrong widget compiles. The pairing was audited key by key, and
+  `DevScreenSweep.checkConfigScreen` opens the screen so the widget construction runs on the build
+  host. `scripts/dev-client.sh --screens` passes in 139s with all three checks and four factory
+  screens green; `./gradlew test` is 99 tests, 0 failures.
