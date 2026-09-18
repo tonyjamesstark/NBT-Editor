@@ -41,7 +41,7 @@ build and a dev client at once.
 ## Checklist
 
 - [x] 1. ADR-0003 completion and the dead widener lines
-- [ ] 2. `ConcatContainerIO` array-walk deduplication
+- [x] 2. `ConcatContainerIO` array-walk deduplication
 - [ ] 3. Roadmap 2.1 per-keystroke entity scan, measured then fixed
 - [ ] 4. The `MAIN_THREAD` init-ordering check
 - [ ] 5. `.scratch/<slug>/issues/` housekeeping
@@ -103,3 +103,27 @@ outside `AccessWidenedApi` (emptying the exemption list surfaces the six real on
 matching nothing (a bogus entry), and a classpath with only the widened jar. `./gradlew check`
 passes, so Loom's `validateAccessWidener` agrees the surviving 50 lines still name members that
 exist. `scripts/dev-client.sh --screens` swept every factory screen in 183s.
+
+**Item 2.** The array walk appeared three times, and `write` and `getNumWritten` were the same
+ten lines differing only in which method they called on each io, which is the drift the contract
+between them cannot afford. One `remaining(contents, numWritten)` replaces the three copies of
+the trim, and one `claimInTurn` walk takes the per-io call as a parameter, so the two now return
+the same number by construction rather than by two people editing both. `getWrittenSlotIndex`
+keeps its own loop, because it stops early.
+
+`ConcatContainerIOTest` is new and covers the chaining arithmetic against stubs: what each io is
+handed, the empty array an io past the end of the contents gets, `write` and `getNumWritten`
+agreeing, the slot offset with and without a compacting io, and the rejection of a slot the chain
+never writes. `DevScreenSweep` gained the same property against the real pair, since a villager's
+io is an equipment io chained to a compacting trade inventory and no unit test can build one.
+
+**Verification.** All six unit tests were shown to fail, on four deliberate breaks: `remaining`
+not trimming, `getWrittenSlotIndex` losing its offset, `write` no longer agreeing with
+`getNumWritten`, and an unwritten slot being waved through. The sweep check was shown to fail on
+a one-slot shift in `remaining`, which it reports as every trade-inventory slot landing one index
+out. `./gradlew check` and `scripts/dev-client.sh --screens` both pass.
+
+`ConcatContainerIO.getWrittenSlotIndex` throws for a slot that a trailing compacting io does hold
+but has not compacted into range, which a villager reaches whenever a trade slot is filled with a
+gap before it. The interface javadoc already describes the mismatch that causes it. It is not
+this item, and it is filed under item 5.

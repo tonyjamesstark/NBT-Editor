@@ -6,6 +6,7 @@ import java.util.List;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIO;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
+import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.HandItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
@@ -23,6 +24,7 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.registries.Registries;
@@ -109,6 +111,7 @@ public class DevScreenSweep {
 				NBTEditor.LOGGER.error("SWEEP fail the client registry manager was never set");
 			if (item == 0) {
 				checkEntityIds();
+				checkConcatContainerIO();
 				checkConfigScreen(client);
 			}
 			client.player.setItemInHand(InteractionHand.MAIN_HAND, buildItem(client));
@@ -155,6 +158,44 @@ public class DevScreenSweep {
 			NBTEditor.LOGGER.error("SWEEP fail the config screen would not open", e);
 		}
 		client.setScreenAndShow(null);
+	}
+
+	/**
+	 * A villager's container io is two ios chained end to end, its equipment and then its trade
+	 * inventory, and {@code ConcatContainerIO} decides which half each slot belongs to. Getting
+	 * that arithmetic wrong writes items into the wrong half, which the player sees as items
+	 * moving between slots. The unit tests cover the arithmetic against stubs; this covers it
+	 * against the real pair, and nothing else in the build opens a container.
+	 *
+	 * <p>Every slot is filled, because the second io compacts and only reports the slots it holds.
+	 * {@code getWrittenSlotIndex} is what the screen asks where an edited slot ended up, so it is
+	 * what the read-back is checked against rather than the slot number itself.
+	 */
+	private static void checkConcatContainerIO() {
+		try {
+			LocalEntity villager = new LocalEntity(EntityTypes.VILLAGER, new CompoundTag());
+			ContainerIO<LocalEntity> io = ContainerIOs.get(villager);
+			int slots = io.getMaxSlots(villager);
+			ItemStack[] contents = new ItemStack[slots];
+			for (int slot = 0; slot < slots; slot++)
+				contents[slot] = new ItemStack(Items.DIAMOND, slot + 1);
+			io.write(villager, contents);
+			
+			ItemStack[] readBack = io.read(villager);
+			List<String> wrong = new ArrayList<>();
+			for (int slot = 0; slot < slots; slot++) {
+				int index = io.getWrittenSlotIndex(villager, contents, slot);
+				ItemStack got = index < readBack.length ? readBack[index] : null;
+				if (got == null || got.getCount() != slot + 1)
+					wrong.add("slot " + slot + " -> index " + index + " holds " + got);
+			}
+			if (wrong.isEmpty())
+				NBTEditor.LOGGER.info("SWEEP check villager round trips {} concat slots", slots);
+			else
+				NBTEditor.LOGGER.error("SWEEP fail villager concat slots: {}", wrong);
+		} catch (Throwable e) {
+			NBTEditor.LOGGER.error("SWEEP fail the villager concat io could not be edited", e);
+		}
 	}
 
 	private static void checkEntityIds() {
