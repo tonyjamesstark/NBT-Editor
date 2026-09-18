@@ -40,7 +40,7 @@ public class PlayerItems {
 	public static void saveItem(InteractionHand hand, ItemStack item) {
 		Minecraft.getInstance().player.setItemInHand(hand, item.copy());
 		clickCreativeStack(item, hand == InteractionHand.OFF_HAND ? SlotUtil.createOffHandInContainer() :
-			SlotUtil.createHotbarInContainer(Minecraft.getInstance().player.getInventory().selected));
+			SlotUtil.createHotbarInContainer(Minecraft.getInstance().player.getInventory().getSelectedSlot()));
 	}
 	public static void saveItem(EquipmentSlot slot, ItemStack item) {
 		if (slot == EquipmentSlot.MAINHAND)

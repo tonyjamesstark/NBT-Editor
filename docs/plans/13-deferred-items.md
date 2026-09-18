@@ -40,7 +40,7 @@ build and a dev client at once.
 
 ## Checklist
 
-- [ ] 1. ADR-0003 completion and the dead widener lines
+- [x] 1. ADR-0003 completion and the dead widener lines
 - [ ] 2. `ConcatContainerIO` array-walk deduplication
 - [ ] 3. Roadmap 2.1 per-keystroke entity scan, measured then fixed
 - [ ] 4. The `MAIN_THREAD` init-ordering check
@@ -62,3 +62,44 @@ build and a dev client at once.
 5. The files exist and say what `docs/agents/issue-tracker.md` requires of them.
 
 ## Log
+
+**Item 1.** The task described a sweep of roughly 35 widener entries into `AccessWidenedApi`.
+Measurement changed the shape of all three of its parts.
+
+Eight lines had no consumer at all: `TagTypes.TYPES`, `MenuScreens.register` and its
+`ScreenConstructor`, `GameRenderer.renderBuffers`, and the four `GlStateManager` scissor entries
+that `MVTooltip` stopped using. Four more had a public equivalent the mod could have called all
+along, so they are gone too rather than wrapped: `AbstractWidget.x`/`y` became `getX`/`setX` and
+`getY`/`setY` across five classes, `Rarity.color` became `color()`, and `Inventory.selected`
+became `getSelectedSlot()`. Five `EditBox.value` reads became `getValue()`; only the silent write
+in `AccessWidenedApi` still needs that line. The widener is 69 lines down to 50, and 26 of those
+are widened members rather than the 35 the task assumed.
+
+The twenty-one genuine accesses outside `AccessWidenedApi` moved into it, as twelve new methods.
+Two of the lines collapse into a single helper (`Minecraft.fontManager` plus
+`FontManager.fontSets` is one `getLoadedFontIds`), and the five `Style` flags became one
+`getStyleFlag(Style, ChatFormatting)`, which let `StyleUtil.identical`, `minus` and
+`minusFormatting` become loops over a `FLAGS` list and dropped a duplicated `bold` block in
+`minus`.
+
+Six accesses did not move, and the ADR now says why rather than claiming otherwise.
+`SuggestingTextFieldWidget` subclasses `CommandSuggestions` and reimplements
+`updateCommandInfo`; a static helper cannot stand in for `this.keepSuggestions` inside an
+override. The exemption is a named entry in the checker, and an entry matching nothing fails the
+run, so the list cannot grow quietly or rot.
+
+Two corrections the tool needed before its answer was worth anything. javac writes an inherited
+member under the qualifying type, so matching on name and descriptor alone credited
+`ColorSelectorWidget`'s own `private int x` to `AbstractWidget.x`; resolving each reference to
+its first declaring class separates them. And "the consumer inherits the member" is the wrong
+exemption. The right one is "vanilla's own modifiers would have allowed this", which needs the
+un-widened jar, because Loom puts the already-widened one on `compileClasspath` and against that
+one every line reads as reachable and the whole check passes vacuously. The tool now refuses to
+run when nothing on its classpath is still private.
+
+**Verification.** `checkWidenerConsumers` in `check` reports clean, and was shown to fail on each
+of its four findings: a widener line with no consumer (an added `Entity.tickCount`), an access
+outside `AccessWidenedApi` (emptying the exemption list surfaces the six real ones), an exemption
+matching nothing (a bogus entry), and a classpath with only the widened jar. `./gradlew check`
+passes, so Loom's `validateAccessWidener` agrees the surviving 50 lines still name members that
+exist. `scripts/dev-client.sh --screens` swept every factory screen in 183s.

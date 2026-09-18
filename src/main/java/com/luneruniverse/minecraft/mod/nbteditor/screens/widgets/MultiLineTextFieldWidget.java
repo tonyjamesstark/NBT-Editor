@@ -187,7 +187,7 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 		return this;
 	}
 	private void syncToSuggestor() {
-		if (!suggestor.value.equals(text))
+		if (!suggestor.getValue().equals(text))
 			suggestor.setValue(text);
 		
 		if (suggestor.getCursorPosition() != cursor)
@@ -198,8 +198,8 @@ public class MultiLineTextFieldWidget implements Renderable, MVElement, Tickable
 			suggestor.setMultiFocused(focus);
 	}
 	private void syncFromSuggestor() {
-		if (!suggestor.value.equals(text))
-			setText(suggestor.value);
+		if (!suggestor.getValue().equals(text))
+			setText(suggestor.getValue());
 		
 		if (suggestor.getCursorPosition() != cursor)
 			setCursor(suggestor.getCursorPosition());

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
 import com.mojang.brigadier.StringReader;
@@ -140,11 +141,8 @@ public class FancyText {
 			Style changes = StyleUtil.minus(partStyle, currentStyle.getPlain());
 			currentStyle.setPlain(partStyle);
 			
-			if (changes.bold != null && !changes.bold ||
-					changes.italic != null && !changes.italic ||
-					changes.underlined != null && !changes.underlined ||
-					changes.strikethrough != null && !changes.strikethrough ||
-					changes.obfuscated != null && !changes.obfuscated) {
+			Style cleared = changes;
+			if (StyleUtil.FLAGS.stream().anyMatch(flag -> Boolean.FALSE.equals(AccessWidenedApi.getStyleFlag(cleared, flag)))) {
 				output.append("&r");
 				changes = StyleUtil.minus(partStyle, StyleUtil.RESET_STYLE);
 			}
@@ -152,9 +150,9 @@ public class FancyText {
 			if (changes.getColor() != null) {
 				ChatFormatting formatting = StyleUtil.getByName(changes.getColor().serialize());
 				if (formatting == null)
-					output.append("&" + changes.getColor().formatValue() + ";");
+					output.append("&" + AccessWidenedApi.formatColorValue(changes.getColor()) + ";");
 				else
-					output.append("&" + formatting.code);
+					output.append("&" + AccessWidenedApi.getFormattingCode(formatting));
 			}
 			if (StyleUtil.SHADOW_COLOR_EXISTS && changes.getShadowColor() != null) {
 				if (changes.getShadowColor() >>> 24 == 0xFF)

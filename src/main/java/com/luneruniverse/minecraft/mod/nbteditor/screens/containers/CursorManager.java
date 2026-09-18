@@ -107,7 +107,7 @@ public class CursorManager {
 		transferCursorTo(branch);
 		currentBranch = branch;
 		Minecraft.getInstance().player.containerMenu = branch.getMenu();
-		branch.skipNextRelease = true;
+		AccessWidenedApi.skipNextRelease(branch);
 		Minecraft.getInstance().setScreenAndShow(branch);
 	}
 	public void showRoot() {

@@ -43,18 +43,18 @@ public class MVSliderWidget extends MVButtonWidget {
 		setMessage(msg.get());
 	}
 	private void setValueFromMouse(double mouseX) {
-		setValue((mouseX - x - 4) / (width - 8));
+		setValue((mouseX - getX() - 4) / (width - 8));
 	}
 	
 	@Override
 	public void renderButton(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (renderSlider(context, mouseX, mouseY, delta)) {
 			Drawing.drawTexture(context, this.isHovered || this.isFocused() ? HANDLE_HIGHLIGHTED : HANDLE,
-					x + (int) (value * (width - 8)), y, 0, 0, 8, 20, 8, 20);
+					getX() + (int) (value * (width - 8)), getY(), 0, 0, 8, 20, 8, 20);
 			context.centeredText(Minecraft.getInstance().font, getMessage(),
-					x + width / 2, y + height / 2 - Minecraft.getInstance().font.lineHeight / 2, -1);
+					getX() + width / 2, getY() + height / 2 - Minecraft.getInstance().font.lineHeight / 2, -1);
 		} else {
-			new AbstractSliderButton(x, y, width, height, getMessage(), value) {
+			new AbstractSliderButton(getX(), getY(), width, height, getMessage(), value) {
 				@Override
 				protected void updateMessage() {}
 				@Override

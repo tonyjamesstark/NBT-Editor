@@ -28,6 +28,6 @@ public class ChatInputSuggestorMixin {
 			args.set(1, pos.x);
 			args.set(2, pos.y);
 		} else
-			args.set(2, input.y + input.getHeight() + 2);
+			args.set(2, input.getY() + input.getHeight() + 2);
 	}
 }

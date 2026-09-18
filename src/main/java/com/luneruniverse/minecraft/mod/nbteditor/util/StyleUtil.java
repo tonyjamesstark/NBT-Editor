@@ -1,6 +1,7 @@
 package com.luneruniverse.minecraft.mod.nbteditor.util;
 
 import java.awt.Color;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -35,7 +36,7 @@ public class StyleUtil {
 		if (localNBT instanceof LocalItem item) {
 			if (!itemName)
 				baseNameStyle = baseNameStyle.applyFormat(ChatFormatting.ITALIC);
-			baseNameStyle = baseNameStyle.applyFormat(item.getEditableItem().getRarity().color);
+			baseNameStyle = baseNameStyle.applyFormat(item.getEditableItem().getRarity().color());
 		} else if (localNBT instanceof LocalBlock)
 			;
 		else if (localNBT instanceof LocalEntity)
@@ -50,13 +51,30 @@ public class StyleUtil {
 	
 	public static final Style BOOK_STYLE = Style.EMPTY.applyFormat(ChatFormatting.BLACK);
 	
+	/**
+	 * The five formatting flags a {@link Style} stores as a nullable boolean, in the order the
+	 * editor writes them. Every one of them is reached through
+	 * {@link AccessWidenedApi#getStyleFlag}, because the public accessors cannot report "unset".
+	 */
+	public static final List<ChatFormatting> FLAGS = List.of(ChatFormatting.BOLD, ChatFormatting.ITALIC,
+			ChatFormatting.UNDERLINE, ChatFormatting.STRIKETHROUGH, ChatFormatting.OBFUSCATED);
+	
+	/** Applies one of {@link #FLAGS} to a style, including setting it back to unset. */
+	public static Style withFlag(Style style, ChatFormatting flag, Boolean value) {
+		return switch (flag) {
+			case BOLD -> style.withBold(value);
+			case ITALIC -> style.withItalic(value);
+			case UNDERLINE -> style.withUnderlined(value);
+			case STRIKETHROUGH -> style.withStrikethrough(value);
+			case OBFUSCATED -> style.withObfuscated(value);
+			default -> throw new IllegalArgumentException("Not a style flag: " + flag);
+		};
+	}
+	
 	public static boolean identical(Style a, Style b) {
 		boolean output = Objects.equals(a.getColor(), b.getColor()) &&
-				a.bold == b.bold &&
-				a.italic == b.italic &&
-				a.underlined == b.underlined &&
-				a.strikethrough == b.strikethrough &&
-				a.obfuscated == b.obfuscated &&
+				FLAGS.stream().allMatch(flag -> Objects.equals(
+						AccessWidenedApi.getStyleFlag(a, flag), AccessWidenedApi.getStyleFlag(b, flag))) &&
 				Objects.equals(a.getClickEvent(), b.getClickEvent()) &&
 				Objects.equals(a.getHoverEvent(), b.getHoverEvent()) &&
 				Objects.equals(a.getInsertion(), b.getInsertion()) &&
@@ -81,18 +99,11 @@ public class StyleUtil {
 		
 		if (style.getColor() != null && !style.getColor().equals(base.getColor()))
 			output = output.withColor(style.getColor());
-		if (style.bold != null && !style.bold.equals(base.bold))
-			output = output.withBold(style.bold);
-		if (style.italic != null && !style.italic.equals(base.italic))
-			output = output.withItalic(style.italic);
-		if (style.underlined != null && !style.underlined.equals(base.underlined))
-			output = output.withUnderlined(style.underlined);
-		if (style.strikethrough != null && !style.strikethrough.equals(base.strikethrough))
-			output = output.withStrikethrough(style.strikethrough);
-		if (style.obfuscated != null && !style.obfuscated.equals(base.obfuscated))
-			output = output.withObfuscated(style.obfuscated);
-		if (style.bold != null && !style.bold.equals(base.bold))
-			output = output.withBold(style.bold);
+		for (ChatFormatting flag : FLAGS) {
+			Boolean value = AccessWidenedApi.getStyleFlag(style, flag);
+			if (value != null && !value.equals(AccessWidenedApi.getStyleFlag(base, flag)))
+				output = withFlag(output, flag, value);
+		}
 		if (style.getClickEvent() != null && !style.getClickEvent().equals(base.getClickEvent()))
 			output = output.withClickEvent(style.getClickEvent());
 		if (style.getHoverEvent() != null && !style.getHoverEvent().equals(base.getHoverEvent()))
@@ -113,14 +124,9 @@ public class StyleUtil {
 			return base;
 		if (isColor(formatting))
 			return style.withColor(base.getColor());
-		return switch (formatting) {
-			case BOLD -> style.withBold(base.bold);
-			case ITALIC -> style.withItalic(base.italic);
-			case UNDERLINE -> style.withUnderlined(base.underlined);
-			case STRIKETHROUGH -> style.withStrikethrough(base.strikethrough);
-			case OBFUSCATED -> style.withObfuscated(base.obfuscated);
-			default -> throw new IllegalArgumentException("Unknown formatting: " + formatting);
-		};
+		if (!FLAGS.contains(formatting))
+			throw new IllegalArgumentException("Unknown formatting: " + formatting);
+		return withFlag(style, formatting, AccessWidenedApi.getStyleFlag(base, formatting));
 	}
 	
 	// 26.2 stripped ChatFormatting down to a code and a toString. Everything the

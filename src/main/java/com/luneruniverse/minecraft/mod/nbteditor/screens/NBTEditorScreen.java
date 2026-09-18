@@ -334,7 +334,7 @@ public class NBTEditorScreen<L extends LocalNBT> extends LocalEditorScreen<L> {
 	}
 	private void updateName() {
 		String newName = localNBT.getName().getString();
-		if (!name.value.equals(newName))
+		if (!name.getValue().equals(newName))
 			AccessWidenedApi.setTextFieldValueSilently(name, newName, false);
 	}
 	@Override
