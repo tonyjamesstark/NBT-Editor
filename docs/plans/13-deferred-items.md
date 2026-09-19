@@ -44,7 +44,7 @@ build and a dev client at once.
 - [x] 2. `ConcatContainerIO` array-walk deduplication
 - [x] 3. Roadmap 2.1 per-keystroke entity scan, measured then fixed
 - [x] 4. The `MAIN_THREAD` init-ordering check
-- [ ] 5. `.scratch/<slug>/issues/` housekeeping
+- [x] 5. `.scratch/<slug>/issues/` housekeeping
 
 ## Verification per item
 
@@ -177,3 +177,28 @@ instead of re-deriving it.
 **Verification.** The instrumentation was the check, and it is the kind that has to be removed
 again: it lived in `MinecraftClientMixin`, `NBTEditor` and `NBTEditorClient` for the run and is
 reverted. What ships is the javadoc. `./gradlew check` passes.
+
+**Item 5.** `docs/agents/issue-tracker.md` described a layout that had no instance anywhere, and
+the one artifact that used any of it, `.scratch/upstream-sync-2026-09/spec.md`, still read
+`Status: needs-triage` with all 64 of its items ticked and given a verdict.
+
+Two tickets exist, and only two, because only two things in the tree are genuinely open and would
+otherwise be lost. Both are decisions the sync pass parked on purpose at the tail of a result
+line: the equipment slot reorder from `4d10512`, and the `NBTManager` to `SubjectIO` rename from
+`290a846`. Each says what taking it costs, and the rename ticket adds the argument its own diff
+does not show, that the package being renamed is one `CLAUDE.md` says is being dismantled. The
+spec's two result lines now point at them, so the two cannot drift apart.
+
+Nothing else was filed. The review's other open finding, `Drawing.renderItem`'s z-layering, was
+answered on the previous branch and the answer is the method's javadoc. The roadmap's deletion
+candidates and `PartitionedLockImpl.unlock` are recorded where they are maintained, and copying
+them into a second place is how two places disagree.
+
+`.scratch/` was neither tracked nor ignored, so it was untracked noise in every `git status` and a
+ticket written there would not have survived the machine. It now works the way `docs/` does:
+ignored as a directory, with the specs and issues force-added and the probe scripts left alone.
+
+**Verification.** `tools/check-issue-tracker.py` runs in `check`, and was shown to fail on each of
+its six findings: a filename that is not `NN-slug.md`, a `Status` role outside
+`triage-labels.md`, a missing heading to append under, a gap in the numbering, an `issues/`
+directory with no spec beside it, and a combined `tickets.md`. `./gradlew check` passes.

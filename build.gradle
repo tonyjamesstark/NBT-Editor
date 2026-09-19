@@ -275,3 +275,28 @@ tasks.register("checkWidenerConsumers") {
 	}
 }
 check.dependsOn checkWidenerConsumers
+
+// The tickets the skills read are markdown under .scratch/, because this host has no `gh` CLI.
+// tools/check-issue-tracker.py holds them to docs/agents/issue-tracker.md: one file per ticket,
+// numbered from 01 without gaps, each carrying a Status from docs/agents/triage-labels.md and a
+// heading to append conversation under. A ticket that drifts out of that shape is one the next
+// agent does not find, and nothing else in the build looks at .scratch/ at all.
+tasks.register("checkIssueTracker") {
+	def script = file("tools/check-issue-tracker.py")
+	def scratch = file(".scratch")
+	// A fileTree rather than inputs.dir, which fails outright on a clone that has no .scratch yet.
+	inputs.files(script, fileTree(scratch))
+	onlyIf {
+		if ("which python3".execute().waitFor() == 0) return true
+		logger.warn("checkIssueTracker: no python3, skipping")
+		false
+	}
+	doLast {
+		def proc = new ProcessBuilder("python3", script.absolutePath, scratch.absolutePath)
+				.directory(projectDir).redirectErrorStream(true).start()
+		proc.inputStream.eachLine { logger.lifecycle(it) }
+		if (proc.waitFor() != 0)
+			throw new GradleException(".scratch/ does not match docs/agents/issue-tracker.md")
+	}
+}
+check.dependsOn checkIssueTracker
