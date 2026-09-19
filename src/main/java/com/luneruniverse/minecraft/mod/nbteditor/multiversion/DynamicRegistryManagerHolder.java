@@ -10,6 +10,7 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.server.NBTEditorServer;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.CompletableFutureCache;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -149,7 +150,7 @@ public class DynamicRegistryManagerHolder {
 		if (RegistryCache.isRegistryStatic(registry))
 			return false;
 		
-		return entry.owner.canSerializeIn(registry);
+		return AccessWidenedApi.getHolderOwner(entry).canSerializeIn(registry);
 	}
 	
 }

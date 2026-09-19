@@ -18,13 +18,13 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mt1006.nbt_ac.autocomplete.NbtSuggestionManager;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.resources.Identifier;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 
 public class NBTAutocompleteIntegration extends Integration {

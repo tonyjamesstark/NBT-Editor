@@ -17,6 +17,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.networking.MVClientNetworking;
 import com.luneruniverse.minecraft.mod.nbteditor.server.ServerMVMisc;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.Block;
@@ -178,7 +179,7 @@ public class ContainerIOs {
 		Map<EntityType<?>, BoatItem> boatItems = new HashMap<>();
 		for (Item item : MVRegistry.ITEM) {
 			if (item instanceof BoatItem boat)
-				boatItems.put(boat.entityType, boat);
+				boatItems.put(AccessWidenedApi.getBoatEntityType(boat), boat);
 		}
 		registerEntityIO(EntityTypes.ALLAY, ALLAY_IO);
 		MVClientNetworking.PlayNetworkStateEvents.Join.EVENT.register(() -> {

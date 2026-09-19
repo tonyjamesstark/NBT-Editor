@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.FancyText;
 import com.luneruniverse.minecraft.mod.nbteditor.fancytext.StyleOption;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.util.StyleUtil;
@@ -97,7 +98,7 @@ public class FancyTextArgumentType implements ArgumentType<Component> {
 		if (lastColor == lastIndex || StyleUtil.SHADOW_COLOR_EXISTS && lastColor == lastShadowColor - 1 && lastShadowColor == lastIndex) {
 			builder = builder.createOffset(builder.getStart() + lastIndex + 1);
 			for (ChatFormatting format : ChatFormatting.values())
-				builder.suggest(format.code + "", () -> StyleUtil.getName(format));
+				builder.suggest(AccessWidenedApi.getFormattingCode(format) + "", () -> StyleUtil.getName(format));
 			builder.suggest("#", Component.translatableEscape("nbteditor.fancy_text_arg_type.custom_color"));
 			if (StyleUtil.SHADOW_COLOR_EXISTS && lastColor == lastIndex)
 				builder.suggest("_", Component.translatableEscape("nbteditor.fancy_text_arg_type.shadow_color"));

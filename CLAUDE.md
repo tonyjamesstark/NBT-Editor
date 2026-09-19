@@ -44,6 +44,13 @@ fail until that screen opens. Rerun the script after every `minecraft_version` b
 mod's own classes against `src/main/java` and `src/dev/java`. It exists because the screen sweep is
 reached by name, so moving or renaming it would compile clean and silently stop it installing.
 
+`checkWidenerConsumers` runs `tools/check-widener-consumers.py`, which reads the constant pools of
+the mod's compiled classes and holds `nbteditor.accesswidener` to ADR-0003: no line without a
+consumer, and no access to a widened member outside `util/AccessWidenedApi` beyond the exemptions
+that file lists. Loom's `validateAccessWidener` only proves a line still names a member that
+exists. The check needs Loom's un-widened `minecraft-merged.jar`, since compileClasspath carries
+the jar the widener was already applied to; it refuses to run rather than pass vacuously.
+
 **The jar ships no refMap.** Runtime classes carry Mojang names, so a mixin annotation string is
 used verbatim and an intermediary name (`method_*`, `class_*`, `field_*`) never resolves.
 `checkMixinTargets` fails the build on one. Reflection through `multiversion/Reflection.java` is
@@ -91,7 +98,11 @@ See `docs/AUDIT-2026-09-14.md` for the partition and the ordered plan.
 
 ### Issue tracker
 
-Issues and specs live as markdown under `.scratch/<feature>/`; no `gh` CLI on this host. See `docs/agents/issue-tracker.md`.
+Issues and specs live as markdown under `.scratch/<feature>/`; no `gh` CLI on this host. See
+`docs/agents/issue-tracker.md`. `checkIssueTracker` runs `tools/check-issue-tracker.py` in
+`check` and holds that layout: one file per ticket, numbered from `01` without gaps, each with a
+`Status:` role and a heading to append under. `.scratch/` is gitignored like `docs/`, so a ticket
+needs `git add -f` to survive the machine.
 
 ### Triage labels
 

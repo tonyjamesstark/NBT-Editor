@@ -11,6 +11,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.ItemTagReferences;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
@@ -47,7 +48,7 @@ public class ContainerScreenInput {
 			return;
 
 		if (slot instanceof CreativeModeInventoryScreen.SlotWrapper creativeSlot)
-			slot = creativeSlot.target;
+			slot = AccessWidenedApi.getWrappedSlot(creativeSlot);
 
 		if (actionType == ContainerInput.PICKUP && slot != null &&
 				(slot.container == Minecraft.getInstance().player.getInventory() || !creativeInv) &&
@@ -82,7 +83,7 @@ public class ContainerScreenInput {
 		Slot hoveredSlot = ((HandledScreenAccessor) source).getHoveredSlot();
 
 		if (hoveredSlot instanceof CreativeModeInventoryScreen.SlotWrapper creativeSlot)
-			hoveredSlot = creativeSlot.target;
+			hoveredSlot = AccessWidenedApi.getWrappedSlot(creativeSlot);
 
 		if (hoveredSlot != null &&
 				((creativeInv && hoveredSlot.container == Minecraft.getInstance().player.getInventory()) ||

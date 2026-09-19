@@ -16,6 +16,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.screens.util.FancyConfirmScreen
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.NamedTextFieldWidget;
 
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Keys;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.client.input.KeyEvent;
@@ -27,7 +28,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.client.Minecraft;
-import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.IntFields;
 
 public class ClientChestScreen extends ClientHandledScreen {

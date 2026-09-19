@@ -6,6 +6,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -40,7 +41,7 @@ public class GetBlockCommand extends ClientCommand {
 			if (pos != null && !Minecraft.getInstance().level.isInWorldBounds(pos))
 				throw BlockPosArgument.ERROR_OUT_OF_WORLD.create();
 			BlockInput blockArg = context.getArgument("block", BlockInput.class);
-			CompoundTag nbt = blockArg.tag;
+			CompoundTag nbt = AccessWidenedApi.getBlockArgumentNbt(blockArg);
 			if (nbt == null)
 				nbt = new CompoundTag();
 			LocalBlock block = new LocalBlock(blockArg.getState().getBlock(), new BlockStateProperties(blockArg.getState()), nbt);

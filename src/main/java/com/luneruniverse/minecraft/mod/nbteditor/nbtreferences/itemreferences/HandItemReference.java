@@ -49,7 +49,7 @@ public class HandItemReference implements ItemReference {
 	@Override
 	public int getBlockedSlot() {
 		if (hand == InteractionHand.MAIN_HAND)
-			return SlotUtil.createHotbarInInv(Minecraft.getInstance().player.getInventory().selected);
+			return SlotUtil.createHotbarInInv(Minecraft.getInstance().player.getInventory().getSelectedSlot());
 		return SlotUtil.createOffHandInInv();
 	}
 	

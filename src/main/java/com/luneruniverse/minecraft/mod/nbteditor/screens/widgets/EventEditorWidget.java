@@ -145,18 +145,18 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 		y = height / 2;
 		
 		clickActionField.setTranslation(x - 152, y - 34, 0);
-		clickValueField.x = x + 2;
-		clickValueField.y = y - 32;
+		clickValueField.setX(x + 2);
+		clickValueField.setY(y - 32);
 		
 		hoverActionField.setTranslation(x - 152, y - 12, 0);
-		hoverValueField.x = x + 2;
-		hoverValueField.y = y - 10;
+		hoverValueField.setX(x + 2);
+		hoverValueField.setY(y - 10);
 		
-		ok.x = x - 152;
-		ok.y = y + 12;
+		ok.setX(x - 152);
+		ok.setY(y + 12);
 		
-		cancel.x = x + 2;
-		cancel.y = y + 12;
+		cancel.setX(x + 2);
+		cancel.setY(y + 12);
 	}
 	
 	private void updateOk() {

@@ -39,7 +39,7 @@ public class SuggestingTextFieldWidget extends NamedTextFieldWidget {
 					if (SuggestingTextFieldWidget.this.suggestions == null)
 						this.pendingSuggestions = new SuggestionsBuilder("", 0).buildFuture();
 					else
-						this.pendingSuggestions = SuggestingTextFieldWidget.this.suggestions.apply(SuggestingTextFieldWidget.this.value, SuggestingTextFieldWidget.this.getCursorPosition());
+						this.pendingSuggestions = SuggestingTextFieldWidget.this.suggestions.apply(SuggestingTextFieldWidget.this.getValue(), SuggestingTextFieldWidget.this.getCursorPosition());
 					this.pendingSuggestions.thenRun(() -> {
 						if (!this.pendingSuggestions.isDone())
 							return;

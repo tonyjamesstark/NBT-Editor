@@ -99,11 +99,20 @@ event editor with invalid click-event input, a custom hex colour round trip, an 
 
 ## Phase 2: `SHOW_ENTITY` hover scan
 
-- [ ] **2.1 Measure before changing anything.** `FancyTextStyleOptionNode.modifyStyle`
-  streams every entity in the world to resolve a UUID, and `modifyStyle` runs on the parse path
-  that fires per keystroke in the formatted-text field. The cost is proportional to loaded
-  entities, so it is invisible on a test world and painful on a busy server. Capture a baseline
-  before picking a fix.
+- [x] **2.1 Measure before changing anything.** Measured, then fixed.
+  `FancyTextStyleOptionNode.modifyStyle` streamed every entity in the world to resolve a UUID, on
+  the parse path brigadier re-runs per keystroke. `dev/DevEntityScanBench` loads a chosen number
+  of entities client side and times the parse against each; the baseline was 14us at 152 loaded
+  entities and 698us at 8052, about 86ns an entity, which is the shape the item predicted. The
+  fix is `Level.getEntities().get(uuid)`, the index the level already keeps, reached through the
+  new `AccessWidenedApi.getEntityByUuid` because the getter is protected. The same measurement
+  now reads 6.7us at 8065 entities and does not move with the count.
+  <br>The bench is the durable form of the finding: it fails when the busiest world is more than
+  eight times slower than the fastest run, which the scan was and the index is not. Run it with
+  `NBTE_BENCH= scripts/dev-client.sh --join`.
+  <br>One behaviour changed with it. The scan only saw entities in the render list, so a UUID
+  belonging to a loaded but unrendered entity fell through to the crosshair target; the index
+  finds it. The fallback itself is unchanged.
 
 ## Phase 3: `ContainerIO` audit
 

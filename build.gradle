@@ -69,6 +69,11 @@ loom {
 			if (project.hasProperty("devscreensNbt")) {
 				vmArgs "-Dnbte.devscreens.nbt=" + project.property("devscreensNbt")
 			}
+			// -Pdevbench[=counts] times the show_entity UUID resolve against a loaded entity
+			// count it spawns itself. See dev/DevEntityScanBench.
+			if (project.hasProperty("devbench")) {
+				vmArgs "-Dnbte.devbench=" + project.property("devbench")
+			}
 		}
 		server {
 			runDir = "run/server"
@@ -234,3 +239,64 @@ tasks.register("checkMixinTargets") {
 	}
 }
 check.dependsOn checkMixinTargets
+
+// Loom's validateAccessWidener proves each line names a member that exists. It says nothing
+// about whether anything still uses it, or about where. tools/check-widener-consumers.py reads
+// the constant pools of the mod's own classes and reports a line with no consumer, and any
+// access to a widened member outside util/AccessWidenedApi that vanilla's own modifiers would
+// have refused. That is ADR-0003's rule, which nothing else in the build enforces.
+tasks.register("checkWidenerConsumers") {
+	def script = file("tools/check-widener-consumers.py")
+	def widener = file("src/main/resources/nbteditor.accesswidener")
+	def classDirs = [sourceSets.main.output.classesDirs, sourceSets.dev.output.classesDirs]
+	def classpath = configurations.compileClasspath
+	dependsOn compileJava, compileDevJava
+	inputs.files(script, widener, classDirs, classpath)
+	onlyIf {
+		if ("which python3".execute().waitFor() == 0) return true
+		logger.warn("checkWidenerConsumers: no python3, skipping")
+		false
+	}
+	doLast {
+		// compileClasspath carries the jar Loom already applied the widener to, where every
+		// widened member reads as public. The modifier the check needs is the one vanilla
+		// shipped, which is in Loom's own merged jar, so that goes first.
+		def vanilla = new File(gradle.gradleUserHomeDir,
+				"caches/fabric-loom/${project.minecraft_version}/minecraft-merged.jar")
+		if (!vanilla.exists())
+			throw new GradleException("no un-widened Minecraft jar at ${vanilla}")
+		def args = ["python3", script.absolutePath, widener.absolutePath, vanilla.absolutePath]
+		classDirs.each { it.each { dir -> args << dir.absolutePath } }
+		args << classpath.asPath
+		def proc = new ProcessBuilder(args).directory(projectDir).redirectErrorStream(true).start()
+		proc.inputStream.eachLine { logger.lifecycle(it) }
+		if (proc.waitFor() != 0)
+			throw new GradleException("nbteditor.accesswidener does not match ADR-0003")
+	}
+}
+check.dependsOn checkWidenerConsumers
+
+// The tickets the skills read are markdown under .scratch/, because this host has no `gh` CLI.
+// tools/check-issue-tracker.py holds them to docs/agents/issue-tracker.md: one file per ticket,
+// numbered from 01 without gaps, each carrying a Status from docs/agents/triage-labels.md and a
+// heading to append conversation under. A ticket that drifts out of that shape is one the next
+// agent does not find, and nothing else in the build looks at .scratch/ at all.
+tasks.register("checkIssueTracker") {
+	def script = file("tools/check-issue-tracker.py")
+	def scratch = file(".scratch")
+	// A fileTree rather than inputs.dir, which fails outright on a clone that has no .scratch yet.
+	inputs.files(script, fileTree(scratch))
+	onlyIf {
+		if ("which python3".execute().waitFor() == 0) return true
+		logger.warn("checkIssueTracker: no python3, skipping")
+		false
+	}
+	doLast {
+		def proc = new ProcessBuilder("python3", script.absolutePath, scratch.absolutePath)
+				.directory(projectDir).redirectErrorStream(true).start()
+		proc.inputStream.eachLine { logger.lifecycle(it) }
+		if (proc.waitFor() != 0)
+			throw new GradleException(".scratch/ does not match docs/agents/issue-tracker.md")
+	}
+}
+check.dependsOn checkIssueTracker

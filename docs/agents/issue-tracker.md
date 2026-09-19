@@ -10,6 +10,17 @@ Issues and specs for this repo live as markdown files in `.scratch/`.
 - Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
 - Comments and conversation history append to the bottom of the file under a `## Comments` heading
 
+## Keeping a ticket
+
+`.scratch/` is gitignored, the same way `docs/` is, so a new ticket needs `git add -f` or it
+lives only on the machine that wrote it. Throwaway probes and scripts under `.scratch/` are
+meant to stay untracked; specs and issues are not.
+
+`tools/check-issue-tracker.py` runs in `check` and holds this file's conventions: the file
+naming, contiguous numbering from `01`, a `Status:` role from `triage-labels.md`, a heading to
+append conversation under, and no combined ticket file. It is why the conventions above are a
+rule rather than a description.
+
 ## When a skill says "publish to the issue tracker"
 
 Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).

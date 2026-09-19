@@ -25,6 +25,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.packets.SetSlotC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.SummonEntityC2SPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.ViewBlockS2CPacket;
 import com.luneruniverse.minecraft.mod.nbteditor.packets.ViewEntityS2CPacket;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.BlockStateProperties;
 
 import net.minecraft.network.chat.Component;
@@ -52,7 +53,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.IdentifierException;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.client.Minecraft;
-import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 
 public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvents.Start {
 	
@@ -146,7 +146,7 @@ public class NBTEditorServer implements MVServerNetworking.PlayNetworkStateEvent
 		if (player.containerMenu instanceof LecternMenu handler) {
 			// Get the LecternBlockEntity from the inventory's synthetic reference to its
 			// enclosing class. Synthetic members have no Mojang name, so this stays intermediary.
-			Container inv = handler.lectern;
+			Container inv = AccessWidenedApi.getLecternContainer(handler);
 			LecternBlockEntity lectern = Reflection.getField(inv.getClass(), "field_17391", "Lnet/minecraft/class_3722;").get(inv);
 			if (lectern != null) {
 				sendViewBlockPacket(packet.getRequestId(), lectern, player);

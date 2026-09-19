@@ -84,20 +84,20 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 		
 		super.renderButton(context, mouseX, mouseY, delta);
 		if (open) {
-			context.fill(this.x, this.height, this.x + this.width, allValues.size() * this.height, 0xFF000000);
-			boolean xHover = this.active && mouseX >= this.x && mouseX < this.x + this.width;
+			context.fill(getX(), this.height, getX() + this.width, allValues.size() * this.height, 0xFF000000);
+			boolean xHover = this.active && mouseX >= getX() && mouseX < getX() + this.width;
 			int i = 0;
 			for (T option : allValues) {
 				if (option.equals(value))
 					continue;
-				int y = this.y + (++i * this.height);
+				int y = getY() + (++i * this.height);
 				int color = -1;
 				if (xHover && mouseY >= y && mouseY < y + this.height)
 					color = 0xFF257789;
 				else if (importantValues.contains(option))
 					color = 0xFFFFAA00;
 				context.centeredText(Minecraft.getInstance().font, Component.nullToEmpty(option.toString()),
-						this.x + this.width / 2, y + (this.height - Minecraft.getInstance().font.lineHeight) / 2, color);
+						getX() + this.width / 2, y + (this.height - Minecraft.getInstance().font.lineHeight) / 2, color);
 				if (color != -1 && option instanceof ConfigTooltipSupplier) // Hovering
 					((ConfigTooltipSupplier) option).getTooltip().render(context, mouseX, mouseY);
 			}
@@ -111,12 +111,12 @@ public class ConfigValueDropdown<T> extends MVButtonWidget implements ConfigValu
 	public boolean mouseClicked(MouseButtonEvent click, boolean doubled) {
 		double mouseX = click.x(); double mouseY = click.y(); int button = click.button();
 		boolean output = super.mouseClicked(click, doubled);
-		if (!output && this.active && this.visible && open && mouseX >= this.x && mouseX < this.x + this.width) {
+		if (!output && this.active && this.visible && open && mouseX >= getX() && mouseX < getX() + this.width) {
 			int i = 0;
 			for (T option : allValues) {
 				if (option.equals(value))
 					continue;
-				int y = this.y + (++i * this.height);
+				int y = getY() + (++i * this.height);
 				if (mouseY >= y && mouseY < y + this.height) {
 					this.playDownSound(Minecraft.getInstance().getSoundManager());
 					setConfigValue(option);

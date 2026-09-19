@@ -2,8 +2,8 @@ package com.luneruniverse.minecraft.mod.nbteditor.fancytext;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -53,10 +53,9 @@ public record FancyTextStyleOptionNode(StyleOption option, String value, List<Fa
 					String uuid = value;
 					if (!uuid.contains("-"))
 						uuid = uuid.replaceFirst("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)", "$1-$2-$3-$4-$5");
-					UUID uuidObj = UUID.fromString(uuid);
-					entity = StreamSupport.stream(Minecraft.getInstance().level.entitiesForRendering().spliterator(), false)
-							.filter(testEntity -> testEntity.getUUID().equals(uuidObj)).findFirst()
-							.orElseThrow(IllegalArgumentException::new);
+					entity = AccessWidenedApi.getEntityByUuid(Minecraft.getInstance().level, UUID.fromString(uuid));
+					if (entity == null)
+						throw new IllegalArgumentException();
 				} catch (IllegalArgumentException e) {
 					if (Minecraft.getInstance().crosshairPickEntity != null)
 						entity = Minecraft.getInstance().crosshairPickEntity;

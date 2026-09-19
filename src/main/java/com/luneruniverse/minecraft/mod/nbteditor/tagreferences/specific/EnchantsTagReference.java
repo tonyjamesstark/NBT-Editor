@@ -7,9 +7,9 @@ import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.ComponentTagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.general.TagReference;
 import com.luneruniverse.minecraft.mod.nbteditor.tagreferences.specific.data.Enchants;
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

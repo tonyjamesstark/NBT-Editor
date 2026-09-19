@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.luneruniverse.minecraft.mod.nbteditor.util.AccessWidenedApi;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVElement;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTooltip;
@@ -43,7 +44,7 @@ public class CreativeTabWidget implements Renderable, MVElement {
 				Point pos = ConfigScreen.getCreativeTabsPos().position(i, tabs.size(), screen.width, screen.height);
 				group.addWidget(new CreativeTabWidget(ConfigScreen.getCreativeTabsPos().isTop(), pos.x, pos.y, tab.item().get(), tab.onClick()));
 			}
-			screen.addRenderableWidget(group);
+			AccessWidenedApi.addWidgetToScreen(screen, group);
 		}
 	}
 	
