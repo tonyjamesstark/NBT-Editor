@@ -2,6 +2,7 @@ package com.luneruniverse.minecraft.mod.nbteditor.util.lock;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -10,14 +11,14 @@ public class PartitionedLockImpl implements PartitionedLock {
 	private volatile boolean stopped;
 	private final Lock globalLock;
 	private final Map<Integer, Lock> locks;
-	private volatile int globallyLocked;
+	private final AtomicInteger globallyLocked;
 	private final Map<Integer, Integer> lockedPartitions;
 	
 	public PartitionedLockImpl() {
 		stopped = false;
 		globalLock = new ReentrantLock(true);
 		locks = new ConcurrentHashMap<>();
-		globallyLocked = 0;
+		globallyLocked = new AtomicInteger();
 		lockedPartitions = new ConcurrentHashMap<>();
 	}
 	
@@ -29,7 +30,7 @@ public class PartitionedLockImpl implements PartitionedLock {
 	public void stop() {
 		stopped = true;
 		
-		globallyLocked++;
+		globallyLocked.incrementAndGet();
 		globalLock.lock();
 		locks.values().forEach(Lock::lock);
 	}
@@ -50,7 +51,9 @@ public class PartitionedLockImpl implements PartitionedLock {
 	
 	@Override
 	public void lockAll() {
-		globallyLocked++;
+		// Raised before the global lock is taken, so a pending lockAll already reads as locked.
+		// Atomic because that puts it outside the mutex, where two callers can collide on it.
+		globallyLocked.incrementAndGet();
 		globalLock.lock();
 		locks.values().forEach(Lock::lock);
 		
@@ -64,7 +67,7 @@ public class PartitionedLockImpl implements PartitionedLock {
 		// can appear between lockAll and here, since adding one requires the global lock.
 		locks.values().forEach(Lock::unlock);
 		globalLock.unlock();
-		globallyLocked--;
+		globallyLocked.decrementAndGet();
 	}
 	
 	@Override
@@ -94,12 +97,12 @@ public class PartitionedLockImpl implements PartitionedLock {
 	
 	@Override
 	public boolean isAllLocked() {
-		return globallyLocked > 0;
+		return globallyLocked.get() > 0;
 	}
 	
 	@Override
 	public boolean isLocked(int partition) {
-		return globallyLocked > 0 || lockedPartitions.getOrDefault(partition, 0) > 0;
+		return globallyLocked.get() > 0 || lockedPartitions.getOrDefault(partition, 0) > 0;
 	}
 	
 }

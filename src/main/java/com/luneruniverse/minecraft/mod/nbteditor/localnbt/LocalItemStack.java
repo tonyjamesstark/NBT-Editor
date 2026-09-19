@@ -111,7 +111,7 @@ public class LocalItemStack extends LocalItem {
 	
 	@Override
 	public void renderIcon(GuiGraphicsExtractor context, int x, int y, float tickDelta) {
-		Drawing.renderItem(context, 200.0F, true, item, x, y);
+		Drawing.renderItem(context, item, x, y);
 	}
 	
 	@Override

@@ -11,9 +11,10 @@
 # player in. A local dev server is started if one is not already up, and stopped again on
 # the way out; pass a host:port to use one that is already running elsewhere.
 #
-# With --screens it implies --join and then runs misc/DevScreenSweep, which opens every
-# factory screen in turn against an item carrying the lore given (default: non-ASCII).
-# Success is the sweep reaching its last screen; any screen that threw is reported.
+# With --screens it implies --join and then runs dev/DevScreenSweep, which opens every
+# factory screen in turn against an item carrying the lore given (default: non-ASCII) and
+# checks the entity id the minecart container ios write. Success is the sweep reaching its
+# last screen with nothing reported failed.
 # NBTE_SCREENS_NBT gives the item a component patch as SNBT instead, ';;' separating
 # patches to sweep in turn; NBTE_SCREENS_FROM resumes at a row.
 #
@@ -122,7 +123,7 @@ while (( SECONDS - started < DEADLINE )); do
 		if grep -q 'SWEEP done' "$LOG"; then
 			grep -o 'SWEEP .*' "$LOG"
 			if grep -q 'SWEEP fail' "$LOG"; then
-				echo "FAILED, $(grep -c 'SWEEP fail' "$LOG") screen(s) threw after $((SECONDS - started))s"
+				echo "FAILED, $(grep -c 'SWEEP fail' "$LOG") sweep check(s) failed after $((SECONDS - started))s"
 				grep -m1 -A22 'SWEEP fail' "$LOG"
 				exit 1
 			fi

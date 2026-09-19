@@ -91,7 +91,7 @@ public class LoadingScreen extends MVScreen {
 		super.extractRenderState(context, mouseX, mouseY, delta);
 		Drawing.renderLogo(context);
 		
-		Drawing.drawCenteredTextWithShadow(context, font, Component.translatableEscape("nbteditor.loading"),
+		context.centeredText(font, Component.translatableEscape("nbteditor.loading"),
 				width / 2, height / 2 - font.lineHeight / 2 - 10, -1);
 	}
 	

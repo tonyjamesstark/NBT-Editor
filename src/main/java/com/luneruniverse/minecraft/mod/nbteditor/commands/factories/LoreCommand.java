@@ -8,8 +8,7 @@ import java.util.List;
 
 import com.luneruniverse.minecraft.mod.nbteditor.commands.ClientCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.commands.arguments.FancyTextArgumentType;
-import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.commands.FabricClientCommandSource;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.itemreferences.ItemReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.factories.DisplayScreen;
@@ -113,22 +112,22 @@ public class LoreCommand extends ClientCommand {
 			ItemStack item = heldItem.getItem();
 			
 			context.getSource().sendFeedback(Component.literal("[").withStyle(ChatFormatting.GRAY).append(Component.literal("+").withStyle(ChatFormatting.GREEN)).append(Component.literal("] ").withStyle(ChatFormatting.GRAY))
-					.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore add "))
-							.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore add"))))
+					.withStyle(style -> style.withClickEvent(TextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore add "))
+							.withHoverEvent(TextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore add"))))
 					.append(Component.literal("[").withStyle(ChatFormatting.GRAY).append(Component.literal("Clear").withStyle(ChatFormatting.RED)).append(Component.literal("] ").withStyle(ChatFormatting.GRAY))
-					.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore clear"))
-							.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore clear"))))));
+					.withStyle(style -> style.withClickEvent(TextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore clear"))
+							.withHoverEvent(TextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore clear"))))));
 			
 			List<Component> lore = ItemTagReferences.LORE.get(item);
 			int i = 0;
 			for (Component line : lore) {
 				final int finalI = i;
 				context.getSource().sendFeedback(Component.literal("[").withStyle(ChatFormatting.GRAY).append(Component.literal("-").withStyle(ChatFormatting.RED)).append(Component.literal("]").withStyle(ChatFormatting.GRAY))
-						.withStyle(style -> style.withClickEvent(MVTextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
-								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore remove " + finalI))))
+						.withStyle(style -> style.withClickEvent(TextEvents.ClickAction.SUGGEST_COMMAND.newEvent("/factory display lore remove " + finalI))
+								.withHoverEvent(TextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore remove " + finalI))))
 						.append(Component.literal(" ").withStyle(ChatFormatting.DARK_PURPLE).withStyle(ChatFormatting.ITALIC).append(line)
-						.withStyle(style -> MixinLink.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
-								.withHoverEvent(MVTextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore set " + finalI))))));
+						.withStyle(style -> TextEvents.withRunClickEvent(style, () -> Minecraft.getInstance().setScreenAndShow(new ChatScreen("/factory display lore set " + finalI + " " + FancyTextArgumentType.stringifyFancyText(line, StyleUtil.BASE_LORE_STYLE, true), false)))
+								.withHoverEvent(TextEvents.HoverAction.SHOW_TEXT.newEvent(Component.nullToEmpty("/factory display lore set " + finalI))))));
 				i++;
 			}
 			if (lore.isEmpty())

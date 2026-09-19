@@ -111,8 +111,8 @@ public class ClientHandledScreen extends net.minecraft.client.gui.screens.invent
 	protected void extractLabels(GuiGraphicsExtractor context, int mouseX, int mouseY) {
 		getLockedSlotsInfo().renderLockedHighlights(context, menu, true, false, true);
 		
-		Drawing.drawTextWithoutShadow(context, font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752);
-		Drawing.drawTextWithoutShadow(context, font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752);
+		context.text(font, getRenderedTitle(), titleLabelX, titleLabelY, 4210752, false);
+		context.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, 4210752, false);
 	}
 	protected Component getRenderedTitle() {
 		return title;

@@ -346,4 +346,52 @@ class PartitionedReadWriteLockTest {
 		assertFalse(lock.write().isAllLocked(), "isAllLocked was still true after unlockAll");
 	}
 
+	/**
+	 * Concurrent global locking, which no other test here covers: every caller must get in and out,
+	 * and the lock must read unlocked once they are done.
+	 *
+	 * <p>This does not pin the lost-update defect that made {@code globallyLocked} an
+	 * {@link java.util.concurrent.atomic.AtomicInteger}. That race needs two threads inside one
+	 * {@code ++}, which measured at roughly one occurrence per 100k iterations, so a test that
+	 * waited for it would pass on the broken code far more often than not. The field's type is what
+	 * rules it out; see the log for 2026-09-18 in {@code docs/plans/12-review-fixes.md}.
+	 */
+	@Test
+	@Timeout(60)
+	void concurrentGlobalLocksDoNotDeadlockOrLeakState() throws Exception {
+		int threads = 8;
+		int iterations = 500;
+
+		PartitionedLock lock = new PartitionedReadWriteLock().read();
+		AtomicReference<Throwable> failure = new AtomicReference<>();
+		CountDownLatch go = new CountDownLatch(1);
+		CountDownLatch done = new CountDownLatch(threads);
+
+		for (int t = 0; t < threads; t++) {
+			start(() -> {
+				try {
+					go.await();
+					for (int i = 0; i < iterations; i++) {
+						lock.lockAll();
+						lock.unlockAll();
+					}
+				} catch (Throwable e) {
+					failure.compareAndSet(null, e);
+				} finally {
+					done.countDown();
+				}
+			});
+		}
+
+		go.countDown();
+		assertTrue(done.await(45, TimeUnit.SECONDS), "threads did not finish - the lock deadlocked");
+		if (failure.get() != null)
+			throw new AssertionError("a worker threw", failure.get());
+
+		assertFalse(lock.isAllLocked(), "isAllLocked was true after every global lock was released");
+		lock.lockAll();
+		assertTrue(lock.isAllLocked(), "isAllLocked was false while a global lock was held");
+		lock.unlockAll();
+	}
+
 }

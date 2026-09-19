@@ -9,8 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ConfigScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.ImportScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.CreativeTabWidget;
@@ -42,9 +41,9 @@ public class ScreenMixin {
 	private static void defaultHandleGameClickEvent(ClickEvent event, Minecraft client, Screen screen, CallbackInfo info) {
 		if (event == null || Keys.hasShiftDown())
 			return;
-		MVTextEvents.ClickAction<?> clickAction = MVTextEvents.ClickAction.getAction(event);
-		if (clickAction == MVTextEvents.ClickAction.OPEN_FILE &&
-				MixinLink.tryRunClickEvent(clickAction.getStringifiedValue(event)))
+		TextEvents.ClickAction<?> clickAction = TextEvents.ClickAction.getAction(event);
+		if (clickAction == TextEvents.ClickAction.OPEN_FILE &&
+				TextEvents.tryRunClickEvent(clickAction.getStringifiedValue(event)))
 			info.cancel();
 	}
 	

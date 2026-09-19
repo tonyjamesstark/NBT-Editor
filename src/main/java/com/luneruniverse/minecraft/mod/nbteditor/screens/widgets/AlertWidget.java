@@ -42,7 +42,7 @@ public class AlertWidget extends GroupWidget implements InitializableOverlay<Scr
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
 		for (int i = 0; i < lines.length; i++) {
-			Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, lines[i],
+			context.centeredText(Minecraft.getInstance().font, lines[i],
 					x, y + i * Minecraft.getInstance().font.lineHeight, -1);
 		}
 		super.extractRenderState(context, mouseX, mouseY, delta);

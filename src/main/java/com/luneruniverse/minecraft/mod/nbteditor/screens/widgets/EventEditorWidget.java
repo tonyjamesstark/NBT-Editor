@@ -2,7 +2,7 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.widgets;
 
 import org.lwjgl.glfw.GLFW;
 import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.OverlaySupportingScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigValueDropdown;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.widgets.Buttons;
@@ -21,29 +21,29 @@ import net.minecraft.client.Minecraft;
  *
  * <p>The two enums are the editor's own vocabulary, not the game's: each names an action a player
  * can pick from a dropdown, including the NONE that clears the event, and maps it onto the
- * {@link MVTextEvents} action that carries it.
+ * {@link TextEvents} action that carries it.
  */
 class EventEditorWidget extends GroupWidget implements InitializableOverlay<Screen> {
 	public enum ClickAction {
 		NONE(null),
-		OPEN_URL(MVTextEvents.ClickAction.OPEN_URL),
-		RUN_COMMAND(MVTextEvents.ClickAction.RUN_COMMAND),
-		SUGGEST_COMMAND(MVTextEvents.ClickAction.SUGGEST_COMMAND),
-		CHANGE_PAGE(MVTextEvents.ClickAction.CHANGE_PAGE),
-		COPY_TO_CLIPBOARD(MVTextEvents.ClickAction.COPY_TO_CLIPBOARD);
+		OPEN_URL(TextEvents.ClickAction.OPEN_URL),
+		RUN_COMMAND(TextEvents.ClickAction.RUN_COMMAND),
+		SUGGEST_COMMAND(TextEvents.ClickAction.SUGGEST_COMMAND),
+		CHANGE_PAGE(TextEvents.ClickAction.CHANGE_PAGE),
+		COPY_TO_CLIPBOARD(TextEvents.ClickAction.COPY_TO_CLIPBOARD);
 		
-		public static ClickAction get(MVTextEvents.ClickAction<?> value) {
+		public static ClickAction get(TextEvents.ClickAction<?> value) {
 			for (ClickAction action : values()) {
 				if (action.value == value)
 					return action;
 			}
-			if (value == MVTextEvents.ClickAction.OPEN_FILE)
+			if (value == TextEvents.ClickAction.OPEN_FILE)
 				return NONE;
 			throw new IllegalArgumentException("Invalid ClickAction: " + value);
 		}
 		
-		public final MVTextEvents.ClickAction<?> value;
-		private ClickAction(MVTextEvents.ClickAction<?> value) {
+		public final TextEvents.ClickAction<?> value;
+		private ClickAction(TextEvents.ClickAction<?> value) {
 			this.value = value;
 		}
 		
@@ -56,11 +56,11 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 	}
 	public enum HoverAction {
 		NONE(null),
-		SHOW_TEXT(MVTextEvents.HoverAction.SHOW_TEXT),
-		SHOW_ITEM(MVTextEvents.HoverAction.SHOW_ITEM),
-		SHOW_ENTITY(MVTextEvents.HoverAction.SHOW_ENTITY);
+		SHOW_TEXT(TextEvents.HoverAction.SHOW_TEXT),
+		SHOW_ITEM(TextEvents.HoverAction.SHOW_ITEM),
+		SHOW_ENTITY(TextEvents.HoverAction.SHOW_ENTITY);
 		
-		public static HoverAction get(MVTextEvents.HoverAction<?> value) {
+		public static HoverAction get(TextEvents.HoverAction<?> value) {
 			for (HoverAction action : values()) {
 				if (action.value == value)
 					return action;
@@ -68,8 +68,8 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 			throw new IllegalArgumentException("Invalid HoverAction: " + value);
 		}
 		
-		public final MVTextEvents.HoverAction<?> value;
-		private HoverAction(MVTextEvents.HoverAction<?> value) {
+		public final TextEvents.HoverAction<?> value;
+		private HoverAction(TextEvents.HoverAction<?> value) {
 			this.value = value;
 		}
 		
@@ -96,9 +96,9 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 	private final Button cancel;
 	
 	public EventEditorWidget(ClickEvent clickEvent, HoverEvent hoverEvent, EventPairCallback onDone) {
-		MVTextEvents.ClickAction<?> clickAction = (clickEvent == null ? null : MVTextEvents.ClickAction.getAction(clickEvent));
+		TextEvents.ClickAction<?> clickAction = (clickEvent == null ? null : TextEvents.ClickAction.getAction(clickEvent));
 		String clickValue = (clickAction == null ? "" : clickAction.getStringifiedValue(clickEvent));
-		MVTextEvents.HoverAction<?> hoverAction = (hoverEvent == null ? null : MVTextEvents.HoverAction.getAction(hoverEvent));
+		TextEvents.HoverAction<?> hoverAction = (hoverEvent == null ? null : TextEvents.HoverAction.getAction(hoverEvent));
 		String hoverValue = (hoverEvent == null ? "" : hoverAction.getStringifiedValue(hoverEvent));
 		
 		clickActionDropdown = ConfigValueDropdown.forEnum(ClickAction.get(clickAction), ClickAction.NONE, ClickAction.class);
@@ -169,7 +169,7 @@ class EventEditorWidget extends GroupWidget implements InitializableOverlay<Scre
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		Drawing.renderBackground(Minecraft.getInstance().gui.screen(), context);
-		Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font,
+		context.centeredText(Minecraft.getInstance().font,
 				Component.translatableEscape("nbteditor.formatted_text.events"),
 				x, y - 38 - Minecraft.getInstance().font.lineHeight, -1);
 		super.extractRenderState(context, mouseX, mouseY, delta);

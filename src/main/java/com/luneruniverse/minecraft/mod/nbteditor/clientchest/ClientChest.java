@@ -27,7 +27,7 @@ import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.PageTasks.Access;
 import com.luneruniverse.minecraft.mod.nbteditor.misc.MixinLink;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DataVersionStatus;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.Version;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.MVNbtCompoundParent;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
@@ -689,7 +689,7 @@ public class ClientChest {
 	}
 	public static Component attachShowFolder(MutableComponent text) {
 		return text.append(" ").append(Component.translatableEscape("nbteditor.file_options.show").withStyle(
-				style -> style.withClickEvent(MVTextEvents.ClickAction.OPEN_FILE.newEvent(CLIENT_CHEST_FOLDER.getAbsolutePath()))));
+				style -> style.withClickEvent(TextEvents.ClickAction.OPEN_FILE.newEvent(CLIENT_CHEST_FOLDER.getAbsolutePath()))));
 	}
 	
 }

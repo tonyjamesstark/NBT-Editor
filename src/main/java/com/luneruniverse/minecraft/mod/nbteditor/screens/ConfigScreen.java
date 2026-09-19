@@ -10,15 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.clientchest.ClientChestHelper;
@@ -192,236 +186,120 @@ public class ConfigScreen extends TickableSupportingScreen {
 		}
 	}
 	
-	private static EnchantLevelMax enchantLevelMax;
-	private static boolean enchantNumberTypeArabic;
-	private static double keyTextSize;
-	private static boolean keybindsHidden;
-	private static boolean lockSlots; // Not shown in screen
-	private static boolean chatLimitExtended;
-	private static boolean singleQuotesAllowed;
-	private static double scrollSpeed;
-	private static boolean airEditable;
-	private static boolean normalText;
-	private static List<String> shortcuts;
-	private static CheckUpdatesLevel checkUpdates;
-	private static boolean largeClientChest;
-	private static boolean screenshotOptions;
-	private static boolean tooltipOverflowFix;
-	private static boolean noSlotRestrictions;
-	private static boolean hideFormatButtons;
-	private static boolean specialNumbers;
-	private static List<Alias> aliases;
-	private static ItemSizeFormat itemSizeFormat;
-	private static boolean invertedPageKeybinds;
-	private static boolean triggerBlockUpdates;
-	private static boolean warnIncompatibleProtocol;
-	private static boolean recreateBlocksAndEntities;
-	private static CreativeTabsPosition creativeTabsPos;
-	
 	public static void loadSettings() {
-		enchantLevelMax = EnchantLevelMax.NEVER;
-		enchantNumberTypeArabic = false;
-		keyTextSize = 0.5;
-		keybindsHidden = false;
-		chatLimitExtended = false;
-		singleQuotesAllowed = false;
-		scrollSpeed = 5;
-		airEditable = false;
-		normalText = false;
-		shortcuts = new ArrayList<>();
-		checkUpdates = CheckUpdatesLevel.MINOR;
-		largeClientChest = false;
-		screenshotOptions = true;
-		tooltipOverflowFix = true;
-		noSlotRestrictions = false;
-		hideFormatButtons = false;
-		specialNumbers = true;
-		aliases = new ArrayList<>(List.of(
-				new Alias("nbteditor", "nbt"),
-				new Alias("clientchest", "chest"),
-				new Alias("clientchest", "storage"),
-				new Alias("factory signature", "sign")));
-		itemSizeFormat = ItemSizeFormat.HIDDEN;
-		invertedPageKeybinds = false;
-		triggerBlockUpdates = true;
-		warnIncompatibleProtocol = true;
-		recreateBlocksAndEntities = false;
-		creativeTabsPos = CreativeTabsPosition.BOTTOM_LEFT;
-		
+		JsonObject stored;
 		try {
-			// Many config options use the old names
-			// To avoid converting the config types, the old names are still used
-			JsonObject settings = new Gson().fromJson(new String(Files.readAllBytes(new File(NBTEditorClient.SETTINGS_FOLDER, "settings.json").toPath())), JsonObject.class);
-			enchantLevelMax = EnchantLevelMax.valueOf(settings.get("maxEnchantLevelDisplay").getAsString());
-			enchantNumberTypeArabic = settings.get("useArabicEnchantLevels").getAsBoolean();
-			keyTextSize = settings.get("keyTextSize").getAsDouble();
-			keybindsHidden = settings.get("hideKeybinds").getAsBoolean();
-			lockSlots = settings.get("lockSlots").getAsBoolean();
-			chatLimitExtended = settings.get("extendChatLimit").getAsBoolean();
-			singleQuotesAllowed = settings.get("allowSingleQuotes").getAsBoolean();
-			scrollSpeed = settings.get("scrollSpeed").getAsDouble();
-			airEditable = settings.get("airEditable").getAsBoolean();
-			normalText = settings.get("jsonText").getAsBoolean();
-			shortcuts = getStream(settings.get("shortcuts").getAsJsonArray())
-					.map(cmd -> cmd.getAsString()).collect(Collectors.toList());
-			JsonPrimitive checkUpdatesLegacy = settings.get("checkUpdates").getAsJsonPrimitive();
-			checkUpdates = checkUpdatesLegacy.isBoolean() ?
-					(checkUpdatesLegacy.getAsBoolean() ? CheckUpdatesLevel.MINOR : CheckUpdatesLevel.NONE)
-					: CheckUpdatesLevel.valueOf(checkUpdatesLegacy.getAsString());
-			largeClientChest = settings.get("largeClientChest").getAsBoolean();
-			screenshotOptions = settings.get("screenshotOptions").getAsBoolean();
-			tooltipOverflowFix = settings.get("tooltipOverflowFix").getAsBoolean();
-			noSlotRestrictions = settings.get("noArmorRestriction").getAsBoolean();
-			hideFormatButtons = settings.get("hideFormatButtons").getAsBoolean();
-			specialNumbers = settings.get("specialNumbers").getAsBoolean();
-			aliases = getStream(settings.get("aliases").getAsJsonArray())
-					.map(alias -> new Alias(alias.getAsJsonObject().get("original").getAsString(),
-							alias.getAsJsonObject().get("alias").getAsString())).collect(Collectors.toList());
-			itemSizeFormat = ItemSizeFormat.valueOf(settings.get("itemSize").getAsString());
-			// Negated on both sides: the saved key predates the swap of what "normal" means, so an
-			// existing config keeps the behaviour its owner chose.
-			invertedPageKeybinds = !settings.get("invertedPageKeybinds").getAsBoolean();
-			triggerBlockUpdates = settings.get("triggerBlockUpdates").getAsBoolean();
-			warnIncompatibleProtocol = settings.get("warnIncompatibleProtocol").getAsBoolean();
-			recreateBlocksAndEntities = settings.get("recreateBlocksAndEntities").getAsBoolean();
-			creativeTabsPos = CreativeTabsPosition.valueOf(settings.get("creativeTabsPos").getAsString());
-		} catch (NoSuchFileException | ClassCastException | NullPointerException e) {
+			stored = new Gson().fromJson(
+					Files.readString(new File(NBTEditorClient.SETTINGS_FOLDER, "settings.json").toPath()),
+					JsonObject.class);
+		} catch (NoSuchFileException e) {
+			stored = new JsonObject();
+		} catch (Exception e) {
+			// Defaults stand, and nothing is written: a file that could not be read is not a
+			// file to overwrite.
+			NBTEditor.LOGGER.error("Error while loading settings", e);
+			return;
+		}
+		if (!Settings.load(stored == null ? new JsonObject() : stored)) {
 			NBTEditor.LOGGER.info("Missing some settings from settings.json, fixing ...");
 			saveSettings();
-		} catch (Exception e) {
-			NBTEditor.LOGGER.error("Error while loading settings", e);
 		}
 	}
 	private static void saveSettings() {
-		JsonObject settings = new JsonObject();
-		settings.addProperty("maxEnchantLevelDisplay", enchantLevelMax.name());
-		settings.addProperty("useArabicEnchantLevels", enchantNumberTypeArabic);
-		settings.addProperty("keyTextSize", keyTextSize);
-		settings.addProperty("hideKeybinds", keybindsHidden);
-		settings.addProperty("lockSlots", lockSlots);
-		settings.addProperty("extendChatLimit", chatLimitExtended);
-		settings.addProperty("allowSingleQuotes", singleQuotesAllowed);
-		settings.addProperty("scrollSpeed", scrollSpeed);
-		settings.addProperty("airEditable", airEditable);
-		settings.addProperty("jsonText", normalText);
-		settings.add("shortcuts", shortcuts.stream().collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
-		settings.addProperty("checkUpdates", checkUpdates.name());
-		settings.addProperty("largeClientChest", largeClientChest);
-		settings.addProperty("screenshotOptions", screenshotOptions);
-		settings.addProperty("tooltipOverflowFix", tooltipOverflowFix);
-		settings.addProperty("noArmorRestriction", noSlotRestrictions);
-		settings.addProperty("hideFormatButtons", hideFormatButtons);
-		settings.addProperty("specialNumbers", specialNumbers);
-		settings.add("aliases", aliases.stream().map(alias -> {
-			JsonObject obj = new JsonObject();
-			obj.addProperty("original", alias.original);
-			obj.addProperty("alias", alias.alias);
-			return obj;
-		}).collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
-		settings.addProperty("itemSize", itemSizeFormat.name());
-		settings.addProperty("invertedPageKeybinds", !invertedPageKeybinds);
-		settings.addProperty("triggerBlockUpdates", triggerBlockUpdates);
-		settings.addProperty("warnIncompatibleProtocol", warnIncompatibleProtocol);
-		settings.addProperty("recreateBlocksAndEntities", recreateBlocksAndEntities);
-		settings.addProperty("creativeTabsPos", creativeTabsPos.name());
-		
 		try {
-			Files.write(new File(NBTEditorClient.SETTINGS_FOLDER, "settings.json").toPath(), new Gson().toJson(settings).getBytes());
+			Files.write(new File(NBTEditorClient.SETTINGS_FOLDER, "settings.json").toPath(),
+					new Gson().toJson(Settings.save()).getBytes());
 		} catch (IOException e) {
 			NBTEditor.LOGGER.error("Error while saving settings", e);
 		}
 	}
-	// jsonArray.asList().stream() doesn't exist in 1.17
-	private static Stream<JsonElement> getStream(JsonArray jsonArray) {
-		return StreamSupport.stream(jsonArray.spliterator(), false);
-	}
 	
 	public static EnchantLevelMax getEnchantLevelMax() {
-		return enchantLevelMax;
+		return Settings.ENCHANT_LEVEL_MAX.get();
 	}
 	public static boolean isEnchantNumberTypeArabic() {
-		return enchantNumberTypeArabic;
+		return Settings.ENCHANT_NUMBER_TYPE_ARABIC.get();
 	}
 	public static double getKeyTextSize() {
-		return keyTextSize;
+		return Settings.KEY_TEXT_SIZE.get();
 	}
 	public static boolean isKeybindsHidden() {
-		return keybindsHidden;
+		return Settings.KEYBINDS_HIDDEN.get();
 	}
 	public static void setLockSlots(boolean lockSlots) {
-		ConfigScreen.lockSlots = lockSlots;
+		Settings.LOCK_SLOTS.set(lockSlots);
 		saveSettings();
 	}
 	public static boolean isLockSlots() {
-		return lockSlots || isLockSlotsRequired();
+		return Settings.LOCK_SLOTS.get() || isLockSlotsRequired();
 	}
 	public static boolean isLockSlotsRequired() {
 		return Minecraft.getInstance().gameMode != null && !NBTEditorClient.SERVER_CONN.isEditingAllowed();
 	}
 	public static boolean isChatLimitExtended() {
-		return chatLimitExtended;
+		return Settings.CHAT_LIMIT_EXTENDED.get();
 	}
 	public static boolean isSingleQuotesAllowed() {
-		return singleQuotesAllowed;
+		return Settings.SINGLE_QUOTES_ALLOWED.get();
 	}
 	public static double getScrollSpeed() {
-		return scrollSpeed;
+		return Settings.SCROLL_SPEED.get();
 	}
 	public static boolean isAirEditable() {
-		return airEditable;
+		return Settings.AIR_EDITABLE.get();
 	}
 	public static boolean isNormalText() {
-		return normalText;
+		return Settings.NORMAL_TEXT.get();
 	}
 	public static List<String> getShortcuts() {
-		return shortcuts;
+		return Settings.SHORTCUTS.get();
 	}
 	public static CheckUpdatesLevel getCheckUpdates() {
-		return checkUpdates;
+		return Settings.CHECK_UPDATES.get();
 	}
 	public static boolean isLargeClientChest() {
-		return largeClientChest;
+		return Settings.LARGE_CLIENT_CHEST.get();
 	}
 	public static boolean isScreenshotOptions() {
-		return screenshotOptions;
+		return Settings.SCREENSHOT_OPTIONS.get();
 	}
 	public static boolean isTooltipOverflowFix() {
-		return tooltipOverflowFix;
+		return Settings.TOOLTIP_OVERFLOW_FIX.get();
 	}
 	public static boolean isNoSlotRestrictions() {
-		return noSlotRestrictions;
+		return Settings.NO_SLOT_RESTRICTIONS.get();
 	}
 	public static boolean isHideFormatButtons() {
-		return hideFormatButtons;
+		return Settings.HIDE_FORMAT_BUTTONS.get();
 	}
 	public static boolean isSpecialNumbers() {
-		return specialNumbers;
+		return Settings.SPECIAL_NUMBERS.get();
 	}
 	public static List<Alias> getAliases() {
-		return aliases;
+		return Settings.ALIASES.get();
 	}
 	public static ItemSizeFormat getItemSizeFormat() {
-		return itemSizeFormat;
+		return Settings.ITEM_SIZE_FORMAT.get();
 	}
 	public static boolean isInvertedPageKeybinds() {
-		return invertedPageKeybinds;
+		return Settings.INVERTED_PAGE_KEYBINDS.get();
 	}
 	public static boolean isTriggerBlockUpdates() {
-		return triggerBlockUpdates;
+		return Settings.TRIGGER_BLOCK_UPDATES.get();
 	}
 	public static boolean isWarnIncompatibleProtocol() {
-		return warnIncompatibleProtocol;
+		return Settings.WARN_INCOMPATIBLE_PROTOCOL.get();
 	}
 	public static boolean isRecreateBlocksAndEntities() {
-		return recreateBlocksAndEntities;
+		return Settings.RECREATE_BLOCKS_AND_ENTITIES.get();
 	}
 	public static CreativeTabsPosition getCreativeTabsPos() {
-		return creativeTabsPos;
+		return Settings.CREATIVE_TABS_POS.get();
 	}
 	
 	private static MutableComponent getEnchantName(Enchantment enchant, int level) {
 		MutableComponent output = MVEnchantments.getEnchantmentName(enchant).copy();
-        if (level != 1 || enchant.getMaxLevel() != 1 || enchantLevelMax == EnchantLevelMax.ALWAYS) {
+        if (level != 1 || enchant.getMaxLevel() != 1 || getEnchantLevelMax() == EnchantLevelMax.ALWAYS) {
             output.append(" ");
             if (isEnchantNumberTypeArabic())
             	output.append("" + level);
@@ -441,7 +319,7 @@ public class ConfigScreen extends TickableSupportingScreen {
 		return text;
 	}
 	public static Component getEnchantNameWithMax(Enchantment enchant, int level) {
-		return getEnchantNameWithMax(enchant, level, enchantLevelMax);
+		return getEnchantNameWithMax(enchant, level, getEnchantLevelMax());
 	}
 	
 	
@@ -468,82 +346,82 @@ public class ConfigScreen extends TickableSupportingScreen {
 		// ---------- MC ----------
 		
 		mc.setConfigurable("extendChatLimit", new ConfigItem<>(Component.translatableEscape("nbteditor.config.chat_limit"),
-				new ConfigValueBoolean(chatLimitExtended, false, 100, Component.translatableEscape("nbteditor.config.chat_limit.extended"), Component.translatableEscape("nbteditor.config.chat_limit.normal"))
-				.addValueListener(value -> chatLimitExtended = value.getValidValue()))
+				new ConfigValueBoolean(Settings.CHAT_LIMIT_EXTENDED.get(), false, 100, Component.translatableEscape("nbteditor.config.chat_limit.extended"), Component.translatableEscape("nbteditor.config.chat_limit.normal"))
+				.addValueListener(value -> Settings.CHAT_LIMIT_EXTENDED.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.chat_limit.desc"));
 		
 		mc.setConfigurable("tooltipOverflowFix", new ConfigItem<>(Component.translatableEscape("nbteditor.config.tooltip_overflow_fix"),
-				new ConfigValueBoolean(tooltipOverflowFix, true, 100, Component.translatableEscape("nbteditor.config.tooltip_overflow_fix.enabled"), Component.translatableEscape("nbteditor.config.tooltip_overflow_fix.disabled"))
-				.addValueListener(value -> tooltipOverflowFix = value.getValidValue()))
+				new ConfigValueBoolean(Settings.TOOLTIP_OVERFLOW_FIX.get(), true, 100, Component.translatableEscape("nbteditor.config.tooltip_overflow_fix.enabled"), Component.translatableEscape("nbteditor.config.tooltip_overflow_fix.disabled"))
+				.addValueListener(value -> Settings.TOOLTIP_OVERFLOW_FIX.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.tooltip_overflow_fix.desc"));
 		
 		mc.setConfigurable("maxEnchantLevelDisplay", new ConfigItem<>(Component.translatableEscape("nbteditor.config.enchant_level_max"),
-				ConfigValueDropdown.forEnum(enchantLevelMax, EnchantLevelMax.NEVER, EnchantLevelMax.class)
-				.addValueListener(value -> enchantLevelMax = value.getValidValue()))
+				ConfigValueDropdown.forEnum(Settings.ENCHANT_LEVEL_MAX.get(), EnchantLevelMax.NEVER, EnchantLevelMax.class)
+				.addValueListener(value -> Settings.ENCHANT_LEVEL_MAX.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.enchant_level_max.desc"));
 		
 		mc.setConfigurable("useArabicEnchantLevels", new ConfigItem<>(Component.translatableEscape("nbteditor.config.enchant_number_type"),
-				new ConfigValueBoolean(enchantNumberTypeArabic, false, 100, Component.translatableEscape("nbteditor.config.enchant_number_type.arabic"),
+				new ConfigValueBoolean(Settings.ENCHANT_NUMBER_TYPE_ARABIC.get(), false, 100, Component.translatableEscape("nbteditor.config.enchant_number_type.arabic"),
 				Component.translatableEscape("nbteditor.config.enchant_number_type.roman"), new MVTooltip(Component.translatableEscape("nbteditor.config.enchant_number_type.desc2")))
-				.addValueListener(value -> enchantNumberTypeArabic = value.getValidValue()))
+				.addValueListener(value -> Settings.ENCHANT_NUMBER_TYPE_ARABIC.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.enchant_number_type.desc"));
 		
 		mc.setConfigurable("noSlotRestrictions", new ConfigItem<>(Component.translatableEscape("nbteditor.config.no_slot_restrictions"),
-				new ConfigValueBoolean(noSlotRestrictions, false, 100, Component.translatableEscape("nbteditor.config.no_slot_restrictions.enabled"), Component.translatableEscape("nbteditor.config.no_slot_restrictions.disabled"))
-				.addValueListener(value -> noSlotRestrictions = value.getValidValue()))
+				new ConfigValueBoolean(Settings.NO_SLOT_RESTRICTIONS.get(), false, 100, Component.translatableEscape("nbteditor.config.no_slot_restrictions.enabled"), Component.translatableEscape("nbteditor.config.no_slot_restrictions.disabled"))
+				.addValueListener(value -> Settings.NO_SLOT_RESTRICTIONS.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.no_slot_restrictions.desc"));
 		
 		mc.setConfigurable("screenshotOptions", new ConfigItem<>(Component.translatableEscape("nbteditor.config.screenshot_options"),
-				new ConfigValueBoolean(screenshotOptions, true, 100, Component.translatableEscape("nbteditor.config.screenshot_options.enabled"), Component.translatableEscape("nbteditor.config.screenshot_options.disabled"))
-				.addValueListener(value -> screenshotOptions = value.getValidValue()))
+				new ConfigValueBoolean(Settings.SCREENSHOT_OPTIONS.get(), true, 100, Component.translatableEscape("nbteditor.config.screenshot_options.enabled"), Component.translatableEscape("nbteditor.config.screenshot_options.disabled"))
+				.addValueListener(value -> Settings.SCREENSHOT_OPTIONS.set(value.getValidValue())))
 				.setTooltip(new MVTooltip(Component.translatableEscape("nbteditor.config.screenshot_options.desc", Component.translatableEscape("nbteditor.file_options.show"), Component.translatableEscape("nbteditor.file_options.delete")))));
 		
 		// ---------- GUIs ----------
 		
 		guis.setConfigurable("creativeTabsPos", new ConfigItem<>(Component.translatableEscape("nbteditor.config.creative_tabs_pos"),
-				ConfigValueDropdown.forEnum(creativeTabsPos, CreativeTabsPosition.BOTTOM_LEFT, CreativeTabsPosition.class)
-				.addValueListener(value -> creativeTabsPos = value.getValidValue()))
+				ConfigValueDropdown.forEnum(Settings.CREATIVE_TABS_POS.get(), CreativeTabsPosition.BOTTOM_LEFT, CreativeTabsPosition.class)
+				.addValueListener(value -> Settings.CREATIVE_TABS_POS.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.creative_tabs_pos.desc"));
 		
 		guis.setConfigurable("scrollSpeed", new ConfigItem<>(Component.translatableEscape("nbteditor.config.scroll_speed"),
-				ConfigValueSlider.forDouble(100, scrollSpeed, 5, 0.5, 10, 0.05, value -> Component.literal(String.format("%.2f", value)))
-				.addValueListener(value -> scrollSpeed = value.getValidValue()))
+				ConfigValueSlider.forDouble(100, Settings.SCROLL_SPEED.get(), 5, 0.5, 10, 0.05, value -> Component.literal(String.format("%.2f", value)))
+				.addValueListener(value -> Settings.SCROLL_SPEED.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.scroll_speed.desc"));
 		
 		guis.setConfigurable("hideFormatButtons", new ConfigItem<>(Component.translatableEscape("nbteditor.config.hide_format_buttons"),
-				new ConfigValueBoolean(hideFormatButtons, false, 100, Component.translatableEscape("nbteditor.config.hide_format_buttons.enabled"), Component.translatableEscape("nbteditor.config.hide_format_buttons.disabled"))
-				.addValueListener(value -> hideFormatButtons = value.getValidValue()))
+				new ConfigValueBoolean(Settings.HIDE_FORMAT_BUTTONS.get(), false, 100, Component.translatableEscape("nbteditor.config.hide_format_buttons.enabled"), Component.translatableEscape("nbteditor.config.hide_format_buttons.disabled"))
+				.addValueListener(value -> Settings.HIDE_FORMAT_BUTTONS.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.hide_format_buttons.desc"));
 		
 		guis.setConfigurable("hideKeybinds", new ConfigItem<>(Component.translatableEscape("nbteditor.config.keybinds"),
-				new ConfigValueBoolean(keybindsHidden, false, 100, Component.translatableEscape("nbteditor.config.keybinds.hidden"), Component.translatableEscape("nbteditor.config.keybinds.shown"),
+				new ConfigValueBoolean(Settings.KEYBINDS_HIDDEN.get(), false, 100, Component.translatableEscape("nbteditor.config.keybinds.hidden"), Component.translatableEscape("nbteditor.config.keybinds.shown"),
 				new MVTooltip("nbteditor.keybind.edit", "nbteditor.keybind.factory", "nbteditor.keybind.container", "nbteditor.keybind.enchant", "nbteditor.keybind.delete"))
-				.addValueListener(value -> keybindsHidden = value.getValidValue()))
+				.addValueListener(value -> Settings.KEYBINDS_HIDDEN.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.keybinds.desc"));
 		
 		guis.setConfigurable("invertedPageKeybinds", new ConfigItem<>(Component.translatableEscape("nbteditor.config.page_keybinds"),
-				new ConfigValueBoolean(invertedPageKeybinds, false, 100, Component.translatableEscape("nbteditor.config.page_keybinds.inverted"), Component.translatableEscape("nbteditor.config.page_keybinds.normal"))
-				.addValueListener(value -> invertedPageKeybinds = value.getValidValue()))
+				new ConfigValueBoolean(Settings.INVERTED_PAGE_KEYBINDS.get(), false, 100, Component.translatableEscape("nbteditor.config.page_keybinds.inverted"), Component.translatableEscape("nbteditor.config.page_keybinds.normal"))
+				.addValueListener(value -> Settings.INVERTED_PAGE_KEYBINDS.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.page_keybinds.desc"));
 		
 		guis.setConfigurable("itemSize", new ConfigItem<>(Component.translatableEscape("nbteditor.config.item_size"),
-				ConfigValueDropdown.forEnum(itemSizeFormat, ItemSizeFormat.HIDDEN, ItemSizeFormat.class)
-				.addValueListener(value -> itemSizeFormat = value.getValidValue()))
+				ConfigValueDropdown.forEnum(Settings.ITEM_SIZE_FORMAT.get(), ItemSizeFormat.HIDDEN, ItemSizeFormat.class)
+				.addValueListener(value -> Settings.ITEM_SIZE_FORMAT.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.item_size.desc"));
 		
 		guis.setConfigurable("keyTextSize", new ConfigItem<>(Component.translatableEscape("nbteditor.config.key_text_size"),
-				ConfigValueSlider.forDouble(100, keyTextSize, 0.5, 0.5, 1, 0.05, value -> Component.literal(String.format("%.2f", value)))
-				.addValueListener(value -> keyTextSize = value.getValidValue()))
+				ConfigValueSlider.forDouble(100, Settings.KEY_TEXT_SIZE.get(), 0.5, 0.5, 1, 0.05, value -> Component.literal(String.format("%.2f", value)))
+				.addValueListener(value -> Settings.KEY_TEXT_SIZE.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.key_text_size.desc"));
 		
 		guis.setConfigurable("checkUpdates", new ConfigItem<>(Component.translatableEscape("nbteditor.config.check_updates"),
-				ConfigValueDropdown.forEnum(checkUpdates, CheckUpdatesLevel.MINOR, CheckUpdatesLevel.class)
-				.addValueListener(value -> checkUpdates = value.getValidValue()))
+				ConfigValueDropdown.forEnum(Settings.CHECK_UPDATES.get(), CheckUpdatesLevel.MINOR, CheckUpdatesLevel.class)
+				.addValueListener(value -> Settings.CHECK_UPDATES.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.check_updates.desc"));
 		
 		guis.setConfigurable("warnIncompatibleProtocol", new ConfigItem<>(Component.translatableEscape("nbteditor.config.warn_incompatible_protocol"),
-				new ConfigValueBoolean(warnIncompatibleProtocol, true, 100, Component.translatableEscape("nbteditor.config.warn_incompatible_protocol.enabled"), Component.translatableEscape("nbteditor.config.warn_incompatible_protocol.disabled"))
-				.addValueListener(value -> warnIncompatibleProtocol = value.getValidValue()))
+				new ConfigValueBoolean(Settings.WARN_INCOMPATIBLE_PROTOCOL.get(), true, 100, Component.translatableEscape("nbteditor.config.warn_incompatible_protocol.enabled"), Component.translatableEscape("nbteditor.config.warn_incompatible_protocol.disabled"))
+				.addValueListener(value -> Settings.WARN_INCOMPATIBLE_PROTOCOL.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.warn_incompatible_protocol.desc"));
 		
 		// ---------- FUNCTIONAL ----------
@@ -555,39 +433,39 @@ public class ConfigScreen extends TickableSupportingScreen {
 				btn -> minecraft.setScreenAndShow(new ShortcutsScreen(this)), new MVTooltip("nbteditor.config.shortcuts.desc")));
 		
 		functional.setConfigurable("recreateBlocksAndEntities", new ConfigItem<>(Component.translatableEscape("nbteditor.config.recreate_blocks_and_entities"),
-				new ConfigValueBoolean(recreateBlocksAndEntities, false, 100, Component.translatableEscape("nbteditor.config.recreate_blocks_and_entities.enabled"), Component.translatableEscape("nbteditor.config.recreate_blocks_and_entities.disabled"))
-				.addValueListener(value -> recreateBlocksAndEntities = value.getValidValue()))
+				new ConfigValueBoolean(Settings.RECREATE_BLOCKS_AND_ENTITIES.get(), false, 100, Component.translatableEscape("nbteditor.config.recreate_blocks_and_entities.enabled"), Component.translatableEscape("nbteditor.config.recreate_blocks_and_entities.disabled"))
+				.addValueListener(value -> Settings.RECREATE_BLOCKS_AND_ENTITIES.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.recreate_blocks_and_entities.desc"));
 		
 		functional.setConfigurable("largeClientChest", new ConfigItem<>(Component.translatableEscape("nbteditor.config.client_chest_size"),
-				new ConfigValueBoolean(largeClientChest, false, 100, Component.translatableEscape("nbteditor.config.client_chest_size.large"), Component.translatableEscape("nbteditor.config.client_chest_size.small"))
-				.addValueListener(value -> largeClientChest = value.getValidValue()))
+				new ConfigValueBoolean(Settings.LARGE_CLIENT_CHEST.get(), false, 100, Component.translatableEscape("nbteditor.config.client_chest_size.large"), Component.translatableEscape("nbteditor.config.client_chest_size.small"))
+				.addValueListener(value -> Settings.LARGE_CLIENT_CHEST.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.client_chest_size.desc"));
 		
 		functional.setConfigurable("airEditable", new ConfigItem<>(Component.translatableEscape("nbteditor.config.air_editable"),
-				new ConfigValueBoolean(airEditable, false, 100, Component.translatableEscape("nbteditor.config.air_editable.yes"), Component.translatableEscape("nbteditor.config.air_editable.no"))
-				.addValueListener(value -> airEditable = value.getValidValue()))
+				new ConfigValueBoolean(Settings.AIR_EDITABLE.get(), false, 100, Component.translatableEscape("nbteditor.config.air_editable.yes"), Component.translatableEscape("nbteditor.config.air_editable.no"))
+				.addValueListener(value -> Settings.AIR_EDITABLE.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.air_editable.desc"));
 		
 		functional.setConfigurable("specialNumbers", new ConfigItem<>(Component.translatableEscape("nbteditor.config.special_numbers"),
-				new ConfigValueBoolean(specialNumbers, true, 100, Component.translatableEscape("nbteditor.config.special_numbers.enabled"), Component.translatableEscape("nbteditor.config.special_numbers.disabled"))
-				.addValueListener(value -> specialNumbers = value.getValidValue()))
+				new ConfigValueBoolean(Settings.SPECIAL_NUMBERS.get(), true, 100, Component.translatableEscape("nbteditor.config.special_numbers.enabled"), Component.translatableEscape("nbteditor.config.special_numbers.disabled"))
+				.addValueListener(value -> Settings.SPECIAL_NUMBERS.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.special_numbers.desc"));
 		
 		functional.setConfigurable("triggerBlockUpdates", new ConfigItem<>(Component.translatableEscape("nbteditor.config.trigger_block_updates"),
-				new ConfigValueBoolean(triggerBlockUpdates, true, 100, Component.translatableEscape("nbteditor.config.trigger_block_updates.yes"), Component.translatableEscape("nbteditor.config.trigger_block_updates.no"))
-				.addValueListener(value -> triggerBlockUpdates = value.getValidValue()))
+				new ConfigValueBoolean(Settings.TRIGGER_BLOCK_UPDATES.get(), true, 100, Component.translatableEscape("nbteditor.config.trigger_block_updates.yes"), Component.translatableEscape("nbteditor.config.trigger_block_updates.no"))
+				.addValueListener(value -> Settings.TRIGGER_BLOCK_UPDATES.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.trigger_block_updates.desc"));
 		
 		functional.setConfigurable("normalText", new ConfigItem<>(Component.translatableEscape("nbteditor.config.normal_text"),
-				new ConfigValueBoolean(normalText, false, 100, Component.translatableEscape("nbteditor.config.normal_text.yes"), Component.translatableEscape("nbteditor.config.normal_text.no"))
-				.addValueListener(value -> normalText = value.getValidValue()))
+				new ConfigValueBoolean(Settings.NORMAL_TEXT.get(), false, 100, Component.translatableEscape("nbteditor.config.normal_text.yes"), Component.translatableEscape("nbteditor.config.normal_text.no"))
+				.addValueListener(value -> Settings.NORMAL_TEXT.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.normal_text.desc"));
 		
 		functional.setConfigurable("allowSingleQuotes", new ConfigItem<>(Component.translatableEscape("nbteditor.config.single_quotes"),
-				new ConfigValueBoolean(singleQuotesAllowed, false, 100, Component.translatableEscape("nbteditor.config.single_quotes.allowed"),
+				new ConfigValueBoolean(Settings.SINGLE_QUOTES_ALLOWED.get(), false, 100, Component.translatableEscape("nbteditor.config.single_quotes.allowed"),
 				Component.translatableEscape("nbteditor.config.single_quotes.not_allowed"), new MVTooltip("nbteditor.config.single_quotes.example"))
-				.addValueListener(value -> singleQuotesAllowed = value.getValidValue()))
+				.addValueListener(value -> Settings.SINGLE_QUOTES_ALLOWED.set(value.getValidValue())))
 				.setTooltip("nbteditor.config.single_quotes.desc"));
 		
 		ADDED_OPTIONS.forEach(option -> option.accept(config));
@@ -615,8 +493,8 @@ public class ConfigScreen extends TickableSupportingScreen {
 	@Override
 	public void removed() {
 		saveSettings();
-		if (largeClientChest != (NBTEditorClient.CLIENT_CHEST.getCache() instanceof LargeClientChestPageCache)) {
-			NBTEditorClient.CLIENT_CHEST.setCache(largeClientChest ? new LargeClientChestPageCache(5) : new SmallClientChestPageCache(100))
+		if (isLargeClientChest() != (NBTEditorClient.CLIENT_CHEST.getCache() instanceof LargeClientChestPageCache)) {
+			NBTEditorClient.CLIENT_CHEST.setCache(isLargeClientChest() ? new LargeClientChestPageCache(5) : new SmallClientChestPageCache(100))
 					.thenAccept(v -> ClientChestHelper.loadDefaultPages(NBTEditorClient.CLIENT_CHEST.getLoadLevel(0)));
 			ClientChestScreen.PAGE = Math.min(ClientChestScreen.PAGE, NBTEditorClient.CLIENT_CHEST.getPageCount() - 1);
 		}

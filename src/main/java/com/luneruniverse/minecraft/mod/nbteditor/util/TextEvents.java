@@ -1,15 +1,18 @@
-package com.luneruniverse.minecraft.mod.nbteditor.multiversion;
+package com.luneruniverse.minecraft.mod.nbteditor.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
+import java.util.WeakHashMap;
 import java.util.function.Function;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.DynamicOps;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
-import net.minecraft.world.item.ItemStack;
+import com.luneruniverse.minecraft.mod.nbteditor.multiversion.DynamicRegistryManagerHolder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
@@ -17,10 +20,44 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.util.Util;
 import net.minecraft.world.item.ItemStackTemplate;
 
-public class MVTextEvents {
+/**
+ * Click and hover events as a descriptor per action: its fancy-text name, how a typed value is
+ * parsed out of a string, and how one is read from and written back to a vanilla event.
+ *
+ * <p>This was <code>multiversion/MVTextEvents</code>. Nothing about it spans game versions -- the
+ * package was the only version-flavoured thing left, and ADR-0001 sends such a class to
+ * <code>util/</code> rather than keeping it in a layer being dismantled. It sits beside
+ * {@link TextUtil}, which is where the rest of the text serialization already lives.
+ */
+public class TextEvents {
+	
+	/**
+	 * Handlers for the mod's own clickable text, carried as an {@link ClickAction#OPEN_FILE}
+	 * event because a path is the only click value that is free-form enough to hide an id in.
+	 * {@code mixin.ScreenMixin} sees the click first and calls {@link #tryRunClickEvent}.
+	 *
+	 * <p>The keys are weak and the id string inside the event is the only strong reference to
+	 * one, so a handler lives exactly as long as the text that can still invoke it. A strong map
+	 * here pinned every screen a handler had captured for the rest of the session.
+	 */
+	private static final Map<String, Runnable> runClickEvents = Collections.synchronizedMap(new WeakHashMap<>());
+	
+	public static Style withRunClickEvent(Style style, Runnable onClick) {
+		String id = "\0nbteditor_runnable@" + new Random().nextLong(); // \0 is not valid in file paths on most OSs
+		runClickEvents.put(id, onClick);
+		return style.withClickEvent(ClickAction.OPEN_FILE.newEvent(id));
+	}
+	public static boolean tryRunClickEvent(String id) {
+		Runnable onClick = runClickEvents.get(id);
+		if (onClick == null)
+			return false;
+		onClick.run();
+		return true;
+	}
 	
 	public static class ClickAction<T> {
 		private static final Function<String, Optional<URI>> parseUri = valueStr -> {

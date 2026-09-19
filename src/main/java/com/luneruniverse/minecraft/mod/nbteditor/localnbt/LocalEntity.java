@@ -11,7 +11,7 @@ import org.joml.Vector3f;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditorClient;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVRegistry;
-import com.luneruniverse.minecraft.mod.nbteditor.multiversion.MVTextEvents;
+import com.luneruniverse.minecraft.mod.nbteditor.util.TextEvents;
 import com.luneruniverse.minecraft.mod.nbteditor.util.TextUtil;
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.EntityReference;
@@ -224,7 +224,7 @@ public class LocalEntity implements LocalNBT {
 	public Component toHoverableText() {
 		UUID uuid = nbt.nbte$getUuid("UUID").orElseGet(() -> new UUID(0, 0));
 		return Component.translatableEscape("chat.square_brackets", getName()).withStyle(
-				style -> style.withHoverEvent(MVTextEvents.HoverAction.SHOW_ENTITY.newEvent(new HoverEvent.EntityTooltipInfo(
+				style -> style.withHoverEvent(TextEvents.HoverAction.SHOW_ENTITY.newEvent(new HoverEvent.EntityTooltipInfo(
 						entityType, uuid, TextUtil.fromMinecraftSafely(nbt, "CustomName", () -> null)))));
 	}
 	

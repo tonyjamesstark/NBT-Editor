@@ -51,7 +51,7 @@ public class MVSliderWidget extends MVButtonWidget {
 		if (renderSlider(context, mouseX, mouseY, delta)) {
 			Drawing.drawTexture(context, this.isHovered || this.isFocused() ? HANDLE_HIGHLIGHTED : HANDLE,
 					x + (int) (value * (width - 8)), y, 0, 0, 8, 20, 8, 20);
-			Drawing.drawCenteredTextWithShadow(context, Minecraft.getInstance().font, getMessage(),
+			context.centeredText(Minecraft.getInstance().font, getMessage(),
 					x + width / 2, y + height / 2 - Minecraft.getInstance().font.lineHeight / 2, -1);
 		} else {
 			new AbstractSliderButton(x, y, width, height, getMessage(), value) {

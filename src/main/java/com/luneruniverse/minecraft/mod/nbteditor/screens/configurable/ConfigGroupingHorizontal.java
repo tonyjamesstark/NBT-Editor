@@ -2,7 +2,6 @@ package com.luneruniverse.minecraft.mod.nbteditor.screens.configurable;
 
 import java.util.ArrayList;
 
-import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -24,7 +23,7 @@ public abstract class ConfigGroupingHorizontal<K, T extends ConfigGroupingHorizo
 		int xOffset = 0;
 		Component fullName = getFullName();
 		if (fullName != null) {
-			Drawing.drawTextWithShadow(context, Minecraft.getInstance().font, fullName, PADDING * 2, 0, 0xFFFFFFFF);
+			context.text(Minecraft.getInstance().font, fullName, PADDING * 2, 0, 0xFFFFFFFF);
 			xOffset += getNameWidth();
 		}
 		

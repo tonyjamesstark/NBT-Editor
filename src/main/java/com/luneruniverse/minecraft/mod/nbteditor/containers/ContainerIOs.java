@@ -110,10 +110,12 @@ public class ContainerIOs {
 	private static final ContainerIO<LocalEntity> VILLAGER_IO = new ConcatContainerIO<>(
 			EQUIPMENT_IO.apply(EntityTypes.VILLAGER).entity(),
 			ContainerIO.forLocalNBT(new OrderNbtListContainerIO(8).forNbtCompound("Inventory")));
-	private static final ItemEntityContainerIO CHEST_MINECART_IO = ItemEntityContainerIO.forEntityTagIO(
-			new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), EntityTypes.CHEST_MINECART);
-	private static final ItemEntityContainerIO HOPPER_MINECART_IO = ItemEntityContainerIO.forEntityTagIO(
-			new SlotKeyNbtListContainerIO(5).forNbtCompoundItems(), EntityTypes.FURNACE_MINECART);
+	private static final Function<EntityType<?>, ItemEntityContainerIO> CHEST_MINECART_IO =
+			entityType -> ItemEntityContainerIO.forEntityTagIO(
+							new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), entityType);
+	private static final Function<EntityType<?>, ItemEntityContainerIO> HOPPER_MINECART_IO =
+			entityType -> ItemEntityContainerIO.forEntityTagIO(
+							new SlotKeyNbtListContainerIO(5).forNbtCompoundItems(), entityType);
 	private static final Function<EntityType<?>, ItemEntityContainerIO> CHEST_BOAT_IO =
 			entityType -> ItemEntityContainerIO.forEntityTagIO(
 							new SlotKeyNbtListContainerIO(27).forNbtCompoundItems(), entityType);

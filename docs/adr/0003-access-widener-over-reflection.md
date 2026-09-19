@@ -31,5 +31,6 @@ visible from both sides, and deleting a widener line makes exactly one file stop
 `AccessWidenedApi` holds nothing else. A method that compiles against the public API is ordinary
 mod code and belongs in the package that owns the concept.
 
-Reflection survives at two call sites in `server/`, which look members up by intermediary name.
-Those are not covered by this decision and are not a precedent for new ones.
+Reflection survives at one call site, `server/NBTEditorServer.java:150`, which looks a synthetic
+lectern field up by intermediary name. It is not covered by this decision and is not a precedent
+for new ones.

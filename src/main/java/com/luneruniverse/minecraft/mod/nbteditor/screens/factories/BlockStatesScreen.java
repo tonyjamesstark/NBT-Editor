@@ -9,7 +9,6 @@ import java.util.Set;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalBlock;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalItem;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalNBT;
-import com.luneruniverse.minecraft.mod.nbteditor.util.Drawing;
 import com.luneruniverse.minecraft.mod.nbteditor.nbtreferences.NBTReference;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.LocalEditorScreen;
 import com.luneruniverse.minecraft.mod.nbteditor.screens.configurable.ConfigCategory;
@@ -89,7 +88,7 @@ public class BlockStatesScreen<L extends LocalNBT> extends LocalEditorScreen<L> 
 	@Override
 	public void renderEditor(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		if (!hasBlockStates)
-			Drawing.drawTextWithShadow(context, font, Component.translatableEscape("nbteditor.block_states.none"), 16, 64, -1);
+			context.text(font, Component.translatableEscape("nbteditor.block_states.none"), 16, 64, -1);
 	}
 	
 }
