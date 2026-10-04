@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.luneruniverse.minecraft.mod.nbteditor.NBTEditor;
+import com.luneruniverse.minecraft.mod.nbteditor.commands.get.GetLostItemCommand;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIO;
 import com.luneruniverse.minecraft.mod.nbteditor.containers.ContainerIOs;
 import com.luneruniverse.minecraft.mod.nbteditor.localnbt.LocalEntity;
@@ -118,6 +119,8 @@ public class DevScreenSweep {
 				checkConfigScreen(client);
 			}
 			client.player.setItemInHand(InteractionHand.MAIN_HAND, buildItem(client));
+			if (item == 0)
+				checkCursorHistory(client.player.getMainHandItem());
 			ItemReference ref = new HandItemReference(InteractionHand.MAIN_HAND);
 			rows = new ArrayList<>();
 			for (LocalFactoryReference factory : LocalFactoryScreen.BASIC_FACTORIES) {
@@ -198,6 +201,22 @@ public class DevScreenSweep {
 				NBTEditor.LOGGER.error("SWEEP fail villager concat slots: {}", wrong);
 		} catch (Throwable e) {
 			NBTEditor.LOGGER.error("SWEEP fail the villager concat io could not be edited", e);
+		}
+	}
+
+	/**
+	 * Every slot click records the carried item in the cursor history, and recording it a second
+	 * time compares it against the first by encoding both. With the sweep's server-enchanted item
+	 * that encoding threw, which aborted the click itself and left the inventory dead until a
+	 * restart, since the history is static and the entry that threw was never replaced.
+	 */
+	private static void checkCursorHistory(ItemStack stack) {
+		try {
+			GetLostItemCommand.addToHistory(stack);
+			GetLostItemCommand.addToHistory(stack);
+			NBTEditor.LOGGER.info("SWEEP check cursor history records the sweep item twice");
+		} catch (Throwable e) {
+			NBTEditor.LOGGER.error("SWEEP fail the cursor history threw on the sweep item", e);
 		}
 	}
 

@@ -42,7 +42,7 @@ public class RegistryCache {
 	
 	private static final LoadingCache<Registry<?>, Boolean> staticRegistries = CacheBuilder.newBuilder().build(
 			CacheLoader.from(registry -> {
-				return (BuiltInRegistries.REGISTRY.get(registry.key().identifier()) != null);
+				return BuiltInRegistries.REGISTRY.containsKey(registry.key().identifier());
 			}));
 	public static boolean isRegistryStatic(Registry<?> registry) {
 		return staticRegistries.getUnchecked(registry);
