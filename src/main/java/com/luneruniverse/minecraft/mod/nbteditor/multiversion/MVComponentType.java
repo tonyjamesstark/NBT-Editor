@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import com.luneruniverse.minecraft.mod.nbteditor.multiversion.nbt.manager.NBTManagers;
 
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.BlockItemStateProperties;
@@ -12,6 +13,9 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.item.JukeboxPlayable;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.component.SuspiciousStewEffects;
@@ -26,7 +30,7 @@ public class MVComponentType<T> {
 	
 	public static final MVComponentType<ItemAttributeModifiers> ATTRIBUTE_MODIFIERS =
 			new MVComponentType<>(() -> DataComponents.ATTRIBUTE_MODIFIERS);
-	public static final MVComponentType<CustomData> BLOCK_ENTITY_DATA =
+	public static final MVComponentType<TypedEntityData<BlockEntityType<?>>> BLOCK_ENTITY_DATA =
 			new MVComponentType<>(() -> DataComponents.BLOCK_ENTITY_DATA);
 	public static final MVComponentType<BlockItemStateProperties> BLOCK_STATE =
 			new MVComponentType<>(() -> DataComponents.BLOCK_STATE);
@@ -42,7 +46,7 @@ public class MVComponentType<T> {
 			new MVComponentType<>(() -> DataComponents.DYED_COLOR);
 	public static final MVComponentType<ItemEnchantments> ENCHANTMENTS =
 			new MVComponentType<>(() -> DataComponents.ENCHANTMENTS);
-	public static final MVComponentType<CustomData> ENTITY_DATA =
+	public static final MVComponentType<TypedEntityData<EntityType<?>>> ENTITY_DATA =
 			new MVComponentType<>(() -> DataComponents.ENTITY_DATA);
 	public static final MVComponentType<Component> ITEM_NAME =
 			new MVComponentType<>(() -> DataComponents.ITEM_NAME);
@@ -71,13 +75,13 @@ public class MVComponentType<T> {
 	public static final MVComponentType<JukeboxPlayable> JUKEBOX_PLAYABLE =
 			new MVComponentType<>(() -> DataComponents.JUKEBOX_PLAYABLE);
 	
-	private final Object component;
+	private final DataComponentType<T> component;
 	
-	public MVComponentType(Supplier<Object> component) {
+	public MVComponentType(Supplier<DataComponentType<T>> component) {
 		this.component = component.get();
 	}
 	
-	public Object getInternalValue() {
+	public DataComponentType<T> getInternalValue() {
 		if (component == null)
 			throw new IllegalStateException("Components aren't in this version!");
 		return component;

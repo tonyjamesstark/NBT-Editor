@@ -25,7 +25,13 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.registries.Registries;
@@ -74,6 +80,8 @@ public class DevScreenSweep {
 			return;
 		DevScreenSweep sweep = new DevScreenSweep(lore.isEmpty() ? DEFAULT_LORE : lore,
 				System.getProperty("nbte.devscreens.nbt"), Integer.getInteger("nbte.devscreens.from", 0));
+		DevTypedDataCheck.start();
+		ClientTickEvents.END_CLIENT_TICK.register(DevTypedDataCheck::tick);
 		ClientTickEvents.END_CLIENT_TICK.register(sweep::tick);
 	}
 
@@ -92,7 +100,7 @@ public class DevScreenSweep {
 	}
 
 	private void tick(Minecraft client) {
-		if (client.player == null || done)
+		if (client.player == null || done || !DevTypedDataCheck.isDone())
 			return;
 		if (rows != null && next >= rows.size()) {
 			if (items == null || ++item >= items.size()) {
@@ -115,6 +123,7 @@ public class DevScreenSweep {
 				NBTEditor.LOGGER.error("SWEEP fail the client registry manager was never set");
 			if (item == 0) {
 				checkEntityIds();
+				checkTypedEntityData(client);
 				checkConcatContainerIO();
 				checkConfigScreen(client);
 			}
@@ -225,6 +234,43 @@ public class DevScreenSweep {
 		checkEntityId(Items.CHEST_MINECART, "minecraft:chest_minecart");
 	}
 
+	/**
+	 * Entity and block entity data are {@code TypedEntityData}, with the id held outside the tag.
+	 * Reading them as {@code CustomData} threw on any item the game itself had filled, and the
+	 * tooltip reads the spawn egg's, so hovering one in creative crashed the client.
+	 */
+	private static void checkTypedEntityData(Minecraft client) {
+		try {
+			ItemStack egg = new ItemStack(Items.ZOMBIE_SPAWN_EGG);
+			CompoundTag tag = new CompoundTag();
+			tag.putFloat("Health", 5);
+			egg.set(DataComponents.ENTITY_DATA, TypedEntityData.of(EntityTypes.ZOMBIE, tag));
+			egg.getTooltipLines(Item.TooltipContext.of(client.level), client.player, TooltipFlag.ADVANCED);
+			CompoundTag read = ItemTagReferences.ENTITY_DATA.get(egg);
+			if ("minecraft:zombie".equals(read.nbte$getStringOrDefault("id")) && read.getFloatOr("Health", 0) == 5)
+				NBTEditor.LOGGER.info("SWEEP check spawn egg entity data reads {}", read);
+			else
+				NBTEditor.LOGGER.error("SWEEP fail spawn egg entity data reads {}", read);
+		} catch (Throwable e) {
+			NBTEditor.LOGGER.error("SWEEP fail the spawn egg's entity data could not be read", e);
+		}
+		
+		ItemStack lectern = new ItemStack(Items.LECTERN);
+		try {
+			ContainerIO<ItemStack> io = ContainerIOs.get(lectern);
+			ItemStack[] contents = new ItemStack[io.getMaxSlots(lectern)];
+			contents[0] = new ItemStack(Items.WRITABLE_BOOK);
+			io.write(lectern, contents);
+			TypedEntityData<BlockEntityType<?>> data = lectern.get(DataComponents.BLOCK_ENTITY_DATA);
+			if (data != null && data.type() == BlockEntityTypes.LECTERN && io.read(lectern)[0].is(Items.WRITABLE_BOOK))
+				NBTEditor.LOGGER.info("SWEEP check lectern writes typed block entity data");
+			else
+				NBTEditor.LOGGER.error("SWEEP fail lectern writes block entity data {}", data);
+		} catch (Throwable e) {
+			NBTEditor.LOGGER.error("SWEEP fail the lectern's block entity data could not be edited", e);
+		}
+	}
+
 	/** Edits the item the way the container screen does, then reads back the id that reached NBT. */
 	private static void checkEntityId(Item container, String expected) {
 		ItemStack stack = new ItemStack(container);
@@ -235,6 +281,9 @@ public class DevScreenSweep {
 			io.write(stack, contents);
 			CompoundTag entityData = ItemTagReferences.ENTITY_DATA.get(stack);
 			String id = entityData == null ? null : entityData.nbte$getStringOrDefault("id");
+			TypedEntityData<EntityType<?>> data = stack.get(DataComponents.ENTITY_DATA);
+			if (data == null || !expected.equals(EntityType.getKey(data.type()).toString()))
+				id = "component " + data;
 			if (expected.equals(id))
 				NBTEditor.LOGGER.info("SWEEP check {} writes id={}", expected, id);
 			else

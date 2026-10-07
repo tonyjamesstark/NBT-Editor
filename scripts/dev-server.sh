@@ -12,7 +12,7 @@ cd "$(dirname "$0")/.."
 DEADLINE=${1:-300}
 LOG=run/dev-server.log
 
-export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
+export JAVA_HOME="$HOME/.sdkman/candidates/java/$(sed -n 's/^java=//p' .sdkmanrc)"
 export PATH="$JAVA_HOME/bin:$PATH"
 
 mkdir -p run/server
@@ -31,6 +31,12 @@ view-distance=4
 simulation-distance=4
 sync-chunk-writes=false
 PROPS
+
+# The client joins as NbteDev (build.gradle) and is op, so dev checks can /give the items a
+# server would send. The uuid is the offline one for that name.
+cat > run/server/ops.json <<'OPS'
+[{"uuid":"98033738-ca30-3915-a4ab-94c8ab10021f","name":"NbteDev","level":4,"bypassesPlayerLimit":false}]
+OPS
 
 rm -f "$LOG"
 ./gradlew runServer --console=plain >"$LOG" 2>&1 &

@@ -53,6 +53,8 @@ loom {
 		client {
 			source sourceSets.dev
 			vmArgs "-Xms256m", "-Xmx1G", "-Dnbte.devrun=client"
+			// A fixed name, so scripts/dev-server.sh can op it.
+			programArgs "--username", "NbteDev"
 			// -Pjoin=host:port sends the client straight into a world, which is the only
 			// place item components are bound. See scripts/dev-client.sh --join.
 			if (project.hasProperty("join")) {

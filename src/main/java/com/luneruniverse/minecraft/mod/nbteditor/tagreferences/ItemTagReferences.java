@@ -23,6 +23,10 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.BlockItemStateProperties;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TypedEntityData;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.component.ResolvableProfile;
 import net.minecraft.world.item.component.WritableBookContent;
 import net.minecraft.world.item.ItemStack;
@@ -37,6 +41,29 @@ public class ItemTagReferences {
 				null,
 				componentValue -> componentValue == null ? new CompoundTag() : componentValue.copyTag(),
 				CustomData::of);
+	}
+	
+	/**
+	 * The game keeps the type out of the tag; callers read and write it as the tag's <code>id</code>.
+	 * A tag without a known <code>id</code> keeps the item's current type, or is not written.
+	 */
+	private static <T> TagReference<CompoundTag, ItemStack> getComponentTagRefOfTypedNBT(
+			MVComponentType<TypedEntityData<T>> component, Registry<T> registry) {
+		return new ComponentTagReference<>(component,
+				null,
+				componentValue -> {
+					if (componentValue == null)
+						return new CompoundTag();
+					CompoundTag nbt = componentValue.copyTagWithoutId();
+					nbt.putString("id", registry.getKey(componentValue.type()).toString());
+					return nbt;
+				},
+				(componentValue, nbt) -> {
+					Optional<T> type = Optional.ofNullable(Identifier.tryParse(nbt.getStringOr("id", "")))
+							.flatMap(registry::getOptional)
+							.or(() -> Optional.ofNullable(componentValue).map(TypedEntityData::type));
+					return type.map(t -> TypedEntityData.of(t, nbt)).orElse(componentValue);
+				});
 	}
 	
 	public static final TagReference<CustomPotionContents, ItemStack> CUSTOM_POTION_CONTENTS = (new ComponentTagReference<>(MVComponentType.POTION_CONTENTS,
@@ -74,9 +101,9 @@ public class ItemTagReferences {
 					component -> component == null ? new HashMap<>() : new HashMap<>(component.properties()),
 					BlockItemStateProperties::new));
 	
-	public static final TagReference<CompoundTag, ItemStack> BLOCK_ENTITY_DATA = getComponentTagRefOfNBT(MVComponentType.BLOCK_ENTITY_DATA);
+	public static final TagReference<CompoundTag, ItemStack> BLOCK_ENTITY_DATA = getComponentTagRefOfTypedNBT(MVComponentType.BLOCK_ENTITY_DATA, BuiltInRegistries.BLOCK_ENTITY_TYPE);
 	
-	public static final TagReference<CompoundTag, ItemStack> ENTITY_DATA = getComponentTagRefOfNBT(MVComponentType.ENTITY_DATA);
+	public static final TagReference<CompoundTag, ItemStack> ENTITY_DATA = getComponentTagRefOfTypedNBT(MVComponentType.ENTITY_DATA, BuiltInRegistries.ENTITY_TYPE);
 	
 	public static final TagReference<Enchants, ItemStack> ENCHANTMENTS = new EnchantsTagReference();
 	

@@ -53,7 +53,7 @@ LOG=run/dev-client.log
 SERVER_LOG=run/dev-server.log
 CRASHED='Minecraft Crash Report|Unreported exception thrown|Mixin apply for mod .* failed'
 
-export JAVA_HOME="$HOME/.sdkman/candidates/java/current"
+export JAVA_HOME="$HOME/.sdkman/candidates/java/$(sed -n 's/^java=//p' .sdkmanrc)"
 export PATH="$JAVA_HOME/bin:$PATH"
 export LIBGL_ALWAYS_SOFTWARE=1
 export GALLIUM_DRIVER=llvmpipe
